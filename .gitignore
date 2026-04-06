@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+app/node_modules/
+
+# Expo
+.expo/
+expo-env.d.ts
+dist/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro
+.metro-health-check*
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# Local env
+.env
+.env.local
+.env*.local
+
+# Build
+android/
+ios/
+
+# Editor
+.vscode/
+.idea/
+
+# Claude
+.claude/
