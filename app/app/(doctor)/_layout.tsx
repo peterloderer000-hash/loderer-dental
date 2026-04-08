@@ -27,6 +27,7 @@ export default function DoctorLayout() {
       tabBarLabelStyle: styles.tabLabel,
     }}>
       <Tabs.Screen name="index"    options={{ title: 'Termíny',  tabBarIcon: ({ focused }) => TabIcon('list',     focused) }} />
+      <Tabs.Screen name="patients" options={{ title: 'Pacienti', tabBarIcon: ({ focused }) => TabIcon('people',   focused) }} />
       <Tabs.Screen name="calendar" options={{ title: 'Kalendár', tabBarIcon: ({ focused }) => TabIcon('calendar', focused) }} />
       <Tabs.Screen name="profile"  options={{ title: 'Profil',   tabBarIcon: ({ focused }) => TabIcon('person',   focused) }} />
       {/* Skryté obrazovky — nie sú taby */}
