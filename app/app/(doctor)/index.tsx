@@ -98,8 +98,10 @@ export default function DoctorHome() {
   const [doctorName, setDoctorName] = useState('');
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.replace('/');
+    Alert.alert('Odhlásiť sa', 'Naozaj sa chceš odhlásiť?', [
+      { text: 'Nie', style: 'cancel' },
+      { text: 'Áno', style: 'destructive', onPress: () => supabase.auth.signOut() },
+    ]);
   }
 
   useFocusEffect(useCallback(() => { refetch(); }, []));

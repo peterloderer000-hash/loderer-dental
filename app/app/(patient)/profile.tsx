@@ -49,9 +49,8 @@ export default function ProfileScreen() {
     else Alert.alert('Uložené ✓', 'Profil bol aktualizovaný.');
   }
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.replace('/');
+  function handleSignOut() {
+    supabase.auth.signOut();
   }
 
   const initials = fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';

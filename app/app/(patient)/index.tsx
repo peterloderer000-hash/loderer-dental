@@ -4,11 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
-import { Alert } from 'react-native';
 import UpcomingAppointmentCard from './components/UpcomingAppointmentCard';
 import QuickActionsGrid from './components/QuickActionsGrid';
 
@@ -38,11 +36,6 @@ export default function PatientHome() {
     ]);
   }
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.replace('/');
-  }
-
   const displayName = profile?.full_name ?? 'Pacient';
 
   // Najbližší naplánovaný termín
@@ -60,7 +53,7 @@ export default function PatientHome() {
             ? <ActivityIndicator color={COLORS.sand} size="small" style={{ alignSelf: 'flex-start', marginTop: 4 }} />
             : <Text style={styles.headerTitle}>Ahoj, {displayName}! 👋</Text>}
         </View>
-        <TouchableOpacity style={styles.avatar} onPress={handleSignOut} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.avatar} onPress={() => router.push('/(patient)/profile')} activeOpacity={0.8}>
           <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
         </TouchableOpacity>
       </View>

@@ -32,6 +32,8 @@ yarn-error.*
 .env
 .env.local
 .env*.local
+app/.env
+app/.env.local
 
 # Build
 android/
