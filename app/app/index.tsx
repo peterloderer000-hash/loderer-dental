@@ -6,8 +6,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabase';
 import { COLORS, SIZES } from '../styles/theme';
+import { ONBOARDING_KEY } from './onboarding';
 
 const { width } = Dimensions.get('window');
 
@@ -30,10 +32,19 @@ export default function AuthScreen() {
   const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    async function init() {
+      // Skontroluj či bol onboarding zobrazený
+      const seen = await AsyncStorage.getItem(ONBOARDING_KEY);
+      if (!seen) {
+        router.replace('/onboarding');
+        return;
+      }
+      // Bežná kontrola session
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) getRoleAndNavigate(session.user.id, router);
       else setLoading(false);
-    });
+    }
+    init();
   }, []);
 
   async function handleSignIn() {

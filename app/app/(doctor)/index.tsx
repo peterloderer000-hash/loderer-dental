@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
-  ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet,
-  Text, TouchableOpacity, View,
+  ActivityIndicator, Alert, Modal, RefreshControl, ScrollView, StyleSheet,
+  Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -91,6 +91,52 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
 
 type Filter = 'today' | 'upcoming' | 'all';
 
+// ─── Modal: klinické poznámky pri dokončení ────────────────────────────────────
+function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
+  visible: boolean; patientName: string; onClose: () => void;
+  onConfirm: (notes: string) => void; saving: boolean;
+}) {
+  const [notes, setNotes] = useState('');
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.sheet}>
+          <View style={styles.sheetHandle} />
+          <Text style={styles.sheetTitle}>Dokončiť termín</Text>
+          <Text style={styles.sheetSub}>{patientName}</Text>
+          <Text style={styles.sheetLabel}>KLINICKÉ POZNÁMKY (voliteľné)</Text>
+          <TextInput
+            style={styles.sheetInput}
+            placeholder="Čo sa robilo, odporúčania, ďalší postup..."
+            placeholderTextColor="#bbb"
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
+            autoFocus
+          />
+          <View style={styles.sheetActions}>
+            <TouchableOpacity style={styles.sheetBtnCancel} onPress={onClose} activeOpacity={0.8}>
+              <Text style={styles.sheetBtnCancelText}>Zrušiť</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.sheetBtnConfirm, saving && { opacity: 0.6 }]}
+              onPress={() => onConfirm(notes)}
+              disabled={saving}
+              activeOpacity={0.85}
+            >
+              {saving
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <Text style={styles.sheetBtnConfirmText}>✓ Dokončiť</Text>}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 export default function DoctorHome() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -98,6 +144,9 @@ export default function DoctorHome() {
   const [filter, setFilter] = useState<Filter>('today');
   const [doctorName, setDoctorName] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [completingItem, setCompletingItem] = useState<Appointment | null>(null);
+  const [completeSaving, setCompleteSaving] = useState(false);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -126,34 +175,60 @@ export default function DoctorHome() {
     });
   }, []);
 
-  async function handleStatus(id: string, status: 'completed' | 'cancelled') {
-    const label = status === 'completed' ? 'dokončiť' : 'zrušiť';
-    Alert.alert('Potvrdenie', `Chcete ${label} tento termín?`, [
+  async function handleComplete(item: Appointment) {
+    setCompletingItem(item);
+  }
+
+  async function confirmComplete(notes: string) {
+    if (!completingItem) return;
+    setCompleteSaving(true);
+    const err = await updateStatus(completingItem.id, 'completed', notes);
+    setCompleteSaving(false);
+    setCompletingItem(null);
+    if (err) Alert.alert('Chyba', err.message);
+  }
+
+  async function handleCancel(id: string) {
+    Alert.alert('Zrušiť termín', 'Chcete zrušiť tento termín?', [
       { text: 'Nie', style: 'cancel' },
       {
-        text: 'Áno', style: status === 'cancelled' ? 'destructive' : 'default',
-        onPress: async () => { const err = await updateStatus(id, status); if (err) Alert.alert('Chyba', err.message); },
+        text: 'Áno, zrušiť', style: 'destructive',
+        onPress: async () => { const err = await updateStatus(id, 'cancelled'); if (err) Alert.alert('Chyba', err.message); },
       },
     ]);
   }
 
-  const now = new Date();
-  const filtered = appointments.filter((a) => {
-    const d = new Date(a.appointment_date);
-    if (filter === 'today')    return isToday(a.appointment_date) && a.status === 'scheduled';
-    if (filter === 'upcoming') return d > now && a.status === 'scheduled';
-    return true;
-  });
+  const filtered = useMemo(() => {
+    const now = new Date();
+    const q = searchQuery.trim().toLowerCase();
+    return appointments.filter((a) => {
+      // Filter podľa tab
+      const d = new Date(a.appointment_date);
+      if (filter === 'today'    && !(isToday(a.appointment_date) && a.status === 'scheduled')) return false;
+      if (filter === 'upcoming' && !(d > now && a.status === 'scheduled')) return false;
+      // Filter podľa vyhľadávania
+      if (q) {
+        const name  = (a.patient?.full_name    ?? '').toLowerCase();
+        const phone = (a.patient?.phone_number ?? '').toLowerCase();
+        const notes = (a.notes                 ?? '').toLowerCase();
+        if (!name.includes(q) && !phone.includes(q) && !notes.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [appointments, filter, searchQuery]);
 
-  const grouped: Record<string, Appointment[]> = {};
-  filtered.forEach((a) => {
-    const key = formatDate(a.appointment_date);
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(a);
-  });
+  const grouped = useMemo(() => {
+    const map: Record<string, Appointment[]> = {};
+    filtered.forEach((a) => {
+      const key = formatDate(a.appointment_date);
+      if (!map[key]) map[key] = [];
+      map[key].push(a);
+    });
+    return map;
+  }, [filtered]);
 
   const todayCount    = appointments.filter((a) => isToday(a.appointment_date) && a.status === 'scheduled').length;
-  const upcomingCount = appointments.filter((a) => new Date(a.appointment_date) > now && a.status === 'scheduled').length;
+  const upcomingCount = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -187,6 +262,26 @@ export default function DoctorHome() {
           ))}
         </View>
       )}
+
+      {/* ── Search bar ── */}
+      <View style={styles.searchWrap}>
+        <Ionicons name="search-outline" size={16} color={COLORS.wal} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Hľadaj pacienta, poznámky..."
+          placeholderTextColor="#aaa"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          autoCapitalize="none"
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Ionicons name="close-circle" size={16} color="#bbb" />
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View style={styles.filterRow}>
         {([
@@ -225,8 +320,8 @@ export default function DoctorHome() {
               </View>
               {items.map((item) => (
                 <AppointmentCard key={item.id} item={item}
-                  onComplete={() => handleStatus(item.id, 'completed')}
-                  onCancel={() => handleStatus(item.id, 'cancelled')}
+                  onComplete={() => handleComplete(item)}
+                  onCancel={() => handleCancel(item.id)}
                   onDentalChart={() => router.push({
                     pathname: '/(doctor)/dental-chart',
                     params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' },
@@ -247,6 +342,15 @@ export default function DoctorHome() {
         onPress={() => router.push('/(doctor)/add-appointment')} activeOpacity={0.85}>
         <Ionicons name="add" size={26} color="#fff" />
       </TouchableOpacity>
+
+      {/* ── Modal: klinické poznámky ── */}
+      <CompleteModal
+        visible={!!completingItem}
+        patientName={completingItem?.patient?.full_name ?? 'Pacient'}
+        onClose={() => setCompletingItem(null)}
+        onConfirm={confirmComplete}
+        saving={completeSaving}
+      />
     </SafeAreaView>
   );
 }
@@ -308,4 +412,22 @@ const styles = StyleSheet.create({
   emptySub:  { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
 
   fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
+
+  // Search bar
+  searchWrap:  { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: SIZES.padding + 4, marginTop: 10, marginBottom: 4, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8 },
+  searchInput: { flex: 1, paddingVertical: 11, fontSize: 13, color: COLORS.esp },
+
+  // Complete modal
+  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  sheet:   { backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 22, paddingBottom: 40 },
+  sheetHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
+  sheetTitle:  { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
+  sheetSub:    { fontSize: 13, color: COLORS.wal, marginBottom: 18 },
+  sheetLabel:  { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
+  sheetInput:  { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 100, backgroundColor: COLORS.bg2, marginBottom: 20 },
+  sheetActions:       { flexDirection: 'row', gap: 10 },
+  sheetBtnCancel:     { flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
+  sheetBtnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
+  sheetBtnConfirm:     { flex: 2, backgroundColor: '#1E8449', borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
+  sheetBtnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' },
 });

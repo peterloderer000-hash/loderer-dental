@@ -6,6 +6,7 @@ export type Appointment = {
   appointment_date: string;
   status: 'scheduled' | 'completed' | 'cancelled';
   notes: string | null;
+  doctor_notes: string | null;
   patient_id: string;
   doctor_id: string;
   patient: { full_name: string | null; phone_number: string | null } | null;
@@ -62,8 +63,10 @@ export function useAppointments(role: 'patient' | 'doctor') {
   }, [role, refetch]);
 
   /** Zmena statusu termínu */
-  async function updateStatus(id: string, status: 'completed' | 'cancelled') {
-    const { error } = await supabase.from('appointments').update({ status }).eq('id', id);
+  async function updateStatus(id: string, status: 'completed' | 'cancelled', doctorNotes?: string) {
+    const payload: Record<string, unknown> = { status };
+    if (doctorNotes !== undefined) payload.doctor_notes = doctorNotes.trim() || null;
+    const { error } = await supabase.from('appointments').update(payload).eq('id', id);
     if (!error) refetch();
     return error;
   }
