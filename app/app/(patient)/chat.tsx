@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   KeyboardAvoidingView, Platform, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
@@ -87,28 +87,27 @@ function getTime() {
   return new Date().toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
 }
 
-let msgId = 100;
-
 export default function ChatScreen() {
+  const msgId = useRef(100);
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, from: 'bot', time: getTime(), text: 'Ahoj! Som tvoj dentálny asistent 🦷\n\nPomôžem ti s otázkami o ústnej hygiene, bolestiach alebo návšteve zubára.\n\nNiektoré otázky ktoré môžeš položiť:' },
   ]);
   const [input, setInput]   = useState('');
   const scrollRef           = useRef<ScrollView>(null);
 
-  function sendMessage(text: string) {
+  const sendMessage = useCallback((text: string) => {
     if (!text.trim()) return;
-    const userMsg: Message = { id: ++msgId, from: 'user', text: text.trim(), time: getTime() };
+    const userMsg: Message = { id: ++msgId.current, from: 'user', text: text.trim(), time: getTime() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
 
     setTimeout(() => {
-      const botMsg: Message = { id: ++msgId, from: 'bot', text: getBotResponse(text), time: getTime() };
+      const botMsg: Message = { id: ++msgId.current, from: 'bot', text: getBotResponse(text), time: getTime() };
       setMessages((prev) => [...prev, botMsg]);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }, 500);
-  }
+  }, []);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>

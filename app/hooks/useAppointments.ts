@@ -15,6 +15,7 @@ export type Appointment = {
 export function useAppointments(role: 'patient' | 'doctor') {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
 
   const refetch = useCallback(() => setTick((t) => t + 1), []);
@@ -38,7 +39,8 @@ export function useAppointments(role: 'patient' | 'doctor') {
         .order('appointment_date', { ascending: true });
 
       if (!cancelled) {
-        if (!error) setAppointments((data as Appointment[]) ?? []);
+        if (error) setFetchError(error.message);
+        else { setAppointments((data as Appointment[]) ?? []); setFetchError(null); }
         setLoading(false);
       }
     }
@@ -54,5 +56,5 @@ export function useAppointments(role: 'patient' | 'doctor') {
     return error;
   }
 
-  return { appointments, loading, refetch, updateStatus };
+  return { appointments, loading, fetchError, refetch, updateStatus };
 }

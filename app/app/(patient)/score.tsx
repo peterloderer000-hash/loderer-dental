@@ -52,14 +52,16 @@ export default function ScoreScreen() {
   const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      if (!user || cancelled) { if (!cancelled) setLoading(false); return; }
 
       // Zubná karta
       const { data: teeth } = await supabase
         .from('dental_charts').select('status').eq('patient_id', user.id);
-      if (teeth) {
+      if (!cancelled && teeth) {
         const s: Stats = {};
         teeth.forEach((t) => { s[t.status as ToothStatus] = (s[t.status as ToothStatus] ?? 0) + 1; });
         setStats(s);
@@ -68,17 +70,19 @@ export default function ScoreScreen() {
       // Zdravotný pas
       const { data: pp } = await supabase
         .from('health_passports').select('patient_id').eq('patient_id', user.id).maybeSingle();
-      setHasPassport(!!pp);
+      if (!cancelled) setHasPassport(!!pp);
 
       // Termín
       const { data: appts } = await supabase
         .from('appointments').select('id')
         .eq('patient_id', user.id).eq('status', 'scheduled');
-      setHasAppointment((appts?.length ?? 0) > 0);
+      if (!cancelled) setHasAppointment((appts?.length ?? 0) > 0);
 
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     }
+
     load();
+    return () => { cancelled = true; };
   }, []);
 
   // Výpočet skóre

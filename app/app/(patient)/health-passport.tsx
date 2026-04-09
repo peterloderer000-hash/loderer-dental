@@ -177,7 +177,7 @@ export default function HealthPassportScreen() {
             </Text>
           </View>
 
-          <SectionHeader num="2" title="HLAVNÝ DÔVOD NÁVŠTEVY" />
+          <SectionHeader num="1" title="HLAVNÝ DÔVOD NÁVŠTEVY" />
           <View style={styles.card}>
             {VISIT_REASONS.map((item) => (
               <CheckItem key={item} label={item} selected={visitReasons.includes(item)}
@@ -185,7 +185,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="3" title="MEDICÍNSKA ANAMNÉZA" />
+          <SectionHeader num="2" title="MEDICÍNSKA ANAMNÉZA" />
           <View style={styles.card}>
             <Text style={styles.cardSub}>Zaškrtnite, čo sa Vás týka:</Text>
             {MEDICAL_CONDITIONS.map((item) => (
@@ -203,7 +203,7 @@ export default function HealthPassportScreen() {
               multiline numberOfLines={2} textAlignVertical="top" />
           </View>
 
-          <SectionHeader num="4" title="DENTÁLNA ANAMNÉZA" />
+          <SectionHeader num="3" title="DENTÁLNA ANAMNÉZA" />
           <View style={styles.card}>
             <Text style={styles.cardSub}>Ako často chodíte k zubárovi?</Text>
             {DENTAL_FREQUENCY.map((item) => (
@@ -212,7 +212,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="5" title="STRACH ZO ZUBÁRA" />
+          <SectionHeader num="4" title="STRACH ZO ZUBÁRA" />
           <View style={styles.card}>
             {FEAR_LEVELS.map((item) => (
               <RadioItem key={item} label={item} selected={fearLevel === item}
@@ -220,7 +220,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="6" title="KOMFORT POČAS OŠETRENIA" />
+          <SectionHeader num="5" title="KOMFORT POČAS OŠETRENIA" />
           <View style={styles.card}>
             <Text style={styles.cardSub}>Čo vám pomáha relaxovať?</Text>
             {COMFORT_OPTIONS.map((item) => (
@@ -229,7 +229,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="7" title="ESTETICKÉ OČAKÁVANIA" />
+          <SectionHeader num="6" title="ESTETICKÉ OČAKÁVANIA" />
           <View style={styles.card}>
             <Text style={styles.cardSub}>Čo by ste chceli zlepšiť?</Text>
             {AESTHETIC_OPTIONS.map((item) => (
@@ -238,7 +238,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="8" title="ŽIVOTNÝ ŠTÝL" />
+          <SectionHeader num="7" title="ŽIVOTNÝ ŠTÝL" />
           <View style={styles.card}>
             {LIFESTYLE_OPTIONS.map((item) => (
               <CheckItem key={item} label={item} selected={lifestyle.includes(item)}
@@ -246,7 +246,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="9" title="INVESTIČNÉ OČAKÁVANIA" />
+          <SectionHeader num="8" title="INVESTIČNÉ OČAKÁVANIA" />
           <View style={styles.card}>
             {INVESTMENT_OPTIONS.map((item) => (
               <RadioItem key={item} label={item} selected={investment === item}
@@ -254,7 +254,7 @@ export default function HealthPassportScreen() {
             ))}
           </View>
 
-          <SectionHeader num="10" title="OTVORENÁ OTÁZKA" />
+          <SectionHeader num="9" title="OTVORENÁ OTÁZKA" />
           <View style={styles.card}>
             <Text style={styles.cardSub}>Čo by sme mohli urobiť, aby bola vaša návšteva čo najpríjemnejšia?</Text>
             <TextInput style={[styles.input, { minHeight: 90 }]}

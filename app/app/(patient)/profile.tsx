@@ -25,7 +25,7 @@ export default function ProfileScreen() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setEmail(user.email ?? '');
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
       if (data) {
         setFullName(data.full_name ?? '');
         setPhone(data.phone_number ?? '');
@@ -41,7 +41,7 @@ export default function ProfileScreen() {
     if (!fullName.trim()) { Alert.alert('Chyba', 'Zadaj meno.'); return; }
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setSaving(false); return; }
     const { error } = await supabase.from('profiles').update({
       full_name: fullName.trim(),
       phone_number: phone.trim() || null,
@@ -57,7 +57,7 @@ export default function ProfileScreen() {
     parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
   }
 
-  const initials = fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+  const initials = fullName.trim().split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
 
   if (loading) {
     return <View style={styles.center}><ActivityIndicator color={COLORS.wal} size="large" /></View>;

@@ -3,7 +3,7 @@ import { supabase } from '../supabase';
 
 export function useProfile() {
   const [profile, setProfile] = useState<any>(null);
-  const [hasHealthPassport, setHasHealthPassport] = useState<boolean>(true); // Default true, nech to nebliká
+  const [hasHealthPassport, setHasHealthPassport] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);
 
@@ -28,7 +28,7 @@ export function useProfile() {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       // Check health passport
       const { data: passportData } = await supabase

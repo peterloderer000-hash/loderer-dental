@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  ActivityIndicator, Dimensions, Modal, ScrollView,
+  ActivityIndicator, Alert, Dimensions, Modal, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -156,8 +156,9 @@ export default function DentalChart() {
   async function handleSave(status: ToothStatus, notes: string) {
     if (!activeTooth) return;
     setSaving(true);
-    await saveTooth(activeTooth, status, notes);
+    const err = await saveTooth(activeTooth, status, notes);
     setSaving(false);
+    if (err) { Alert.alert('Chyba', (err as any)?.message ?? 'Nepodarilo sa uložiť.'); return; }
     setActiveTooth(null);
   }
 

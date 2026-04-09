@@ -24,7 +24,7 @@ export default function PatientHome() {
   useFocusEffect(useCallback(() => {
     refetchProfile();
     refetchAppts();
-  }, []));
+  }, [refetchProfile, refetchAppts]));
 
   async function handleCancelAppointment(id: string) {
     Alert.alert('Zrušiť termín', 'Naozaj chcete zrušiť tento termín?', [

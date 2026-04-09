@@ -109,7 +109,7 @@ export default function DoctorHome() {
     ]);
   }
 
-  useFocusEffect(useCallback(() => { refetch(); }, []));
+  useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
 
   React.useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {

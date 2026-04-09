@@ -38,7 +38,7 @@ export default function DoctorCalendar() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(new Date());
 
-  useFocusEffect(useCallback(() => { refetch(); }, []));
+  useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
 
   const weekDays = getWeekDays(weekOffset);
   const weekLabel = `${weekDays[0].getDate()}. – ${weekDays[6].getDate()}. ${SK_MONTHS[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`;

@@ -94,7 +94,7 @@ export default function PatientsScreen() {
   const { patients, loading, refetch } = usePatients();
   const [query, setQuery] = useState('');
 
-  useFocusEffect(React.useCallback(() => { refetch(); }, []));
+  useFocusEffect(React.useCallback(() => { refetch(); }, [refetch]));
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
