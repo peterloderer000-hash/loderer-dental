@@ -31,8 +31,9 @@ export default function DoctorLayout() {
       <Tabs.Screen name="calendar" options={{ title: 'Kalendár', tabBarIcon: ({ focused }) => TabIcon('calendar', focused) }} />
       <Tabs.Screen name="profile"  options={{ title: 'Profil',   tabBarIcon: ({ focused }) => TabIcon('person',   focused) }} />
       {/* Skryté obrazovky — nie sú taby */}
-      <Tabs.Screen name="dental-chart"     options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="patient-passport" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="dental-chart"      options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="patient-passport"  options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="add-appointment"   options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

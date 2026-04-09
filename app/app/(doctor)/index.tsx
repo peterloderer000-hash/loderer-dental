@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
@@ -93,6 +93,7 @@ type Filter = 'today' | 'upcoming' | 'all';
 
 export default function DoctorHome() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { appointments, loading, refetch, updateStatus } = useAppointments('doctor');
   const [filter, setFilter] = useState<Filter>('today');
   const [doctorName, setDoctorName] = useState('');
@@ -100,7 +101,11 @@ export default function DoctorHome() {
   async function handleSignOut() {
     Alert.alert('Odhlásiť sa', 'Naozaj sa chceš odhlásiť?', [
       { text: 'Nie', style: 'cancel' },
-      { text: 'Áno', style: 'destructive', onPress: () => supabase.auth.signOut() },
+      { text: 'Áno', style: 'destructive', onPress: async () => {
+        await supabase.auth.signOut();
+        const parent = navigation.getParent() ?? navigation;
+        parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+      }},
     ]);
   }
 
@@ -211,6 +216,12 @@ export default function DoctorHome() {
           <View style={{ height: 30 }} />
         </ScrollView>
       )}
+
+      {/* ── FAB: Nový termín ── */}
+      <TouchableOpacity style={styles.fab}
+        onPress={() => router.push('/(doctor)/add-appointment')} activeOpacity={0.85}>
+        <Ionicons name="add" size={26} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -265,4 +276,6 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 52, marginBottom: 14 },
   emptyText: { fontSize: 18, fontWeight: '600', color: COLORS.esp, marginBottom: 6 },
   emptySub:  { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
+
+  fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
 });

@@ -35,10 +35,11 @@ function Avatar({ name }: { name: string | null }) {
 }
 
 // ─── Jedna karta pacienta ─────────────────────────────────────────────────────
-function PatientCard({ patient, onChart, onPassport }: {
+function PatientCard({ patient, onChart, onPassport, onBook }: {
   patient: Patient;
   onChart:   () => void;
   onPassport: () => void;
+  onBook:    () => void;
 }) {
   return (
     <View style={styles.card}>
@@ -79,6 +80,10 @@ function PatientCard({ patient, onChart, onPassport }: {
           <Text style={styles.btnPassportText}>Anamnéza</Text>
         </TouchableOpacity>
       </View>
+      <TouchableOpacity style={styles.btnBook} onPress={onBook} activeOpacity={0.8}>
+        <Ionicons name="calendar-outline" size={14} color="#fff" />
+        <Text style={styles.btnBookText}>Rezervovať termín</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -197,6 +202,10 @@ export default function PatientsScreen() {
                 pathname: '/(doctor)/patient-passport',
                 params: { patientId: patient.id, patientName: patient.full_name ?? 'Pacient' },
               })}
+              onBook={() => router.push({
+                pathname: '/(doctor)/add-appointment',
+                params: { patientId: patient.id, patientName: patient.full_name ?? 'Pacient' },
+              })}
             />
           ))}
           <View style={{ height: 30 }} />
@@ -256,6 +265,8 @@ const styles = StyleSheet.create({
   btnChartText:    { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 10, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },
+  btnBook:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 10, backgroundColor: COLORS.wal, marginTop: 8 },
+  btnBookText: { fontSize: 12, fontWeight: '700', color: '#fff' },
 
   // Empty / loading
   loadingText: { marginTop: 12, color: COLORS.wal, fontSize: 13 },
