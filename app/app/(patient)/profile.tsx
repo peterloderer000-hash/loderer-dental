@@ -6,11 +6,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const [fullName, setFullName]   = useState('');
   const [phone, setPhone]         = useState('');
   const [email, setEmail]         = useState('');
@@ -49,8 +51,10 @@ export default function ProfileScreen() {
     else Alert.alert('Uložené ✓', 'Profil bol aktualizovaný.');
   }
 
-  function handleSignOut() {
-    supabase.auth.signOut();
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    const parent = navigation.getParent() ?? navigation;
+    parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
   }
 
   const initials = fullName.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
