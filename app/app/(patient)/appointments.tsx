@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -29,9 +29,11 @@ const STATUS_CONFIG = {
 type Filter = 'all' | 'scheduled' | 'completed' | 'cancelled';
 
 // ─── Karta termínu ────────────────────────────────────────────────────────────
-function AppointmentCard({ item }: { item: Appointment }) {
+function AppointmentCard({ item, onCancel }: { item: Appointment; onCancel: () => void }) {
   const cfg = STATUS_CONFIG[item.status];
-  const isPast = new Date(item.appointment_date) < new Date();
+  const now = new Date();
+  const isPast = new Date(item.appointment_date) < now;
+  const canCancel = item.status === 'scheduled' && !isPast;
 
   return (
     <View style={[styles.card, isPast && item.status === 'scheduled' && styles.cardMissed]}>
@@ -71,6 +73,14 @@ function AppointmentCard({ item }: { item: Appointment }) {
           </View>
         ) : null}
       </View>
+
+      {/* Cancel button — len pre budúce naplánované */}
+      {canCancel && (
+        <TouchableOpacity style={styles.cancelBtn} onPress={onCancel} activeOpacity={0.8}>
+          <Ionicons name="close-circle-outline" size={14} color="#922B21" />
+          <Text style={styles.cancelBtnText}>Zrušiť termín</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -78,10 +88,20 @@ function AppointmentCard({ item }: { item: Appointment }) {
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function AppointmentsScreen() {
   const router = useRouter();
-  const { appointments, loading, refetch } = useAppointments('patient');
+  const { appointments, loading, refetch, updateStatus } = useAppointments('patient');
   const [filter, setFilter] = useState<Filter>('all');
 
   useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
+
+  function handleCancel(id: string) {
+    Alert.alert('Zrušiť termín', 'Naozaj chcete zrušiť tento termín?', [
+      { text: 'Nie', style: 'cancel' },
+      { text: 'Áno, zrušiť', style: 'destructive', onPress: async () => {
+        const err = await updateStatus(id, 'cancelled');
+        if (err) Alert.alert('Chyba', err.message);
+      }},
+    ]);
+  }
 
   // Grupuj podľa mesiaca
   const filtered = useMemo(() => {
@@ -184,7 +204,7 @@ export default function AppointmentsScreen() {
               </View>
 
               {items.map((item) => (
-                <AppointmentCard key={item.id} item={item} />
+                <AppointmentCard key={item.id} item={item} onCancel={() => handleCancel(item.id)} />
               ))}
             </View>
           ))}
@@ -242,6 +262,9 @@ const styles = StyleSheet.create({
   cardBottom: { gap: 6 },
   infoItem:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
   infoText:   { fontSize: 12, color: COLORS.wal, flex: 1 },
+
+  cancelBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10, paddingVertical: 9, borderRadius: 8, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
+  cancelBtnText: { fontSize: 12, fontWeight: '600', color: '#922B21' },
 
   // Empty / loading
   loadingText: { marginTop: 12, color: COLORS.wal, fontSize: 13 },

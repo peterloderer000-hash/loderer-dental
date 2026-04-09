@@ -121,7 +121,7 @@ export default function DoctorHome() {
   React.useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      supabase.from('profiles').select('full_name').eq('id', user.id).single()
+      supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle()
         .then(({ data }) => { if (data?.full_name) setDoctorName(data.full_name); });
     });
   }, []);

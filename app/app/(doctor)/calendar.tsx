@@ -38,6 +38,18 @@ export default function DoctorCalendar() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState(new Date());
 
+  // Keď sa zmení týždeň, vyber prvý deň nového týždňa (alebo dnešok ak je v ňom)
+  const handleWeekChange = useCallback((delta: number) => {
+    setWeekOffset((o) => {
+      const next = o + delta;
+      const days = getWeekDays(next);
+      const today = new Date();
+      const todayInWeek = days.find((d) => sameDay(d, today));
+      setSelectedDay(todayInWeek ?? days[0]);
+      return next;
+    });
+  }, []);
+
   useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
 
   const weekDays = getWeekDays(weekOffset);
@@ -62,11 +74,11 @@ export default function DoctorCalendar() {
 
       {/* Week navigator */}
       <View style={styles.weekNav}>
-        <TouchableOpacity onPress={() => setWeekOffset((o) => o - 1)} style={styles.navBtn} activeOpacity={0.75}>
+        <TouchableOpacity onPress={() => handleWeekChange(-1)} style={styles.navBtn} activeOpacity={0.75}>
           <Text style={styles.navArrow}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.weekLabel}>{weekLabel}</Text>
-        <TouchableOpacity onPress={() => setWeekOffset((o) => o + 1)} style={styles.navBtn} activeOpacity={0.75}>
+        <TouchableOpacity onPress={() => handleWeekChange(1)} style={styles.navBtn} activeOpacity={0.75}>
           <Text style={styles.navArrow}>›</Text>
         </TouchableOpacity>
       </View>

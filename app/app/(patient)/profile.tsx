@@ -10,6 +10,8 @@ import { useNavigation, CommonActions } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 
+type ApptStats = { total: number; completed: number; upcoming: number; lastVisit: string | null };
+
 export default function ProfileScreen() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -19,6 +21,7 @@ export default function ProfileScreen() {
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState(false);
   const [hasPassport, setHasPassport] = useState(false);
+  const [apptStats, setApptStats] = useState<ApptStats>({ total: 0, completed: 0, upcoming: 0, lastVisit: null });
 
   useEffect(() => {
     async function load() {
@@ -32,6 +35,24 @@ export default function ProfileScreen() {
       }
       const { data: pp } = await supabase.from('health_passports').select('patient_id').eq('patient_id', user.id).maybeSingle();
       setHasPassport(!!pp);
+
+      // Štatistiky termínov
+      const { data: appts } = await supabase
+        .from('appointments').select('status, appointment_date').eq('patient_id', user.id);
+      if (appts) {
+        const now       = new Date();
+        const total     = appts.length;
+        const completed = appts.filter((a) => a.status === 'completed').length;
+        const upcoming  = appts.filter((a) => a.status === 'scheduled' && new Date(a.appointment_date) > now).length;
+        const past      = appts.filter((a) => a.status === 'completed').sort(
+          (a, b) => new Date(b.appointment_date).getTime() - new Date(a.appointment_date).getTime()
+        );
+        const lastVisit = past[0]
+          ? new Date(past[0].appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })
+          : null;
+        setApptStats({ total, completed, upcoming, lastVisit });
+      }
+
       setLoading(false);
     }
     load();
@@ -79,6 +100,26 @@ export default function ProfileScreen() {
               <Text style={styles.roleText}>🦷  Pacient</Text>
             </View>
           </View>
+
+          {/* Štatistiky */}
+          <View style={styles.statsRow}>
+            {[
+              { num: apptStats.total,     label: 'Termínov',   color: COLORS.wal,  bg: '#F4ECE4' },
+              { num: apptStats.completed, label: 'Absolvovaných', color: '#1E8449', bg: '#EAFAF1' },
+              { num: apptStats.upcoming,  label: 'Plánovaných', color: '#1A5276',  bg: '#EBF5FB' },
+            ].map((s) => (
+              <View key={s.label} style={[styles.statBox, { backgroundColor: s.bg }]}>
+                <Text style={[styles.statNum, { color: s.color }]}>{s.num}</Text>
+                <Text style={[styles.statLabel, { color: s.color }]}>{s.label}</Text>
+              </View>
+            ))}
+          </View>
+          {apptStats.lastVisit && (
+            <View style={styles.lastVisitRow}>
+              <Ionicons name="time-outline" size={13} color={COLORS.wal} />
+              <Text style={styles.lastVisitText}>Posledná návšteva: {apptStats.lastVisit}</Text>
+            </View>
+          )}
 
           {/* Osobné údaje */}
           <View style={styles.card}>
@@ -149,6 +190,13 @@ const styles = StyleSheet.create({
   avatarName: { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   roleBadge:  { backgroundColor: COLORS.bg3, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 5, borderWidth: 1, borderColor: COLORS.sand },
   roleText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
+
+  statsRow:     { flexDirection: 'row', gap: 10, marginBottom: 12 },
+  statBox:      { flex: 1, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
+  statNum:      { fontSize: 24, fontWeight: '800', lineHeight: 28 },
+  statLabel:    { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4, marginTop: 3, textAlign: 'center' },
+  lastVisitRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 14, paddingHorizontal: 4 },
+  lastVisitText:{ fontSize: 11, color: COLORS.wal, fontStyle: 'italic' },
 
   card:      { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 14 },

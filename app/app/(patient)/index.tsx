@@ -46,6 +46,20 @@ export default function PatientHome() {
 
   const displayName = profile?.full_name ?? 'Pacient';
 
+  // Reminder — termín dnes alebo zajtra
+  const now      = new Date();
+  const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+  const reminderAppt = appointments.find((a) => {
+    if (a.status !== 'scheduled') return false;
+    const d = new Date(a.appointment_date);
+    const isToday    = d.toDateString() === now.toDateString();
+    const isTomorrow = d.toDateString() === tomorrow.toDateString();
+    return isToday || isTomorrow;
+  });
+  const reminderIsToday = reminderAppt
+    ? new Date(reminderAppt.appointment_date).toDateString() === now.toDateString()
+    : false;
+
   // Najbližší naplánovaný termín
   const nextAppointment = appointments.find(
     (a) => a.status === 'scheduled' && new Date(a.appointment_date) > new Date()
@@ -68,6 +82,28 @@ export default function PatientHome() {
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.wal} colors={[COLORS.wal]} />}>
+
+        {/* ── 🔔 Reminder Banner ── */}
+        {!apptLoading && reminderAppt && (
+          <TouchableOpacity
+            style={[styles.reminderBanner, reminderIsToday ? styles.reminderToday : styles.reminderTomorrow]}
+            onPress={() => router.push('/(patient)/appointments')}
+            activeOpacity={0.88}
+          >
+            <Text style={styles.reminderIcon}>{reminderIsToday ? '🔔' : '📅'}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.reminderTitle, reminderIsToday && styles.reminderTodayText]}>
+                {reminderIsToday ? 'Dnes máš termín!' : 'Zajtra máš termín!'}
+              </Text>
+              <Text style={styles.reminderSub}>
+                {new Date(reminderAppt.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
+                {' · '}
+                {reminderAppt.doctor?.full_name ?? 'MDDr. Loderer'}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={reminderIsToday ? '#7D2A1A' : '#1A5276'} />
+          </TouchableOpacity>
+        )}
 
         {/* ── ⚠️ Health Passport Banner ── */}
         {!profileLoading && !hasHealthPassport && (
@@ -158,6 +194,14 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 22, fontWeight: '500', color: '#fff' },
   avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.wal, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },
+
+  reminderBanner:     { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 14, marginBottom: 4, paddingVertical: 13, paddingHorizontal: 14, borderWidth: 1.5 },
+  reminderToday:      { backgroundColor: '#FEF0EE', borderColor: '#E8917F' },
+  reminderTomorrow:   { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' },
+  reminderTodayText:  { color: '#7D2A1A' },
+  reminderIcon:       { fontSize: 26 },
+  reminderTitle:      { fontSize: 14, fontWeight: '700', color: '#1A5276', marginBottom: 2 },
+  reminderSub:        { fontSize: 12, color: COLORS.wal },
 
   hpBanner: { backgroundColor: '#FAE8E5', borderWidth: 1.5, borderColor: '#CC7060', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 16, marginBottom: 4, paddingVertical: 13, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 10 },
   hpBannerLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },

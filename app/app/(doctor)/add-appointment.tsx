@@ -18,13 +18,19 @@ const TIME_SLOTS = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:
 const SK_DAYS_SHORT   = ['Ne','Po','Ut','St','Št','Pi','So'];
 const SK_MONTHS_SHORT = ['jan','feb','mar','apr','máj','jún','júl','aug','sep','okt','nov','dec'];
 
+// Generuj pracovné dni (bez víkendov)
 function getNextDays(count = 21): Date[] {
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
+  const result: Date[] = [];
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  // Zahrň dnešok ak je pracovný deň
+  if (d.getDay() !== 0 && d.getDay() !== 6) result.push(new Date(d));
+  while (result.length < count) {
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) result.push(new Date(d));
+  }
+  return result;
 }
 
 export default function DoctorAddAppointment() {

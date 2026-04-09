@@ -12,17 +12,25 @@ import { COLORS, SIZES } from '../../styles/theme';
 
 type Doctor = { id: string; full_name: string | null };
 
-// Generuj časové sloty
-const TIME_SLOTS = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+// Generuj časové sloty (30-minútové intervaly, 08:00–17:00)
+const TIME_SLOTS = [
+  '08:00','08:30','09:00','09:30','10:00','10:30',
+  '11:00','11:30','12:00','13:00','13:30',
+  '14:00','14:30','15:00','15:30','16:00','16:30','17:00',
+];
 
-// Generuj nasledujúcich 14 dní
-function getNextDays(count = 14): Date[] {
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i + 1);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
+// Generuj nasledujúcich 21 pracovných dní (bez víkendov)
+function getNextDays(count = 21): Date[] {
+  const result: Date[] = [];
+  let d = new Date();
+  d.setHours(0, 0, 0, 0);
+  while (result.length < count) {
+    d = new Date(d);
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) result.push(new Date(d)); // skip Ne=0, So=6
+  }
+  return result;
 }
 
 const SK_DAYS_SHORT  = ['Ne','Po','Ut','St','Št','Pi','So'];
@@ -50,7 +58,7 @@ export default function BookAppointmentScreen() {
   const [loading, setLoading]         = useState(false);
   const [fetchingDoctors, setFetchingDoctors] = useState(true);
 
-  const days = getNextDays(14);
+  const days = getNextDays(21);
 
   // Načítaj doktorov
   useEffect(() => {
