@@ -33,8 +33,9 @@ export default function PatientLayout() {
       <Tabs.Screen name="chat"    options={{ title: 'AI Chat', tabBarIcon: ({ focused }) => TabIcon('chatbubble',focused) }} />
       <Tabs.Screen name="shop"    options={{ title: 'Shop',    tabBarIcon: ({ focused }) => TabIcon('bag',       focused) }} />
       {/* Skryté obrazovky — nie sú taby */}
-      <Tabs.Screen name="health-passport"   options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="book-appointment"  options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="health-passport"  options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="book-appointment" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="appointments"     options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

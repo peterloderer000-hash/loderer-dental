@@ -76,8 +76,12 @@ export default function PatientHome() {
         )}
 
         {/* ── Najbližší termín ── */}
-        <View style={styles.body}>
+        <View style={[styles.body, styles.bodyRow]}>
           <Text style={styles.sectionLabel}>NAJBLIŽŠÍ TERMÍN</Text>
+          <TouchableOpacity onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.75} style={styles.historyBtn}>
+            <Text style={styles.historyBtnText}>História</Text>
+            <Ionicons name="chevron-forward" size={12} color={COLORS.wal} />
+          </TouchableOpacity>
         </View>
         {apptLoading ? (
           <ActivityIndicator color={COLORS.wal} style={{ marginVertical: 12 }} />
@@ -152,8 +156,11 @@ const styles = StyleSheet.create({
   hpTitle: { fontSize: 14, fontWeight: '700', color: '#8C2A18', marginBottom: 2 },
   hpSub:   { fontSize: 11, color: '#a84030', lineHeight: 16 },
 
-  body: { paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
+  body:    { paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
+  bodyRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '500', textTransform: 'uppercase', marginBottom: 9 },
+  historyBtn:     { flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 9 },
+  historyBtnText: { fontSize: 11, fontWeight: '600', color: COLORS.wal },
 
   noApptCard: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginBottom: 14, padding: 16, borderWidth: 1.5, borderColor: COLORS.bg3, borderStyle: 'dashed', flexDirection: 'row', alignItems: 'center', gap: 12 },
   noApptText: { fontSize: 13, fontWeight: '600', color: COLORS.esp, marginBottom: 3 },
