@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 
@@ -138,6 +139,7 @@ export default function HealthPassportScreen() {
         { onConflict: 'patient_id' },
       );
       if (error) throw error;
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch (e: any) {
       setSaveError(e?.message ?? 'Nastala chyba pri ukladaní.');

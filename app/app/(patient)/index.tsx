@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -20,6 +20,14 @@ export default function PatientHome() {
   const router = useRouter();
   const { profile, hasHealthPassport, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { appointments, loading: apptLoading, refetch: refetchAppts, updateStatus } = useAppointments('patient');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    refetchProfile();
+    refetchAppts();
+    setTimeout(() => setRefreshing(false), 800);
+  }, [refetchProfile, refetchAppts]);
 
   useFocusEffect(useCallback(() => {
     refetchProfile();
@@ -58,7 +66,8 @@ export default function PatientHome() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.wal} colors={[COLORS.wal]} />}>
 
         {/* ── ⚠️ Health Passport Banner ── */}
         {!profileLoading && !hasHealthPassport && (

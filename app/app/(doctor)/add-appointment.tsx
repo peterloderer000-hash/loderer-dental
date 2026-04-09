@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 
@@ -98,6 +99,7 @@ export default function DoctorAddAppointment() {
       });
       if (error) throw error;
 
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert('Termín pridaný ✓', `Termín pre ${selectedPatient.full_name ?? 'pacienta'} bol naplánovaný.`, [
         { text: 'OK', onPress: () => router.back() },
       ]);

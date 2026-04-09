@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet,
+  ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -97,6 +97,13 @@ export default function DoctorHome() {
   const { appointments, loading, refetch, updateStatus } = useAppointments('doctor');
   const [filter, setFilter] = useState<Filter>('today');
   const [doctorName, setDoctorName] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    refetch();
+    setTimeout(() => setRefreshing(false), 800);
+  }, [refetch]);
 
   async function handleSignOut() {
     Alert.alert('Odhlásiť sa', 'Naozaj sa chceš odhlásiť?', [
@@ -208,7 +215,8 @@ export default function DoctorHome() {
           <Text style={styles.emptySub}>V tomto zobrazení nie sú žiadne termíny.</Text>
         </View>
       ) : (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.sand} colors={[COLORS.wal]} />}>
           {Object.entries(grouped).map(([date, items]) => (
             <View key={date}>
               <View style={styles.dateHeader}>

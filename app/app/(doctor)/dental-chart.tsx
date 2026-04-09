@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, Dimensions, Modal, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -158,7 +159,12 @@ export default function DentalChart() {
     setSaving(true);
     const err = await saveTooth(activeTooth, status, notes);
     setSaving(false);
-    if (err) { Alert.alert('Chyba', (err as any)?.message ?? 'Nepodarilo sa uložiť.'); return; }
+    if (err) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Chyba', (err as any)?.message ?? 'Nepodarilo sa uložiť.');
+      return;
+    }
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setActiveTooth(null);
   }
 
