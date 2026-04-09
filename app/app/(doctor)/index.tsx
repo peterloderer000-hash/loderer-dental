@@ -164,6 +164,23 @@ export default function DoctorHome() {
         </TouchableOpacity>
       </View>
 
+      {/* ── Stats strip ── */}
+      {!loading && (
+        <View style={styles.statsStrip}>
+          {[
+            { num: todayCount,    label: 'Dnes',       color: COLORS.wal,  bg: '#F4ECE4' },
+            { num: upcomingCount, label: 'Nadchádza',  color: '#1A5276',   bg: '#EBF5FB' },
+            { num: appointments.filter((a) => a.status === 'completed').length, label: 'Dokončené', color: '#1E8449', bg: '#EAFAF1' },
+            { num: new Set(appointments.map((a) => a.patient_id)).size, label: 'Pacienti', color: '#6C3483', bg: '#F5EEF8' },
+          ].map((s) => (
+            <View key={s.label} style={[styles.statChip, { backgroundColor: s.bg }]}>
+              <Text style={[styles.statNum, { color: s.color }]}>{s.num}</Text>
+              <Text style={[styles.statLbl, { color: s.color }]}>{s.label}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
       <View style={styles.filterRow}>
         {([
           { key: 'today', label: 'Dnes' },
@@ -272,6 +289,11 @@ const styles = StyleSheet.create({
   btnChartText: { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: 8, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },
+
+  statsStrip: { flexDirection: 'row', gap: 8, paddingHorizontal: SIZES.padding + 4, paddingVertical: 12, backgroundColor: COLORS.bg2, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  statChip:   { flex: 1, borderRadius: 12, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' },
+  statNum:    { fontSize: 20, fontWeight: '800', lineHeight: 24 },
+  statLbl:    { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 },
 
   emptyIcon: { fontSize: 52, marginBottom: 14 },
   emptyText: { fontSize: 18, fontWeight: '600', color: COLORS.esp, marginBottom: 6 },

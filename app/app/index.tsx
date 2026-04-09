@@ -18,12 +18,16 @@ async function getRoleAndNavigate(userId: string, router: any) {
   else                               router.replace('/setup-role');
 }
 
+type Mode = 'login' | 'reset';
+
 export default function AuthScreen() {
   const router = useRouter();
+  const [mode, setMode]         = useState<Mode>('login');
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(true);
   const [showPass, setShowPass] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -50,6 +54,17 @@ export default function AuthScreen() {
     if (error) { Alert.alert('Chyba registrácie', error.message); return; }
     router.push('/setup-role');
   }
+
+  async function handleResetPassword() {
+    if (!email.trim()) { Alert.alert('Chyba', 'Zadajte váš email.'); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
+    setLoading(false);
+    if (error) { Alert.alert('Chyba', error.message); return; }
+    setResetSent(true);
+  }
+
+  function backToLogin() { setMode('login'); setResetSent(false); }
 
   if (loading) {
     return (
@@ -81,53 +96,111 @@ export default function AuthScreen() {
 
         {/* ── Formulár ── */}
         <View style={styles.formCard}>
-          <Text style={styles.formTitle}>Prihlásenie</Text>
 
-          <Text style={styles.label}>EMAIL</Text>
-          <View style={styles.inputWrap}>
-            <Ionicons name="mail-outline" size={17} color={COLORS.wal} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="vas@email.sk"
-              placeholderTextColor="#bbb"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
+          {mode === 'reset' ? (
+            /* ── Reset hesla ── */
+            <>
+              <TouchableOpacity onPress={backToLogin} style={styles.backRow} activeOpacity={0.7}>
+                <Ionicons name="arrow-back" size={16} color={COLORS.wal} />
+                <Text style={styles.backText}>Späť na prihlásenie</Text>
+              </TouchableOpacity>
 
-          <Text style={styles.label}>HESLO</Text>
-          <View style={styles.inputWrap}>
-            <Ionicons name="lock-closed-outline" size={17} color={COLORS.wal} style={styles.inputIcon} />
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="••••••••"
-              placeholderTextColor="#bbb"
-              secureTextEntry={!showPass}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPass(p => !p)} style={styles.eyeBtn}>
-              <Ionicons name={showPass ? 'eye-off-outline' : 'eye-outline'} size={18} color={COLORS.wal} />
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.formTitle}>Obnoviť heslo</Text>
 
-          <TouchableOpacity style={styles.btnPrimary} onPress={handleSignIn} activeOpacity={0.85}>
-            <Ionicons name="log-in-outline" size={18} color="#fff" />
-            <Text style={styles.btnPrimaryText}>Prihlásiť sa</Text>
-          </TouchableOpacity>
+              {resetSent ? (
+                <View style={styles.successBox}>
+                  <Ionicons name="checkmark-circle" size={40} color="#1E8449" />
+                  <Text style={styles.successTitle}>Email odoslaný!</Text>
+                  <Text style={styles.successSub}>
+                    Skontrolujte schránku {email} a kliknite na odkaz pre obnovenie hesla.
+                  </Text>
+                  <TouchableOpacity style={styles.btnPrimary} onPress={backToLogin} activeOpacity={0.85}>
+                    <Text style={styles.btnPrimaryText}>Späť na prihlásenie</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  <Text style={styles.resetInfo}>
+                    Zadajte váš email a pošleme vám odkaz na obnovenie hesla.
+                  </Text>
+                  <Text style={styles.label}>EMAIL</Text>
+                  <View style={styles.inputWrap}>
+                    <Ionicons name="mail-outline" size={17} color={COLORS.wal} style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="vas@email.sk"
+                      placeholderTextColor="#bbb"
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      value={email}
+                      onChangeText={setEmail}
+                      autoFocus
+                    />
+                  </View>
+                  <TouchableOpacity style={styles.btnPrimary} onPress={handleResetPassword} activeOpacity={0.85}>
+                    <Ionicons name="send-outline" size={17} color="#fff" />
+                    <Text style={styles.btnPrimaryText}>Odoslať odkaz</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </>
+          ) : (
+            /* ── Prihlásenie / Registrácia ── */
+            <>
+              <Text style={styles.formTitle}>Prihlásenie</Text>
 
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>alebo</Text>
-            <View style={styles.dividerLine} />
-          </View>
+              <Text style={styles.label}>EMAIL</Text>
+              <View style={styles.inputWrap}>
+                <Ionicons name="mail-outline" size={17} color={COLORS.wal} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="vas@email.sk"
+                  placeholderTextColor="#bbb"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
 
-          <TouchableOpacity style={styles.btnSecondary} onPress={handleSignUp} activeOpacity={0.85}>
-            <Ionicons name="person-add-outline" size={17} color={COLORS.wal} />
-            <Text style={styles.btnSecondaryText}>Registrovať sa</Text>
-          </TouchableOpacity>
+              <Text style={styles.label}>HESLO</Text>
+              <View style={styles.inputWrap}>
+                <Ionicons name="lock-closed-outline" size={17} color={COLORS.wal} style={styles.inputIcon} />
+                <TextInput
+                  style={[styles.input, { flex: 1 }]}
+                  placeholder="••••••••"
+                  placeholderTextColor="#bbb"
+                  secureTextEntry={!showPass}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity onPress={() => setShowPass(p => !p)} style={styles.eyeBtn}>
+                  <Ionicons name={showPass ? 'eye-off-outline' : 'eye-outline'} size={18} color={COLORS.wal} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Zabudnuté heslo */}
+              <TouchableOpacity onPress={() => setMode('reset')} style={styles.forgotBtn} activeOpacity={0.7}>
+                <Text style={styles.forgotText}>Zabudli ste heslo?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.btnPrimary} onPress={handleSignIn} activeOpacity={0.85}>
+                <Ionicons name="log-in-outline" size={18} color="#fff" />
+                <Text style={styles.btnPrimaryText}>Prihlásiť sa</Text>
+              </TouchableOpacity>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>alebo</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <TouchableOpacity style={styles.btnSecondary} onPress={handleSignUp} activeOpacity={0.85}>
+                <Ionicons name="person-add-outline" size={17} color={COLORS.wal} />
+                <Text style={styles.btnSecondaryText}>Registrovať sa</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         {/* ── Footer ── */}
@@ -181,4 +254,18 @@ const styles = StyleSheet.create({
   btnSecondaryText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
 
   footer: { textAlign: 'center', fontSize: 10, color: COLORS.sand, marginTop: 24, paddingHorizontal: 20, opacity: 0.7 },
+
+  // Forgot password
+  forgotBtn:  { alignSelf: 'flex-end', marginTop: -8, marginBottom: 14 },
+  forgotText: { fontSize: 12, color: COLORS.wal, fontWeight: '600', textDecorationLine: 'underline' },
+
+  // Reset mode
+  backRow:  { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 18 },
+  backText: { fontSize: 13, color: COLORS.wal, fontWeight: '500' },
+  resetInfo:{ fontSize: 13, color: COLORS.wal, lineHeight: 20, marginBottom: 20, textAlign: 'center' },
+
+  // Success state
+  successBox:   { alignItems: 'center', paddingVertical: 16, gap: 12 },
+  successTitle: { fontSize: 20, fontWeight: '700', color: '#1E8449' },
+  successSub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20, marginBottom: 8 },
 });

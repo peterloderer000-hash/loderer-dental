@@ -49,6 +49,18 @@ export function useAppointments(role: 'patient' | 'doctor') {
     return () => { cancelled = true; };
   }, [tick, role]);
 
+  // ── Realtime subscription ─────────────────────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel(`appointments-rt-${role}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' },
+        () => { refetch(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [role, refetch]);
+
   /** Zmena statusu termínu */
   async function updateStatus(id: string, status: 'completed' | 'cancelled') {
     const { error } = await supabase.from('appointments').update({ status }).eq('id', id);
