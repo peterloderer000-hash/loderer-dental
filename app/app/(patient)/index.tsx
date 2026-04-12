@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,32 +7,120 @@ import { useFocusEffect } from '@react-navigation/native';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
+import { useNotifications } from '../../hooks/useNotifications';
+import { supabase } from '../../supabase';
 import UpcomingAppointmentCard from './components/UpcomingAppointmentCard';
 import QuickActionsGrid from './components/QuickActionsGrid';
 
-function formatAppointmentDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' }) +
-    ' · ' + d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+// ─── Ordinačné hodiny widget ──────────────────────────────────────────────────
+const OH_DAYS = ['','Pon','Ut','St','Št','Pi','So','Ne'];
+type OHRow = { day_of_week: number; open_time: string|null; close_time: string|null; is_closed: boolean; note: string|null };
+
+function OpeningHoursWidget() {
+  const [hours, setHours] = React.useState<OHRow[]>([]);
+  const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay(); // 1=Pon..7=Ned
+
+  React.useEffect(() => {
+    supabase.from('opening_hours')
+      .select('day_of_week,open_time,close_time,is_closed,note')
+      .order('day_of_week')
+      .then(({ data }) => { if (data) setHours(data as OHRow[]); });
+  }, []);
+
+  if (hours.length === 0) return null;
+
+  const todayRow = hours.find(h => h.day_of_week === todayNum);
+  const isOpenToday = todayRow && !todayRow.is_closed;
+
+  return (
+    <View style={ohStyles.card}>
+      {/* Dnešný stav */}
+      <View style={[ohStyles.todayBanner, isOpenToday ? ohStyles.todayOpen : ohStyles.todayClosed]}>
+        <View style={[ohStyles.dot, {backgroundColor: isOpenToday ? '#2ECC71' : '#E74C3C'}]}/>
+        <Text style={[ohStyles.todayStatus, {color: isOpenToday ? '#1E8449' : '#922B21'}]}>
+          {isOpenToday ? 'Dnes otvorené' : 'Dnes zatvorené'}
+        </Text>
+        {isOpenToday && todayRow && (
+          <Text style={ohStyles.todayTime}>{todayRow.open_time?.slice(0,5)} – {todayRow.close_time?.slice(0,5)}</Text>
+        )}
+      </View>
+      {/* Celý týždeň */}
+      {hours.map(h => (
+        <View key={h.day_of_week} style={[ohStyles.row, h.day_of_week === todayNum && ohStyles.rowToday]}>
+          <Text style={[ohStyles.dayLabel, h.day_of_week === todayNum && ohStyles.dayLabelToday]}>
+            {OH_DAYS[h.day_of_week]}
+          </Text>
+          {h.is_closed
+            ? <Text style={ohStyles.closed}>Zatvorené</Text>
+            : <Text style={ohStyles.time}>{h.open_time?.slice(0,5)} – {h.close_time?.slice(0,5)}</Text>
+          }
+          {h.note ? <Text style={ohStyles.note} numberOfLines={1}>{h.note}</Text> : null}
+        </View>
+      ))}
+    </View>
+  );
 }
+
+const ohStyles = StyleSheet.create({
+  card:        { backgroundColor:'#fff', borderRadius:SIZES.radius, marginHorizontal:SIZES.padding, marginBottom:14, borderWidth:1, borderColor:COLORS.bg3, overflow:'hidden' },
+  todayBanner: { flexDirection:'row', alignItems:'center', gap:8, paddingHorizontal:14, paddingVertical:11, borderBottomWidth:1, borderBottomColor:COLORS.bg3 },
+  todayOpen:   { backgroundColor:'#EAFAF1' },
+  todayClosed: { backgroundColor:'#FDEDEC' },
+  dot:         { width:8, height:8, borderRadius:4 },
+  todayStatus: { fontSize:13, fontWeight:'700', flex:1 },
+  todayTime:   { fontSize:12, fontWeight:'600', color:COLORS.esp },
+  row:         { flexDirection:'row', alignItems:'center', paddingHorizontal:14, paddingVertical:9, borderBottomWidth:1, borderBottomColor:COLORS.bg3 },
+  rowToday:    { backgroundColor:COLORS.bg2 },
+  dayLabel:    { width:28, fontSize:11, fontWeight:'600', color:COLORS.wal },
+  dayLabelToday:{ color:COLORS.esp, fontWeight:'800' },
+  time:        { flex:1, fontSize:12, color:COLORS.esp, fontWeight:'500' },
+  closed:      { flex:1, fontSize:12, color:'#bbb', fontStyle:'italic' },
+  note:        { fontSize:10, color:COLORS.wal, fontStyle:'italic', maxWidth:120 },
+});
+
+type ToothStatus = 'healthy'|'cavity'|'filled'|'crown'|'extracted'|'missing'|'root_canal';
+const DEDUCTIONS: Partial<Record<ToothStatus,number>> = { cavity:10, root_canal:8, extracted:12, missing:8 };
+function getWeight(n:number){const p=n%10;if(p===6||p===7)return 3;if(p===4||p===5)return 2;if(p===3)return 1.5;if(p===8)return 0.5;return 1;}
+function calcScore(teeth:{tooth_number:number;status:string}[]){
+  if(!teeth.length) return 70;
+  let ded=0;let healthy=0;
+  teeth.forEach(t=>{const d=DEDUCTIONS[t.status as ToothStatus]??0;ded+=d*getWeight(t.tooth_number);if(t.status==='healthy')healthy++;});
+  return Math.max(0,Math.min(100,Math.round(100-ded+Math.min(10,healthy*0.5))));
+}
+
+// Dátum formátuje UpcomingAppointmentCard interne
 
 export default function PatientHome() {
   const router = useRouter();
   const { profile, hasHealthPassport, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { appointments, loading: apptLoading, refetch: refetchAppts, updateStatus } = useAppointments('patient');
-  const [refreshing, setRefreshing] = useState(false);
+  const { unreadCount } = useNotifications();
+  const [refreshing, setRefreshing]       = useState(false);
+  const [dentalScore, setDentalScore]     = useState<number|null>(null);
+  const [scoreLoading, setScoreLoading]   = useState(true);
+
+  const loadScore = useCallback(async () => {
+    setScoreLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setScoreLoading(false); return; }
+    const { data } = await supabase.from('dental_charts').select('tooth_number, status').eq('patient_id', user.id);
+    setDentalScore(data ? calcScore(data) : null);
+    setScoreLoading(false);
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     refetchProfile();
     refetchAppts();
+    loadScore();
     setTimeout(() => setRefreshing(false), 800);
-  }, [refetchProfile, refetchAppts]);
+  }, [refetchProfile, refetchAppts, loadScore]);
 
   useFocusEffect(useCallback(() => {
     refetchProfile();
     refetchAppts();
-  }, [refetchProfile, refetchAppts]));
+    loadScore();
+  }, [refetchProfile, refetchAppts, loadScore]));
 
   async function handleCancelAppointment(id: string) {
     Alert.alert('Zrušiť termín', 'Naozaj chcete zrušiť tento termín?', [
@@ -46,24 +134,37 @@ export default function PatientHome() {
 
   const displayName = profile?.full_name ?? 'Pacient';
 
-  // Reminder — termín dnes alebo zajtra
-  const now      = new Date();
-  const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
-  const reminderAppt = appointments.find((a) => {
-    if (a.status !== 'scheduled') return false;
-    const d = new Date(a.appointment_date);
-    const isToday    = d.toDateString() === now.toDateString();
-    const isTomorrow = d.toDateString() === tomorrow.toDateString();
-    return isToday || isTomorrow;
-  });
-  const reminderIsToday = reminderAppt
-    ? new Date(reminderAppt.appointment_date).toDateString() === now.toDateString()
-    : false;
+  // Kompletnosť profilu
+  const profileCompleteness = useMemo(() => {
+    const items = [
+      { label: 'Telefónne číslo',    done: !!profile?.phone_number,  points: 25, route: '/(patient)/profile'        as const },
+      { label: 'Zdravotný dotazník', done: hasHealthPassport,         points: 35, route: '/(patient)/health-passport' as const },
+      { label: 'Zubná karta',        done: dentalScore !== null,      points: 25, route: '/(patient)/score'          as const },
+      { label: 'Prvý termín',        done: appointments.length > 0,  points: 15, route: '/(patient)/book-appointment' as const },
+    ];
+    const pct = items.reduce((s, i) => s + (i.done ? i.points : 0), 0);
+    const first = items.find(i => !i.done) ?? null;
+    return { items, pct, first };
+  }, [profile, hasHealthPassport, dentalScore, appointments]);
 
-  // Najbližší naplánovaný termín
-  const nextAppointment = appointments.find(
-    (a) => a.status === 'scheduled' && new Date(a.appointment_date) > new Date()
-  );
+  const { reminderAppt, reminderIsToday, nextAppointment } = useMemo(() => {
+    const now      = new Date();
+    const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+    const reminder = appointments.find((a) => {
+      if (a.status !== 'scheduled') return false;
+      const d = new Date(a.appointment_date);
+      return d.toDateString() === now.toDateString() || d.toDateString() === tomorrow.toDateString();
+    });
+    return {
+      reminderAppt:    reminder,
+      reminderIsToday: reminder
+        ? new Date(reminder.appointment_date).toDateString() === now.toDateString()
+        : false,
+      nextAppointment: appointments.find(
+        (a) => a.status === 'scheduled' && new Date(a.appointment_date) > now
+      ),
+    };
+  }, [appointments]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -75,6 +176,15 @@ export default function PatientHome() {
             ? <ActivityIndicator color={COLORS.sand} size="small" style={{ alignSelf: 'flex-start', marginTop: 4 }} />
             : <Text style={styles.headerTitle}>Ahoj, {displayName}! 👋</Text>}
         </View>
+        {/* Zvonček */}
+        <TouchableOpacity style={styles.bellBtn} onPress={() => router.push('/(patient)/notifications')} activeOpacity={0.8}>
+          <Ionicons name="notifications-outline" size={20} color={COLORS.cream} />
+          {unreadCount > 0 && (
+            <View style={styles.bellBadge}>
+              <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
         <TouchableOpacity style={styles.avatar} onPress={() => router.push('/(patient)/profile')} activeOpacity={0.8}>
           <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
         </TouchableOpacity>
@@ -132,9 +242,9 @@ export default function PatientHome() {
           <ActivityIndicator color={COLORS.wal} style={{ marginVertical: 12 }} />
         ) : nextAppointment ? (
           <UpcomingAppointmentCard
-            date={formatAppointmentDate(nextAppointment.appointment_date)}
-            doctor={nextAppointment.doctor?.full_name ?? 'MDDr. Loderer'}
-            type={nextAppointment.notes ?? 'Preventívna'}
+            appointment={nextAppointment}
+            onPress={() => router.push('/(patient)/appointments')}
+            onReschedule={() => router.push('/(patient)/appointments')}
             onCancel={() => handleCancelAppointment(nextAppointment.id)}
           />
         ) : (
@@ -152,6 +262,62 @@ export default function PatientHome() {
         <View style={styles.body}><Text style={styles.sectionLabel}>RÝCHLE AKCIE</Text></View>
         <QuickActionsGrid />
 
+        {/* ── Kompletnosť profilu ── */}
+        {!profileLoading && profileCompleteness.pct < 100 && (
+          <View style={styles.body}>
+            <Text style={styles.sectionLabel}>PROFIL</Text>
+            <View style={styles.completenessCard}>
+              <View style={styles.completenessTop}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.completenessTitle}>Kompletnosť profilu</Text>
+                  <Text style={styles.completenessSubtitle}>
+                    Doplň údaje pre lepší zážitok
+                  </Text>
+                </View>
+                <Text style={styles.completenessPct}>{profileCompleteness.pct}%</Text>
+              </View>
+              {/* Progress bar */}
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${profileCompleteness.pct}%` }]} />
+              </View>
+              {/* Položky */}
+              <View style={styles.completenessItems}>
+                {profileCompleteness.items.map(item => (
+                  <View key={item.label} style={styles.completenessItem}>
+                    <Ionicons
+                      name={item.done ? 'checkmark-circle' : 'ellipse-outline'}
+                      size={15}
+                      color={item.done ? '#1E8449' : '#ccc'}
+                    />
+                    <Text style={[styles.completenessItemText, item.done && styles.completenessItemDone]}>
+                      {item.label}
+                    </Text>
+                    {item.done && (
+                      <View style={styles.completenessPoints}>
+                        <Text style={styles.completenessPointsText}>+{item.points}</Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+              {/* CTA */}
+              {profileCompleteness.first && (
+                <TouchableOpacity
+                  style={styles.completenessBtn}
+                  onPress={() => router.push(profileCompleteness.first!.route)}
+                  activeOpacity={0.85}>
+                  <Text style={styles.completenessBtnText}>Doplniť: {profileCompleteness.first.label}</Text>
+                  <Ionicons name="arrow-forward" size={14} color="#fff" />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
+
+        {/* ── Ordinačné hodiny ── */}
+        <View style={styles.body}><Text style={styles.sectionLabel}>ORDINAČNÉ HODINY</Text></View>
+        <OpeningHoursWidget />
+
         {/* ── Upozornenia ── */}
         <View style={styles.body}>
           <Text style={styles.sectionLabel}>UPOZORNENIA</Text>
@@ -161,17 +327,48 @@ export default function PatientHome() {
           </View>
         </View>
 
-        {/* ── AI odporúčanie ── */}
+        {/* ── Dentálne skóre mini-karta ── */}
         <View style={styles.body}>
-          <Text style={styles.sectionLabel}>AI ODPORÚČANIE</Text>
-          <View style={styles.aiCard}>
-            <Text style={styles.aiLabel}>DENTÁLNE AI</Text>
-            <Text style={styles.aiText}>
-              Odporúčame zubné nite aspoň raz denne.
-              Pravidelná hygiena znižuje riziko zubného kazu o 40 %. 🎉
-            </Text>
-          </View>
+          <Text style={styles.sectionLabel}>DENTÁLNE SKÓRE</Text>
         </View>
+        <TouchableOpacity
+          style={styles.scoreCard}
+          onPress={() => router.push('/(patient)/score')}
+          activeOpacity={0.85}
+        >
+          {scoreLoading ? (
+            <ActivityIndicator color="#fff" size="small" style={{ marginRight: 8 }} />
+          ) : (
+            <>
+              <View style={[
+                styles.scoreCircleMini,
+                { borderColor: dentalScore == null ? 'rgba(255,255,255,0.3)'
+                    : dentalScore >= 80 ? '#2ECC71'
+                    : dentalScore >= 60 ? '#F4D03F'
+                    : '#E74C3C' }
+              ]}>
+                <Text style={styles.scoreMiniNum}>{dentalScore ?? '?'}</Text>
+                <Text style={styles.scoreMiniSub}>/100</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.scoreMiniTitle}>
+                  {dentalScore == null
+                    ? 'Skóre nedostupné'
+                    : dentalScore >= 80 ? '🌟 Výborný chrup!'
+                    : dentalScore >= 60 ? '👍 Dobrý stav'
+                    : dentalScore >= 40 ? '⚠️ Priemerný stav'
+                    : '🔴 Vyžaduje pozornosť'}
+                </Text>
+                <Text style={styles.scoreMiniSub2}>
+                  {dentalScore == null
+                    ? 'Navštívte doktora pre vyplnenie zubnej karty'
+                    : 'Kliknite pre detailnú analýzu chrupu →'}
+                </Text>
+              </View>
+            </>
+          )}
+          <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.6)" />
+        </TouchableOpacity>
 
         <View style={{ height: 24 }} />
       </ScrollView>
@@ -192,8 +389,11 @@ const styles = StyleSheet.create({
   header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding + 4, paddingTop: 20, paddingBottom: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
   headerTitle: { fontSize: 22, fontWeight: '500', color: '#fff' },
-  avatar: { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.wal, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
+  avatar:     { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.wal, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },
+  bellBtn:    { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', marginRight: 4 },
+  bellBadge:  { position: 'absolute', top: 2, right: 2, minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3, borderWidth: 1.5, borderColor: COLORS.esp },
+  bellBadgeText: { fontSize: 8, fontWeight: '800', color: '#fff' },
 
   reminderBanner:     { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 14, marginBottom: 4, paddingVertical: 13, paddingHorizontal: 14, borderWidth: 1.5 },
   reminderToday:      { backgroundColor: '#FEF0EE', borderColor: '#E8917F' },
@@ -222,9 +422,29 @@ const styles = StyleSheet.create({
   alertCard: { backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: SIZES.radius, padding: 12, flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   alertText:  { flex: 1, fontSize: 12, color: '#8C2A18', lineHeight: 18 },
 
-  aiCard:  { backgroundColor: COLORS.esp, borderRadius: SIZES.radius, padding: 14 },
-  aiLabel: { fontSize: 9, color: 'rgba(255,255,255,0.38)', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: '500', marginBottom: 6 },
-  aiText:  { fontSize: 13, color: COLORS.cream, lineHeight: 20 },
+  // Kompletnosť profilu
+  completenessCard:      { backgroundColor: '#fff', borderRadius: SIZES.radius, padding: 16, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  completenessTop:       { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
+  completenessTitle:     { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
+  completenessSubtitle:  { fontSize: 11, color: COLORS.wal },
+  completenessPct:       { fontSize: 28, fontWeight: '800', color: COLORS.wal },
+  progressTrack:         { height: 6, backgroundColor: COLORS.bg3, borderRadius: 3, marginBottom: 14, overflow: 'hidden' },
+  progressFill:          { height: 6, backgroundColor: COLORS.wal, borderRadius: 3 },
+  completenessItems:     { gap: 8, marginBottom: 14 },
+  completenessItem:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  completenessItemText:  { flex: 1, fontSize: 12, color: COLORS.wal },
+  completenessItemDone:  { color: '#1E8449', textDecorationLine: 'line-through' },
+  completenessPoints:    { backgroundColor: '#EAFAF1', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  completenessPointsText:{ fontSize: 9, fontWeight: '700', color: '#1E8449' },
+  completenessBtn:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 11 },
+  completenessBtnText:   { fontSize: 12, fontWeight: '700', color: '#fff' },
+
+  scoreCard:        { backgroundColor: COLORS.esp, borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginBottom: 14, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  scoreCircleMini:  { width: 56, height: 56, borderRadius: 28, borderWidth: 3, alignItems: 'center', justifyContent: 'center' },
+  scoreMiniNum:     { fontSize: 20, fontWeight: '800', color: '#fff', lineHeight: 22 },
+  scoreMiniSub:     { fontSize: 8,  fontWeight: '600', color: 'rgba(255,255,255,0.6)', lineHeight: 10 },
+  scoreMiniTitle:   { fontSize: 14, fontWeight: '700', color: '#fff', marginBottom: 3 },
+  scoreMiniSub2:    { fontSize: 11, color: COLORS.sand },
 
   fab: { position: 'absolute', bottom: 80, right: 20, width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6 },
 });

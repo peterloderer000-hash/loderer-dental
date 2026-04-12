@@ -8,10 +8,11 @@ type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
 const ACTIONS: { label: string; icon: IoniconsName; route: string; color: string; bg: string }[] = [
   { label: 'Rezervovať', icon: 'calendar-outline',    route: '/(patient)/book-appointment', color: COLORS.esp, bg: '#FAF7F2' },
-  { label: 'Zdravie',    icon: 'clipboard-outline',   route: '/(patient)/health-passport',  color: '#1A5276',  bg: '#EBF5FB' },
+  { label: 'Termíny',    icon: 'list-outline',        route: '/(patient)/appointments',     color: '#1A5276',  bg: '#EBF5FB' },
+  { label: 'Kalkulačka', icon: 'calculator-outline',  route: '/(patient)/calculator',       color: '#7D6608',  bg: '#FEF9E7' },
+  { label: 'Zdravie',    icon: 'clipboard-outline',   route: '/(patient)/health-passport',  color: '#17A589',  bg: '#E8F8F5' },
   { label: 'Skóre',      icon: 'bar-chart-outline',   route: '/(patient)/score',            color: '#1E8449',  bg: '#EAFAF1' },
   { label: 'AI Chat',    icon: 'chatbubble-outline',  route: '/(patient)/chat',             color: '#6C3483',  bg: '#F5EEF8' },
-  { label: 'Profil',     icon: 'person-outline',      route: '/(patient)/profile',          color: COLORS.wal, bg: '#FAF7F2' },
   { label: 'Shop',       icon: 'bag-outline',         route: '/(patient)/shop',             color: '#9A7D0A',  bg: '#FEF9E7' },
 ];
 

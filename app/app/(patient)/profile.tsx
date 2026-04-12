@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
@@ -9,6 +9,83 @@ import { useRouter } from 'expo-router';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+
+// ─── Vernostné body ───────────────────────────────────────────────────────────
+const LEVELS = [
+  { name: 'Bronz',   min: 0,    max: 299,  color: '#CD7F32', bg: '#FDF3E7', icon: '🥉' },
+  { name: 'Striebro',min: 300,  max: 599,  color: '#A0A0A0', bg: '#F4F4F4', icon: '🥈' },
+  { name: 'Zlato',   min: 600,  max: 999,  color: '#D4A017', bg: '#FEF9E7', icon: '🥇' },
+  { name: 'Platina', min: 1000, max: 99999, color: '#6C3483', bg: '#F5EEF8', icon: '💎' },
+];
+
+function getLoyaltyLevel(points: number) {
+  return LEVELS.find((l) => points >= l.min && points <= l.max) ?? LEVELS[0];
+}
+
+function LoyaltyCard({ completed }: { completed: number }) {
+  const points    = completed * 100;
+  const level     = getLoyaltyLevel(points);
+  const nextLevel = LEVELS[LEVELS.indexOf(level) + 1];
+  const progress  = nextLevel
+    ? (points - level.min) / (nextLevel.min - level.min)
+    : 1;
+
+  return (
+    <View style={[loyStyles.card, { backgroundColor: level.bg, borderColor: level.color + '55' }]}>
+      <View style={loyStyles.header}>
+        <Text style={loyStyles.icon}>{level.icon}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={loyStyles.title}>Vernostné body</Text>
+          <Text style={[loyStyles.level, { color: level.color }]}>{level.name}</Text>
+        </View>
+        <View style={[loyStyles.pointsBadge, { backgroundColor: level.color }]}>
+          <Text style={loyStyles.pointsNum}>{points}</Text>
+          <Text style={loyStyles.pointsLabel}>bodov</Text>
+        </View>
+      </View>
+
+      {nextLevel && (
+        <>
+          <View style={loyStyles.progressBg}>
+            <View style={[loyStyles.progressFill, { width: `${Math.round(progress * 100)}%` as any, backgroundColor: level.color }]} />
+          </View>
+          <Text style={[loyStyles.progressLabel, { color: level.color }]}>
+            {nextLevel.min - points} bodov do úrovne {nextLevel.name} {nextLevel.icon}
+          </Text>
+        </>
+      )}
+
+      <View style={loyStyles.infoRow}>
+        <Ionicons name="information-circle-outline" size={13} color={level.color} />
+        <Text style={[loyStyles.infoText, { color: level.color }]}>
+          {points >= 1000
+            ? '💎 Platina — získavaš 15 % zľavu na každú návštevu!'
+            : points >= 600
+            ? '🥇 Zlato — získavaš 10 % zľavu na každú návštevu'
+            : points >= 300
+            ? '🥈 Striebro — získavaš 5 % zľavu na každú návštevu'
+            : '100 bodov za každú absolvovanú návštevu'}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+const loyStyles = StyleSheet.create({
+  card:         { borderRadius: 16, padding: 16, marginBottom: 14, borderWidth: 1.5 },
+  header:       { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  icon:         { fontSize: 32 },
+  title:        { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 2 },
+  level:        { fontSize: 18, fontWeight: '800' },
+  pointsBadge:  { borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8, alignItems: 'center' },
+  pointsNum:    { fontSize: 22, fontWeight: '800', color: '#fff', lineHeight: 26 },
+  pointsLabel:  { fontSize: 8, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: 1 },
+  progressBg:   { height: 8, backgroundColor: 'rgba(0,0,0,0.08)', borderRadius: 4, marginBottom: 6, overflow: 'hidden' },
+  progressFill: { height: 8, borderRadius: 4 },
+  progressLabel:{ fontSize: 10, fontWeight: '600', marginBottom: 12, textAlign: 'center' },
+  infoRow:      { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
+  infoText:     { flex: 1, fontSize: 11, lineHeight: 16 },
+});
 
 type ApptStats = { total: number; completed: number; upcoming: number; lastVisit: string | null };
 
@@ -26,7 +103,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setLoading(false); return; }
       setEmail(user.email ?? '');
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
       if (data) {
@@ -121,6 +198,9 @@ export default function ProfileScreen() {
             </View>
           )}
 
+          {/* Vernostné body */}
+          <LoyaltyCard completed={apptStats.completed} />
+
           {/* Osobné údaje */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>OSOBNÉ ÚDAJE</Text>
@@ -148,22 +228,29 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Zdravotný pas */}
-          <TouchableOpacity style={[styles.card, styles.passportCard]}
-            onPress={() => router.push('/(patient)/health-passport')} activeOpacity={0.85}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <View style={[styles.passportIcon, { backgroundColor: hasPassport ? '#EAFAF1' : '#FEF9E7' }]}>
-                <Text style={{ fontSize: 24 }}>{hasPassport ? '✅' : '📋'}</Text>
+          {/* Rýchle skratky */}
+          <Text style={styles.sectionTitle}>RÝCHLY PRÍSTUP</Text>
+          {[
+            { icon: 'clipboard-outline'    as const, label: 'Zdravotný dotazník', sub: hasPassport ? 'Vyplnený' : 'Nevyplnený', route: '/(patient)/health-passport', accent: hasPassport ? '#1E8449' : '#9A7D0A', bg: hasPassport ? '#EAFAF1' : '#FEF9E7' },
+            { icon: 'bar-chart-outline'    as const, label: 'Dentálne skóre',     sub: 'Môj stav chrupu',          route: '/(patient)/score',            accent: '#1A5276',  bg: '#EBF5FB' },
+            { icon: 'list-outline'         as const, label: 'História termínov',  sub: `${apptStats.total} termínov`, route: '/(patient)/appointments',    accent: COLORS.wal, bg: '#F4ECE4' },
+            { icon: 'chatbubble-outline'   as const, label: 'AI Dentálny asistent',sub: 'Otázky o zdraví zubov',  route: '/(patient)/chat',             accent: '#6C3483',  bg: '#F5EEF8' },
+            { icon: 'bag-outline'          as const, label: 'Shop produktov',     sub: 'Odporúčané doktorom',      route: '/(patient)/shop',             accent: '#784212',  bg: '#FDEBD0' },
+          ].map((item) => (
+            <TouchableOpacity key={item.label} style={styles.navRow}
+              onPress={() => router.push(item.route as any)} activeOpacity={0.8}>
+              <View style={[styles.navIcon, { backgroundColor: item.bg }]}>
+                <Ionicons name={item.icon} size={18} color={item.accent} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.passportTitle}>Zdravotný dotazník</Text>
-                <Text style={styles.passportSub}>
-                  {hasPassport ? 'Vyplnený — klikni pre úpravu' : 'Nevyplnený — klikni pre vyplnenie'}
-                </Text>
+                <Text style={styles.navLabel}>{item.label}</Text>
+                <Text style={styles.navSub}>{item.sub}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={18} color={COLORS.wal} />
-            </View>
-          </TouchableOpacity>
+              <Ionicons name="chevron-forward" size={15} color={COLORS.bg3} />
+            </TouchableOpacity>
+          ))}
+
+          <View style={{ height: 14 }} />
 
           {/* Odhlásiť */}
           <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut} activeOpacity={0.85}>
@@ -213,6 +300,14 @@ const styles = StyleSheet.create({
   passportIcon: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   passportTitle: { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 3 },
   passportSub:   { fontSize: 11, color: COLORS.wal },
+
+  sectionTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8, marginTop: 4 },
+
+  // Quick nav
+  navRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  navIcon:  { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  navLabel: { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 2 },
+  navSub:   { fontSize: 11, color: COLORS.wal },
 
   logoutBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FDEDEC', borderRadius: 12, paddingVertical: 14, borderWidth: 1, borderColor: '#F1948A', marginBottom: 10 },
   logoutText: { fontSize: 14, fontWeight: '600', color: '#922B21' },

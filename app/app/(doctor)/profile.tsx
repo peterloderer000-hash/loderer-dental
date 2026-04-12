@@ -23,7 +23,7 @@ export default function DoctorProfile() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setLoading(false); return; }
       setEmail(user.email ?? '');
 
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -142,6 +142,29 @@ export default function DoctorProfile() {
             ))}
           </View>
 
+          {/* Rýchle skratky */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>RÝCHLY PRÍSTUP</Text>
+            {[
+              { icon: 'time-outline'       as const, label: 'Ordinačné hodiny',   sub: 'Spravovať rozvrh',          route: '/(doctor)/opening-hours' },
+              { icon: 'stats-chart-outline'as const, label: 'Štatistiky praxe',   sub: 'Prehľad výkonnosti',        route: '/(doctor)/stats' },
+              { icon: 'people-outline'     as const, label: 'Pacienti',            sub: `${stats.patients} registrovaných`, route: '/(doctor)/patients' },
+              { icon: 'calendar-outline'   as const, label: 'Kalendár termínov',  sub: 'Týždenný prehľad',          route: '/(doctor)/calendar' },
+            ].map((item) => (
+              <TouchableOpacity key={item.label} style={styles.navRow}
+                onPress={() => router.push(item.route as any)} activeOpacity={0.8}>
+                <View style={styles.navIcon}>
+                  <Ionicons name={item.icon} size={18} color={COLORS.wal} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.navLabel}>{item.label}</Text>
+                  <Text style={styles.navSub}>{item.sub}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={15} color={COLORS.bg3} />
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {/* Odhlásiť */}
           <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut} activeOpacity={0.85}>
             <Ionicons name="log-out-outline" size={18} color="#922B21" />
@@ -190,6 +213,15 @@ const styles = StyleSheet.create({
 
   infoRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
   infoText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 },
+
+  hoursBtn:     { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, paddingVertical: 14, paddingHorizontal: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 10 },
+  hoursBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
+
+  // Quick nav
+  navRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  navIcon:  { width: 38, height: 38, borderRadius: 10, backgroundColor: '#F4ECE4', alignItems: 'center', justifyContent: 'center' },
+  navLabel: { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 1 },
+  navSub:   { fontSize: 11, color: COLORS.wal },
 
   logoutBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FDEDEC', borderRadius: 12, paddingVertical: 14, borderWidth: 1, borderColor: '#F1948A' },
   logoutText: { fontSize: 14, fontWeight: '600', color: '#922B21' },

@@ -27,14 +27,18 @@ export default function DoctorLayout() {
       tabBarStyle: styles.tabBar,
       tabBarLabelStyle: styles.tabLabel,
     }}>
-      <Tabs.Screen name="index"    options={{ title: 'Termíny',  tabBarIcon: ({ focused }) => TabIcon('list',     focused) }} />
-      <Tabs.Screen name="patients" options={{ title: 'Pacienti', tabBarIcon: ({ focused }) => TabIcon('people',   focused) }} />
-      <Tabs.Screen name="calendar" options={{ title: 'Kalendár', tabBarIcon: ({ focused }) => TabIcon('calendar', focused) }} />
-      <Tabs.Screen name="profile"  options={{ title: 'Profil',   tabBarIcon: ({ focused }) => TabIcon('person',   focused) }} />
+      <Tabs.Screen name="index"    options={{ title: 'Termíny',    tabBarIcon: ({ focused }) => TabIcon('list',         focused) }} />
+      <Tabs.Screen name="patients" options={{ title: 'Pacienti',  tabBarIcon: ({ focused }) => TabIcon('people',       focused) }} />
+      <Tabs.Screen name="calendar" options={{ title: 'Kalendár',  tabBarIcon: ({ focused }) => TabIcon('calendar',     focused) }} />
+      <Tabs.Screen name="stats"    options={{ title: 'Štatistiky',tabBarIcon: ({ focused }) => TabIcon('bar-chart',    focused) }} />
+      <Tabs.Screen name="profile"  options={{ title: 'Profil',    tabBarIcon: ({ focused }) => TabIcon('person',       focused) }} />
       {/* Skryté obrazovky — nie sú taby */}
       <Tabs.Screen name="dental-chart"      options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="patient-passport"  options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="add-appointment"   options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="patient-detail"    options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="opening-hours"     options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="notifications"    options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

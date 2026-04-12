@@ -35,14 +35,15 @@ function Avatar({ name }: { name: string | null }) {
 }
 
 // ─── Jedna karta pacienta ─────────────────────────────────────────────────────
-function PatientCard({ patient, onChart, onPassport, onBook }: {
+function PatientCard({ patient, onDetail, onChart, onPassport, onBook }: {
   patient: Patient;
+  onDetail:  () => void;
   onChart:   () => void;
   onPassport: () => void;
   onBook:    () => void;
 }) {
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onDetail} activeOpacity={0.88}>
       <View style={styles.cardTop}>
         <Avatar name={patient.full_name} />
 
@@ -67,6 +68,7 @@ function PatientCard({ patient, onChart, onPassport, onBook }: {
             {patient.has_passport ? '✓ Anamnéza' : '! Bez anamnézy'}
           </Text>
         </View>
+        <Ionicons name="chevron-forward" size={14} color={COLORS.bg3} style={{ marginLeft: 4 }} />
       </View>
 
       {/* Akcie */}
@@ -84,7 +86,7 @@ function PatientCard({ patient, onChart, onPassport, onBook }: {
         <Ionicons name="calendar-outline" size={14} color="#fff" />
         <Text style={styles.btnBookText}>Rezervovať termín</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -194,6 +196,10 @@ export default function PatientsScreen() {
             <PatientCard
               key={patient.id}
               patient={patient}
+              onDetail={() => router.push({
+                pathname: '/(doctor)/patient-detail',
+                params: { patientId: patient.id, patientName: patient.full_name ?? 'Pacient' },
+              })}
               onChart={() => router.push({
                 pathname: '/(doctor)/dental-chart',
                 params: { patientId: patient.id, patientName: patient.full_name ?? 'Pacient' },

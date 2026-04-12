@@ -9,61 +9,126 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useServices, Service, formatPrice, formatDuration } from '../../hooks/useServices';
+import {
+  generateTimeSlotsForDay, getNextOpenDays,
+  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+} from '../../utils/timeSlots';
+
+type OpeningHour = { open_time: string; close_time: string };
+type BookedSlot  = { start: number; end: number };
 
 type Patient = { id: string; full_name: string | null; phone_number: string | null };
-
-const TIME_SLOTS = ['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
-                    '12:00','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
-
-const SK_DAYS_SHORT   = ['Ne','Po','Ut','St','Št','Pi','So'];
-const SK_MONTHS_SHORT = ['jan','feb','mar','apr','máj','jún','júl','aug','sep','okt','nov','dec'];
-
-// Generuj pracovné dni (bez víkendov)
-function getNextDays(count = 21): Date[] {
-  const result: Date[] = [];
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  // Zahrň dnešok ak je pracovný deň
-  if (d.getDay() !== 0 && d.getDay() !== 6) result.push(new Date(d));
-  while (result.length < count) {
-    d.setDate(d.getDate() + 1);
-    const day = d.getDay();
-    if (day !== 0 && day !== 6) result.push(new Date(d));
-  }
-  return result;
-}
 
 export default function DoctorAddAppointment() {
   const router  = useRouter();
   const params  = useLocalSearchParams<{ patientId?: string; patientName?: string }>();
+  const { grouped: servicesGrouped, loading: loadingServices } = useServices();
 
-  const [patients, setPatients]     = useState<Patient[]>([]);
-  const [patientQuery, setQuery]    = useState(params.patientName ?? '');
+  const [patients, setPatients]       = useState<Patient[]>([]);
+  const [patientQuery, setQuery]      = useState(params.patientName ?? '');
   const [selectedPatient, setPatient] = useState<Patient | null>(null);
-  const [showDropdown, setDropdown] = useState(false);
-  const [selectedDate, setDate]     = useState<Date | null>(null);
-  const [selectedTime, setTime]     = useState('');
-  const [notes, setNotes]           = useState('');
-  const [loading, setLoading]       = useState(false);
+  const [showDropdown, setDropdown]   = useState(false);
+  const [selectedService, setService] = useState<Service | null>(null);
+  const [selectedDate, setDate]       = useState<Date | null>(null);
+  const [selectedTime, setTime]       = useState('');
+  const [notes, setNotes]             = useState('');
+  const [loading, setLoading]         = useState(false);
   const [loadingPatients, setLoadingP] = useState(true);
+  const [showServices, setShowServices] = useState(false);
+  const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
+  const [doctorUserId,    setDoctorUserId]    = useState('');
+  const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
-  const days = getNextDays(21);
+  const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
 
-  // Načítaj zoznam pacientov
+  const days = useMemo(
+    () => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [],
+    [openDbDays],
+  );
+
+  const selectedDayHours = useMemo((): OpeningHour | null => {
+    if (!selectedDate) return null;
+    return openingHoursMap.get(jsDayToDb(selectedDate.getDay())) ?? null;
+  }, [selectedDate, openingHoursMap]);
+
+  const slots = useMemo(
+    () => generateTimeSlotsForDay(
+      selectedService?.duration_minutes ?? 30,
+      selectedDayHours?.open_time  ?? '08:00',
+      selectedDayHours?.close_time ?? '17:00',
+    ),
+    [selectedService, selectedDayHours],
+  );
+
+  function isSlotTaken(slotStart: string, durationMin: number): boolean {
+    const s = timeToMinutes(slotStart);
+    const e = s + durationMin;
+    return bookedSlots.some(b => s < b.end && e > b.start);
+  }
+
+  // Načítaj pacientov + ordinačné hodiny doktora
   useEffect(() => {
-    supabase.from('profiles').select('id, full_name, phone_number').eq('role', 'patient')
-      .order('full_name', { ascending: true })
-      .then(({ data }) => {
-        const list = (data ?? []) as Patient[];
-        setPatients(list);
-        // Ak bol predvybraný pacient cez params
-        if (params.patientId) {
-          const found = list.find((p) => p.id === params.patientId);
-          if (found) { setPatient(found); setQuery(found.full_name ?? ''); }
+    async function load() {
+      // Doktor = prihlásený user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setDoctorUserId(user.id);
+        const { data: hours } = await supabase
+          .from('opening_hours')
+          .select('day_of_week, open_time, close_time, is_closed')
+          .eq('doctor_id', user.id);
+        if (hours) {
+          const map = new Map<number, OpeningHour>();
+          hours.forEach(h => {
+            if (!h.is_closed && h.open_time && h.close_time) {
+              map.set(h.day_of_week, { open_time: h.open_time.slice(0, 5), close_time: h.close_time.slice(0, 5) });
+            }
+          });
+          if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
+          setOpeningHoursMap(map);
         }
-        setLoadingP(false);
-      });
+      }
+      // Pacienti
+      const { data: pats } = await supabase
+        .from('profiles').select('id, full_name, phone_number')
+        .eq('role', 'patient').order('full_name', { ascending: true });
+      const list = (pats ?? []) as Patient[];
+      setPatients(list);
+      if (params.patientId) {
+        const found = list.find((p) => p.id === params.patientId);
+        if (found) { setPatient(found); setQuery(found.full_name ?? ''); }
+      }
+      setLoadingP(false);
+    }
+    load();
   }, []);
+
+  // Fetch obsadených slotov pre vybraný deň
+  useEffect(() => {
+    if (!selectedDate || !doctorUserId) { setBookedSlots([]); return; }
+    setLoadingSlots(true);
+    const dayStart = new Date(selectedDate); dayStart.setHours(0, 0, 0, 0);
+    const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
+    supabase
+      .from('appointments')
+      .select('appointment_date, service:services(duration_minutes)')
+      .eq('doctor_id', doctorUserId)
+      .eq('status', 'scheduled')
+      .gte('appointment_date', dayStart.toISOString())
+      .lte('appointment_date', dayEnd.toISOString())
+      .then(({ data }) => {
+        setLoadingSlots(false);
+        if (!data) return;
+        setBookedSlots(data.map(a => {
+          const d = new Date(a.appointment_date);
+          const sMin = d.getHours() * 60 + d.getMinutes();
+          const dur  = (a.service as any)?.duration_minutes ?? 30;
+          return { start: sMin, end: sMin + dur };
+        }));
+      });
+  }, [selectedDate, doctorUserId]);
 
   const filteredPatients = useMemo(() => {
     const q = patientQuery.trim().toLowerCase();
@@ -76,6 +141,7 @@ export default function DoctorAddAppointment() {
 
   async function handleSave() {
     if (!selectedPatient) { Alert.alert('Chyba', 'Vyber prosím pacienta.'); return; }
+    if (!selectedService) { Alert.alert('Chyba', 'Vyber prosím službu.'); return; }
     if (!selectedDate)    { Alert.alert('Chyba', 'Vyber prosím dátum.'); return; }
     if (!selectedTime)    { Alert.alert('Chyba', 'Vyber prosím čas.'); return; }
 
@@ -88,13 +154,24 @@ export default function DoctorAddAppointment() {
       const dt     = new Date(selectedDate);
       dt.setHours(h, m, 0, 0);
 
-      // Kontrola duplicitného termínu
+      // Kontrola kolízie (duration-based overlap) — nie len exact match
+      const newStart = h * 60 + m;
+      const newEnd   = newStart + (selectedService?.duration_minutes ?? 30);
+      const dayStart2 = new Date(dt); dayStart2.setHours(0, 0, 0, 0);
+      const dayEnd2   = new Date(dt); dayEnd2.setHours(23, 59, 59, 999);
       const { data: existing } = await supabase.from('appointments')
-        .select('id').eq('doctor_id', user.id)
-        .eq('appointment_date', dt.toISOString())
-        .eq('status', 'scheduled');
-      if (existing && existing.length > 0)
-        throw new Error('Tento čas je už obsadený. Vyber iný termín.');
+        .select('appointment_date, service:services(duration_minutes)')
+        .eq('doctor_id', user.id)
+        .eq('status', 'scheduled')
+        .gte('appointment_date', dayStart2.toISOString())
+        .lte('appointment_date', dayEnd2.toISOString());
+      const conflict = (existing ?? []).some(e => {
+        const ed = new Date(e.appointment_date);
+        const es = ed.getHours() * 60 + ed.getMinutes();
+        const ee = es + ((e.service as any)?.duration_minutes ?? 30);
+        return newStart < ee && newEnd > es;
+      });
+      if (conflict) throw new Error('Tento čas sa prekrýva s existujúcim termínom. Vyber iný.');
 
       const { error } = await supabase.from('appointments').insert({
         patient_id:       selectedPatient.id,
@@ -102,6 +179,7 @@ export default function DoctorAddAppointment() {
         appointment_date: dt.toISOString(),
         status:           'scheduled',
         notes:            notes.trim() || null,
+        service_id:       selectedService?.id ?? null,
       });
       if (error) throw error;
 
@@ -116,7 +194,7 @@ export default function DoctorAddAppointment() {
     }
   }
 
-  const canSave = !!selectedPatient && !!selectedDate && !!selectedTime;
+  const canSave = !!selectedPatient && !!selectedService && !!selectedDate && !!selectedTime;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -204,17 +282,68 @@ export default function DoctorAddAppointment() {
             </View>
           )}
 
+          {/* ── Výber služby ── */}
+          <Text style={[styles.sectionLabel, { marginTop: 20 }]}>SLUŽBA</Text>
+          <TouchableOpacity style={styles.servicePickerBtn}
+            onPress={() => setShowServices((v) => !v)} activeOpacity={0.8}>
+            {selectedService ? (
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Text style={{ fontSize: 20 }}>{selectedService.emoji ?? '🦷'}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.servicePickerName}>{selectedService.name}</Text>
+                  <Text style={styles.servicePickerMeta}>
+                    {formatDuration(selectedService.duration_minutes)} · {formatPrice(selectedService.price_min, selectedService.price_max)}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Text style={styles.servicePickerPlaceholder}>Vyber službu...</Text>
+            )}
+            <Ionicons name={showServices ? 'chevron-up' : 'chevron-down'} size={16} color={COLORS.wal} />
+          </TouchableOpacity>
+
+          {showServices && (
+            <View style={styles.serviceDropdown}>
+              {loadingServices
+                ? <ActivityIndicator color={COLORS.wal} style={{ padding: 12 }} />
+                : Object.entries(servicesGrouped).map(([cat, items]) => (
+                  <View key={cat}>
+                    <Text style={styles.serviceDropdownCat}>{cat}</Text>
+                    {items.map((svc) => (
+                      <TouchableOpacity key={svc.id} style={styles.serviceDropdownItem}
+                        onPress={() => { setService(svc); setTime(''); setShowServices(false); }}
+                        activeOpacity={0.8}>
+                        <Text style={{ fontSize: 16 }}>{svc.emoji ?? '🦷'}</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.serviceDropdownName}>{svc.name}</Text>
+                          <Text style={styles.serviceDropdownMeta}>
+                            {formatDuration(svc.duration_minutes)} · {formatPrice(svc.price_min, svc.price_max)}
+                          </Text>
+                        </View>
+                        {selectedService?.id === svc.id && (
+                          <Ionicons name="checkmark-circle" size={18} color="#1E8449" />
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ))
+              }
+            </View>
+          )}
+
           {/* ── Výber dátumu ── */}
           <Text style={[styles.sectionLabel, { marginTop: 24 }]}>DÁTUM</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             style={styles.datesScroll} contentContainerStyle={styles.datesContent}>
-            {days.map((d, i) => {
+            {days.map((d) => {
               const isSel   = selectedDate?.toDateString() === d.toDateString();
               const isToday = d.toDateString() === new Date().toDateString();
+              const dbDay   = jsDayToDb(d.getDay());
+              const hrs     = openingHoursMap.get(dbDay);
               return (
-                <TouchableOpacity key={i}
+                <TouchableOpacity key={d.toISOString()}
                   style={[styles.dateCell, isSel && styles.dateCellSel]}
-                  onPress={() => setDate(d)} activeOpacity={0.75}>
+                  onPress={() => { setDate(d); setTime(''); }} activeOpacity={0.75}>
                   <Text style={[styles.dateDayName, isSel && styles.dateSel]}>
                     {isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}
                   </Text>
@@ -222,6 +351,11 @@ export default function DoctorAddAppointment() {
                   <Text style={[styles.dateMonth, isSel && styles.dateSel]}>
                     {SK_MONTHS_SHORT[d.getMonth()]}
                   </Text>
+                  {hrs && (
+                    <Text style={[styles.dateHours, isSel && styles.dateSel]}>
+                      {hrs.open_time}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               );
             })}
@@ -229,18 +363,38 @@ export default function DoctorAddAppointment() {
 
           {/* ── Výber času ── */}
           <Text style={[styles.sectionLabel, { marginTop: 8 }]}>ČAS</Text>
-          <View style={styles.timesGrid}>
-            {TIME_SLOTS.map((slot) => {
-              const isSel = selectedTime === slot;
-              return (
-                <TouchableOpacity key={slot}
-                  style={[styles.timeCell, isSel && styles.timeCellSel]}
-                  onPress={() => setTime(slot)} activeOpacity={0.75}>
-                  <Text style={[styles.timeText, isSel && styles.timeSel]}>{slot}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          {selectedService && (
+            <Text style={styles.slotSubLabel}>
+              {selectedDayHours
+                ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(selectedService.duration_minutes)}`
+                : `Trvanie: ${formatDuration(selectedService.duration_minutes)}`}
+            </Text>
+          )}
+          {loadingSlots ? (
+            <ActivityIndicator color={COLORS.wal} style={{ marginBottom: 16 }} />
+          ) : (
+            <View style={styles.timesGrid}>
+              {slots.map((slot) => {
+                const isSel  = selectedTime === slot.start;
+                const taken  = isSlotTaken(slot.start, selectedService?.duration_minutes ?? 30);
+                return (
+                  <TouchableOpacity key={slot.start}
+                    style={[styles.timeCell, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
+                    onPress={() => { if (!taken) setTime(slot.start); }}
+                    activeOpacity={taken ? 1 : 0.75}
+                    disabled={taken}>
+                    <Text style={[styles.timeText, isSel && styles.timeSel, taken && styles.timeTakenText]}>
+                      {slot.start}
+                    </Text>
+                    <Text style={[styles.timeEndText, isSel && { color: COLORS.sand }, taken && styles.timeTakenText]}>
+                      –{slot.end}
+                    </Text>
+                    {taken && <Text style={styles.timeTakenLabel}>✗</Text>}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
 
           {/* ── Poznámky ── */}
           <Text style={[styles.sectionLabel, { marginTop: 8 }]}>POZNÁMKY</Text>
@@ -334,14 +488,31 @@ const styles = StyleSheet.create({
   dateDayName:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
   dateDayNum:   { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginVertical: 2 },
   dateMonth:    { fontSize: 9, color: COLORS.wal, textTransform: 'uppercase' },
+  dateHours:    { fontSize: 7, color: COLORS.wal, marginTop: 2, letterSpacing: 0.2 },
   dateSel:      { color: COLORS.sand },
 
   // Times
-  timesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  timeCell:    { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  timeCellSel: { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  timeText:    { fontSize: 13, fontWeight: '600', color: COLORS.esp },
-  timeSel:     { color: COLORS.cream },
+  timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
+  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
+  timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
+  timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
+  timeSel:        { color: COLORS.cream },
+  timeTakenText:  { color: '#ccc' },
+  timeTakenLabel: { fontSize: 9, color: '#E74C3C', marginTop: 2, fontWeight: '700' },
+  timeEndText:    { fontSize: 9, color: '#aaa', marginTop: 2 },
+  slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
+
+  // Service picker
+  servicePickerBtn:         { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 12, marginBottom: 4 },
+  servicePickerName:        { fontSize: 13, fontWeight: '700', color: COLORS.esp },
+  servicePickerMeta:        { fontSize: 10, color: COLORS.wal, marginTop: 1 },
+  servicePickerPlaceholder: { flex: 1, fontSize: 14, color: '#bbb' },
+  serviceDropdown:          { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 8, overflow: 'hidden', elevation: 4 },
+  serviceDropdownCat:       { fontSize: 9, fontWeight: '800', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, paddingHorizontal: 12, paddingTop: 12, paddingBottom: 4, backgroundColor: COLORS.bg2 },
+  serviceDropdownItem:      { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },
+  serviceDropdownName:      { fontSize: 13, fontWeight: '600', color: COLORS.esp },
+  serviceDropdownMeta:      { fontSize: 10, color: COLORS.wal, marginTop: 1 },
 
   // Notes
   notesCard:  { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 16 },

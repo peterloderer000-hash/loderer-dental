@@ -36,6 +36,12 @@ export default function PatientLayout() {
       <Tabs.Screen name="health-passport"  options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="book-appointment" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="appointments"     options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="calculator"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="notifications"    options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="booking-success"  options={{ href: null, headerShown: false }} />
+      {/* Skryté komponenty — nie sú obrazovky */}
+      <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
+      <Tabs.Screen name="components/QuickActionsGrid"        options={{ href: null }} />
     </Tabs>
   );
 }

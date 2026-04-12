@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../supabase';
 
 export type Appointment = {
@@ -9,8 +9,12 @@ export type Appointment = {
   doctor_notes: string | null;
   patient_id: string;
   doctor_id: string;
+  service_id: string | null;
   patient: { full_name: string | null; phone_number: string | null } | null;
   doctor:  { full_name: string | null } | null;
+  service: { name: string; emoji: string | null; duration_minutes: number; price_min: number | null; price_max: number | null } | null;
+  patient_rating: number | null;
+  patient_review: string | null;
 };
 
 export function useAppointments(role: 'patient' | 'doctor') {
@@ -18,6 +22,8 @@ export function useAppointments(role: 'patient' | 'doctor') {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  // Unikátny ID pre každú inštanciu hooku — zabraňuje konfliktu názvov kanálov
+  const instanceId = useRef(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
   const refetch = useCallback(() => setTick((t) => t + 1), []);
 
@@ -33,8 +39,9 @@ export function useAppointments(role: 'patient' | 'doctor') {
         .from('appointments')
         .select(`
           *,
-          patient:patient_id ( full_name, phone_number ),
-          doctor:doctor_id  ( full_name )
+          patient:profiles!appointments_patient_id_fkey ( full_name, phone_number ),
+          doctor:profiles!appointments_doctor_id_fkey   ( full_name ),
+          service:services ( name, emoji, duration_minutes, price_min, price_max )
         `)
         .eq(role === 'patient' ? 'patient_id' : 'doctor_id', user.id)
         .order('appointment_date', { ascending: true });
@@ -51,15 +58,34 @@ export function useAppointments(role: 'patient' | 'doctor') {
   }, [tick, role]);
 
   // ── Realtime subscription ─────────────────────────────────────────────────
+  // Každá inštancia hooku dostane unikátny názov kanála (instanceId),
+  // aby nedošlo ku konfliktu keď je hook použitý na viacerých obrazovkách naraz.
   useEffect(() => {
-    const channel = supabase
-      .channel(`appointments-rt-${role}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' },
-        () => { refetch(); }
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
 
-    return () => { supabase.removeChannel(channel); };
+    async function subscribe() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+
+      const filter = role === 'patient'
+        ? `patient_id=eq.${user.id}`
+        : `doctor_id=eq.${user.id}`;
+
+      channel = supabase
+        .channel(`appointments-rt-${role}-${instanceId.current}`)
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'appointments', filter },
+          () => { refetch(); }
+        )
+        .subscribe();
+    }
+
+    subscribe();
+    return () => {
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
+    };
   }, [role, refetch]);
 
   /** Zmena statusu termínu */

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 
 export function useProfile() {
-  const [profile, setProfile] = useState<any>(null);
+  type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null };
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [hasHealthPassport, setHasHealthPassport] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);

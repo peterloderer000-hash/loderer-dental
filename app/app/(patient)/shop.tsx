@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../styles/theme';
 
 type Category = 'all' | 'brushes' | 'floss' | 'whitening' | 'mouthwash';
@@ -11,6 +12,13 @@ const CATEGORIES: { key: Category; label: string; emoji: string }[] = [
   { key: 'floss',     label: 'Nite',      emoji: '🧵' },
   { key: 'whitening', label: 'Bielenie',  emoji: '✨' },
   { key: 'mouthwash', label: 'Ústna voda',emoji: '💧' },
+];
+
+// Produkty odporúčané doktorom — zobrazujú sa vždy navrchu
+const DOCTOR_PICKS = [
+  { id: 101, emoji: '🪥', name: 'Oral-B iO Series 7',   desc: 'Elektrická kefka — ideálna po ošetrení', reason: 'Šetrná k ďasnám po zákroku' },
+  { id: 102, emoji: '🧵', name: 'Oral-B Super Floss',    desc: 'Špeciálna niť pre mosty a implantáty',  reason: 'Odporúčame pre tvoj typ chrupu' },
+  { id: 103, emoji: '💧', name: 'Listerine Total Care',  desc: 'Ústna voda 6v1 — denná ochrana',         reason: 'Profylaktická ochrana ďasien' },
 ];
 
 const PRODUCTS = [
@@ -56,6 +64,32 @@ export default function ShopScreen() {
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
 
+        {/* ── Doktor odporúča ── */}
+        <View style={styles.doctorSection}>
+          <View style={styles.doctorHeader}>
+            <Ionicons name="medical" size={14} color={COLORS.wal} />
+            <Text style={styles.doctorHeaderText}>DOKTOR ODPORÚČA</Text>
+          </View>
+          {DOCTOR_PICKS.map((p) => (
+            <TouchableOpacity key={p.id} style={styles.doctorCard}
+              onPress={() => Alert.alert(p.name, `${p.desc}\n\n💬 Doktor: „${p.reason}"`)}
+              activeOpacity={0.85}>
+              <Text style={styles.doctorEmoji}>{p.emoji}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.doctorName}>{p.name}</Text>
+                <Text style={styles.doctorDesc}>{p.desc}</Text>
+                <View style={styles.doctorReasonRow}>
+                  <Ionicons name="chatbubble-outline" size={10} color={COLORS.wal} />
+                  <Text style={styles.doctorReason}>{p.reason}</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.sand} />
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* ── Všetky produkty ── */}
+        <Text style={styles.allProductsLabel}>VŠETKY PRODUKTY</Text>
         <View style={styles.grid}>
           {filtered.map((p) => (
             <TouchableOpacity key={p.id} style={styles.card}
@@ -124,4 +158,16 @@ const styles = StyleSheet.create({
   comingSoonEmoji: { fontSize: 36, marginBottom: 10 },
   comingSoonTitle: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   comingSoonSub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
+
+  // Doktor odporúča
+  doctorSection:    { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1.5, borderColor: COLORS.sand, marginBottom: 20, overflow: 'hidden' },
+  doctorHeader:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.esp, paddingHorizontal: 14, paddingVertical: 10 },
+  doctorHeaderText: { fontSize: 10, fontWeight: '700', color: COLORS.sand, letterSpacing: 2, textTransform: 'uppercase' },
+  doctorCard:       { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  doctorEmoji:      { fontSize: 28, width: 40, textAlign: 'center' },
+  doctorName:       { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
+  doctorDesc:       { fontSize: 10, color: COLORS.wal, marginBottom: 4 },
+  doctorReasonRow:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  doctorReason:     { fontSize: 10, color: COLORS.wal, fontStyle: 'italic', flex: 1 },
+  allProductsLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
 });
