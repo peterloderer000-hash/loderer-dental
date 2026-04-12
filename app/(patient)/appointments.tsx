@@ -204,7 +204,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
     const dayStart = new Date(selDate); dayStart.setHours(0,0,0,0);
     const dayEnd   = new Date(selDate); dayEnd.setHours(23,59,59,999);
     supabase.from('appointments')
-      .select('appointment_date, service:service_id(duration_minutes)')
+      .select('appointment_date, service:services(duration_minutes)')
       .eq('doctor_id', appointment.doctor_id)
       .eq('status', 'scheduled')
       .neq('id', appointment.id) // vylúč aktuálny termín
@@ -616,12 +616,12 @@ export default function AppointmentsScreen() {
     cancelled: appointments.filter((a) => a.status === 'cancelled').length,
   }), [appointments]);
 
-  const FILTERS: { key: Filter; label: string; color: string }[] = [
+  const FILTERS = useMemo<{ key: Filter; label: string; color: string }[]>(() => [
     { key: 'all',       label: `Všetky (${counts.all})`,           color: COLORS.wal },
     { key: 'scheduled', label: `Plánované (${counts.scheduled})`,  color: '#1A5276' },
     { key: 'completed', label: `Dokončené (${counts.completed})`,  color: '#1E8449' },
     { key: 'cancelled', label: `Zrušené (${counts.cancelled})`,    color: '#922B21' },
-  ];
+  ], [counts]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>

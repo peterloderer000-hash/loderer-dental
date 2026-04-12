@@ -78,7 +78,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
     const dayStart = new Date(selDate); dayStart.setHours(0,0,0,0);
     const dayEnd   = new Date(selDate); dayEnd.setHours(23,59,59,999);
     supabase.from('appointments')
-      .select('appointment_date, service:service_id(duration_minutes)')
+      .select('appointment_date, service:services(duration_minutes)')
       .eq('doctor_id', doctorId)
       .eq('status', 'scheduled')
       .neq('id', appointment.id)

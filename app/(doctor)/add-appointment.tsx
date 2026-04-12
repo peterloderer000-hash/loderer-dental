@@ -113,7 +113,7 @@ export default function DoctorAddAppointment() {
     const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
     supabase
       .from('appointments')
-      .select('appointment_date, service:service_id(duration_minutes)')
+      .select('appointment_date, service:services(duration_minutes)')
       .eq('doctor_id', doctorUserId)
       .eq('status', 'scheduled')
       .gte('appointment_date', dayStart.toISOString())
@@ -141,6 +141,7 @@ export default function DoctorAddAppointment() {
 
   async function handleSave() {
     if (!selectedPatient) { Alert.alert('Chyba', 'Vyber prosím pacienta.'); return; }
+    if (!selectedService) { Alert.alert('Chyba', 'Vyber prosím službu.'); return; }
     if (!selectedDate)    { Alert.alert('Chyba', 'Vyber prosím dátum.'); return; }
     if (!selectedTime)    { Alert.alert('Chyba', 'Vyber prosím čas.'); return; }
 
@@ -159,7 +160,7 @@ export default function DoctorAddAppointment() {
       const dayStart2 = new Date(dt); dayStart2.setHours(0, 0, 0, 0);
       const dayEnd2   = new Date(dt); dayEnd2.setHours(23, 59, 59, 999);
       const { data: existing } = await supabase.from('appointments')
-        .select('appointment_date, service:service_id(duration_minutes)')
+        .select('appointment_date, service:services(duration_minutes)')
         .eq('doctor_id', user.id)
         .eq('status', 'scheduled')
         .gte('appointment_date', dayStart2.toISOString())

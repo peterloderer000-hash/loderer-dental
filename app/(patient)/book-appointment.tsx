@@ -139,7 +139,7 @@ export default function BookAppointmentScreen() {
     const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
     supabase
       .from('appointments')
-      .select('appointment_date, service:service_id(duration_minutes)')
+      .select('appointment_date, service:services(duration_minutes)')
       .eq('doctor_id', doctorId)
       .eq('status', 'scheduled')
       .gte('appointment_date', dayStart.toISOString())
