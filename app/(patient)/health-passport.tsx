@@ -63,6 +63,23 @@ function RadioItem({ label, selected, onSelect }: { label: string; selected: boo
   );
 }
 
+function OtherInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <View style={styles.otherInputWrap}>
+      <Ionicons name="create-outline" size={15} color={COLORS.wal} style={{ marginTop: 2 }} />
+      <TextInput
+        style={styles.otherInput}
+        placeholder="Upresni..."
+        placeholderTextColor="#bbb"
+        value={value}
+        onChangeText={onChange}
+        autoCapitalize="sentences"
+        returnKeyType="done"
+      />
+    </View>
+  );
+}
+
 function SectionHeader({ num, title }: { num: string; title: string }) {
   return (
     <View style={styles.secHeader}>
@@ -76,19 +93,48 @@ export default function HealthPassportScreen() {
   const router = useRouter();
 
   const [visitReasons, setVisitReasons] = useState<string[]>([]);
+  const [visitReasonsOther, setVisitReasonsOther] = useState('');
   const [medConditions, setMedConditions] = useState<string[]>([]);
+  const [medConditionsOther, setMedConditionsOther] = useState('');
   const [allergies, setAllergies] = useState('');
   const [medications, setMedications] = useState('');
   const [dentalFreq, setDentalFreq] = useState('');
+  const [dentalFreqOther, setDentalFreqOther] = useState('');
   const [fearLevel, setFearLevel] = useState('');
   const [comfort, setComfort] = useState('');
+  const [comfortOther, setComfortOther] = useState('');
   const [aesthetics, setAesthetics] = useState<string[]>([]);
+  const [aestheticsOther, setAestheticsOther] = useState('');
   const [lifestyle, setLifestyle] = useState<string[]>([]);
+  const [lifestyleOther, setLifestyleOther] = useState('');
   const [investment, setInvestment] = useState('');
   const [openQ, setOpenQ] = useState('');
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // ── Pomocné funkcie pre „Iné" ──────────────────────────────────────────────
+  // Extrahuje vlastný text z "Iné: text" položky v poli
+  function extractOtherFromArray(arr: string[]): { items: string[]; otherText: string } {
+    const otherItem = arr.find((v) => v.startsWith('Iné:'));
+    const otherText = otherItem ? otherItem.replace(/^Iné:\s*/, '') : '';
+    const items = arr.map((v) => (v.startsWith('Iné:') ? 'Iné' : v));
+    return { items, otherText };
+  }
+  // Extrahuje vlastný text z "Iné: text" rádio hodnoty
+  function extractOtherFromRadio(val: string): { value: string; otherText: string } {
+    if (val?.startsWith('Iné:')) return { value: 'Iné', otherText: val.replace(/^Iné:\s*/, '') };
+    return { value: val ?? '', otherText: '' };
+  }
+  // Zakóduje "Iné" + vlastný text späť do uložiteľného formátu (pre pole)
+  function encodeOtherArray(arr: string[], otherText: string): string[] {
+    return arr.map((v) => (v === 'Iné' ? (otherText.trim() ? `Iné: ${otherText.trim()}` : 'Iné') : v));
+  }
+  // Zakóduje "Iné" + vlastný text pre rádio
+  function encodeOtherRadio(val: string, otherText: string): string {
+    if (val === 'Iné') return otherText.trim() ? `Iné: ${otherText.trim()}` : 'Iné';
+    return val;
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -100,17 +146,35 @@ export default function HealthPassportScreen() {
       if (cancelled) return;
       if (data) {
         try {
-          if (data.main_reasons)           setVisitReasons(data.main_reasons ?? []);
-          if (data.medical_history)        setMedConditions(data.medical_history ?? []);
-          if (data.allergies)              setAllergies(data.allergies);
-          if (data.medications)            setMedications(data.medications);
-          if (data.dental_history)         setDentalFreq(data.dental_history);
-          if (data.fear_level)             setFearLevel(data.fear_level);
-          if (data.comfort_preferences)    setComfort(data.comfort_preferences?.[0] ?? '');
-          if (data.aesthetic_expectations) setAesthetics(data.aesthetic_expectations ?? []);
-          if (data.lifestyle_habits)       setLifestyle(data.lifestyle_habits ?? []);
-          if (data.investment_preference)  setInvestment(data.investment_preference);
-          if (data.open_question)          setOpenQ(data.open_question);
+          if (data.main_reasons) {
+            const { items, otherText } = extractOtherFromArray(data.main_reasons ?? []);
+            setVisitReasons(items); setVisitReasonsOther(otherText);
+          }
+          if (data.medical_history) {
+            const { items, otherText } = extractOtherFromArray(data.medical_history ?? []);
+            setMedConditions(items); setMedConditionsOther(otherText);
+          }
+          if (data.allergies)    setAllergies(data.allergies);
+          if (data.medications)  setMedications(data.medications);
+          if (data.dental_history) {
+            const { value, otherText } = extractOtherFromRadio(data.dental_history);
+            setDentalFreq(value); setDentalFreqOther(otherText);
+          }
+          if (data.fear_level)   setFearLevel(data.fear_level);
+          if (data.comfort_preferences) {
+            const { value, otherText } = extractOtherFromRadio(data.comfort_preferences?.[0] ?? '');
+            setComfort(value); setComfortOther(otherText);
+          }
+          if (data.aesthetic_expectations) {
+            const { items, otherText } = extractOtherFromArray(data.aesthetic_expectations ?? []);
+            setAesthetics(items); setAestheticsOther(otherText);
+          }
+          if (data.lifestyle_habits) {
+            const { items, otherText } = extractOtherFromArray(data.lifestyle_habits ?? []);
+            setLifestyle(items); setLifestyleOther(otherText);
+          }
+          if (data.investment_preference) setInvestment(data.investment_preference);
+          if (data.open_question)         setOpenQ(data.open_question);
         } catch (e) {
           console.warn('[HealthPassport] Failed to populate form fields:', e);
         }
@@ -130,17 +194,17 @@ export default function HealthPassportScreen() {
       const { error } = await supabase.from('health_passports').upsert(
         {
           patient_id: user.id,
-          main_reasons: visitReasons,
-          medical_history: medConditions,
-          allergies: allergies.trim() || null,
-          medications: medications.trim() || null,
-          dental_history: dentalFreq || null,
-          fear_level: fearLevel || null,
-          comfort_preferences: comfort ? [comfort] : [],
-          aesthetic_expectations: aesthetics,
-          lifestyle_habits: lifestyle,
-          investment_preference: investment || null,
-          open_question: openQ.trim() || null,
+          main_reasons:           encodeOtherArray(visitReasons, visitReasonsOther),
+          medical_history:        encodeOtherArray(medConditions, medConditionsOther),
+          allergies:              allergies.trim() || null,
+          medications:            medications.trim() || null,
+          dental_history:         encodeOtherRadio(dentalFreq, dentalFreqOther) || null,
+          fear_level:             fearLevel || null,
+          comfort_preferences:    comfort ? [encodeOtherRadio(comfort, comfortOther)] : [],
+          aesthetic_expectations: encodeOtherArray(aesthetics, aestheticsOther),
+          lifestyle_habits:       encodeOtherArray(lifestyle, lifestyleOther),
+          investment_preference:  investment || null,
+          open_question:          openQ.trim() || null,
         },
         { onConflict: 'patient_id' },
       );
@@ -191,6 +255,11 @@ export default function HealthPassportScreen() {
               <CheckItem key={item} label={item} selected={visitReasons.includes(item)}
                 onToggle={() => setVisitReasons((p) => toggle(p, item))} />
             ))}
+            <CheckItem label="Iné" selected={visitReasons.includes('Iné')}
+              onToggle={() => setVisitReasons((p) => toggle(p, 'Iné'))} />
+            {visitReasons.includes('Iné') && (
+              <OtherInput value={visitReasonsOther} onChange={setVisitReasonsOther} />
+            )}
           </View>
 
           <SectionHeader num="2" title="MEDICÍNSKA ANAMNÉZA" />
@@ -200,6 +269,11 @@ export default function HealthPassportScreen() {
               <CheckItem key={item} label={item} selected={medConditions.includes(item)}
                 onToggle={() => setMedConditions((p) => toggle(p, item))} />
             ))}
+            <CheckItem label="Iné" selected={medConditions.includes('Iné')}
+              onToggle={() => setMedConditions((p) => toggle(p, 'Iné'))} />
+            {medConditions.includes('Iné') && (
+              <OtherInput value={medConditionsOther} onChange={setMedConditionsOther} />
+            )}
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>ALERGIE</Text>
             <TextInput style={styles.input} placeholder="napr. Penicilín, latex..."
@@ -218,6 +292,11 @@ export default function HealthPassportScreen() {
               <RadioItem key={item} label={item} selected={dentalFreq === item}
                 onSelect={() => setDentalFreq(item)} />
             ))}
+            <RadioItem label="Iné" selected={dentalFreq === 'Iné'}
+              onSelect={() => setDentalFreq('Iné')} />
+            {dentalFreq === 'Iné' && (
+              <OtherInput value={dentalFreqOther} onChange={setDentalFreqOther} />
+            )}
           </View>
 
           <SectionHeader num="4" title="STRACH ZO ZUBÁRA" />
@@ -235,6 +314,11 @@ export default function HealthPassportScreen() {
               <RadioItem key={item} label={item} selected={comfort === item}
                 onSelect={() => setComfort(item)} />
             ))}
+            <RadioItem label="Iné" selected={comfort === 'Iné'}
+              onSelect={() => setComfort('Iné')} />
+            {comfort === 'Iné' && (
+              <OtherInput value={comfortOther} onChange={setComfortOther} />
+            )}
           </View>
 
           <SectionHeader num="6" title="ESTETICKÉ OČAKÁVANIA" />
@@ -244,6 +328,11 @@ export default function HealthPassportScreen() {
               <CheckItem key={item} label={item} selected={aesthetics.includes(item)}
                 onToggle={() => setAesthetics((p) => toggle(p, item))} />
             ))}
+            <CheckItem label="Iné" selected={aesthetics.includes('Iné')}
+              onToggle={() => setAesthetics((p) => toggle(p, 'Iné'))} />
+            {aesthetics.includes('Iné') && (
+              <OtherInput value={aestheticsOther} onChange={setAestheticsOther} />
+            )}
           </View>
 
           <SectionHeader num="7" title="ŽIVOTNÝ ŠTÝL" />
@@ -252,6 +341,11 @@ export default function HealthPassportScreen() {
               <CheckItem key={item} label={item} selected={lifestyle.includes(item)}
                 onToggle={() => setLifestyle((p) => toggle(p, item))} />
             ))}
+            <CheckItem label="Iné" selected={lifestyle.includes('Iné')}
+              onToggle={() => setLifestyle((p) => toggle(p, 'Iné'))} />
+            {lifestyle.includes('Iné') && (
+              <OtherInput value={lifestyleOther} onChange={setLifestyleOther} />
+            )}
           </View>
 
           <SectionHeader num="8" title="INVESTIČNÉ OČAKÁVANIA" />
@@ -319,6 +413,8 @@ const styles = StyleSheet.create({
   radioDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.wal },
   fieldLabel: { fontSize: 9, letterSpacing: 1.8, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 6 },
   input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: SIZES.radius - 2, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 60, lineHeight: 20 },
+  otherInputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 8, borderWidth: 1.5, borderColor: COLORS.sand, paddingHorizontal: 10, paddingVertical: 4, marginTop: 2 },
+  otherInput:     { flex: 1, fontSize: 13, color: COLORS.esp, paddingVertical: 8 },
   errorBox: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: SIZES.radius, padding: 12, marginHorizontal: SIZES.padding, marginTop: 12 },
   errorText: { flex: 1, fontSize: 12, color: '#8C2A18' },
   saveBtn: { backgroundColor: COLORS.wal, borderRadius: SIZES.radius, paddingVertical: 15, marginHorizontal: SIZES.padding, marginTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, elevation: 4 },
