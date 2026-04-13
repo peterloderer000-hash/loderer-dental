@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   ActivityIndicator, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
@@ -57,6 +57,9 @@ export default function DoctorNotificationsScreen() {
 
   useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
 
+  const unreadNotifs = useMemo(() => notifications.filter((n) => !n.read), [notifications]);
+  const readNotifs   = useMemo(() => notifications.filter((n) =>  n.read), [notifications]);
+
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
@@ -91,16 +94,16 @@ export default function DoctorNotificationsScreen() {
               <Text style={styles.sectionLabel}>NOVÉ ({unreadCount})</Text>
             </View>
           )}
-          {notifications.filter((n) => !n.read).map((n) => (
+          {unreadNotifs.map((n) => (
             <NotifCard key={n.id} item={n} onPress={() => markRead(n.id)} />
           ))}
-          {notifications.some((n) => n.read) && (
+          {readNotifs.length > 0 && (
             <View style={[styles.sectionHeader, { marginTop: 18 }]}>
               <View style={[styles.sectionDot, { backgroundColor: '#ccc' }]} />
               <Text style={[styles.sectionLabel, { color: '#bbb' }]}>PREČÍTANÉ</Text>
             </View>
           )}
-          {notifications.filter((n) => n.read).map((n) => (
+          {readNotifs.map((n) => (
             <NotifCard key={n.id} item={n} onPress={() => {}} />
           ))}
           <View style={{ height: 40 }} />

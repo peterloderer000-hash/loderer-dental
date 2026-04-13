@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 
+type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null };
+
 export function useProfile() {
-  type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null };
   const [profile, setProfile] = useState<Profile | null>(null);
   const [hasHealthPassport, setHasHealthPassport] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);

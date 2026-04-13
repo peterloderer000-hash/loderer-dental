@@ -325,7 +325,8 @@ export default function ScoreScreen() {
     let cancelled = false;
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) { if (!cancelled) setLoading(false); return; }
+      if (cancelled) return;
+      if (!user) { setLoading(false); return; }
 
       // Zubná karta
       const { data: teeth } = await supabase
@@ -355,11 +356,12 @@ export default function ScoreScreen() {
       // Doktorove poznámky
       const { data: notes } = await supabase
         .from('appointments')
-        .select('appointment_date, doctor_notes, service:service_id(name)')
+        .select('appointment_date, doctor_notes, service:services(name)')
         .eq('patient_id', user.id).eq('status', 'completed')
         .not('doctor_notes', 'is', null)
         .order('appointment_date', { ascending: false }).limit(3);
-      if (!cancelled && notes) setDoctorNotes((notes as any[]).filter((n) => n.doctor_notes));
+      // DB query už filtruje NOT NULL doctor_notes — klientský filter nie je potrebný
+      if (!cancelled && notes) setDoctorNotes(notes as any[]);
 
       if (!cancelled) setLoading(false);
     }

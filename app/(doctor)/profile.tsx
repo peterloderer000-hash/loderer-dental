@@ -23,7 +23,7 @@ export default function DoctorProfile() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setLoading(false); return; }
       setEmail(user.email ?? '');
 
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();

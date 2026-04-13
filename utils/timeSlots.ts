@@ -21,9 +21,12 @@ export function getNextWorkingDays(count: number, includeToday = false): Date[] 
     result.push(new Date(d));
   }
 
-  while (result.length < count) {
+  // Maximálne 120 dní dopredu aby sme predišli nekonečnej slučke
+  let safety = 0;
+  while (result.length < count && safety < 120) {
     d.setDate(d.getDate() + 1);
     if (d.getDay() !== 0 && d.getDay() !== 6) result.push(new Date(d));
+    safety++;
   }
   return result;
 }

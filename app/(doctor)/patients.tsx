@@ -188,7 +188,7 @@ export default function PatientsScreen() {
           {/* Počet výsledkov pri hľadaní */}
           {query.length > 0 && (
             <Text style={styles.resultLabel}>
-              {filtered.length} {filtered.length === 1 ? 'výsledok' : 'výsledky'} pre „{query}"
+              {filtered.length} {filtered.length === 1 ? 'výsledok' : filtered.length >= 2 && filtered.length <= 4 ? 'výsledky' : 'výsledkov'} pre „{query}"
             </Text>
           )}
 

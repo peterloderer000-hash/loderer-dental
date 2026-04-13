@@ -91,10 +91,13 @@ export default function HealthPassportScreen() {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function loadExisting() {
       const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled) return;
       if (!user) { setLoadingData(false); return; }
       const { data } = await supabase.from('health_passports').select('*').eq('patient_id', user.id).maybeSingle();
+      if (cancelled) return;
       if (data) {
         try {
           if (data.main_reasons)           setVisitReasons(data.main_reasons ?? []);
@@ -108,11 +111,14 @@ export default function HealthPassportScreen() {
           if (data.lifestyle_habits)       setLifestyle(data.lifestyle_habits ?? []);
           if (data.investment_preference)  setInvestment(data.investment_preference);
           if (data.open_question)          setOpenQ(data.open_question);
-        } catch (_) {}
+        } catch (e) {
+          console.warn('[HealthPassport] Failed to populate form fields:', e);
+        }
       }
-      setLoadingData(false);
+      if (!cancelled) setLoadingData(false);
     }
     loadExisting();
+    return () => { cancelled = true; };
   }, []);
 
   async function handleSave() {

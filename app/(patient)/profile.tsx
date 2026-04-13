@@ -103,7 +103,7 @@ export default function ProfileScreen() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) { setLoading(false); return; }
       setEmail(user.email ?? '');
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
       if (data) {

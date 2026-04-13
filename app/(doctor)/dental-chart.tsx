@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, Dimensions, Modal, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
@@ -29,7 +29,7 @@ function getStatus(key: ToothStatus) {
 }
 
 // ─── Jednotlivý zub ───────────────────────────────────────────────────────────
-function Tooth({ num, record, onPress }: {
+const Tooth = React.memo(function Tooth({ num, record, onPress }: {
   num: number;
   record: ToothRecord | undefined;
   onPress: () => void;
@@ -50,10 +50,10 @@ function Tooth({ num, record, onPress }: {
       )}
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Riadok zubov ─────────────────────────────────────────────────────────────
-function ToothRow({ teeth, chart, onPress }: {
+const ToothRow = React.memo(function ToothRow({ teeth, chart, onPress }: {
   teeth: number[];
   chart: Record<number, ToothRecord>;
   onPress: (n: number) => void;
@@ -65,7 +65,7 @@ function ToothRow({ teeth, chart, onPress }: {
       ))}
     </View>
   );
-}
+});
 
 // ─── Edit modal ───────────────────────────────────────────────────────────────
 function EditModal({ tooth, record, visible, onClose, onSave, saving }: {
@@ -154,6 +154,8 @@ export default function DentalChart() {
   const [activeTooth, setActiveTooth] = useState<number | null>(null);
   const [saving, setSaving]           = useState(false);
 
+  const handleToothPress = useCallback((n: number) => setActiveTooth(n), []);
+
   async function handleSave(status: ToothStatus, notes: string) {
     if (!activeTooth) return;
     setSaving(true);
@@ -208,7 +210,7 @@ export default function DentalChart() {
               <Text style={styles.qLabel}>Q1</Text>
               <Text style={styles.qDesc}>vpravo hore</Text>
             </View>
-            <ToothRow teeth={[18,17,16,15,14,13,12,11]} chart={chart} onPress={setActiveTooth} />
+            <ToothRow teeth={[18,17,16,15,14,13,12,11]} chart={chart} onPress={handleToothPress} />
 
             <View style={styles.separator} />
 
@@ -216,7 +218,7 @@ export default function DentalChart() {
               <Text style={styles.qLabel}>Q2</Text>
               <Text style={styles.qDesc}>vľavo hore</Text>
             </View>
-            <ToothRow teeth={[21,22,23,24,25,26,27,28]} chart={chart} onPress={setActiveTooth} />
+            <ToothRow teeth={[21,22,23,24,25,26,27,28]} chart={chart} onPress={handleToothPress} />
           </View>
 
           {/* ── DOLNÁ ČEĽUSŤ ── */}
@@ -227,7 +229,7 @@ export default function DentalChart() {
               <Text style={styles.qLabel}>Q4</Text>
               <Text style={styles.qDesc}>vpravo dole</Text>
             </View>
-            <ToothRow teeth={[48,47,46,45,44,43,42,41]} chart={chart} onPress={setActiveTooth} />
+            <ToothRow teeth={[48,47,46,45,44,43,42,41]} chart={chart} onPress={handleToothPress} />
 
             <View style={styles.separator} />
 
@@ -235,7 +237,7 @@ export default function DentalChart() {
               <Text style={styles.qLabel}>Q3</Text>
               <Text style={styles.qDesc}>vľavo dole</Text>
             </View>
-            <ToothRow teeth={[31,32,33,34,35,36,37,38]} chart={chart} onPress={setActiveTooth} />
+            <ToothRow teeth={[31,32,33,34,35,36,37,38]} chart={chart} onPress={handleToothPress} />
           </View>
 
           {/* ── Štatistiky ── */}

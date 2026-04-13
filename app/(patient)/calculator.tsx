@@ -54,6 +54,15 @@ export default function CalculatorScreen() {
     return counts;
   }, [basket]);
 
+  // Zoskupenie košíka pre zobrazenie (memoizované — nie znovu-počítané pri každom renderi)
+  const basketGrouped = useMemo(() =>
+    basket.reduce<Record<string, { svc: Service; count: number }>>((acc, s) => {
+      if (!acc[s.id]) acc[s.id] = { svc: s, count: 0 };
+      acc[s.id].count++;
+      return acc;
+    }, {}),
+  [basket]);
+
   function formatTotalPrice(min: number, max: number): string {
     if (min === 0 && max === 0) return 'Zadarmo';
     if (min === max) return `${min} €`;
@@ -98,7 +107,7 @@ export default function CalculatorScreen() {
         </View>
 
         {/* ── Zoznam výberu ── */}
-        {Object.entries(grouped).map(([category, items]) => {
+        {Object.entries(grouped ?? {}).map(([category, items]) => {
           const isOpen = openCat === category;
           return (
             <View key={category} style={styles.categoryBlock}>
@@ -197,13 +206,7 @@ export default function CalculatorScreen() {
               showsVerticalScrollIndicator={false}
             >
               {/* Zoskupenie rovnakých služieb */}
-              {Object.entries(
-                basket.reduce<Record<string, { svc: Service; count: number }>>((acc, s) => {
-                  if (!acc[s.id]) acc[s.id] = { svc: s, count: 0 };
-                  acc[s.id].count++;
-                  return acc;
-                }, {})
-              ).map(([id, { svc, count }]) => (
+              {Object.entries(basketGrouped).map(([id, { svc, count }]) => (
                 <View key={id} style={styles.basketRow}>
                   <Text style={styles.basketEmoji}>{svc.emoji ?? '🦷'}</Text>
                   <Text style={styles.basketName} numberOfLines={1}>{svc.name}</Text>

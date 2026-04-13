@@ -25,11 +25,15 @@ export function useServices() {
       .eq('is_active', true)
       .order('category')
       .order('duration_minutes')
-      .then(({ data }) => {
-        if (!cancelled) {
-          setServices((data ?? []) as Service[]);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error('[useServices] Failed to load services:', error);
           setLoading(false);
+          return;
         }
+        setServices((data ?? []) as Service[]);
+        setLoading(false);
       });
     return () => { cancelled = true; };
   }, []);

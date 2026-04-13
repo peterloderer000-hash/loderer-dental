@@ -179,27 +179,25 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   useEffect(() => {
     if (!visible || !appointment) return;
     setSelDate(null); setSelTime('');
-    supabase.from('profiles').select('id').eq('role', 'doctor').limit(1)
-      .then(({ data: docs }) => {
-        if (!docs || docs.length === 0) return;
-        supabase.from('opening_hours')
-          .select('day_of_week, open_time, close_time, is_closed')
-          .eq('doctor_id', docs[0].id)
-          .then(({ data: hours }) => {
-            const map = new Map<number, OpeningHour>();
-            (hours ?? []).forEach(h => {
-              if (!h.is_closed && h.open_time && h.close_time)
-                map.set(h.day_of_week, { open_time: h.open_time.slice(0,5), close_time: h.close_time.slice(0,5) });
-            });
-            if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
-            setOpeningHoursMap(map);
-          });
+    // Použijeme doctor_id priamo z termínu — nie prvého doktora v DB
+    supabase.from('opening_hours')
+      .select('day_of_week, open_time, close_time, is_closed')
+      .eq('doctor_id', appointment.doctor_id)
+      .then(({ data: hours }) => {
+        const map = new Map<number, OpeningHour>();
+        (hours ?? []).forEach(h => {
+          if (!h.is_closed && h.open_time && h.close_time)
+            map.set(h.day_of_week, { open_time: h.open_time.slice(0,5), close_time: h.close_time.slice(0,5) });
+        });
+        if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
+        setOpeningHoursMap(map);
       });
   }, [visible, appointment]);
 
   // Načítaj obsadené sloty pre vybraný deň (okrem aktuálneho termínu)
   useEffect(() => {
     if (!selDate || !appointment) { setBookedSlots([]); return; }
+    let cancelled = false;
     setLoadingSlots(true);
     const dayStart = new Date(selDate); dayStart.setHours(0,0,0,0);
     const dayEnd   = new Date(selDate); dayEnd.setHours(23,59,59,999);
@@ -211,6 +209,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
       .gte('appointment_date', dayStart.toISOString())
       .lte('appointment_date', dayEnd.toISOString())
       .then(({ data }) => {
+        if (cancelled) return;
         setLoadingSlots(false);
         setBookedSlots((data ?? []).map(a => {
           const d = new Date(a.appointment_date);
@@ -218,6 +217,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
           return { start: s, end: s + ((a.service as any)?.duration_minutes ?? 30) };
         }));
       });
+    return () => { cancelled = true; };
   }, [selDate, appointment]);
 
   function isSlotTaken(start: string, dur: number) {

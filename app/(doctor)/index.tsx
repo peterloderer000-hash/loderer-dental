@@ -316,6 +316,9 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
   onConfirm: (notes: string) => void; saving: boolean;
 }) {
   const [notes, setNotes] = useState('');
+
+  // Reset poznámok pri každom otvorení modalu
+  React.useEffect(() => { if (visible) setNotes(''); }, [visible]);
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
