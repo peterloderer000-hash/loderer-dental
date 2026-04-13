@@ -70,9 +70,11 @@ export default function DoctorAddAppointment() {
 
   // Načítaj pacientov + ordinačné hodiny doktora
   useEffect(() => {
+    let cancelled = false;
     async function load() {
       // Doktor = prihlásený user
       const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled) return;
       if (user) {
         setDoctorUserId(user.id);
         const { data: hours } = await supabase
@@ -100,14 +102,16 @@ export default function DoctorAddAppointment() {
         const found = list.find((p) => p.id === params.patientId);
         if (found) { setPatient(found); setQuery(found.full_name ?? ''); }
       }
-      setLoadingP(false);
+      if (!cancelled) setLoadingP(false);
     }
     load();
+    return () => { cancelled = true; };
   }, []);
 
   // Fetch obsadených slotov pre vybraný deň
   useEffect(() => {
     if (!selectedDate || !doctorUserId) { setBookedSlots([]); return; }
+    let cancelled = false;
     setLoadingSlots(true);
     const dayStart = new Date(selectedDate); dayStart.setHours(0, 0, 0, 0);
     const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
@@ -119,6 +123,7 @@ export default function DoctorAddAppointment() {
       .gte('appointment_date', dayStart.toISOString())
       .lte('appointment_date', dayEnd.toISOString())
       .then(({ data }) => {
+        if (cancelled) return;
         setLoadingSlots(false);
         if (!data) return;
         setBookedSlots(data.map(a => {
@@ -128,6 +133,7 @@ export default function DoctorAddAppointment() {
           return { start: sMin, end: sMin + dur };
         }));
       });
+    return () => { cancelled = true; };
   }, [selectedDate, doctorUserId]);
 
   const filteredPatients = useMemo(() => {

@@ -64,12 +64,14 @@ export default function DoctorCalendar() {
 
   // ── Načítaj ordinačné hodiny raz ──────────────────────────────────────────
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data: { user }, error: authErr }) => {
+      if (cancelled || authErr || !user) return;
       supabase.from('opening_hours')
         .select('day_of_week, open_time, close_time, is_closed')
         .eq('doctor_id', user.id)
-        .then(({ data }) => {
+        .then(({ data, error: qErr }) => {
+          if (cancelled || qErr) return;
           const map = new Map<number, OHRange>();
           (data ?? []).forEach(h => {
             if (!h.is_closed && h.open_time && h.close_time) {
@@ -81,6 +83,7 @@ export default function DoctorCalendar() {
           setOhMap(map);
         });
     });
+    return () => { cancelled = true; };
   }, []);
 
   useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
