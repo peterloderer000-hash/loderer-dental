@@ -228,9 +228,10 @@ function isToday(dateStr: string) {
 }
 
 const STATUS_CONFIG = {
-  scheduled: { label: 'Naplánovaný', bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1' },
-  completed:  { label: 'Dokončený',   bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF' },
-  cancelled:  { label: 'Zrušený',     bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
+  pending:   { label: 'Čaká na schválenie', bg: '#FEF9E7', color: '#7D6608', border: '#F9E79F' },
+  scheduled: { label: 'Naplánovaný',        bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1' },
+  completed: { label: 'Dokončený',           bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF' },
+  cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
 };
 
 function StatusBadge({ status }: { status: Appointment['status'] }) {
@@ -310,6 +311,132 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
 
 type Filter = 'today' | 'upcoming' | 'all';
 
+// ─── Modal: schválenie žiadosti pacienta ─────────────────────────────────────
+function ApproveModal({ visible, appointment, onClose, onApprove, onReject, saving }: {
+  visible: boolean;
+  appointment: Appointment | null;
+  onClose: () => void;
+  onApprove: (durationMinutes: number) => void;
+  onReject: () => void;
+  saving: boolean;
+}) {
+  const defaultDur = appointment?.service?.duration_minutes ?? 30;
+  const [selectedDur, setSelectedDur] = useState(defaultDur);
+  const [customText,  setCustomText]  = useState('');
+
+  React.useEffect(() => {
+    if (visible && appointment) {
+      const d = appointment.service?.duration_minutes ?? 30;
+      setSelectedDur(d);
+      setCustomText('');
+    }
+  }, [visible, appointment]);
+
+  if (!appointment) return null;
+  const d = new Date(appointment.appointment_date);
+  const dateLabel = d.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
+  const timeLabel = d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.sheet}>
+          <View style={styles.sheetHandle} />
+          <Text style={styles.sheetTitle}>Schváliť termín</Text>
+          <Text style={styles.sheetSub}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
+
+          {/* Info o termíne */}
+          <View style={aStyles.infoBox}>
+            {appointment.service && (
+              <Text style={aStyles.infoRow}>
+                {appointment.service.emoji ?? '🦷'} {appointment.service.name}
+              </Text>
+            )}
+            <Text style={aStyles.infoRow}>📅 {dateLabel} o {timeLabel}</Text>
+            {appointment.notes ? <Text style={aStyles.infoRow}>📝 {appointment.notes}</Text> : null}
+          </View>
+
+          {/* Dĺžka ošetrenia */}
+          <Text style={styles.sheetLabel}>DĹŽKA OŠETRENIA</Text>
+          <View style={aStyles.chipRow}>
+            {[15, 30, 45, 60, 90, 120].map((min) => (
+              <TouchableOpacity
+                key={min}
+                style={[aStyles.chip, selectedDur === min && aStyles.chipActive]}
+                onPress={() => { setSelectedDur(min); setCustomText(''); }}
+                activeOpacity={0.75}
+              >
+                <Text style={[aStyles.chipText, selectedDur === min && aStyles.chipTextActive]}>
+                  {min < 60 ? `${min} min` : `${min / 60} hod`}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={aStyles.customRow}>
+            <Ionicons name="time-outline" size={15} color={COLORS.wal} />
+            <TextInput
+              style={aStyles.customInput}
+              placeholder={`Vlastná (min) · teraz: ${selectedDur} min`}
+              placeholderTextColor="#bbb"
+              keyboardType="numeric"
+              value={customText}
+              onChangeText={(t) => {
+                setCustomText(t);
+                const n = parseInt(t, 10);
+                if (!isNaN(n) && n > 0 && n <= 480) setSelectedDur(n);
+              }}
+              maxLength={3}
+            />
+          </View>
+
+          {/* Tlačidlá */}
+          <View style={aStyles.btnRow}>
+            <TouchableOpacity
+              style={[aStyles.btnReject, saving && { opacity: 0.5 }]}
+              onPress={onReject}
+              disabled={saving}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="close-circle-outline" size={16} color="#922B21" />
+              <Text style={aStyles.btnRejectText}>Odmietnuť</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[aStyles.btnApprove, saving && { opacity: 0.5 }]}
+              onPress={() => onApprove(selectedDur)}
+              disabled={saving}
+              activeOpacity={0.85}
+            >
+              {saving
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <>
+                    <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                    <Text style={aStyles.btnApproveText}>Schváliť</Text>
+                  </>}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const aStyles = StyleSheet.create({
+  infoBox:  { backgroundColor: COLORS.bg2, borderRadius: 10, padding: 12, marginBottom: 14, gap: 4 },
+  infoRow:  { fontSize: 13, color: COLORS.esp, fontWeight: '500', lineHeight: 20 },
+  chipRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  chip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  chipActive:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
+  chipText:      { fontSize: 12, fontWeight: '600', color: COLORS.wal },
+  chipTextActive:{ color: COLORS.cream },
+  customRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
+  customInput: { flex: 1, paddingVertical: 10, fontSize: 13, color: COLORS.esp },
+  btnRow:    { flexDirection: 'row', gap: 10 },
+  btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
+  btnRejectText: { fontSize: 13, fontWeight: '700', color: '#922B21' },
+  btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#1E8449' },
+  btnApproveText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+});
+
 // ─── Modal: klinické poznámky pri dokončení ────────────────────────────────────
 function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
   visible: boolean; patientName: string; onClose: () => void;
@@ -362,7 +489,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
 export default function DoctorHome() {
   const router = useRouter();
   const navigation = useNavigation();
-  const { appointments, loading, refetch, updateStatus } = useAppointments('doctor');
+  const { appointments, loading, refetch, updateStatus, approvePending } = useAppointments('doctor');
   const { unreadCount: notifCount } = useNotifications();
   const [filter, setFilter] = useState<Filter>('today');
   const [doctorName, setDoctorName] = useState('');
@@ -371,6 +498,8 @@ export default function DoctorHome() {
   const [completingItem, setCompletingItem] = useState<Appointment | null>(null);
   const [completeSaving, setCompleteSaving] = useState(false);
   const [rescheduleAppt, setRescheduleAppt] = useState<Appointment | null>(null);
+  const [approvingAppt,  setApprovingAppt]  = useState<Appointment | null>(null);
+  const [approveSaving,  setApproveSaving]  = useState(false);
   const [doctorId, setDoctorId] = useState('');
 
   const onRefresh = useCallback(async () => {
@@ -414,6 +543,30 @@ export default function DoctorHome() {
     if (err) Alert.alert('Chyba', err.message);
   }
 
+  async function handleApprove(durationMinutes: number) {
+    if (!approvingAppt) return;
+    setApproveSaving(true);
+    const err = await approvePending(approvingAppt.id, durationMinutes);
+    setApproveSaving(false);
+    setApprovingAppt(null);
+    if (err) Alert.alert('Chyba', err.message);
+  }
+
+  async function handleReject() {
+    if (!approvingAppt) return;
+    Alert.alert('Odmietnuť žiadosť', 'Naozaj chcete odmietnuť túto žiadosť pacienta?', [
+      { text: 'Nie', style: 'cancel' },
+      {
+        text: 'Odmietnuť', style: 'destructive',
+        onPress: async () => {
+          const err = await updateStatus(approvingAppt.id, 'cancelled');
+          setApprovingAppt(null);
+          if (err) Alert.alert('Chyba', err.message);
+        },
+      },
+    ]);
+  }
+
   async function handleCancel(id: string) {
     Alert.alert('Zrušiť termín', 'Chcete zrušiť tento termín?', [
       { text: 'Nie', style: 'cancel' },
@@ -453,6 +606,7 @@ export default function DoctorHome() {
     return map;
   }, [filtered]);
 
+  const pendingAppts  = useMemo(() => appointments.filter((a) => a.status === 'pending'), [appointments]);
   const todayCount    = appointments.filter((a) => isToday(a.appointment_date) && a.status === 'scheduled').length;
   const upcomingCount = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
 
@@ -514,6 +668,72 @@ export default function DoctorHome() {
               <Text style={[styles.statLbl, { color: s.color }]}>{s.label}</Text>
             </View>
           ))}
+        </View>
+      )}
+
+      {/* ── Čakajúce žiadosti ── */}
+      {pendingAppts.length > 0 && (
+        <View style={styles.pendingSection}>
+          <View style={styles.pendingSectionHeader}>
+            <View style={styles.pendingDot} />
+            <Text style={styles.pendingSectionTitle}>
+              ČAKAJÚ NA SCHVÁLENIE ({pendingAppts.length})
+            </Text>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: SIZES.padding + 4, gap: 10, paddingBottom: 4 }}>
+            {pendingAppts.map((appt) => {
+              const d = new Date(appt.appointment_date);
+              const dateStr = d.toLocaleDateString('sk-SK', { weekday: 'short', day: 'numeric', month: 'short' });
+              const timeStr = d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+              return (
+                <TouchableOpacity
+                  key={appt.id}
+                  style={styles.pendingCard}
+                  onPress={() => setApprovingAppt(appt)}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.pendingCardTop}>
+                    <Text style={styles.pendingPatient} numberOfLines={1}>
+                      {appt.patient?.full_name ?? 'Pacient'}
+                    </Text>
+                    <View style={styles.pendingBadge}>
+                      <Text style={styles.pendingBadgeText}>Nové</Text>
+                    </View>
+                  </View>
+                  {appt.service && (
+                    <Text style={styles.pendingService} numberOfLines={1}>
+                      {appt.service.emoji ?? '🦷'} {appt.service.name}
+                    </Text>
+                  )}
+                  <Text style={styles.pendingTime}>📅 {dateStr} o {timeStr}</Text>
+                  <View style={styles.pendingActions}>
+                    <TouchableOpacity
+                      style={styles.pendingBtnApprove}
+                      onPress={() => setApprovingAppt(appt)}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons name="checkmark" size={13} color="#fff" />
+                      <Text style={styles.pendingBtnApproveText}>Schváliť</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.pendingBtnReject}
+                      onPress={() => {
+                        Alert.alert('Odmietnuť', `Odmietnuť žiadosť od ${appt.patient?.full_name ?? 'pacienta'}?`, [
+                          { text: 'Nie', style: 'cancel' },
+                          { text: 'Odmietnuť', style: 'destructive',
+                            onPress: async () => { await updateStatus(appt.id, 'cancelled'); } },
+                        ]);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons name="close" size={13} color="#922B21" />
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
       )}
 
@@ -614,6 +834,16 @@ export default function DoctorHome() {
         <Ionicons name="add" size={26} color="#fff" />
       </TouchableOpacity>
 
+      {/* ── Modal: schválenie žiadosti ── */}
+      <ApproveModal
+        visible={!!approvingAppt}
+        appointment={approvingAppt}
+        onClose={() => setApprovingAppt(null)}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        saving={approveSaving}
+      />
+
       {/* ── Modal: klinické poznámky ── */}
       <CompleteModal
         visible={!!completingItem}
@@ -697,6 +927,23 @@ const styles = StyleSheet.create({
   emptySub:  { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
 
   fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
+
+  // Pending section
+  pendingSection:       { backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingTop: 10, paddingBottom: 12 },
+  pendingSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SIZES.padding + 4, marginBottom: 10 },
+  pendingDot:           { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D4AC0D' },
+  pendingSectionTitle:  { fontSize: 9, fontWeight: '800', color: '#7D6608', letterSpacing: 1.5 },
+  pendingCard:          { width: 200, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  pendingCardTop:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  pendingPatient:       { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
+  pendingBadge:         { backgroundColor: '#D4AC0D', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  pendingBadgeText:     { fontSize: 8, fontWeight: '800', color: '#fff' },
+  pendingService:       { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
+  pendingTime:          { fontSize: 11, color: '#7D6608', fontWeight: '500', marginBottom: 8 },
+  pendingActions:       { flexDirection: 'row', gap: 6 },
+  pendingBtnApprove:    { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: 8, backgroundColor: '#1E8449' },
+  pendingBtnApproveText:{ fontSize: 11, fontWeight: '700', color: '#fff' },
+  pendingBtnReject:     { width: 30, alignItems: 'center', justifyContent: 'center', paddingVertical: 7, borderRadius: 8, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
 
   // Next appointment banner
   nextApptBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingHorizontal: SIZES.padding + 4, paddingVertical: 10 },

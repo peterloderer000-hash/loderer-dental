@@ -4,7 +4,8 @@ import { supabase } from '../supabase';
 export type Appointment = {
   id: string;
   appointment_date: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: 'pending' | 'scheduled' | 'completed' | 'cancelled';
+  custom_duration_minutes: number | null;
   notes: string | null;
   doctor_notes: string | null;
   patient_id: string;
@@ -97,5 +98,14 @@ export function useAppointments(role: 'patient' | 'doctor') {
     return error;
   }
 
-  return { appointments, loading, fetchError, refetch, updateStatus };
+  /** Schválenie čakajúceho termínu doktorom (nastaví status=scheduled + voliteľnú dĺžku) */
+  async function approvePending(id: string, customDurationMinutes?: number) {
+    const payload: Record<string, unknown> = { status: 'scheduled' };
+    if (customDurationMinutes != null) payload.custom_duration_minutes = customDurationMinutes;
+    const { error } = await supabase.from('appointments').update(payload).eq('id', id);
+    if (!error) refetch();
+    return error;
+  }
+
+  return { appointments, loading, fetchError, refetch, updateStatus, approvePending };
 }

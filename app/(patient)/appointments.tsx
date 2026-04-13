@@ -29,12 +29,13 @@ function getMonthLabel(dateStr: string) {
 }
 
 const STATUS_CONFIG = {
-  scheduled: { label: 'Naplánovaný', bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1', icon: 'time-outline' as const },
-  completed:  { label: 'Dokončený',   bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
-  cancelled:  { label: 'Zrušený',     bg: '#FDEDEC', color: '#922B21', border: '#F1948A', icon: 'close-circle-outline' as const },
+  pending:   { label: 'Čaká na schválenie', bg: '#FEF9E7', color: '#7D6608', border: '#F9E79F', icon: 'hourglass-outline' as const },
+  scheduled: { label: 'Naplánovaný',        bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1', icon: 'time-outline' as const },
+  completed: { label: 'Dokončený',           bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
+  cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A', icon: 'close-circle-outline' as const },
 };
 
-type Filter = 'all' | 'scheduled' | 'completed' | 'cancelled';
+type Filter = 'all' | 'pending' | 'scheduled' | 'completed' | 'cancelled';
 
 // ─── Karta termínu ────────────────────────────────────────────────────────────
 function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate }: {
@@ -611,16 +612,18 @@ export default function AppointmentsScreen() {
   // Počty pre filter tabs
   const counts = useMemo(() => ({
     all:       appointments.length,
+    pending:   appointments.filter((a) => a.status === 'pending').length,
     scheduled: appointments.filter((a) => a.status === 'scheduled').length,
     completed: appointments.filter((a) => a.status === 'completed').length,
     cancelled: appointments.filter((a) => a.status === 'cancelled').length,
   }), [appointments]);
 
   const FILTERS = useMemo<{ key: Filter; label: string; color: string }[]>(() => [
-    { key: 'all',       label: `Všetky (${counts.all})`,           color: COLORS.wal },
-    { key: 'scheduled', label: `Plánované (${counts.scheduled})`,  color: '#1A5276' },
-    { key: 'completed', label: `Dokončené (${counts.completed})`,  color: '#1E8449' },
-    { key: 'cancelled', label: `Zrušené (${counts.cancelled})`,    color: '#922B21' },
+    { key: 'all',       label: `Všetky (${counts.all})`,             color: COLORS.wal },
+    ...(counts.pending > 0 ? [{ key: 'pending' as Filter, label: `Čakajúce (${counts.pending})`, color: '#D4AC0D' }] : []),
+    { key: 'scheduled', label: `Plánované (${counts.scheduled})`,    color: '#1A5276' },
+    { key: 'completed', label: `Dokončené (${counts.completed})`,    color: '#1E8449' },
+    { key: 'cancelled', label: `Zrušené (${counts.cancelled})`,      color: '#922B21' },
   ], [counts]);
 
   return (

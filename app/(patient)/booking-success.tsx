@@ -57,13 +57,13 @@ export default function BookingSuccessScreen() {
         {/* Success ikona */}
         <Animated.View style={[styles.iconWrap, { transform: [{ scale }] }]}>
           <View style={styles.iconCircle}>
-            <Ionicons name="checkmark" size={52} color="#fff" />
+            <Ionicons name="hourglass-outline" size={48} color="#fff" />
           </View>
-          <Text style={styles.confetti}>🎉</Text>
+          <Text style={styles.confetti}>📋</Text>
         </Animated.View>
 
         {/* Titulok */}
-        <Text style={styles.title}>Termín rezervovaný!</Text>
+        <Text style={styles.title}>Žiadosť odoslaná!</Text>
         <View style={styles.serviceRow}>
           <Text style={styles.serviceEmoji}>{serviceEmoji ?? '🦷'}</Text>
           <Text style={styles.serviceName}>{serviceName}</Text>
@@ -86,9 +86,9 @@ export default function BookingSuccessScreen() {
 
         {/* Info */}
         <View style={styles.infoBox}>
-          <Ionicons name="notifications-outline" size={15} color="#1A5276" />
-          <Text style={styles.infoText}>
-            Dostaneš notifikáciu deň pred termínom ako pripomienku.
+          <Ionicons name="time-outline" size={15} color="#7D6608" />
+          <Text style={[styles.infoText, { color: '#7D6608' }]}>
+            Tvoja žiadosť čaká na schválenie doktorom. Po schválení dostaneš notifikáciu.
           </Text>
         </View>
 
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
 
   // Icon
   iconWrap:   { alignItems: 'center', marginBottom: 20 },
-  iconCircle: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#1E8449', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#1E8449', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
+  iconCircle: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#D4AC0D', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#1E8449', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
   confetti:   { fontSize: 32, position: 'absolute', bottom: -8, right: -8 },
 
   // Text
@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
   rowValue: { fontSize: 14, fontWeight: '600', color: COLORS.esp, lineHeight: 19 },
 
   // Info
-  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#EBF5FB', borderRadius: 12, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#AED6F1' },
-  infoText: { flex: 1, fontSize: 12, color: '#1A5276', lineHeight: 18 },
+  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF9E7', borderRadius: 12, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#F9E79F' },
+  infoText: { flex: 1, fontSize: 12, color: '#7D6608', lineHeight: 18 },
 
   // Buttons
   btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },

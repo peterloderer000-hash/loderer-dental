@@ -217,7 +217,7 @@ export default function BookAppointmentScreen() {
         patient_id:       user.id,
         doctor_id:        doctorId,
         appointment_date: dt.toISOString(),
-        status:           'scheduled',
+        status:           'pending',
         notes:            notes.trim() || null,
         service_id:       selectedService.id,
       });
