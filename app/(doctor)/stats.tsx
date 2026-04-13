@@ -15,6 +15,7 @@ type ApptRow = {
   appointment_date: string;
   status: 'scheduled' | 'completed' | 'cancelled';
   patient_id: string;
+  patient_rating: number | null;
   service: { name: string; emoji: string | null; price_min: number | null } | null;
 };
 
@@ -117,18 +118,24 @@ export default function StatsScreen() {
   const [refreshing,setRefreshing]= useState(false);
 
   const loadData = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    try {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user) { setLoading(false); setRefreshing(false); return; }
 
-    const { data } = await supabase
-      .from('appointments')
-      .select('id, appointment_date, status, patient_id, service:service_id(name, emoji, price_min)')
-      .eq('doctor_id', user.id)
-      .order('appointment_date', { ascending: false });
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, appointment_date, status, patient_id, patient_rating, service:service_id(name, emoji, price_min)')
+        .eq('doctor_id', user.id)
+        .order('appointment_date', { ascending: false });
 
-    setAppts((data ?? []) as ApptRow[]);
-    setLoading(false);
-    setRefreshing(false);
+      if (error) throw error;
+      setAppts((data ?? []) as ApptRow[]);
+    } catch (e) {
+      console.error('[Stats] loadData failed:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
@@ -203,6 +210,12 @@ export default function StatsScreen() {
     const maxDayIdx = dayBuckets.indexOf(Math.max(...dayBuckets));
     const busiestDay = dayBuckets[maxDayIdx] > 0 ? SK_DAYS[maxDayIdx] : null;
 
+    // Priemerné hodnotenie (iba completed s rating)
+    const rated = completed.filter((a) => a.patient_rating != null && a.patient_rating > 0);
+    const avgRating = rated.length > 0
+      ? rated.reduce((sum, a) => sum + (a.patient_rating ?? 0), 0) / rated.length
+      : null;
+
     return {
       todayCount: today.length,
       thisWeekCount: thisWeek.filter((a) => a.status !== 'cancelled').length,
@@ -221,6 +234,8 @@ export default function StatsScreen() {
       weekChartData,
       busiestDay,
       completionRate: appts.length > 0 ? Math.round((completed.length / appts.length) * 100) : 0,
+      avgRating,
+      ratedCount: rated.length,
     };
   }, [appts]);
 
@@ -348,6 +363,37 @@ export default function StatsScreen() {
           </View>
         </View>
 
+        {/* ── Hodnotenia pacientov ── */}
+        {stats.avgRating !== null && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>HODNOTENIA PACIENTOV</Text>
+            <View style={styles.ratingRow}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.starsRow}>
+                  {[1,2,3,4,5].map((star) => (
+                    <Ionicons
+                      key={star}
+                      name={star <= Math.round(stats.avgRating!) ? 'star' : 'star-outline'}
+                      size={22}
+                      color="#F1C40F"
+                    />
+                  ))}
+                </View>
+                <Text style={styles.ratingAvgText}>
+                  {stats.avgRating!.toFixed(1)} / 5
+                </Text>
+                <Text style={styles.ratingCountText}>
+                  Počet hodnotení: {stats.ratedCount}
+                </Text>
+              </View>
+              <View style={styles.ratingCircle}>
+                <Text style={styles.ratingCircleNum}>{stats.avgRating!.toFixed(1)}</Text>
+                <Text style={styles.ratingCircleSub}>/ 5</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* ── Príjem (odhad) ── */}
         <View style={[styles.card, styles.revenueCard]}>
           <Text style={[styles.cardTitle, { color: COLORS.sand }]}>ODHADOVANÝ PRÍJEM</Text>
@@ -390,9 +436,10 @@ export default function StatsScreen() {
             { label: 'Všetky termíny',    value: stats.totalCount,     emoji: '📋' },
             { label: 'Unikátnych pacientov', value: stats.uniquePats,  emoji: '👥' },
             { label: 'Dokončené termíny', value: stats.completedCount,  emoji: '✅' },
-            { label: 'Miera úspešnosti',  value: `${stats.completionRate}%`, emoji: '📊' },
-          ].map((row) => (
-            <View key={row.label} style={styles.summaryRow}>
+            { label: 'Miera úspešnosti',   value: `${stats.completionRate}%`, emoji: '📊' },
+            { label: 'Priem. hodnotenie',   value: stats.avgRating != null ? `${stats.avgRating.toFixed(1)} ⭐` : '—', emoji: '⭐' },
+          ].map((row, idx, arr) => (
+            <View key={row.label} style={[styles.summaryRow, idx === arr.length - 1 && { borderBottomWidth: 0 }]}>
               <Text style={styles.summaryEmoji}>{row.emoji}</Text>
               <Text style={styles.summaryLabel}>{row.label}</Text>
               <Text style={styles.summaryValue}>{row.value}</Text>
@@ -476,6 +523,15 @@ const styles = StyleSheet.create({
   totalRow:    { flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.bg3, marginTop: 2 },
   totalLabel:  { fontSize: 11, fontWeight: '600', color: COLORS.esp },
   totalCount:  { fontSize: 13, fontWeight: '800', color: COLORS.esp },
+
+  // Hodnotenia
+  ratingRow:       { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  starsRow:        { flexDirection: 'row', gap: 3, marginBottom: 6 },
+  ratingAvgText:   { fontSize: 20, fontWeight: '800', color: COLORS.esp, marginBottom: 2 },
+  ratingCountText: { fontSize: 10, color: COLORS.wal, fontWeight: '500' },
+  ratingCircle:    { width: 70, height: 70, borderRadius: 35, backgroundColor: '#FEF9E7', borderWidth: 2, borderColor: '#F1C40F', alignItems: 'center', justifyContent: 'center' },
+  ratingCircleNum: { fontSize: 22, fontWeight: '800', color: COLORS.esp, lineHeight: 26 },
+  ratingCircleSub: { fontSize: 9, color: COLORS.wal, fontWeight: '600' },
 
   // Príjem
   revenueCard:     { backgroundColor: COLORS.esp },
