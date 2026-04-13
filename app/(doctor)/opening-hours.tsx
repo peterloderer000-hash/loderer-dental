@@ -71,60 +71,47 @@ function TimeStepper({ label, value, onChange }: {
   const mins = timeToMinutes(value);
 
   function step(delta: number) {
-    const next = Math.max(0, Math.min(23 * 60 + 59, mins + delta));
+    const next = Math.max(0, Math.min(23 * 60 + 55, mins + delta));
     onChange(minutesToTime(next));
   }
 
   return (
     <View style={ts.wrap}>
       <Text style={ts.label}>{label}</Text>
-      <View style={ts.row}>
-        <TouchableOpacity style={ts.btn} onPress={() => step(-30)} activeOpacity={0.7}>
-          <Ionicons name="remove" size={16} color={COLORS.wal} />
+      <View style={ts.timeDisplay}>
+        <Text style={ts.timeText}>{value}</Text>
+      </View>
+      <View style={ts.btnRow}>
+        <TouchableOpacity style={ts.btn} onPress={() => step(-60)} activeOpacity={0.7}>
+          <Text style={ts.btnText}>−1h</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={ts.btn} onPress={() => step(-15)} activeOpacity={0.7}>
+          <Text style={ts.btnText}>−15</Text>
         </TouchableOpacity>
         <TouchableOpacity style={ts.btn} onPress={() => step(-5)} activeOpacity={0.7}>
-          <Text style={ts.smallStep}>−5</Text>
+          <Text style={ts.btnText}>−5</Text>
         </TouchableOpacity>
-
-        {/* Priame editovanie */}
-        <TextInput
-          style={ts.timeText}
-          value={value}
-          onChangeText={(v) => {
-            // Akceptuj iba platný formát
-            if (/^\d{0,2}:?\d{0,2}$/.test(v)) onChange(v);
-          }}
-          onBlur={() => {
-            // Normalizuj pri opustení poľa
-            const parts = value.split(':');
-            if (parts.length === 2) {
-              const h = Math.min(23, parseInt(parts[0]) || 0);
-              const m = Math.min(59, parseInt(parts[1]) || 0);
-              onChange(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-            }
-          }}
-          keyboardType="numbers-and-punctuation"
-          maxLength={5}
-          selectTextOnFocus
-        />
-
         <TouchableOpacity style={ts.btn} onPress={() => step(5)} activeOpacity={0.7}>
-          <Text style={ts.smallStep}>+5</Text>
+          <Text style={ts.btnText}>+5</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(30)} activeOpacity={0.7}>
-          <Ionicons name="add" size={16} color={COLORS.wal} />
+        <TouchableOpacity style={ts.btn} onPress={() => step(15)} activeOpacity={0.7}>
+          <Text style={ts.btnText}>+15</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={ts.btn} onPress={() => step(60)} activeOpacity={0.7}>
+          <Text style={ts.btnText}>+1h</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 const ts = StyleSheet.create({
-  wrap:      { flex: 1 },
-  label:     { fontSize: 8, letterSpacing: 1, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  btn:       { width: 30, height: 30, borderRadius: 8, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
-  smallStep: { fontSize: 9, fontWeight: '800', color: COLORS.wal },
-  timeText:  { flex: 1, textAlign: 'center', fontSize: 18, fontWeight: '800', color: COLORS.esp, backgroundColor: COLORS.bg2, borderRadius: 10, paddingVertical: 6, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  wrap:        { width: '100%' },
+  label:       { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
+  timeDisplay: { alignItems: 'center', marginBottom: 10 },
+  timeText:    { fontSize: 36, fontWeight: '800', color: COLORS.esp, letterSpacing: 2 },
+  btnRow:      { flexDirection: 'row', gap: 6 },
+  btn:         { flex: 1, height: 44, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
+  btnText:     { fontSize: 13, fontWeight: '800', color: COLORS.wal },
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -348,16 +335,14 @@ export default function OpeningHoursScreen() {
                 </View>
               ) : (
                 <>
-                  {/* Time steppers */}
-                  <View style={styles.steppersRow}>
+                  {/* Time steppers — stacked vertically */}
+                  <View style={styles.steppersCol}>
                     <TimeStepper
                       label="Otvorenie"
                       value={row.open_time}
                       onChange={(v) => update(row.day_of_week, 'open_time', v)}
                     />
-                    <View style={styles.arrowWrap}>
-                      <Ionicons name="arrow-forward" size={18} color={COLORS.bg3} />
-                    </View>
+                    <View style={styles.stepperDivider} />
                     <TimeStepper
                       label="Zatvorenie"
                       value={row.close_time}
@@ -478,8 +463,8 @@ const styles = StyleSheet.create({
 
   // Editor
   editorCard:     { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 14, borderWidth: 1.5, borderColor: COLORS.wal },
-  steppersRow:    { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginBottom: 12 },
-  arrowWrap:      { paddingBottom: 6 },
+  steppersCol:    { flexDirection: 'column', gap: 0, marginBottom: 14 },
+  stepperDivider: { height: 1, backgroundColor: COLORS.bg3, marginVertical: 16 },
   durationBadge:  { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginBottom: 14, alignSelf: 'flex-start' },
   durationBadgeText: { fontSize: 11, color: COLORS.wal, fontWeight: '600' },
 

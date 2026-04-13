@@ -2,8 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 
 export type ToothStatus =
-  | 'healthy' | 'cavity' | 'filled' | 'crown'
-  | 'extracted' | 'missing' | 'root_canal';
+  | 'healthy' | 'cavity' | 'early_cavity' | 'watch'
+  | 'filled' | 'large_filling' | 'replace_filling'
+  | 'crown' | 'bridge' | 'implant' | 'veneer' | 'sealant'
+  | 'root_canal' | 'extracted' | 'missing'
+  | 'fracture' | 'erosion' | 'abrasion'
+  | 'hypoplasia' | 'hypomineralization'
+  | 'periodontal' | 'mobility'
+  | 'improve_hygiene' | 'treatment_needed';
 
 export type ToothRecord = {
   tooth_number: number;
@@ -61,7 +67,6 @@ export function useDentalChart(patientId: string) {
     return error;
   }
 
-  // Štatistiky pre summary bar
   const stats = Object.values(chart).reduce(
     (acc, t) => { acc[t.status] = (acc[t.status] ?? 0) + 1; return acc; },
     {} as Partial<Record<ToothStatus, number>>,
