@@ -96,9 +96,11 @@ export default function BookAppointmentScreen() {
 
   // Načítaj doktora + jeho ordinačné hodiny
   useEffect(() => {
+    let cancelled = false;
     async function load() {
       const { data: doctors } = await supabase
         .from('profiles').select('id, full_name').eq('role', 'doctor');
+      if (cancelled) return;
       if (!doctors || doctors.length === 0) { setLoadingHours(false); return; }
 
       const doc = doctors[0];
@@ -126,9 +128,10 @@ export default function BookAppointmentScreen() {
         }
         setOpeningHoursMap(map);
       }
-      setLoadingHours(false);
+      if (!cancelled) setLoadingHours(false);
     }
     load();
+    return () => { cancelled = true; };
   }, []);
 
   // Načítaj obsadené sloty pre vybraný deň
@@ -188,14 +191,26 @@ export default function BookAppointmentScreen() {
       const dt = new Date(selectedDate);
       dt.setHours(h, m, 0, 0);
 
-      // Kontrola obsadenosti
+      // Kontrola obsadenosti — duration-based overlap (nie len presná zhoda timestamps)
+      const dayStart = new Date(selectedDate); dayStart.setHours(0, 0, 0, 0);
+      const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
       const { data: existing } = await supabase
         .from('appointments')
-        .select('id')
+        .select('appointment_date, service:services(duration_minutes)')
         .eq('doctor_id', doctorId)
-        .eq('appointment_date', dt.toISOString())
-        .eq('status', 'scheduled');
-      if (existing && existing.length > 0)
+        .eq('status', 'scheduled')
+        .gte('appointment_date', dayStart.toISOString())
+        .lte('appointment_date', dayEnd.toISOString());
+
+      const newStart = h * 60 + m;
+      const newEnd   = newStart + selectedService.duration_minutes;
+      const conflict = (existing ?? []).some(e => {
+        const ed = new Date(e.appointment_date);
+        const es = ed.getHours() * 60 + ed.getMinutes();
+        const ee = es + ((e.service as any)?.duration_minutes ?? 30);
+        return newStart < ee && newEnd > es;
+      });
+      if (conflict)
         throw new Error('Tento čas je už obsadený. Vyberte iný termín.');
 
       const { error } = await supabase.from('appointments').insert({

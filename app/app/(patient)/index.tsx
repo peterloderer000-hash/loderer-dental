@@ -21,10 +21,12 @@ function OpeningHoursWidget() {
   const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay(); // 1=Pon..7=Ned
 
   React.useEffect(() => {
+    let cancelled = false;
     supabase.from('opening_hours')
       .select('day_of_week,open_time,close_time,is_closed,note')
       .order('day_of_week')
-      .then(({ data }) => { if (data) setHours(data as OHRow[]); });
+      .then(({ data }) => { if (!cancelled && data) setHours(data as OHRow[]); });
+    return () => { cancelled = true; };
   }, []);
 
   if (hours.length === 0) return null;
