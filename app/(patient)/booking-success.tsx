@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -51,67 +51,72 @@ export default function BookingSuccessScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
-      <Animated.View style={[styles.container, { opacity }]}>
-
-        {/* Success ikona */}
-        <Animated.View style={[styles.iconWrap, { transform: [{ scale }] }]}>
-          <View style={styles.iconCircle}>
-            <Ionicons name="hourglass-outline" size={48} color="#fff" />
-          </View>
-          <Text style={styles.confetti}>📋</Text>
-        </Animated.View>
-
-        {/* Titulok */}
-        <Text style={styles.title}>Žiadosť odoslaná!</Text>
-        <View style={styles.serviceRow}>
-          <Text style={styles.serviceEmoji}>{serviceEmoji ?? '🦷'}</Text>
-          <Text style={styles.serviceName}>{serviceName}</Text>
-        </View>
-
-        {/* Detail karta */}
-        <View style={styles.card}>
-          {rows.map((r, idx) => (
-            <View key={r.label} style={[styles.row, idx === rows.length - 1 && { borderBottomWidth: 0 }]}>
-              <View style={styles.rowIcon}>
-                <Ionicons name={r.icon} size={16} color={COLORS.wal} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowLabel}>{r.label}</Text>
-                <Text style={styles.rowValue} numberOfLines={2}>{r.value}</Text>
-              </View>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <Animated.View style={{ flex: 1, opacity }}>
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Success ikona */}
+          <Animated.View style={[styles.iconWrap, { transform: [{ scale }] }]}>
+            <View style={styles.iconCircle}>
+              <Ionicons name="hourglass-outline" size={48} color="#fff" />
             </View>
-          ))}
-        </View>
+            <Text style={styles.confetti}>📋</Text>
+          </Animated.View>
 
-        {/* Info */}
-        <View style={styles.infoBox}>
-          <Ionicons name="time-outline" size={15} color="#7D6608" />
-          <Text style={[styles.infoText, { color: '#7D6608' }]}>
-            Tvoja žiadosť čaká na schválenie doktorom. Po schválení dostaneš notifikáciu.
-          </Text>
-        </View>
+          {/* Titulok */}
+          <Text style={styles.title}>Žiadosť odoslaná!</Text>
+          <View style={styles.serviceRow}>
+            <Text style={styles.serviceEmoji}>{serviceEmoji ?? '🦷'}</Text>
+            <Text style={styles.serviceName}>{serviceName}</Text>
+          </View>
 
-        {/* Zdieľať */}
-        <TouchableOpacity style={styles.btnShare} onPress={handleShare} activeOpacity={0.85}>
-          <Ionicons name="share-social-outline" size={16} color={COLORS.wal} />
-          <Text style={styles.btnShareText}>Zdieľať termín</Text>
-        </TouchableOpacity>
+          {/* Detail karta */}
+          <View style={styles.card}>
+            {rows.map((r, idx) => (
+              <View key={r.label} style={[styles.row, idx === rows.length - 1 && { borderBottomWidth: 0 }]}>
+                <View style={styles.rowIcon}>
+                  <Ionicons name={r.icon} size={16} color={COLORS.wal} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rowLabel}>{r.label}</Text>
+                  <Text style={styles.rowValue} numberOfLines={2}>{r.value}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
 
-        {/* Akcie */}
-        <View style={styles.actions}>
-          <TouchableOpacity style={styles.btnSecondary}
-            onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85}>
-            <Ionicons name="list-outline" size={16} color={COLORS.wal} />
-            <Text style={styles.btnSecondaryText}>Moje termíny</Text>
+          {/* Info */}
+          <View style={styles.infoBox}>
+            <Ionicons name="time-outline" size={15} color="#7D6608" />
+            <Text style={styles.infoText}>
+              Tvoja žiadosť čaká na schválenie doktorom. Po schválení dostaneš notifikáciu.
+            </Text>
+          </View>
+
+          {/* Zdieľať */}
+          <TouchableOpacity style={styles.btnShare} onPress={handleShare} activeOpacity={0.85}>
+            <Ionicons name="share-social-outline" size={16} color={COLORS.wal} />
+            <Text style={styles.btnShareText}>Zdieľať termín</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnPrimary}
-            onPress={() => router.push('/')} activeOpacity={0.85}>
-            <Ionicons name="home-outline" size={16} color="#fff" />
-            <Text style={styles.btnPrimaryText}>Domov</Text>
-          </TouchableOpacity>
-        </View>
 
+          {/* Akcie */}
+          <View style={styles.actions}>
+            <TouchableOpacity style={styles.btnSecondary}
+              onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85}>
+              <Ionicons name="list-outline" size={16} color={COLORS.wal} />
+              <Text style={styles.btnSecondaryText}>Moje termíny</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btnPrimary}
+              onPress={() => router.push('/')} activeOpacity={0.85}>
+              <Ionicons name="home-outline" size={16} color="#fff" />
+              <Text style={styles.btnPrimaryText}>Domov</Text>
+            </TouchableOpacity>
+          </View>
+
+        </ScrollView>
       </Animated.View>
     </SafeAreaView>
   );
@@ -119,7 +124,7 @@ export default function BookingSuccessScreen() {
 
 const styles = StyleSheet.create({
   safe:      { flex: 1, backgroundColor: COLORS.bg2 },
-  container: { flex: 1, padding: SIZES.padding, alignItems: 'center', justifyContent: 'center' },
+  container: { flexGrow: 1, padding: SIZES.padding, paddingTop: 24, paddingBottom: 100, alignItems: 'center', justifyContent: 'center' },
 
   // Icon
   iconWrap:   { alignItems: 'center', marginBottom: 20 },
