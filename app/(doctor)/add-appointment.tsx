@@ -33,6 +33,8 @@ export default function DoctorAddAppointment() {
   const [selectedDate, setDate]       = useState<Date | null>(null);
   const [selectedTime, setTime]       = useState('');
   const [notes, setNotes]             = useState('');
+  const [customDuration, setCustomDuration] = useState<number | null>(null);
+  const [customDurationText, setCustomDurationText] = useState('');
   const [loading, setLoading]         = useState(false);
   const [loadingPatients, setLoadingP] = useState(true);
   const [showServices, setShowServices] = useState(false);
@@ -40,6 +42,9 @@ export default function DoctorAddAppointment() {
   const [doctorUserId,    setDoctorUserId]    = useState('');
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Efektívna dĺžka = vlastná ak nastavená, inak z vybranej služby
+  const effectiveDuration = customDuration ?? selectedService?.duration_minutes ?? 30;
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
 
@@ -55,14 +60,15 @@ export default function DoctorAddAppointment() {
 
   const slots = useMemo(
     () => generateTimeSlotsForDay(
-      selectedService?.duration_minutes ?? 30,
+      effectiveDuration,
       selectedDayHours?.open_time  ?? '08:00',
       selectedDayHours?.close_time ?? '17:00',
     ),
-    [selectedService, selectedDayHours],
+    [effectiveDuration, selectedDayHours],
   );
 
-  function isSlotTaken(slotStart: string, durationMin: number): boolean {
+  function isSlotTaken(slotStart: string): boolean {
+    const durationMin = effectiveDuration;
     const s = timeToMinutes(slotStart);
     const e = s + durationMin;
     return bookedSlots.some(b => s < b.end && e > b.start);
@@ -162,7 +168,7 @@ export default function DoctorAddAppointment() {
 
       // Kontrola kolízie (duration-based overlap) — nie len exact match
       const newStart = h * 60 + m;
-      const newEnd   = newStart + (selectedService?.duration_minutes ?? 30);
+      const newEnd   = newStart + effectiveDuration;
       const dayStart2 = new Date(dt); dayStart2.setHours(0, 0, 0, 0);
       const dayEnd2   = new Date(dt); dayEnd2.setHours(23, 59, 59, 999);
       const { data: existing } = await supabase.from('appointments')
@@ -317,7 +323,7 @@ export default function DoctorAddAppointment() {
                     <Text style={styles.serviceDropdownCat}>{cat}</Text>
                     {items.map((svc) => (
                       <TouchableOpacity key={svc.id} style={styles.serviceDropdownItem}
-                        onPress={() => { setService(svc); setTime(''); setShowServices(false); }}
+                        onPress={() => { setService(svc); setTime(''); setShowServices(false); setCustomDuration(null); setCustomDurationText(''); }}
                         activeOpacity={0.8}>
                         <Text style={{ fontSize: 16 }}>{svc.emoji ?? '🦷'}</Text>
                         <View style={{ flex: 1 }}>
@@ -335,6 +341,46 @@ export default function DoctorAddAppointment() {
                 ))
               }
             </View>
+          )}
+
+          {/* ── Dĺžka ošetrenia ── */}
+          {selectedService && (
+            <>
+              <Text style={[styles.sectionLabel, { marginTop: 20 }]}>DĹŽKA OŠETRENIA</Text>
+              <View style={styles.durationRow}>
+                {[15, 30, 45, 60, 90, 120].map((min) => {
+                  const isActive = effectiveDuration === min;
+                  return (
+                    <TouchableOpacity
+                      key={min}
+                      style={[styles.durationChip, isActive && styles.durationChipActive]}
+                      onPress={() => { setCustomDuration(min); setCustomDurationText(String(min)); setTime(''); }}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[styles.durationChipText, isActive && styles.durationChipTextActive]}>
+                        {min < 60 ? `${min} min` : `${min / 60} hod`}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              <View style={styles.durationCustomRow}>
+                <Ionicons name="time-outline" size={16} color={COLORS.wal} />
+                <TextInput
+                  style={styles.durationInput}
+                  placeholder={`Vlastná (min) · teraz: ${effectiveDuration} min`}
+                  placeholderTextColor="#bbb"
+                  keyboardType="numeric"
+                  value={customDurationText}
+                  onChangeText={(t) => {
+                    setCustomDurationText(t);
+                    const n = parseInt(t, 10);
+                    if (!isNaN(n) && n > 0 && n <= 480) { setCustomDuration(n); setTime(''); }
+                  }}
+                  maxLength={3}
+                />
+              </View>
+            </>
           )}
 
           {/* ── Výber dátumu ── */}
@@ -372,8 +418,8 @@ export default function DoctorAddAppointment() {
           {selectedService && (
             <Text style={styles.slotSubLabel}>
               {selectedDayHours
-                ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(selectedService.duration_minutes)}`
-                : `Trvanie: ${formatDuration(selectedService.duration_minutes)}`}
+                ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(effectiveDuration)}`
+                : `Trvanie: ${formatDuration(effectiveDuration)}`}
             </Text>
           )}
           {loadingSlots ? (
@@ -382,7 +428,7 @@ export default function DoctorAddAppointment() {
             <View style={styles.timesGrid}>
               {slots.map((slot) => {
                 const isSel  = selectedTime === slot.start;
-                const taken  = isSlotTaken(slot.start, selectedService?.duration_minutes ?? 30);
+                const taken  = isSlotTaken(slot.start);
                 return (
                   <TouchableOpacity key={slot.start}
                     style={[styles.timeCell, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
@@ -428,6 +474,9 @@ export default function DoctorAddAppointment() {
                 </Text>
                 <Text style={styles.summaryLine}>
                   📅 {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })} o {selectedTime}
+                </Text>
+                <Text style={styles.summaryLine}>
+                  ⏱ {formatDuration(effectiveDuration)}
                 </Text>
                 {notes.trim() ? <Text style={styles.summaryLine}>📝 {notes.trim()}</Text> : null}
               </View>
@@ -519,6 +568,15 @@ const styles = StyleSheet.create({
   serviceDropdownItem:      { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },
   serviceDropdownName:      { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   serviceDropdownMeta:      { fontSize: 10, color: COLORS.wal, marginTop: 1 },
+
+  // Duration picker
+  durationRow:            { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  durationChip:           { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  durationChipActive:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
+  durationChipText:       { fontSize: 12, fontWeight: '600', color: COLORS.wal },
+  durationChipTextActive: { color: COLORS.cream },
+  durationCustomRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
+  durationInput:          { flex: 1, paddingVertical: 11, fontSize: 13, color: COLORS.esp },
 
   // Notes
   notesCard:  { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 16 },
