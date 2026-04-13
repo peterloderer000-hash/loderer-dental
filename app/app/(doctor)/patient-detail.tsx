@@ -112,23 +112,28 @@ export default function PatientDetailScreen() {
     let cancelled = false;
 
     async function load() {
-      const [teethRes, apptRes, ppRes, profileRes] = await Promise.all([
-        supabase.from('dental_charts').select('tooth_number,status,notes').eq('patient_id', patientId),
-        supabase.from('appointments')
-          .select('id,appointment_date,status,doctor_notes,service:services(name,emoji)')
-          .eq('patient_id', patientId)
-          .order('appointment_date', { ascending: false })
-          .limit(10),
-        supabase.from('health_passports').select('patient_id').eq('patient_id', patientId).maybeSingle(),
-        supabase.from('profiles').select('phone_number').eq('id', patientId).maybeSingle(),
-      ]);
+      try {
+        const [teethRes, apptRes, ppRes, profileRes] = await Promise.all([
+          supabase.from('dental_charts').select('tooth_number,status,notes').eq('patient_id', patientId),
+          supabase.from('appointments')
+            .select('id,appointment_date,status,doctor_notes,service:services(name,emoji)')
+            .eq('patient_id', patientId)
+            .order('appointment_date', { ascending: false })
+            .limit(10),
+          supabase.from('health_passports').select('patient_id').eq('patient_id', patientId).maybeSingle(),
+          supabase.from('profiles').select('phone_number').eq('id', patientId).maybeSingle(),
+        ]);
 
-      if (!cancelled) {
-        setTeeth((teethRes.data ?? []) as ToothRecord[]);
-        setAppointments((apptRes.data ?? []) as ApptRow[]);
-        setHasPassport(!!ppRes.data);
-        setPhone(profileRes.data?.phone_number ?? null);
-        setLoading(false);
+        if (!cancelled) {
+          setTeeth((teethRes.data ?? []) as ToothRecord[]);
+          setAppointments((apptRes.data ?? []) as ApptRow[]);
+          setHasPassport(!!ppRes.data);
+          setPhone(profileRes.data?.phone_number ?? null);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('[PatientDetail] Failed to load patient data:', e);
+        if (!cancelled) setLoading(false);
       }
     }
     load();
@@ -272,7 +277,7 @@ export default function PatientDetailScreen() {
                 );
               })}
             </View>
-            {(stats.cavity||0)>0||(stats.root_canal||0)>0 && (
+            {((stats.cavity||0)>0 || (stats.root_canal||0)>0) && (
               <View style={styles.warningBox}>
                 <Ionicons name="warning-outline" size={14} color="#922B21"/>
                 <Text style={styles.warningText}>
