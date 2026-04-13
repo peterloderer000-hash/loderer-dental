@@ -55,14 +55,14 @@ export default function BookingSuccessScreen() {
 
         {/* Detail karta */}
         <View style={styles.card}>
-          {rows.map((r) => (
-            <View key={r.label} style={styles.row}>
+          {rows.map((r, idx) => (
+            <View key={r.label} style={[styles.row, idx === rows.length - 1 && { borderBottomWidth: 0 }]}>
               <View style={styles.rowIcon}>
                 <Ionicons name={r.icon} size={16} color={COLORS.wal} />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.rowLabel}>{r.label}</Text>
-                <Text style={styles.rowValue}>{r.value}</Text>
+                <Text style={styles.rowValue} numberOfLines={2}>{r.value}</Text>
               </View>
             </View>
           ))}

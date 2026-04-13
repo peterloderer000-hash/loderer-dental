@@ -117,18 +117,24 @@ export default function StatsScreen() {
   const [refreshing,setRefreshing]= useState(false);
 
   const loadData = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    try {
+      const { data: { user }, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !user) { setLoading(false); setRefreshing(false); return; }
 
-    const { data } = await supabase
-      .from('appointments')
-      .select('id, appointment_date, status, patient_id, service:service_id(name, emoji, price_min)')
-      .eq('doctor_id', user.id)
-      .order('appointment_date', { ascending: false });
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, appointment_date, status, patient_id, service:service_id(name, emoji, price_min)')
+        .eq('doctor_id', user.id)
+        .order('appointment_date', { ascending: false });
 
-    setAppts((data ?? []) as ApptRow[]);
-    setLoading(false);
-    setRefreshing(false);
+      if (error) throw error;
+      setAppts((data ?? []) as ApptRow[]);
+    } catch (e) {
+      console.error('[Stats] loadData failed:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
