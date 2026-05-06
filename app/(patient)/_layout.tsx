@@ -1,20 +1,23 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useAppTheme } from '../../context/ThemeContext';
+import { COLORS } from '../../styles/theme';
 
 export default function PatientLayout() {
   const { t } = useTranslation();
+  const { dark, colors } = useAppTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#C9A84C',
-        tabBarInactiveTintColor: '#C4A882',
+        tabBarActiveTintColor: COLORS.gold,
+        tabBarInactiveTintColor: dark ? COLORS.sand : '#B8A090',
         tabBarStyle: {
-          backgroundColor: '#FAF6F0',
+          backgroundColor: dark ? colors.cardBg : '#FAF6F0',
           borderTopWidth: 0.5,
-          borderTopColor: 'rgba(201,168,76,0.25)',
+          borderTopColor: dark ? colors.bg3 : 'rgba(201,168,76,0.25)',
           height: 64,
           paddingBottom: 8,
           paddingTop: 6,
@@ -26,7 +29,7 @@ export default function PatientLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '500',
+          fontWeight: '600',
           marginTop: 2,
         },
       }}
@@ -37,10 +40,10 @@ export default function PatientLayout() {
           <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
         ),
       }} />
-      <Tabs.Screen name="profile" options={{
-        title: t('tab.profile'),
+      <Tabs.Screen name="appointments" options={{
+        title: 'Termíny',
         tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
+          <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={22} color={color} />
         ),
       }} />
       <Tabs.Screen name="score" options={{
@@ -55,16 +58,16 @@ export default function PatientLayout() {
           <Ionicons name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} size={22} color={color} />
         ),
       }} />
-      <Tabs.Screen name="shop" options={{
-        title: t('tab.shop'),
+      <Tabs.Screen name="profile" options={{
+        title: t('tab.profile'),
         tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'bag' : 'bag-outline'} size={22} color={color} />
+          <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
         ),
       }} />
+
       {/* Skryté obrazovky */}
       <Tabs.Screen name="health-passport"  options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="book-appointment" options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="appointments"     options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="calculator"       options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="notifications"    options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="booking-success"  options={{ href: null, headerShown: false }} />
@@ -75,6 +78,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="treatment-plan"   options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="prescriptions"    options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="moj-zubar"        options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="shop"             options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
       <Tabs.Screen name="components/QuickActionsGrid"        options={{ href: null }} />
     </Tabs>
