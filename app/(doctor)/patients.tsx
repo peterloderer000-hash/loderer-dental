@@ -13,6 +13,7 @@ import { usePatients, Patient } from '../../hooks/usePatients';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { ScreenWrapper } from '../../components/ScreenWrapper';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type WaitingEntry = {
   id: string;
@@ -68,13 +69,14 @@ function PatientCard({ patient, onDetail, onChart, onPassport, onBook }: {
   onPassport: () => void;
   onBook:    () => void;
 }) {
+  const { colors } = useAppTheme();
   return (
-    <TouchableOpacity style={styles.card} onPress={onDetail} activeOpacity={0.88}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={onDetail} activeOpacity={0.88}>
       <View style={styles.cardTop}>
         <Avatar name={patient.full_name} avatarUrl={patient.avatar_url} />
 
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={styles.patientName} numberOfLines={1}>
+          <Text style={[styles.patientName, { color: colors.textPrimary }]} numberOfLines={1}>
             {patient.full_name ?? 'Neznámy pacient'}
           </Text>
           {patient.phone_number ? (
@@ -144,6 +146,7 @@ const SORT_LABELS: Record<PatientSort, string> = {
 
 export default function PatientsScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
   const { patients, loading, refetch } = usePatients();
   const [query, setQuery]             = useState('');
   const [activeFilter, setActiveFilter] = useState<PatientFilter>('all');
@@ -262,12 +265,12 @@ export default function PatientsScreen() {
       </View>
 
       {/* ── Vyhľadávací bar ── */}
-      <View style={styles.searchWrap}>
+      <View style={[styles.searchWrap, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
         <Ionicons name="search-outline" size={18} color={COLORS.wal} style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: colors.textPrimary }]}
           placeholder="Hľadaj podľa mena alebo telefónu..."
-          placeholderTextColor="#999"
+          placeholderTextColor={dark ? '#666' : '#999'}
           value={query}
           onChangeText={setQuery}
           autoCapitalize="none"
@@ -290,16 +293,16 @@ export default function PatientsScreen() {
 
       {/* ── Sort picker ── */}
       {showSort && (
-        <View style={styles.sortPanel}>
+        <View style={[styles.sortPanel, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           {(Object.entries(SORT_LABELS) as [PatientSort, string][]).map(([key, label]) => (
             <TouchableOpacity
               key={key}
-              style={[styles.sortOption, sortBy === key && styles.sortOptionActive]}
+              style={[styles.sortOption, { borderBottomColor: colors.bg3 }, sortBy === key && styles.sortOptionActive]}
               onPress={() => { setSortBy(key); setShowSort(false); }}
               activeOpacity={0.8}
             >
               {sortBy === key && <Ionicons name="checkmark" size={14} color={COLORS.wal} />}
-              <Text style={[styles.sortOptionText, sortBy === key && styles.sortOptionTextActive]}>
+              <Text style={[styles.sortOptionText, { color: colors.textPrimary }, sortBy === key && styles.sortOptionTextActive]}>
                 {label}
               </Text>
             </TouchableOpacity>
@@ -383,7 +386,7 @@ export default function PatientsScreen() {
           } : undefined}
         />
       ) : (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
         >
           {/* ── Čakacia listina ── */}
