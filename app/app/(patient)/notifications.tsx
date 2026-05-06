@@ -1,170 +1,251 @@
-import React, { useCallback, useMemo } from 'react';
+﻿import React, { useCallback, useMemo, useState } from 'react';
 import {
-  ActivityIndicator, ScrollView, StyleSheet,
+  RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
+import { SkeletonList } from '../../components/Skeleton';
+import { EmptyNotifications } from '../../components/EmptyState';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { useNotifications, AppNotification } from '../../hooks/useNotifications';
+import { useAppTheme } from '../../context/ThemeContext';
 
-// ─── Konfigurácia typov ────────────────────────────────────────────────────────
+// ─── Config ───────────────────────────────────────────────────────────────────
 const TYPE_CONFIG = {
-  info:    { icon: 'information-circle' as const, color: '#1A5276', bg: '#EBF5FB', border: '#AED6F1' },
-  success: { icon: 'checkmark-circle'   as const, color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF' },
-  warning: { icon: 'warning'            as const, color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F' },
-  error:   { icon: 'close-circle'       as const, color: '#922B21', bg: '#FDEDEC', border: '#F1948A' },
+  info:    { icon: 'information-circle' as const, color: COLORS.info,    bg: COLORS.infoBg,    border: '#AED6F1' },
+  success: { icon: 'checkmark-circle'   as const, color: COLORS.success, bg: COLORS.successBg, border: '#A9DFBF' },
+  warning: { icon: 'warning'            as const, color: COLORS.warning,  bg: COLORS.warningBg, border: '#F0C78A' },
+  error:   { icon: 'close-circle'       as const, color: COLORS.error,   bg: COLORS.errorBg,   border: '#F1948A' },
 };
+
+type FilterType = 'all' | 'unread' | 'info' | 'warning';
+
+const FILTERS: { key: FilterType; label: string }[] = [
+  { key: 'all',     label: 'Všetky'        },
+  { key: 'unread',  label: 'Nové'          },
+  { key: 'info',    label: 'Informácie'    },
+  { key: 'warning', label: 'Upozornenia'   },
+];
 
 function timeAgo(dateStr: string): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (diff < 60)   return 'práve teraz';
-  if (diff < 3600) return `pred ${Math.floor(diff / 60)} min`;
-  if (diff < 86400)return `pred ${Math.floor(diff / 3600)} hod`;
+  if (diff < 60)    return 'práve teraz';
+  if (diff < 3600)  return `pred ${Math.floor(diff / 60)} min`;
+  if (diff < 86400) return `pred ${Math.floor(diff / 3600)} hod`;
   const days = Math.floor(diff / 86400);
-  if (days === 1)  return 'včera';
-  if (days < 7)    return `pred ${days} dňami`;
+  if (days === 1)   return 'včera';
+  if (days < 7)     return `pred ${days} dňami`;
   return new Date(dateStr).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long' });
 }
 
-// ─── Karta notifikácie ────────────────────────────────────────────────────────
-function NotifCard({ item, onPress }: { item: AppNotification; onPress: () => void }) {
-  const cfg = TYPE_CONFIG[item.type] ?? TYPE_CONFIG.info;
+// ─── Notification card ────────────────────────────────────────────────────────
+function NotifCard({ item, onPress, colors }: { item: AppNotification; onPress: () => void; colors: any }) {
+  const cfg    = TYPE_CONFIG[item.type] ?? TYPE_CONFIG.info;
+  const hasLink = !!item.appointment_id;
+
   return (
     <TouchableOpacity
-      style={[styles.card, { borderLeftColor: cfg.color }, !item.read && styles.cardUnread]}
+      style={[
+        nc.card,
+        { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
+        !item.read && { backgroundColor: '#FDFAF6', borderColor: COLORS.goldLight },
+        SHADOWS.sm,
+      ]}
       onPress={onPress}
-      activeOpacity={0.8}
+      activeOpacity={0.82}
     >
-      <View style={[styles.iconWrap, { backgroundColor: cfg.bg }]}>
-        <Ionicons name={cfg.icon} size={22} color={cfg.color} />
+      {/* Left accent bar */}
+      <View style={[nc.accent, { backgroundColor: cfg.color }]} />
+
+      {/* Icon */}
+      <View style={[nc.iconWrap, { backgroundColor: cfg.bg }]}>
+        <Ionicons name={cfg.icon} size={20} color={cfg.color} />
       </View>
+
+      {/* Content */}
       <View style={{ flex: 1 }}>
-        <View style={styles.cardTop}>
-          <Text style={[styles.title, !item.read && styles.titleUnread]} numberOfLines={1}>
+        <View style={nc.top}>
+          <Text style={[nc.title, { color: colors.textPrimary }, !item.read && { fontFamily: 'DMSans_500Medium' }]} numberOfLines={1}>
             {item.title}
           </Text>
-          {!item.read && <View style={styles.unreadDot} />}
+          {!item.read && <View style={nc.unreadDot} />}
         </View>
         {item.body ? (
-          <Text style={styles.body} numberOfLines={2}>{item.body}</Text>
+          <Text style={[nc.body, { color: colors.textSecondary }]} numberOfLines={2}>{item.body}</Text>
         ) : null}
-        <Text style={styles.time}>{timeAgo(item.created_at)}</Text>
+        <View style={nc.bottom}>
+          <Text style={[nc.time, { color: colors.textSecondary }]}>{timeAgo(item.created_at)}</Text>
+          {hasLink && (
+            <View style={[nc.linkChip, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+              <Text style={[nc.linkText, { color: cfg.color }]}>Zobraziť</Text>
+              <Ionicons name="chevron-forward" size={10} color={cfg.color} />
+            </View>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
 }
 
-// ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
+// ─── Main ─────────────────────────────────────────────────────────────────────
 export default function NotificationsScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const { notifications, loading, unreadCount, refetch, markRead, markAllRead } = useNotifications();
+  const [refreshing, setRefreshing] = useState(false);
+  const [filter, setFilter] = useState<FilterType>('all');
 
   useFocusEffect(useCallback(() => { refetch(); }, [refetch]));
 
-  const unreadNotifs = useMemo(() => notifications.filter((n) => !n.read), [notifications]);
-  const readNotifs   = useMemo(() => notifications.filter((n) =>  n.read), [notifications]);
+  async function handleRefresh() {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }
+
+  const filtered = useMemo(() => {
+    switch (filter) {
+      case 'unread':  return notifications.filter(n => !n.read);
+      case 'info':    return notifications.filter(n => n.type === 'info' || n.type === 'success');
+      case 'warning': return notifications.filter(n => n.type === 'warning' || n.type === 'error');
+      default:        return notifications;
+    }
+  }, [notifications, filter]);
+
+  const unread = filtered.filter(n => !n.read);
+  const read   = filtered.filter(n =>  n.read);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>CENTRUM</Text>
-          <Text style={styles.headerTitle}>Notifikácie</Text>
-        </View>
-        {unreadCount > 0 && (
-          <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead} activeOpacity={0.8}>
-            <Text style={styles.markAllText}>Označiť všetky</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      {/* Hero */}
+      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
+        <View style={s.heroRow}>
+          <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
+            <Ionicons name="arrow-back" size={20} color={COLORS.sand} />
           </TouchableOpacity>
-        )}
-      </View>
-
-      {/* ── Obsah ── */}
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={COLORS.wal} size="large" />
-        </View>
-      ) : notifications.length === 0 ? (
-        <View style={styles.center}>
-          <Ionicons name="notifications-off-outline" size={52} color={COLORS.bg3} />
-          <Text style={styles.emptyTitle}>Žiadne notifikácie</Text>
-          <Text style={styles.emptySub}>Tu sa zobrazia správy o tvojich termínoch.</Text>
-        </View>
-      ) : (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.content}>
-
+          <View style={{ flex: 1 }}>
+            <Text style={s.heroLabel}>CENTRUM</Text>
+            <Text style={s.heroTitle}>Notifikácie</Text>
+          </View>
           {unreadCount > 0 && (
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionDot} />
-              <Text style={styles.sectionLabel}>NOVÉ ({unreadCount})</Text>
-            </View>
+            <TouchableOpacity style={s.markAllBtn} onPress={() => { markAllRead(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }} activeOpacity={0.8}>
+              <Text style={s.markAllText}>Označiť všetky</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Filter tabs */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filtersRow}>
+          {FILTERS.map(tab => (
+            <TouchableOpacity
+              key={tab.key}
+              style={[s.filterTab, filter === tab.key && s.filterTabActive]}
+              onPress={() => { setFilter(tab.key); Haptics.selectionAsync(); }}
+              activeOpacity={0.8}
+            >
+              <Text style={[s.filterLabel, filter === tab.key ? { color: '#fff' } : { color: 'rgba(196,168,130,0.65)' }]}>
+                {tab.label}
+                {tab.key === 'unread' && unreadCount > 0 ? ` (${unreadCount})` : ''}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </LinearGradient>
+
+      {loading ? (
+        <SkeletonList count={5} />
+      ) : filtered.length === 0 ? (
+        <EmptyNotifications />
+      ) : (
+        <ScrollView
+          style={{ flex: 1, backgroundColor: colors.bg2 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 12, paddingBottom: 120 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.gold} />}
+        >
+          {unread.length > 0 && (
+            <>
+              <SectionLabel label={`NOVÉ (${unread.length})`} color={COLORS.gold} />
+              {unread.map(n => (
+                <NotifCard key={n.id} item={n} colors={colors} onPress={async () => {
+                  await markRead(n.id);
+                  if (n.appointment_id) router.push('/(patient)/appointments');
+                }} />
+              ))}
+            </>
           )}
 
-          {unreadNotifs.map((n) => (
-            <NotifCard key={n.id} item={n} onPress={() => markRead(n.id)} />
-          ))}
-
-          {readNotifs.length > 0 && (
-            <View style={[styles.sectionHeader, { marginTop: 18 }]}>
-              <View style={[styles.sectionDot, { backgroundColor: '#ccc' }]} />
-              <Text style={[styles.sectionLabel, { color: '#bbb' }]}>PREČÍTANÉ</Text>
-            </View>
+          {read.length > 0 && (
+            <>
+              <SectionLabel label="PREČÍTANÉ" color={COLORS.sand} />
+              {read.map(n => (
+                <NotifCard key={n.id} item={n} colors={colors} onPress={() => {
+                  if (n.appointment_id) router.push('/(patient)/appointments');
+                }} />
+              ))}
+            </>
           )}
-
-          {readNotifs.map((n) => (
-            <NotifCard key={n.id} item={n} onPress={() => {}} />
-          ))}
-
-          <View style={{ height: 40 }} />
         </ScrollView>
       )}
     </SafeAreaView>
   );
 }
 
+function SectionLabel({ label, color }: { label: string; color: string }) {
+  return (
+    <View style={sl.row}>
+      <View style={[sl.dot, { backgroundColor: color }]} />
+      <Text style={[sl.text, { color }]}>{label}</Text>
+    </View>
+  );
+}
+
 // ─── Styles ───────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: COLORS.esp },
-  scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ paddingTop: 10, paddingBottom: 20 },
-  center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
+const s = StyleSheet.create({
+  hero:        { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, gap: 4 },
+  heroRow:     { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
+  heroLabel:   { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
+  heroTitle:   { ...TYPO.h1, color: '#FAF6F0' },
+  backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
+  markAllBtn:  { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: RADII.sm, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
+  markAllText: { fontFamily: 'DMSans_500Medium', fontSize: 11, color: COLORS.sand },
 
-  header:     { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
-  markAllBtn: { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 7 },
-  markAllText:{ fontSize: 11, fontWeight: '600', color: COLORS.cream },
+  filtersRow:  { flexDirection: 'row', gap: 8, paddingHorizontal: 0, paddingBottom: 14 },
+  filterTab:   { borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 7, backgroundColor: 'rgba(255,255,255,0.08)' },
+  filterTabActive: { backgroundColor: COLORS.gold },
+  filterLabel: { fontFamily: 'DMSans_500Medium', fontSize: 12, letterSpacing: 0.3 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SIZES.padding, paddingVertical: 10 },
-  sectionDot:    { width: 7, height: 7, borderRadius: 3.5, backgroundColor: COLORS.wal },
-  sectionLabel:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, textTransform: 'uppercase' },
+  center:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
+  emptyTitle: { ...TYPO.h2, textAlign: 'center' },
+  emptySub:   { ...TYPO.body, textAlign: 'center' },
+});
 
+const sl = StyleSheet.create({
+  row:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10, marginTop: 4 },
+  dot:  { width: 6, height: 6, borderRadius: 3 },
+  text: { ...TYPO.label },
+});
+
+const nc = StyleSheet.create({
   card: {
     flexDirection: 'row', alignItems: 'flex-start', gap: 12,
-    backgroundColor: '#fff', marginHorizontal: SIZES.padding, marginBottom: 8,
-    borderRadius: 14, padding: 14, borderLeftWidth: 4,
-    borderWidth: 1, borderColor: COLORS.bg3,
-    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3,
+    marginHorizontal: 16, marginBottom: 8,
+    borderRadius: RADII.lg, padding: 14,
+    borderWidth: 1, overflow: 'hidden',
   },
-  cardUnread: { backgroundColor: '#FDFAF6', borderColor: COLORS.sand },
-
-  iconWrap: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-
-  cardTop:     { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 3 },
-  title:       { flex: 1, fontSize: 13, fontWeight: '600', color: COLORS.wal },
-  titleUnread: { color: COLORS.esp, fontWeight: '700' },
-  unreadDot:   { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.wal },
-  body:        { fontSize: 12, color: COLORS.wal, lineHeight: 17, marginBottom: 5 },
-  time:        { fontSize: 10, color: '#bbb', fontWeight: '500' },
-
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.esp, textAlign: 'center' },
-  emptySub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
+  accent:    { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
+  iconWrap:  { width: 40, height: 40, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
+  top:       { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  title:     { flex: 1, fontFamily: 'DMSans_400Regular', fontSize: 13 },
+  unreadDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: COLORS.gold },
+  body:      { fontFamily: 'DMSans_400Regular', fontSize: 13, lineHeight: 19, marginBottom: 6 },
+  bottom:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
+  time:      { fontFamily: 'DMSans_400Regular', fontSize: 11 },
+  linkChip:  { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
+  linkText:  { fontFamily: 'DMSans_500Medium', fontSize: 11 },
 });

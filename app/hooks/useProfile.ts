@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 
-type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null };
+type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null; avatar_url: string | null };
 
 export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);

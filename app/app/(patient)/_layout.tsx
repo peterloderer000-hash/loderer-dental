@@ -1,81 +1,82 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
-import { COLORS } from '../../styles/theme';
-
-type IoniconsName = ComponentProps<typeof Ionicons>['name'];
-
-function TabIcon(name: IoniconsName, focused: boolean) {
-  return (
-    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-      <Ionicons
-        name={focused ? name : (`${name}-outline` as IoniconsName)}
-        size={20}
-        color={focused ? '#fff' : '#aaa'}
-      />
-    </View>
-  );
-}
+import { useTranslation } from 'react-i18next';
 
 export default function PatientLayout() {
+  const { t } = useTranslation();
+
   return (
-    <Tabs screenOptions={{
-      headerShown: false,
-      tabBarActiveTintColor: COLORS.wal,
-      tabBarInactiveTintColor: '#aaa',
-      tabBarStyle: styles.tabBar,
-      tabBarLabelStyle: styles.tabLabel,
-    }}>
-      <Tabs.Screen name="index"   options={{ title: 'Domov',   tabBarIcon: ({ focused }) => TabIcon('home',      focused) }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profil',  tabBarIcon: ({ focused }) => TabIcon('person',    focused) }} />
-      <Tabs.Screen name="score"   options={{ title: 'Skóre',   tabBarIcon: ({ focused }) => TabIcon('bar-chart', focused) }} />
-      <Tabs.Screen name="chat"    options={{ title: 'AI Chat', tabBarIcon: ({ focused }) => TabIcon('chatbubble',focused) }} />
-      <Tabs.Screen name="shop"    options={{ title: 'Shop',    tabBarIcon: ({ focused }) => TabIcon('bag',       focused) }} />
-      {/* Skryté obrazovky — nie sú taby */}
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#C9A84C',
+        tabBarInactiveTintColor: '#C4A882',
+        tabBarStyle: {
+          backgroundColor: '#FAF6F0',
+          borderTopWidth: 0.5,
+          borderTopColor: 'rgba(201,168,76,0.25)',
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 6,
+          elevation: 8,
+          shadowColor: '#8B6914',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: '500',
+          marginTop: 2,
+        },
+      }}
+    >
+      <Tabs.Screen name="index" options={{
+        title: t('tab.home'),
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="profile" options={{
+        title: t('tab.profile'),
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="score" options={{
+        title: t('tab.score'),
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'star' : 'star-outline'} size={22} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="chat" options={{
+        title: t('tab.chat'),
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} size={22} color={color} />
+        ),
+      }} />
+      <Tabs.Screen name="shop" options={{
+        title: t('tab.shop'),
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'bag' : 'bag-outline'} size={22} color={color} />
+        ),
+      }} />
+      {/* Skryté obrazovky */}
       <Tabs.Screen name="health-passport"  options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="book-appointment" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="appointments"     options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="calculator"       options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="notifications"    options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="booking-success"  options={{ href: null, headerShown: false }} />
-      {/* Skryté komponenty — nie sú obrazovky */}
+      <Tabs.Screen name="messages"         options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="payment-history"  options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="family"           options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="consents"         options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="treatment-plan"   options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="prescriptions"    options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="moj-zubar"        options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
       <Tabs.Screen name="components/QuickActionsGrid"        options={{ href: null }} />
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#fff',
-    borderTopWidth: 0,
-    height: 68,
-    paddingBottom: 10,
-    paddingTop: 8,
-    paddingHorizontal: 4,
-    // Shadow iOS
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.07,
-    shadowRadius: 8,
-    // Shadow Android
-    elevation: 12,
-  },
-  tabLabel: {
-    fontSize: 9,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    marginTop: 2,
-  },
-  iconWrap: {
-    width: 40,
-    height: 26,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrapActive: {
-    backgroundColor: COLORS.wal,
-  },
-});

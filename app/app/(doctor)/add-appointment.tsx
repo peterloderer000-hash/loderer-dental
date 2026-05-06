@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
@@ -14,6 +14,7 @@ import {
   generateTimeSlotsForDay, getNextOpenDays,
   SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
+import { fetchBlockedMinutes } from '../../hooks/useTimeBlocks';
 
 type OpeningHour = { open_time: string; close_time: string };
 type BookedSlot  = { start: number; end: number };
@@ -22,7 +23,7 @@ type Patient = { id: string; full_name: string | null; phone_number: string | nu
 
 export default function DoctorAddAppointment() {
   const router  = useRouter();
-  const params  = useLocalSearchParams<{ patientId?: string; patientName?: string }>();
+  const params  = useLocalSearchParams<{ patientId?: string; patientName?: string; serviceId?: string }>();
   const { grouped: servicesGrouped, loading: loadingServices } = useServices();
 
   const [patients, setPatients]       = useState<Patient[]>([]);
@@ -33,6 +34,10 @@ export default function DoctorAddAppointment() {
   const [selectedDate, setDate]       = useState<Date | null>(null);
   const [selectedTime, setTime]       = useState('');
   const [notes, setNotes]             = useState('');
+  const [customDuration, setCustomDuration] = useState<number | null>(null);
+  const [customDurationText, setCustomDurationText] = useState('');
+  const [repeatType,  setRepeatType]   = useState<'none' | 'weekly' | 'biweekly' | 'monthly'>('none');
+  const [repeatCount, setRepeatCount]  = useState(2);
   const [loading, setLoading]         = useState(false);
   const [loadingPatients, setLoadingP] = useState(true);
   const [showServices, setShowServices] = useState(false);
@@ -40,6 +45,9 @@ export default function DoctorAddAppointment() {
   const [doctorUserId,    setDoctorUserId]    = useState('');
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+
+  // Efektívna dĺžka = vlastná ak nastavená, inak z vybranej služby
+  const effectiveDuration = customDuration ?? selectedService?.duration_minutes ?? 30;
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
 
@@ -55,14 +63,15 @@ export default function DoctorAddAppointment() {
 
   const slots = useMemo(
     () => generateTimeSlotsForDay(
-      selectedService?.duration_minutes ?? 30,
+      effectiveDuration,
       selectedDayHours?.open_time  ?? '08:00',
       selectedDayHours?.close_time ?? '17:00',
     ),
-    [selectedService, selectedDayHours],
+    [effectiveDuration, selectedDayHours],
   );
 
-  function isSlotTaken(slotStart: string, durationMin: number): boolean {
+  function isSlotTaken(slotStart: string): boolean {
+    const durationMin = effectiveDuration;
     const s = timeToMinutes(slotStart);
     const e = s + durationMin;
     return bookedSlots.some(b => s < b.end && e > b.start);
@@ -81,16 +90,14 @@ export default function DoctorAddAppointment() {
           .from('opening_hours')
           .select('day_of_week, open_time, close_time, is_closed')
           .eq('doctor_id', user.id);
-        if (hours) {
-          const map = new Map<number, OpeningHour>();
-          hours.forEach(h => {
-            if (!h.is_closed && h.open_time && h.close_time) {
-              map.set(h.day_of_week, { open_time: h.open_time.slice(0, 5), close_time: h.close_time.slice(0, 5) });
-            }
-          });
-          if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
-          setOpeningHoursMap(map);
-        }
+        const map = new Map<number, OpeningHour>();
+        (hours ?? []).forEach(h => {
+          if (!h.is_closed && h.open_time && h.close_time) {
+            map.set(h.day_of_week, { open_time: h.open_time.slice(0, 5), close_time: h.close_time.slice(0, 5) });
+          }
+        });
+        if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
+        setOpeningHoursMap(map);
       }
       // Pacienti
       const { data: pats } = await supabase
@@ -108,31 +115,41 @@ export default function DoctorAddAppointment() {
     return () => { cancelled = true; };
   }, []);
 
-  // Fetch obsadených slotov pre vybraný deň
+  // Auto-vyber službu z params.serviceId (napr. z čakacej listiny)
+  useEffect(() => {
+    if (!params.serviceId || loadingServices) return;
+    const allServices = Object.values(servicesGrouped).flat();
+    const found = allServices.find((s) => s.id === params.serviceId);
+    if (found) { setService(found); }
+  }, [params.serviceId, servicesGrouped, loadingServices]);
+
+  // Fetch obsadených slotov + blokovaní pre vybraný deň
   useEffect(() => {
     if (!selectedDate || !doctorUserId) { setBookedSlots([]); return; }
     let cancelled = false;
     setLoadingSlots(true);
     const dayStart = new Date(selectedDate); dayStart.setHours(0, 0, 0, 0);
     const dayEnd   = new Date(selectedDate); dayEnd.setHours(23, 59, 59, 999);
-    supabase
-      .from('appointments')
-      .select('appointment_date, service:services(duration_minutes)')
-      .eq('doctor_id', doctorUserId)
-      .eq('status', 'scheduled')
-      .gte('appointment_date', dayStart.toISOString())
-      .lte('appointment_date', dayEnd.toISOString())
-      .then(({ data }) => {
-        if (cancelled) return;
-        setLoadingSlots(false);
-        if (!data) return;
-        setBookedSlots(data.map(a => {
-          const d = new Date(a.appointment_date);
-          const sMin = d.getHours() * 60 + d.getMinutes();
-          const dur  = (a.service as any)?.duration_minutes ?? 30;
-          return { start: sMin, end: sMin + dur };
-        }));
+    Promise.all([
+      supabase
+        .from('appointments')
+        .select('appointment_date, custom_duration_minutes, service:services(duration_minutes)')
+        .eq('doctor_id', doctorUserId)
+        .in('status', ['scheduled', 'pending'])
+        .gte('appointment_date', dayStart.toISOString())
+        .lte('appointment_date', dayEnd.toISOString()),
+      fetchBlockedMinutes(doctorUserId, dayStart, dayEnd),
+    ]).then(([{ data }, blockSlots]) => {
+      if (cancelled) return;
+      setLoadingSlots(false);
+      const apptSlots = (data ?? []).map((a: any) => {
+        const d    = new Date(a.appointment_date);
+        const sMin = d.getHours() * 60 + d.getMinutes();
+        const dur  = a.custom_duration_minutes ?? a.service?.duration_minutes ?? 30;
+        return { start: sMin, end: sMin + dur };
       });
+      setBookedSlots([...apptSlots, ...blockSlots]);
+    });
     return () => { cancelled = true; };
   }, [selectedDate, doctorUserId]);
 
@@ -144,6 +161,20 @@ export default function DoctorAddAppointment() {
       (p.phone_number ?? '').toLowerCase().includes(q)
     );
   }, [patients, patientQuery]);
+
+  // Vypočítaj dátumy opakujúcich sa termínov
+  function buildRepeatDates(baseDt: Date): Date[] {
+    const count = repeatType === 'none' ? 1 : repeatCount;
+    const dates: Date[] = [];
+    for (let i = 0; i < count; i++) {
+      const d = new Date(baseDt);
+      if (repeatType === 'weekly')   d.setDate(baseDt.getDate()   + 7  * i);
+      if (repeatType === 'biweekly') d.setDate(baseDt.getDate()   + 14 * i);
+      if (repeatType === 'monthly')  d.setMonth(baseDt.getMonth() + i);
+      dates.push(d);
+    }
+    return dates;
+  }
 
   async function handleSave() {
     if (!selectedPatient) { Alert.alert('Chyba', 'Vyber prosím pacienta.'); return; }
@@ -160,37 +191,45 @@ export default function DoctorAddAppointment() {
       const dt     = new Date(selectedDate);
       dt.setHours(h, m, 0, 0);
 
-      // Kontrola kolízie (duration-based overlap) — nie len exact match
-      const newStart = h * 60 + m;
-      const newEnd   = newStart + (selectedService?.duration_minutes ?? 30);
+      // Kolízia — kontroluj len pre prvý termín
+      const newStart  = h * 60 + m;
+      const newEnd    = newStart + effectiveDuration;
       const dayStart2 = new Date(dt); dayStart2.setHours(0, 0, 0, 0);
       const dayEnd2   = new Date(dt); dayEnd2.setHours(23, 59, 59, 999);
       const { data: existing } = await supabase.from('appointments')
-        .select('appointment_date, service:services(duration_minutes)')
+        .select('appointment_date, custom_duration_minutes, service:services(duration_minutes)')
         .eq('doctor_id', user.id)
-        .eq('status', 'scheduled')
+        .in('status', ['scheduled', 'pending'])
         .gte('appointment_date', dayStart2.toISOString())
         .lte('appointment_date', dayEnd2.toISOString());
       const conflict = (existing ?? []).some(e => {
         const ed = new Date(e.appointment_date);
         const es = ed.getHours() * 60 + ed.getMinutes();
-        const ee = es + ((e.service as any)?.duration_minutes ?? 30);
+        const ee = es + ((e as any).custom_duration_minutes ?? (e.service as any)?.duration_minutes ?? 30);
         return newStart < ee && newEnd > es;
       });
       if (conflict) throw new Error('Tento čas sa prekrýva s existujúcim termínom. Vyber iný.');
 
-      const { error } = await supabase.from('appointments').insert({
-        patient_id:       selectedPatient.id,
-        doctor_id:        user.id,
-        appointment_date: dt.toISOString(),
-        status:           'scheduled',
-        notes:            notes.trim() || null,
-        service_id:       selectedService?.id ?? null,
-      });
+      // Zostav všetky termíny (1 alebo N opakovaní)
+      const allDates = buildRepeatDates(dt);
+      const rows = allDates.map((d) => ({
+        patient_id:              selectedPatient!.id,
+        doctor_id:               user!.id,
+        appointment_date:        d.toISOString(),
+        status:                  'scheduled',
+        notes:                   notes.trim() || null,
+        service_id:              selectedService?.id ?? null,
+        custom_duration_minutes: customDuration ?? selectedService?.duration_minutes ?? null,
+      }));
+
+      const { error } = await supabase.from('appointments').insert(rows);
       if (error) throw error;
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Termín pridaný ✓', `Termín pre ${selectedPatient.full_name ?? 'pacienta'} bol naplánovaný.`, [
+      const msgBody = repeatType === 'none'
+        ? `Termín pre ${selectedPatient.full_name ?? 'pacienta'} bol naplánovaný.`
+        : `Celkom ${allDates.length} termínov pre ${selectedPatient.full_name ?? 'pacienta'} bolo naplánovaných.`;
+      Alert.alert('Uložené ✓', msgBody, [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (e: any) {
@@ -317,7 +356,7 @@ export default function DoctorAddAppointment() {
                     <Text style={styles.serviceDropdownCat}>{cat}</Text>
                     {items.map((svc) => (
                       <TouchableOpacity key={svc.id} style={styles.serviceDropdownItem}
-                        onPress={() => { setService(svc); setTime(''); setShowServices(false); }}
+                        onPress={() => { setService(svc); setTime(''); setShowServices(false); setCustomDuration(null); setCustomDurationText(''); }}
                         activeOpacity={0.8}>
                         <Text style={{ fontSize: 16 }}>{svc.emoji ?? '🦷'}</Text>
                         <View style={{ flex: 1 }}>
@@ -335,6 +374,46 @@ export default function DoctorAddAppointment() {
                 ))
               }
             </View>
+          )}
+
+          {/* ── Dĺžka ošetrenia ── */}
+          {selectedService && (
+            <>
+              <Text style={[styles.sectionLabel, { marginTop: 20 }]}>DĹŽKA OŠETRENIA</Text>
+              <View style={styles.durationRow}>
+                {[15, 30, 45, 60, 90, 120].map((min) => {
+                  const isActive = effectiveDuration === min;
+                  return (
+                    <TouchableOpacity
+                      key={min}
+                      style={[styles.durationChip, isActive && styles.durationChipActive]}
+                      onPress={() => { setCustomDuration(min); setCustomDurationText(String(min)); setTime(''); }}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[styles.durationChipText, isActive && styles.durationChipTextActive]}>
+                        {min < 60 ? `${min} min` : `${min / 60} hod`}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              <View style={styles.durationCustomRow}>
+                <Ionicons name="time-outline" size={16} color={COLORS.wal} />
+                <TextInput
+                  style={styles.durationInput}
+                  placeholder={`Vlastná (min) · teraz: ${effectiveDuration} min`}
+                  placeholderTextColor="#bbb"
+                  keyboardType="numeric"
+                  value={customDurationText}
+                  onChangeText={(t) => {
+                    setCustomDurationText(t);
+                    const n = parseInt(t, 10);
+                    if (!isNaN(n) && n > 0 && n <= 480) { setCustomDuration(n); setTime(''); }
+                  }}
+                  maxLength={3}
+                />
+              </View>
+            </>
           )}
 
           {/* ── Výber dátumu ── */}
@@ -372,8 +451,8 @@ export default function DoctorAddAppointment() {
           {selectedService && (
             <Text style={styles.slotSubLabel}>
               {selectedDayHours
-                ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(selectedService.duration_minutes)}`
-                : `Trvanie: ${formatDuration(selectedService.duration_minutes)}`}
+                ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(effectiveDuration)}`
+                : `Trvanie: ${formatDuration(effectiveDuration)}`}
             </Text>
           )}
           {loadingSlots ? (
@@ -382,7 +461,7 @@ export default function DoctorAddAppointment() {
             <View style={styles.timesGrid}>
               {slots.map((slot) => {
                 const isSel  = selectedTime === slot.start;
-                const taken  = isSlotTaken(slot.start, selectedService?.duration_minutes ?? 30);
+                const taken  = isSlotTaken(slot.start);
                 return (
                   <TouchableOpacity key={slot.start}
                     style={[styles.timeCell, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
@@ -417,6 +496,65 @@ export default function DoctorAddAppointment() {
             />
           </View>
 
+          {/* ── Opakovanie ── */}
+          <Text style={[styles.sectionLabel, { marginTop: 8 }]}>OPAKOVANIE</Text>
+          <View style={styles.repeatRow}>
+            {([
+              { key: 'none',      label: 'Žiadne' },
+              { key: 'weekly',    label: 'Týždenné' },
+              { key: 'biweekly',  label: '2-týždenné' },
+              { key: 'monthly',   label: 'Mesačné' },
+            ] as const).map((opt) => {
+              const active = repeatType === opt.key;
+              return (
+                <TouchableOpacity key={opt.key}
+                  style={[styles.repeatChip, active && styles.repeatChipActive]}
+                  onPress={() => setRepeatType(opt.key)} activeOpacity={0.8}>
+                  <Text style={[styles.repeatChipText, active && styles.repeatChipTextActive]}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {repeatType !== 'none' && (
+            <>
+              <Text style={styles.repeatCountLabel}>POČET OPAKOVANÍ</Text>
+              <View style={styles.repeatRow}>
+                {[2, 3, 4, 5, 6, 8, 10, 12].map((n) => {
+                  const active = repeatCount === n;
+                  return (
+                    <TouchableOpacity key={n}
+                      style={[styles.repeatCountChip, active && styles.repeatChipActive]}
+                      onPress={() => setRepeatCount(n)} activeOpacity={0.8}>
+                      <Text style={[styles.repeatChipText, active && styles.repeatChipTextActive]}>
+                        {n}×
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              {selectedDate && selectedTime && (
+                <View style={styles.repeatPreview}>
+                  <Ionicons name="repeat" size={13} color={COLORS.wal} />
+                  <Text style={styles.repeatPreviewText}>
+                    {`Celkom ${repeatCount} termínov · posledný: ${(() => {
+                      const [h, m] = selectedTime.split(':').map(Number);
+                      const base = new Date(selectedDate);
+                      base.setHours(h, m, 0, 0);
+                      const last = new Date(base);
+                      if (repeatType === 'weekly')   last.setDate(base.getDate()   + 7  * (repeatCount - 1));
+                      if (repeatType === 'biweekly') last.setDate(base.getDate()   + 14 * (repeatCount - 1));
+                      if (repeatType === 'monthly')  last.setMonth(base.getMonth() + (repeatCount - 1));
+                      return last.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
+                    })()}`}
+                  </Text>
+                </View>
+              )}
+            </>
+          )}
+
           {/* ── Zhrnutie ── */}
           {selectedPatient && selectedDate && selectedTime && (
             <View style={styles.summaryCard}>
@@ -429,6 +567,14 @@ export default function DoctorAddAppointment() {
                 <Text style={styles.summaryLine}>
                   📅 {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })} o {selectedTime}
                 </Text>
+                <Text style={styles.summaryLine}>
+                  ⏱ {formatDuration(effectiveDuration)}
+                </Text>
+                {repeatType !== 'none' && (
+                  <Text style={styles.summaryLine}>
+                    🔁 {repeatCount}× {repeatType === 'weekly' ? 'týždenné' : repeatType === 'biweekly' ? '2-týždenné' : 'mesačné'} opakovanie
+                  </Text>
+                )}
                 {notes.trim() ? <Text style={styles.summaryLine}>📝 {notes.trim()}</Text> : null}
               </View>
             </View>
@@ -449,7 +595,7 @@ export default function DoctorAddAppointment() {
                 </>}
           </TouchableOpacity>
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -520,6 +666,15 @@ const styles = StyleSheet.create({
   serviceDropdownName:      { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   serviceDropdownMeta:      { fontSize: 10, color: COLORS.wal, marginTop: 1 },
 
+  // Duration picker
+  durationRow:            { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  durationChip:           { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  durationChipActive:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
+  durationChipText:       { fontSize: 12, fontWeight: '600', color: COLORS.wal },
+  durationChipTextActive: { color: COLORS.cream },
+  durationCustomRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
+  durationInput:          { flex: 1, paddingVertical: 11, fontSize: 13, color: COLORS.esp },
+
   // Notes
   notesCard:  { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 16 },
   notesInput: { fontSize: 13, color: COLORS.esp, minHeight: 72, lineHeight: 20 },
@@ -532,4 +687,15 @@ const styles = StyleSheet.create({
   saveBtn:         { backgroundColor: COLORS.wal, borderRadius: 14, paddingVertical: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, elevation: 4, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 },
   saveBtnDisabled: { opacity: 0.4 },
   saveBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
+
+  // Opakovanie
+  repeatRow:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  repeatChip:          { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  repeatChipActive:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
+  repeatChipText:      { fontSize: 12, fontWeight: '600', color: COLORS.wal },
+  repeatChipTextActive:{ color: COLORS.cream },
+  repeatCountLabel:    { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
+  repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
+  repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F4ECE4', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  repeatPreviewText:   { fontSize: 11, color: COLORS.wal, flex: 1, fontStyle: 'italic' },
 });

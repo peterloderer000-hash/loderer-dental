@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "home": "Home",
+    "profile": "Profile",
+    "score": "Score",
+    "chat": "AI Chat",
+    "shop": "Shop"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "confirm": "Confirm",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "send": "Send",
+    "all": "All",
+    "more": "More"
+  },
+  "home": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "subtitle": "We care about your smile",
+    "upcoming": "Upcoming appointment",
+    "no_upcoming": "No appointment",
+    "book_cta": "Book appointment",
+    "actions_title": "Quick actions",
+    "view_all": "View all"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "book": "Book",
+    "all": "All",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "cancelled": "Cancelled",
+    "pending": "Pending",
+    "no_appointments": "No appointments",
+    "no_appointments_sub": "You have no appointments yet. Book your first!",
+    "cancel_appt": "Cancel appointment",
+    "reschedule": "Reschedule",
+    "duration": "Duration",
+    "status": "Status",
+    "notes": "Note"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit profile",
+    "language": "App language",
+    "language_sk": "Slovak",
+    "language_en": "English",
+    "logout": "Sign out",
+    "dark_mode": "Dark mode",
+    "notifications": "Notifications",
+    "personal_info": "Personal info",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "date_of_birth": "Date of birth",
+    "insurance": "Insurance"
+  },
+  "health_passport": {
+    "title": "Health passport",
+    "allergies": "Allergies",
+    "medications": "Medications",
+    "conditions": "Conditions",
+    "blood_type": "Blood type",
+    "no_data": "No records",
+    "add": "Add record",
+    "last_updated": "Last updated"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "empty_sub": "You're all caught up",
+    "all": "All",
+    "unread": "Unread",
+    "mark_read": "Mark as read"
+  },
+  "score": {
+    "title": "Score",
+    "your_score": "Your score",
+    "dental_health": "Dental health",
+    "streak": "Day streak",
+    "badges": "Badges",
+    "history": "History"
+  },
+  "booking": {
+    "title": "Book appointment",
+    "select_service": "Select service",
+    "select_date": "Select date",
+    "select_time": "Select time",
+    "confirm": "Confirm booking",
+    "success": "Appointment booked!",
+    "notes_placeholder": "Note (optional)",
+    "price": "Price",
+    "duration": "Duration"
+  },
+  "chat": {
+    "title": "AI Assistant",
+    "placeholder": "Ask anything about dental health...",
+    "typing": "Typing...",
+    "empty": "Start a conversation"
+  },
+  "shop": {
+    "title": "Shop",
+    "add_to_cart": "Add to cart",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "empty_cart": "Your cart is empty"
+  }
+}

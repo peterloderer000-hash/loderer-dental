@@ -4,17 +4,23 @@ import { supabase } from '../supabase';
 export type Appointment = {
   id: string;
   appointment_date: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
+  status: 'pending' | 'scheduled' | 'arrived' | 'completed' | 'cancelled';
+  arrived_at: string | null;
+  custom_duration_minutes: number | null;
   notes: string | null;
   doctor_notes: string | null;
   patient_id: string;
   doctor_id: string;
   service_id: string | null;
+  family_member_name: string | null;
   patient: { full_name: string | null; phone_number: string | null } | null;
   doctor:  { full_name: string | null } | null;
   service: { name: string; emoji: string | null; duration_minutes: number; price_min: number | null; price_max: number | null } | null;
   patient_rating: number | null;
   patient_review: string | null;
+  is_urgent: boolean;
+  payment_status: string;
+  care_instructions: string | null;
 };
 
 export function useAppointments(role: 'patient' | 'doctor') {
@@ -89,13 +95,39 @@ export function useAppointments(role: 'patient' | 'doctor') {
   }, [role, refetch]);
 
   /** Zmena statusu termínu */
-  async function updateStatus(id: string, status: 'completed' | 'cancelled', doctorNotes?: string) {
+  async function updateStatus(
+    id: string,
+    status: 'arrived' | 'completed' | 'cancelled',
+    doctorNotes?: string,
+    careInstructions?: string,
+  ) {
     const payload: Record<string, unknown> = { status };
+    if (status === 'arrived') payload.arrived_at = new Date().toISOString();
     if (doctorNotes !== undefined) payload.doctor_notes = doctorNotes.trim() || null;
+    if (careInstructions !== undefined) payload.care_instructions = careInstructions.trim() || null;
     const { error } = await supabase.from('appointments').update(payload).eq('id', id);
     if (!error) refetch();
     return error;
   }
 
-  return { appointments, loading, fetchError, refetch, updateStatus };
+  /** Pacient si sám označí príchod (check-in) */
+  async function selfCheckIn(id: string) {
+    const { error } = await supabase.from('appointments').update({
+      status: 'arrived',
+      arrived_at: new Date().toISOString(),
+    }).eq('id', id);
+    if (!error) refetch();
+    return error;
+  }
+
+  /** Schválenie čakajúceho termínu doktorom (nastaví status=scheduled + voliteľnú dĺžku) */
+  async function approvePending(id: string, customDurationMinutes?: number) {
+    const payload: Record<string, unknown> = { status: 'scheduled' };
+    if (customDurationMinutes != null) payload.custom_duration_minutes = customDurationMinutes;
+    const { error } = await supabase.from('appointments').update(payload).eq('id', id);
+    if (!error) refetch();
+    return error;
+  }
+
+  return { appointments, loading, fetchError, refetch, updateStatus, selfCheckIn, approvePending };
 }

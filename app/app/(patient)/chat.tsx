@@ -5,7 +5,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = { id: number; text: string; from: 'user' | 'bot'; time: string };
 
@@ -94,7 +97,7 @@ const BOT_RESPONSES: Record<string, string> = {
     '😬 Bruxizmus = nevedomé škrípanie alebo zvieranie zubov, najčastejšie v noci.\n\nPríznaky:\n• Bolesti hlavy ráno\n• Boľavé čeľuste a svaly\n• Obrúsená sklovina\n• Citlivé zuby\n• Zlomené výplne alebo zuby\n\nPríčiny: Stres, úzkosť, nevhodný sklus\n\nLiečba:\n• Nočná okluzná dlaha (chráni zuby)\n• Fyzioterapia čeľuste\n• Relaxácia, redukcia stresu\n• Botulotoxín (závažné prípady)\n\n🦷 Neliečený bruxizmus môže zničiť celý chrup!',
 
   'Ako funguje ústna voda?':
-    '💧 Ústna voda (ústna voda / mouthwash) doplňuje čistenie zubov.\n\nTypy:\n• Antibakteriálna (chlorhexidín) — proti baktériám, zápalu ďasien\n• Fluoridová — posilňuje sklovinu\n• Sviežosť dychu — maskuje zápach\n\nSpráv­ne použitie:\n1. Čisti zuby a použij niť NAJPRV\n2. Odmer 15–20 ml ústnej vody\n3. Kloktaj 30–60 sekúnd\n4. Vypľuj — NEPIJ!\n5. Nejedz ani nepij 30 min po použití\n\n⚠️ Ústna voda NENAHRÁDZA čistenie zubov kefkou a nite!',
+    '💧 Ústna voda (ústna voda / mouthwash) doplňuje čistenie zubov.\n\nTypy:\n• Antibakteriálna (chlorhexidín) — proti baktériám, zápalu ďasien\n• Fluoridová — posilňuje sklovinu\n• Sviežosť dychu — maskuje zápach\n\nSprávne použitie:\n1. Čisti zuby a použij niť NAJPRV\n2. Odmer 15–20 ml ústnej vody\n3. Kloktaj 30–60 sekúnd\n4. Vypľuj — NEPIJ!\n5. Nejedz ani nepij 30 min po použití\n\n⚠️ Ústna voda NENAHRÁDZA čistenie zubov kefkou a nite!',
 
   'Čo je zubná korunka?':
     '👑 Korunka = umelý kryt nasadený na poškodený alebo oslabený zub.\n\nKedy je potrebná:\n• Silno poškodený alebo zlomený zub\n• Po devitalizácii (root canal)\n• Zub s veľkou výplňou\n• Implantát\n\nMateriály:\n• Porcelán (estetický, pre predné zuby)\n• Zirkónium (pevné + estetické)\n• Kovová zliatina (zadné zuby, pevnosť)\n\nPostup:\n1. Obrúsenie zuba\n2. Odtlačok a výroba korunky (1–2 týždne)\n3. Nasadenie a zacementovanie\n\nTrvanlivosť: 10–15 rokov pri správnej hygiene.',
@@ -108,13 +111,9 @@ const BOT_RESPONSES: Record<string, string> = {
 
 function getBotResponse(userText: string): string {
   const text = userText.trim().toLowerCase();
-
-  // Priame zhody
   for (const [key, response] of Object.entries(BOT_RESPONSES)) {
     if (text === key.toLowerCase()) return response;
   }
-
-  // Kľúčové slová
   if (text.includes('bolesť') || text.includes('bolí') || text.includes('boli'))
     return BOT_RESPONSES['Čo robiť pri bolesti zuba?'];
   if (text.includes('čisti') || text.includes('kefk') || text.includes('čistenie'))
@@ -145,7 +144,6 @@ function getBotResponse(userText: string): string {
     return BOT_RESPONSES['Čo je zubná plomba?'];
   if (text.includes('citliv') || text.includes('citlivosť') || text.includes('sensodyne'))
     return BOT_RESPONSES['Ako znížiť citlivosť zubov?'];
-
   return '😊 Ďakujem za otázku! Pre detailnú odpoveď ti odporúčam konzultáciu priamo s MDDr. Lodererom.\n\nSkús niektorú z pripravených otázok — stačí kliknúť na kategóriu nižšie.';
 }
 
@@ -155,11 +153,15 @@ function getTime() {
 
 // ─── Typing indicator ─────────────────────────────────────────────────────────
 function TypingIndicator() {
-  const anims = [useRef(new Animated.Value(0)).current, useRef(new Animated.Value(0)).current, useRef(new Animated.Value(0)).current];
+  const anims = [
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+    useRef(new Animated.Value(0)).current,
+  ];
 
   useEffect(() => {
     const anim = Animated.loop(
-      Animated.stagger(180, anims.map((a) =>
+      Animated.stagger(180, anims.map(a =>
         Animated.sequence([
           Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: true }),
           Animated.timing(a, { toValue: 0, duration: 300, useNativeDriver: true }),
@@ -171,12 +173,18 @@ function TypingIndicator() {
   }, []);
 
   return (
-    <View style={styles.msgRow}>
-      <View style={styles.botIcon}><Text style={{ fontSize: 14 }}>🤖</Text></View>
-      <View style={[styles.bubble, styles.bubbleBot, { paddingVertical: 14, paddingHorizontal: 16 }]}>
+    <View style={s.msgRow}>
+      <View style={s.botAvatar}><Text style={{ fontSize: 14 }}>🤖</Text></View>
+      <View style={[s.bubbleBot, { paddingVertical: 14, paddingHorizontal: 18 }]}>
         <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
           {anims.map((a, i) => (
-            <Animated.View key={i} style={[styles.typingDot, { opacity: a, transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }] }]} />
+            <Animated.View
+              key={i}
+              style={[s.typingDot, {
+                opacity: a,
+                transform: [{ translateY: a.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) }],
+              }]}
+            />
           ))}
         </View>
       </View>
@@ -184,11 +192,15 @@ function TypingIndicator() {
   );
 }
 
-// ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
+// ─── Main screen ──────────────────────────────────────────────────────────────
 export default function ChatScreen() {
-  const msgId    = useRef(100);
+  const { colors, dark } = useAppTheme();
+  const msgId = useRef(100);
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, from: 'bot', time: getTime(), text: 'Ahoj! Som tvoj dentálny asistent 🦷\n\nPomôžem ti s otázkami o ústnej hygiene, bolestiach alebo návšteve zubára.\n\nVyber kategóriu alebo napíš vlastnú otázku:' },
+    {
+      id: 1, from: 'bot', time: getTime(),
+      text: 'Ahoj! Som tvoj dentálny asistent 🦷\n\nPomôžem ti s otázkami o ústnej hygiene, bolestiach alebo návšteve zubára.\n\nVyber kategóriu alebo napíš vlastnú otázku:',
+    },
   ]);
   const [input,       setInput]       = useState('');
   const [isTyping,    setIsTyping]    = useState(false);
@@ -197,8 +209,9 @@ export default function ChatScreen() {
 
   const sendMessage = useCallback((text: string) => {
     if (!text.trim()) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const userMsg: Message = { id: ++msgId.current, from: 'user', text: text.trim(), time: getTime() };
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
@@ -207,91 +220,121 @@ export default function ChatScreen() {
     setTimeout(() => {
       setIsTyping(false);
       const botMsg: Message = { id: ++msgId.current, from: 'bot', text: getBotResponse(text), time: getTime() };
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages(prev => [...prev, botMsg]);
       setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
     }, delay);
   }, []);
 
   const clearChat = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setMessages([
       { id: ++msgId.current, from: 'bot', time: getTime(), text: 'História bola vymazaná. Čím ti môžem pomôcť? 🦷' },
     ]);
+    setActiveGroup(null);
   }, []);
 
   const activeSuggestions = activeGroup
-    ? TOPIC_GROUPS.find((g) => g.label === activeGroup)?.questions ?? []
+    ? TOPIC_GROUPS.find(g => g.label === activeGroup)?.questions ?? []
     : null;
 
-  return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <View style={styles.botAvatar}><Text style={{ fontSize: 22 }}>🤖</Text></View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerTitle}>Dentálny asistent</Text>
-          <Text style={styles.headerSub}>● online · {TOPIC_GROUPS.reduce((s, g) => s + g.questions.length, 0)} tém</Text>
-        </View>
-        <TouchableOpacity style={styles.clearBtn} onPress={clearChat} activeOpacity={0.75}>
-          <Ionicons name="trash-outline" size={16} color={COLORS.sand} />
-        </TouchableOpacity>
-      </View>
+  const totalTopics = TOPIC_GROUPS.reduce((sum, g) => sum + g.questions.length, 0);
 
-      {/* ── Témy (kategórie) ── */}
-      <View style={styles.groupsRow}>
-        {TOPIC_GROUPS.map((g) => (
-          <TouchableOpacity
-            key={g.label}
-            style={[styles.groupChip, activeGroup === g.label && styles.groupChipActive]}
-            onPress={() => setActiveGroup(activeGroup === g.label ? null : g.label)}
-            activeOpacity={0.78}>
-            <Text style={styles.groupEmoji}>{g.emoji}</Text>
-            <Text style={[styles.groupLabel, activeGroup === g.label && styles.groupLabelActive]}>{g.label}</Text>
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      {/* ── Hero header ── */}
+      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
+        <View style={[s.heroCircle, { width: 160, height: 160, right: -30, top: -50 }]} />
+
+        <View style={s.heroRow}>
+          {/* Bot avatar */}
+          <View style={s.botAvatarHero}>
+            <Text style={{ fontSize: 22 }}>🤖</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={s.heroTitle}>Dentálny asistent</Text>
+            <View style={s.onlineBadge}>
+              <View style={s.onlineDot} />
+              <Text style={s.onlineText}>online · {totalTopics} tém</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={s.clearBtn} onPress={clearChat} activeOpacity={0.75}>
+            <Ionicons name="trash-outline" size={16} color={COLORS.sand} />
           </TouchableOpacity>
-        ))}
-      </View>
+        </View>
+
+        {/* Category pills */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.groupsRow}>
+          {TOPIC_GROUPS.map(g => (
+            <TouchableOpacity
+              key={g.label}
+              style={[s.groupChip, activeGroup === g.label && s.groupChipActive]}
+              onPress={() => {
+                setActiveGroup(activeGroup === g.label ? null : g.label);
+                Haptics.selectionAsync();
+              }}
+              activeOpacity={0.78}
+            >
+              <Text style={s.groupEmoji}>{g.emoji}</Text>
+              <Text style={[s.groupLabel, activeGroup === g.label && s.groupLabelActive]}>
+                {g.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </LinearGradient>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView ref={scrollRef} style={styles.messages} contentContainerStyle={styles.messagesContent}
-          showsVerticalScrollIndicator={false}>
-
-          {messages.map((msg) => (
-            <View key={msg.id} style={[styles.msgRow, msg.from === 'user' && styles.msgRowUser]}>
+        {/* ── Messages ── */}
+        <ScrollView
+          ref={scrollRef}
+          style={{ flex: 1, backgroundColor: colors.bg2 }}
+          contentContainerStyle={s.messagesContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {messages.map(msg => (
+            <View key={msg.id} style={[s.msgRow, msg.from === 'user' && s.msgRowUser]}>
               {msg.from === 'bot' && (
-                <View style={styles.botIcon}><Text style={{ fontSize: 14 }}>🤖</Text></View>
+                <View style={s.botAvatar}><Text style={{ fontSize: 14 }}>🤖</Text></View>
               )}
-              <View style={[styles.bubble, msg.from === 'bot' ? styles.bubbleBot : styles.bubbleUser]}>
-                <Text style={[styles.bubbleText, msg.from === 'user' && styles.bubbleTextUser]}>
+              <View style={msg.from === 'bot' ? [s.bubbleBot, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }] : s.bubbleUser}>
+                <Text style={[s.bubbleText, { color: msg.from === 'bot' ? colors.textPrimary : '#fff' }]}>
                   {msg.text}
                 </Text>
-                <Text style={[styles.bubbleTime, msg.from === 'user' && { color: 'rgba(255,255,255,0.6)' }]}>
+                <Text style={[s.bubbleTime, { color: msg.from === 'bot' ? colors.textSecondary : 'rgba(255,255,255,0.55)' }]}>
                   {msg.time}
                 </Text>
               </View>
             </View>
           ))}
 
-          {/* Typing indicator */}
           {isTyping && <TypingIndicator />}
 
-          {/* Suggestions based on selected group */}
+          {/* Suggestions for active group */}
           {activeSuggestions && !isTyping && (
-            <View style={styles.suggestionsWrap}>
-              <Text style={styles.suggestionsLabel}>{activeGroup}:</Text>
-              <View style={styles.suggestions}>
-                {activeSuggestions.map((s) => (
-                  <TouchableOpacity key={s} style={styles.suggestion} onPress={() => sendMessage(s)} activeOpacity={0.75}>
-                    <Text style={styles.suggestionText}>{s}</Text>
+            <View style={s.suggestionsWrap}>
+              <Text style={[s.suggestionsLabel, { color: colors.textSecondary }]}>
+                {activeGroup}:
+              </Text>
+              <View style={s.suggestions}>
+                {activeSuggestions.map(q => (
+                  <TouchableOpacity
+                    key={q}
+                    style={[s.suggestionChip, { backgroundColor: colors.cardBg, borderColor: COLORS.goldLight }]}
+                    onPress={() => sendMessage(q)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={[s.suggestionText, { color: colors.textPrimary }]}>{q}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
           )}
 
-          {/* Default suggestions if no group selected */}
+          {/* Default suggestions when no group selected */}
           {!activeGroup && !isTyping && (
-            <View style={styles.suggestionsWrap}>
-              <Text style={styles.suggestionsLabel}>Populárne otázky:</Text>
-              <View style={styles.suggestions}>
+            <View style={s.suggestionsWrap}>
+              <Text style={[s.suggestionsLabel, { color: colors.textSecondary }]}>Populárne otázky:</Text>
+              <View style={s.suggestions}>
                 {[
                   'Ako správne čistiť zuby?',
                   'Čo robiť pri bolesti zuba?',
@@ -299,25 +342,56 @@ export default function ChatScreen() {
                   'Čo je bruxizmus?',
                   'Ako bieleť zuby?',
                   'Čo je zubná plomba?',
-                ].map((s) => (
-                  <TouchableOpacity key={s} style={styles.suggestion} onPress={() => sendMessage(s)} activeOpacity={0.75}>
-                    <Text style={styles.suggestionText}>{s}</Text>
+                ].map(q => (
+                  <TouchableOpacity
+                    key={q}
+                    style={[s.suggestionChip, { backgroundColor: colors.cardBg, borderColor: COLORS.goldLight }]}
+                    onPress={() => sendMessage(q)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={[s.suggestionText, { color: colors.textPrimary }]}>{q}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
           )}
+
+          {/* Disclaimer */}
+          <View style={[s.disclaimer, { backgroundColor: colors.bg2 }]}>
+            <Ionicons name="information-circle-outline" size={13} color={COLORS.sand} />
+            <Text style={[s.disclaimerText, { color: colors.textSecondary }]}>
+              Odpovede sú informatívne a nenahradzujú lekárske vyšetrenie.
+            </Text>
+          </View>
         </ScrollView>
 
         {/* ── Input bar ── */}
-        <View style={styles.inputRow}>
-          <TextInput style={styles.input} value={input} onChangeText={setInput}
-            placeholder="Napíš otázku..." placeholderTextColor="#bbb"
-            returnKeyType="send" onSubmitEditing={() => sendMessage(input)}
-            multiline maxLength={300} />
-          <TouchableOpacity style={[styles.sendBtn, (!input.trim() || isTyping) && { opacity: 0.4 }]}
-            onPress={() => sendMessage(input)} disabled={!input.trim() || isTyping} activeOpacity={0.85}>
-            <Ionicons name="send" size={18} color="#fff" />
+        <View style={[s.inputBar, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
+          <TextInput
+            style={[s.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Napíš otázku..."
+            placeholderTextColor={COLORS.sand}
+            returnKeyType="send"
+            onSubmitEditing={() => sendMessage(input)}
+            multiline
+            maxLength={300}
+          />
+          <TouchableOpacity
+            style={[s.sendBtn, (!input.trim() || isTyping) && { opacity: 0.4 }]}
+            onPress={() => sendMessage(input)}
+            disabled={!input.trim() || isTyping}
+            activeOpacity={0.85}
+          >
+            <LinearGradient
+              colors={GRADIENTS.gold as [string, string, ...string[]]}
+              style={s.sendGrad}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Ionicons name="send" size={16} color="#fff" />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -325,47 +399,66 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.esp },
+// ─── Styles ───────────────────────────────────────────────────────────────────
+const s = StyleSheet.create({
+  // Hero
+  hero:         { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, overflow: 'hidden' },
+  heroCircle:   { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0', opacity: 0.05 },
+  heroRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  botAvatarHero:{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' },
+  heroTitle:    { ...TYPO.bodyMed, color: '#FAF6F0', fontSize: 16 },
+  onlineBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
+  onlineDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' },
+  onlineText:   { fontFamily: 'DMSans_400Regular', fontSize: 11, color: 'rgba(196,168,130,0.7)' },
+  clearBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)' },
 
-  header:      { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 14 },
-  botAvatar:   { width: 42, height: 42, borderRadius: 21, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#fff' },
-  headerSub:   { fontSize: 11, color: '#4ade80', marginTop: 2 },
-  clearBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
-
-  // Category tabs
-  groupsRow:       { flexDirection: 'row', gap: 6, paddingHorizontal: SIZES.padding, paddingVertical: 10, backgroundColor: COLORS.bg2, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  groupChip:       { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  groupChipActive: { backgroundColor: COLORS.esp, borderColor: COLORS.wal },
+  // Category pills
+  groupsRow:       { flexDirection: 'row', gap: 8, paddingBottom: 14 },
+  groupChip:       { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADII.full, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
+  groupChipActive: { backgroundColor: COLORS.gold, borderColor: COLORS.goldDark },
   groupEmoji:      { fontSize: 13 },
-  groupLabel:      { fontSize: 10, fontWeight: '600', color: COLORS.wal },
+  groupLabel:      { fontFamily: 'DMSans_500Medium', fontSize: 11, color: 'rgba(196,168,130,0.75)', letterSpacing: 0.3 },
   groupLabelActive:{ color: '#fff' },
 
-  messages:        { flex: 1, backgroundColor: COLORS.bg2 },
-  messagesContent: { padding: SIZES.padding, paddingBottom: 10, gap: 12 },
+  // Messages
+  messagesContent: { padding: 16, paddingBottom: 8, gap: 12 },
+  msgRow:          { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
+  msgRowUser:      { flexDirection: 'row-reverse' },
 
-  msgRow:     { flexDirection: 'row', alignItems: 'flex-end', gap: 8 },
-  msgRowUser: { flexDirection: 'row-reverse' },
-  botIcon:    { width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  botAvatar: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: COLORS.wal,
+  },
 
-  bubble:         { maxWidth: '80%', borderRadius: 18, padding: 12 },
-  bubbleBot:      { backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: COLORS.bg3 },
-  bubbleUser:     { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
-  bubbleText:     { fontSize: 13, color: COLORS.esp, lineHeight: 20 },
-  bubbleTextUser: { color: '#fff' },
-  bubbleTime:     { fontSize: 9, color: '#aaa', marginTop: 6, alignSelf: 'flex-end' },
+  bubbleBot: {
+    maxWidth: '80%', borderRadius: RADII.lg, borderBottomLeftRadius: 4,
+    padding: 12, borderWidth: 1,
+    ...SHADOWS.sm,
+  },
+  bubbleUser: {
+    maxWidth: '80%', borderRadius: RADII.lg, borderBottomRightRadius: 4,
+    padding: 12, backgroundColor: COLORS.esp,
+  },
+  bubbleText: { fontFamily: 'DMSans_400Regular', fontSize: 13, lineHeight: 20 },
+  bubbleTime: { fontFamily: 'DMSans_400Regular', fontSize: 9, marginTop: 6, alignSelf: 'flex-end' },
 
-  // Typing indicator dots
   typingDot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: COLORS.wal },
 
+  // Suggestions
   suggestionsWrap:  { marginTop: 4 },
-  suggestionsLabel: { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
+  suggestionsLabel: { ...TYPO.label, marginBottom: 10 },
   suggestions:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  suggestion:       { backgroundColor: '#fff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.sand },
-  suggestionText:   { fontSize: 12, color: COLORS.wal, fontWeight: '500' },
+  suggestionChip:   { borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1 },
+  suggestionText:   { fontFamily: 'DMSans_500Medium', fontSize: 12 },
 
-  inputRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3 },
-  input:    { flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 22, paddingHorizontal: 16, paddingVertical: 10, fontSize: 13, color: COLORS.esp, maxHeight: 100, backgroundColor: COLORS.bg2 },
-  sendBtn:  { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  // Disclaimer
+  disclaimer:     { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginTop: 16, padding: 10, borderRadius: RADII.sm },
+  disclaimerText: { flex: 1, fontFamily: 'DMSans_400Regular', fontSize: 10, lineHeight: 15 },
+
+  // Input bar
+  inputBar: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 12, borderTopWidth: 1 },
+  input:    { flex: 1, borderWidth: 1, borderRadius: RADII.pill, paddingHorizontal: 16, paddingVertical: 10, fontFamily: 'DMSans_400Regular', fontSize: 13, maxHeight: 100 },
+  sendBtn:  { width: 44, height: 44, borderRadius: 22, overflow: 'hidden' },
+  sendGrad: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

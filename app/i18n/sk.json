@@ -1,0 +1,120 @@
+{
+  "tab": {
+    "home": "Domov",
+    "profile": "Profil",
+    "score": "Skóre",
+    "chat": "AI Chat",
+    "shop": "Shop"
+  },
+  "common": {
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "back": "Späť",
+    "loading": "Načítavam...",
+    "error": "Chyba",
+    "confirm": "Potvrdiť",
+    "close": "Zavrieť",
+    "yes": "Áno",
+    "no": "Nie",
+    "ok": "OK",
+    "delete": "Vymazať",
+    "edit": "Upraviť",
+    "search": "Hľadať",
+    "send": "Odoslať",
+    "all": "Všetky",
+    "more": "Viac"
+  },
+  "home": {
+    "greeting_morning": "Dobré ráno",
+    "greeting_afternoon": "Dobrý deň",
+    "greeting_evening": "Dobrý večer",
+    "subtitle": "Staráme sa o váš úsmev",
+    "upcoming": "Najbližší termín",
+    "no_upcoming": "Žiadny termín",
+    "book_cta": "Rezervovať termín",
+    "actions_title": "Rýchle akcie",
+    "view_all": "Zobraziť všetky"
+  },
+  "appointments": {
+    "title": "Termíny",
+    "book": "Rezervovať",
+    "all": "Všetky",
+    "upcoming": "Nadchádzajúce",
+    "past": "Minulé",
+    "cancelled": "Zrušené",
+    "pending": "Čakajúce",
+    "no_appointments": "Žiadne termíny",
+    "no_appointments_sub": "Zatiaľ nemáš žiadne termíny. Rezervuj si prvý!",
+    "cancel_appt": "Zrušiť termín",
+    "reschedule": "Presunúť",
+    "duration": "Trvanie",
+    "status": "Stav",
+    "notes": "Poznámka"
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Upraviť profil",
+    "language": "Jazyk aplikácie",
+    "language_sk": "Slovenčina",
+    "language_en": "Angličtina",
+    "logout": "Odhlásiť sa",
+    "dark_mode": "Tmavý režim",
+    "notifications": "Notifikácie",
+    "personal_info": "Osobné údaje",
+    "name": "Meno",
+    "email": "E-mail",
+    "phone": "Telefón",
+    "date_of_birth": "Dátum narodenia",
+    "insurance": "Poisťovňa"
+  },
+  "health_passport": {
+    "title": "Zdravotný pas",
+    "allergies": "Alergie",
+    "medications": "Lieky",
+    "conditions": "Ochorenia",
+    "blood_type": "Krvná skupina",
+    "no_data": "Žiadne záznamy",
+    "add": "Pridať záznam",
+    "last_updated": "Naposledy aktualizované"
+  },
+  "notifications": {
+    "title": "Notifikácie",
+    "empty": "Žiadne notifikácie",
+    "empty_sub": "Všetko je aktuálne",
+    "all": "Všetky",
+    "unread": "Neprečítané",
+    "mark_read": "Označiť ako prečítané"
+  },
+  "score": {
+    "title": "Skóre",
+    "your_score": "Vaše skóre",
+    "dental_health": "Zdravie zubov",
+    "streak": "Séria dní",
+    "badges": "Odznaky",
+    "history": "História"
+  },
+  "booking": {
+    "title": "Rezervácia termínu",
+    "select_service": "Vybrať službu",
+    "select_date": "Vybrať dátum",
+    "select_time": "Vybrať čas",
+    "confirm": "Potvrdiť rezerváciu",
+    "success": "Termín bol rezervovaný!",
+    "notes_placeholder": "Poznámka (voliteľné)",
+    "price": "Cena",
+    "duration": "Trvanie"
+  },
+  "chat": {
+    "title": "AI Asistent",
+    "placeholder": "Opýtaj sa niečo o zuboch...",
+    "typing": "Píše...",
+    "empty": "Začni konverzáciu"
+  },
+  "shop": {
+    "title": "Shop",
+    "add_to_cart": "Do košíka",
+    "cart": "Košík",
+    "checkout": "Zaplatiť",
+    "empty_cart": "Košík je prázdny"
+  }
+}

@@ -1,105 +1,149 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator, Alert, Animated, Image, Modal,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput,
+  TouchableOpacity, View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { COLORS, SIZES } from '../../styles/theme';
+import Reanimated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SIZES, GRADIENTS, SHADOWS, RADII, SPACING, TYPO } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useNotifications } from '../../hooks/useNotifications';
 import { supabase } from '../../supabase';
-import UpcomingAppointmentCard from './components/UpcomingAppointmentCard';
-import QuickActionsGrid from './components/QuickActionsGrid';
+import { ProgressRing, StatusPill, SectionHeader } from '../../components/ui';
 
-// ─── Ordinačné hodiny widget ──────────────────────────────────────────────────
-const OH_DAYS = ['','Pon','Ut','St','Št','Pi','So','Ne'];
-type OHRow = { day_of_week: number; open_time: string|null; close_time: string|null; is_closed: boolean; note: string|null };
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function OpeningHoursWidget() {
+const HEALTH_DED: Partial<Record<string, number>> = {
+  cavity: 15, early_cavity: 8, root_canal: 10, extracted: 14,
+  missing: 10, fracture: 12, periodontal: 10, mobility: 8,
+};
+function getWeight(n: number) { const p = n % 10; if (p === 6 || p === 7) return 3; if (p === 4 || p === 5) return 2; if (p === 3) return 1.5; if (p === 8) return 0.5; return 1; }
+function calcScore(teeth: { tooth_number: number; status: string }[]) {
+  if (!teeth.length) return 70;
+  let ded = 0; let healthy = 0;
+  teeth.forEach(t => { ded += (HEALTH_DED[t.status] ?? 0) * getWeight(t.tooth_number); if (t.status === 'healthy') healthy++; });
+  return Math.max(0, Math.min(100, Math.round(100 - ded + Math.min(15, healthy * 0.8))));
+}
+
+function isToday(dateStr: string) {
+  const d = new Date(dateStr); const n = new Date();
+  return d.getDate() === n.getDate() && d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Dobré ráno';
+  if (h < 17) return 'Dobrý deň';
+  return 'Dobrý večer';
+}
+
+function formatDate() {
+  return new Date().toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function formatApptDate(iso: string) {
+  const d = new Date(iso);
+  const date = d.toLocaleDateString('sk-SK', { weekday: 'short', day: 'numeric', month: 'short' });
+  const time = d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+  return `${date} · ${time}`;
+}
+
+// ─── Opening Hours compact ────────────────────────────────────────────────────
+
+const OH_DAYS = ['', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+type OHRow = { day_of_week: number; open_time: string | null; close_time: string | null; is_closed: boolean; note: string | null };
+
+function OpeningHoursCompact() {
   const [hours, setHours] = React.useState<OHRow[]>([]);
-  const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay(); // 1=Pon..7=Ned
+  const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
 
   React.useEffect(() => {
     let cancelled = false;
-    supabase.from('opening_hours')
-      .select('day_of_week,open_time,close_time,is_closed,note')
-      .order('day_of_week')
+    supabase.from('opening_hours').select('day_of_week,open_time,close_time,is_closed,note').order('day_of_week')
       .then(({ data }) => { if (!cancelled && data) setHours(data as OHRow[]); });
     return () => { cancelled = true; };
   }, []);
 
-  if (hours.length === 0) return null;
-
+  if (!hours.length) return null;
   const todayRow = hours.find(h => h.day_of_week === todayNum);
-  const isOpenToday = todayRow && !todayRow.is_closed;
+  const isOpen = todayRow && !todayRow.is_closed;
 
   return (
-    <View style={ohStyles.card}>
-      {/* Dnešný stav */}
-      <View style={[ohStyles.todayBanner, isOpenToday ? ohStyles.todayOpen : ohStyles.todayClosed]}>
-        <View style={[ohStyles.dot, {backgroundColor: isOpenToday ? '#2ECC71' : '#E74C3C'}]}/>
-        <Text style={[ohStyles.todayStatus, {color: isOpenToday ? '#1E8449' : '#922B21'}]}>
-          {isOpenToday ? 'Dnes otvorené' : 'Dnes zatvorené'}
+    <View style={ohS.card}>
+      <LinearGradient colors={isOpen ? ['#EAFAF1', '#D5F5E3'] : ['#FDEDEC', '#F5B7B1']} style={ohS.banner}>
+        <View style={[ohS.dot, { backgroundColor: isOpen ? '#2ECC71' : '#E74C3C' }]} />
+        <Text style={[ohS.bannerText, { color: isOpen ? '#1E8449' : '#922B21' }]}>
+          {isOpen ? `Dnes otvorené · ${todayRow?.open_time?.slice(0, 5)} – ${todayRow?.close_time?.slice(0, 5)}` : 'Dnes zatvorené'}
         </Text>
-        {isOpenToday && todayRow && (
-          <Text style={ohStyles.todayTime}>{todayRow.open_time?.slice(0,5)} – {todayRow.close_time?.slice(0,5)}</Text>
-        )}
-      </View>
-      {/* Celý týždeň */}
+      </LinearGradient>
       {hours.map(h => (
-        <View key={h.day_of_week} style={[ohStyles.row, h.day_of_week === todayNum && ohStyles.rowToday]}>
-          <Text style={[ohStyles.dayLabel, h.day_of_week === todayNum && ohStyles.dayLabelToday]}>
-            {OH_DAYS[h.day_of_week]}
-          </Text>
-          {h.is_closed
-            ? <Text style={ohStyles.closed}>Zatvorené</Text>
-            : <Text style={ohStyles.time}>{h.open_time?.slice(0,5)} – {h.close_time?.slice(0,5)}</Text>
-          }
-          {h.note ? <Text style={ohStyles.note} numberOfLines={1}>{h.note}</Text> : null}
+        <View key={h.day_of_week} style={[ohS.row, h.day_of_week === todayNum && ohS.rowToday]}>
+          <Text style={[ohS.day, h.day_of_week === todayNum && { color: COLORS.esp, fontFamily: 'DMSans_500Medium' }]}>{OH_DAYS[h.day_of_week]}</Text>
+          <Text style={ohS.time}>{h.is_closed ? 'Zatvorené' : `${h.open_time?.slice(0, 5)} – ${h.close_time?.slice(0, 5)}`}</Text>
         </View>
       ))}
     </View>
   );
 }
 
-const ohStyles = StyleSheet.create({
-  card:        { backgroundColor:'#fff', borderRadius:SIZES.radius, marginHorizontal:SIZES.padding, marginBottom:14, borderWidth:1, borderColor:COLORS.bg3, overflow:'hidden' },
-  todayBanner: { flexDirection:'row', alignItems:'center', gap:8, paddingHorizontal:14, paddingVertical:11, borderBottomWidth:1, borderBottomColor:COLORS.bg3 },
-  todayOpen:   { backgroundColor:'#EAFAF1' },
-  todayClosed: { backgroundColor:'#FDEDEC' },
-  dot:         { width:8, height:8, borderRadius:4 },
-  todayStatus: { fontSize:13, fontWeight:'700', flex:1 },
-  todayTime:   { fontSize:12, fontWeight:'600', color:COLORS.esp },
-  row:         { flexDirection:'row', alignItems:'center', paddingHorizontal:14, paddingVertical:9, borderBottomWidth:1, borderBottomColor:COLORS.bg3 },
-  rowToday:    { backgroundColor:COLORS.bg2 },
-  dayLabel:    { width:28, fontSize:11, fontWeight:'600', color:COLORS.wal },
-  dayLabelToday:{ color:COLORS.esp, fontWeight:'800' },
-  time:        { flex:1, fontSize:12, color:COLORS.esp, fontWeight:'500' },
-  closed:      { flex:1, fontSize:12, color:'#bbb', fontStyle:'italic' },
-  note:        { fontSize:10, color:COLORS.wal, fontStyle:'italic', maxWidth:120 },
+const ohS = StyleSheet.create({
+  card:       { backgroundColor: '#fff', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 14, overflow: 'hidden', ...SHADOWS.sm },
+  banner:     { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12 },
+  dot:        { width: 8, height: 8, borderRadius: 4 },
+  bannerText: { fontSize: 13, fontFamily: 'DMSans_500Medium' },
+  row:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 8, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
+  rowToday:   { backgroundColor: COLORS.bg2 },
+  day:        { width: 26, fontSize: 11, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
+  time:       { flex: 1, fontSize: 12, color: COLORS.esp, fontFamily: 'DMSans_400Regular' },
 });
 
-type ToothStatus = 'healthy'|'cavity'|'filled'|'crown'|'extracted'|'missing'|'root_canal';
-const DEDUCTIONS: Partial<Record<ToothStatus,number>> = { cavity:10, root_canal:8, extracted:12, missing:8 };
-function getWeight(n:number){const p=n%10;if(p===6||p===7)return 3;if(p===4||p===5)return 2;if(p===3)return 1.5;if(p===8)return 0.5;return 1;}
-function calcScore(teeth:{tooth_number:number;status:string}[]){
-  if(!teeth.length) return 70;
-  let ded=0;let healthy=0;
-  teeth.forEach(t=>{const d=DEDUCTIONS[t.status as ToothStatus]??0;ded+=d*getWeight(t.tooth_number);if(t.status==='healthy')healthy++;});
-  return Math.max(0,Math.min(100,Math.round(100-ded+Math.min(10,healthy*0.5))));
-}
+// ─── Dental Tip ───────────────────────────────────────────────────────────────
 
-// Dátum formátuje UpcomingAppointmentCard interne
+const DENTAL_TIPS = [
+  { emoji: '🪥', text: 'Čistite zuby aspoň 2 minúty dvakrát denne — ráno aj večer.' },
+  { emoji: '🧵', text: 'Medzizubná niť odstraňuje zvyšky jedla tam, kde kefka nedostane.' },
+  { emoji: '💧', text: 'Pite dostatok vody — pomáha produkcii sliny, ktorá chráni zuby.' },
+  { emoji: '🥛', text: 'Mlieko a mliečne výrobky posilňujú sklovinu vďaka vápniku.' },
+  { emoji: '🚫', text: 'Vyhýbajte sa sladkým nápojom — cukor je hlavnou príčinou zubného kazu.' },
+  { emoji: '🍎', text: 'Jablká a mrkva prirodzene čistia zuby pri žuvaní.' },
+  { emoji: '🔬', text: 'Preventívna prehliadka každých 6 mesiacov predchádza vážnym problémom.' },
+  { emoji: '🌿', text: 'Ústna voda s fluoridom dopĺňa čistenie kefkou a chráni sklovinu.' },
+];
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function PatientHome() {
+  const { colors, dark } = useAppTheme();
   const router = useRouter();
   const { profile, hasHealthPassport, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { appointments, loading: apptLoading, refetch: refetchAppts, updateStatus } = useAppointments('patient');
   const { unreadCount } = useNotifications();
+
   const [refreshing, setRefreshing]       = useState(false);
-  const [dentalScore, setDentalScore]     = useState<number|null>(null);
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+  const [dentalScore, setDentalScore]     = useState<number | null>(null);
   const [scoreLoading, setScoreLoading]   = useState(true);
+  const [ratingAppt, setRatingAppt]       = useState<typeof appointments[0] | null>(null);
+  const [ratingVal, setRatingVal]         = useState(0);
+  const [ratingText, setRatingText]       = useState('');
+  const [ratingSaving, setRatingSaving]   = useState(false);
+  const starScale = useRef(new Animated.Value(1)).current;
+  const seenCompletedRef = useRef<Set<string> | null>(null);
+
+  const loadUnreadMsgs = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { count } = await supabase.from('messages').select('*', { count: 'exact', head: true })
+      .eq('receiver_id', user.id).eq('is_read', false);
+    setUnreadMsgCount(count ?? 0);
+  }, []);
 
   const loadScore = useCallback(async () => {
     setScoreLoading(true);
@@ -112,341 +156,724 @@ export default function PatientHome() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    refetchProfile();
-    refetchAppts();
-    loadScore();
+    refetchProfile(); refetchAppts(); loadScore(); loadUnreadMsgs();
     setTimeout(() => setRefreshing(false), 800);
-  }, [refetchProfile, refetchAppts, loadScore]);
+  }, [refetchProfile, refetchAppts, loadScore, loadUnreadMsgs]);
 
   useFocusEffect(useCallback(() => {
-    refetchProfile();
-    refetchAppts();
-    loadScore();
-  }, [refetchProfile, refetchAppts, loadScore]));
+    refetchProfile(); refetchAppts(); loadScore(); loadUnreadMsgs();
+  }, [refetchProfile, refetchAppts, loadScore, loadUnreadMsgs]));
+
+  useEffect(() => {
+    if (apptLoading || appointments.length === 0) return;
+    if (seenCompletedRef.current === null) {
+      seenCompletedRef.current = new Set(appointments.filter(a => a.status === 'completed').map(a => a.id));
+      return;
+    }
+    const fresh = appointments.find(a => a.status === 'completed' && !a.patient_rating && !seenCompletedRef.current!.has(a.id));
+    if (fresh) { seenCompletedRef.current!.add(fresh.id); setRatingAppt(fresh); setRatingVal(0); setRatingText(''); }
+  }, [appointments, apptLoading]);
+
+  async function handleSubmitRating() {
+    if (!ratingAppt || ratingVal === 0) return;
+    setRatingSaving(true);
+    const { error } = await supabase.from('appointments').update({ patient_rating: ratingVal, patient_review: ratingText.trim() || null }).eq('id', ratingAppt.id);
+    setRatingSaving(false);
+    if (error) { Alert.alert('Chyba', error.message); return; }
+    setRatingAppt(null); refetchAppts();
+  }
+
+  function animateStar() {
+    Animated.sequence([
+      Animated.timing(starScale, { toValue: 1.25, duration: 90, useNativeDriver: true }),
+      Animated.spring(starScale, { toValue: 1, useNativeDriver: true }),
+    ]).start();
+  }
 
   async function handleCancelAppointment(id: string) {
     Alert.alert('Zrušiť termín', 'Naozaj chcete zrušiť tento termín?', [
       { text: 'Nie', style: 'cancel' },
-      { text: 'Áno, zrušiť', style: 'destructive', onPress: async () => {
-        await updateStatus(id, 'cancelled');
-        refetchAppts();
-      }},
+      { text: 'Áno, zrušiť', style: 'destructive', onPress: async () => { await updateStatus(id, 'cancelled'); refetchAppts(); } },
     ]);
   }
 
-  const displayName = profile?.full_name ?? 'Pacient';
+  const displayName = profile?.full_name?.split(' ')[0] ?? 'Pacient';
+  const tip = DENTAL_TIPS[new Date().getDate() % DENTAL_TIPS.length];
 
-  // Kompletnosť profilu
-  const profileCompleteness = useMemo(() => {
-    const items = [
-      { label: 'Telefónne číslo',    done: !!profile?.phone_number,  points: 25, route: '/(patient)/profile'        as const },
-      { label: 'Zdravotný dotazník', done: hasHealthPassport,         points: 35, route: '/(patient)/health-passport' as const },
-      { label: 'Zubná karta',        done: dentalScore !== null,      points: 25, route: '/(patient)/score'          as const },
-      { label: 'Prvý termín',        done: appointments.length > 0,  points: 15, route: '/(patient)/book-appointment' as const },
-    ];
-    const pct = items.reduce((s, i) => s + (i.done ? i.points : 0), 0);
-    const first = items.find(i => !i.done) ?? null;
-    return { items, pct, first };
-  }, [profile, hasHealthPassport, dentalScore, appointments]);
+  const { nextAppointment, pendingAppointments, recentAppointments } = useMemo(() => ({
+    nextAppointment: appointments.find(a => a.status === 'scheduled' && new Date(a.appointment_date) > new Date()),
+    pendingAppointments: appointments.filter(a => a.status === 'pending'),
+    recentAppointments: appointments.filter(a => a.status === 'completed').slice(0, 4),
+  }), [appointments]);
 
-  const { reminderAppt, reminderIsToday, nextAppointment } = useMemo(() => {
-    const now      = new Date();
-    const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
-    const reminder = appointments.find((a) => {
-      if (a.status !== 'scheduled') return false;
-      const d = new Date(a.appointment_date);
-      return d.toDateString() === now.toDateString() || d.toDateString() === tomorrow.toDateString();
-    });
-    return {
-      reminderAppt:    reminder,
-      reminderIsToday: reminder
-        ? new Date(reminder.appointment_date).toDateString() === now.toDateString()
-        : false,
-      nextAppointment: appointments.find(
-        (a) => a.status === 'scheduled' && new Date(a.appointment_date) > now
-      ),
-    };
-  }, [appointments]);
+  const scoreColor = dentalScore == null ? COLORS.sand
+    : dentalScore >= 80 ? '#27AE60'
+    : dentalScore >= 60 ? '#F4C95D'
+    : '#E74C3C';
+
+  const scoreLabel = dentalScore == null ? '?' : String(dentalScore);
+
+  const bg = dark ? colors.bg2 : COLORS.bg2;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerLabel}>VITAJ SPÄŤ</Text>
-          {profileLoading
-            ? <ActivityIndicator color={COLORS.sand} size="small" style={{ alignSelf: 'flex-start', marginTop: 4 }} />
-            : <Text style={styles.headerTitle}>Ahoj, {displayName}! 👋</Text>}
-        </View>
-        {/* Zvonček */}
-        <TouchableOpacity style={styles.bellBtn} onPress={() => router.push('/(patient)/notifications')} activeOpacity={0.8}>
-          <Ionicons name="notifications-outline" size={20} color={COLORS.cream} />
-          {unreadCount > 0 && (
-            <View style={styles.bellBadge}>
-              <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.avatar} onPress={() => router.push('/(patient)/profile')} activeOpacity={0.8}>
-          <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.sand} colors={[COLORS.wal]} />}
+      >
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.wal} colors={[COLORS.wal]} />}>
+        {/* ── HERO ── */}
+        <LinearGradient colors={GRADIENTS.hero as [string,string,...string[]]} style={styles.hero}>
+          <SafeAreaView edges={['top']} style={styles.heroSafe}>
 
-        {/* ── 🔔 Reminder Banner ── */}
-        {!apptLoading && reminderAppt && (
-          <TouchableOpacity
-            style={[styles.reminderBanner, reminderIsToday ? styles.reminderToday : styles.reminderTomorrow]}
-            onPress={() => router.push('/(patient)/appointments')}
-            activeOpacity={0.88}
-          >
-            <Text style={styles.reminderIcon}>{reminderIsToday ? '🔔' : '📅'}</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.reminderTitle, reminderIsToday && styles.reminderTodayText]}>
-                {reminderIsToday ? 'Dnes máš termín!' : 'Zajtra máš termín!'}
-              </Text>
-              <Text style={styles.reminderSub}>
-                {new Date(reminderAppt.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
-                {' · '}
-                {reminderAppt.doctor?.full_name ?? 'MDDr. Loderer'}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color={reminderIsToday ? '#7D2A1A' : '#1A5276'} />
-          </TouchableOpacity>
-        )}
+            {/* Decorative circles */}
+            <View style={[styles.decCircle, { width: 180, height: 180, top: -60, right: -50, opacity: 0.06 }]} />
+            <View style={[styles.decCircle, { width: 100, height: 100, top: 40, left: -30, opacity: 0.04 }]} />
 
-        {/* ── ⚠️ Health Passport Banner ── */}
-        {!profileLoading && !hasHealthPassport && (
-          <TouchableOpacity style={styles.hpBanner}
-            onPress={() => router.push('/(patient)/health-passport')} activeOpacity={0.88}>
-            <View style={styles.hpBannerLeft}>
-              <Text style={styles.hpIcon}>⚠️</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.hpTitle}>Vyplňte zdravotný dotazník</Text>
-                <Text style={styles.hpSub}>Pomôže nám poskytovať vám bezpečnejšiu starostlivosť.</Text>
-              </View>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#8C2A18" />
-          </TouchableOpacity>
-        )}
-
-        {/* ── Najbližší termín ── */}
-        <View style={[styles.body, styles.bodyRow]}>
-          <Text style={styles.sectionLabel}>NAJBLIŽŠÍ TERMÍN</Text>
-          <TouchableOpacity onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.75} style={styles.historyBtn}>
-            <Text style={styles.historyBtnText}>História</Text>
-            <Ionicons name="chevron-forward" size={12} color={COLORS.wal} />
-          </TouchableOpacity>
-        </View>
-        {apptLoading ? (
-          <ActivityIndicator color={COLORS.wal} style={{ marginVertical: 12 }} />
-        ) : nextAppointment ? (
-          <UpcomingAppointmentCard
-            appointment={nextAppointment}
-            onPress={() => router.push('/(patient)/appointments')}
-            onReschedule={() => router.push('/(patient)/appointments')}
-            onCancel={() => handleCancelAppointment(nextAppointment.id)}
-          />
-        ) : (
-          <TouchableOpacity style={styles.noApptCard}
-            onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.85}>
-            <Ionicons name="calendar-outline" size={20} color={COLORS.wal} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.noApptText}>Žiadny nadchádzajúci termín</Text>
-              <Text style={styles.noApptSub}>Kliknite sem a rezervujte si nový termín →</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-
-        {/* ── Rýchle akcie ── */}
-        <View style={styles.body}><Text style={styles.sectionLabel}>RÝCHLE AKCIE</Text></View>
-        <QuickActionsGrid />
-
-        {/* ── Kompletnosť profilu ── */}
-        {!profileLoading && profileCompleteness.pct < 100 && (
-          <View style={styles.body}>
-            <Text style={styles.sectionLabel}>PROFIL</Text>
-            <View style={styles.completenessCard}>
-              <View style={styles.completenessTop}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.completenessTitle}>Kompletnosť profilu</Text>
-                  <Text style={styles.completenessSubtitle}>
-                    Doplň údaje pre lepší zážitok
-                  </Text>
-                </View>
-                <Text style={styles.completenessPct}>{profileCompleteness.pct}%</Text>
-              </View>
-              {/* Progress bar */}
-              <View style={styles.progressTrack}>
-                <View style={[styles.progressFill, { width: `${profileCompleteness.pct}%` }]} />
-              </View>
-              {/* Položky */}
-              <View style={styles.completenessItems}>
-                {profileCompleteness.items.map(item => (
-                  <View key={item.label} style={styles.completenessItem}>
-                    <Ionicons
-                      name={item.done ? 'checkmark-circle' : 'ellipse-outline'}
-                      size={15}
-                      color={item.done ? '#1E8449' : '#ccc'}
-                    />
-                    <Text style={[styles.completenessItemText, item.done && styles.completenessItemDone]}>
-                      {item.label}
-                    </Text>
-                    {item.done && (
-                      <View style={styles.completenessPoints}>
-                        <Text style={styles.completenessPointsText}>+{item.points}</Text>
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </View>
-              {/* CTA */}
-              {profileCompleteness.first && (
-                <TouchableOpacity
-                  style={styles.completenessBtn}
-                  onPress={() => router.push(profileCompleteness.first!.route)}
-                  activeOpacity={0.85}>
-                  <Text style={styles.completenessBtnText}>Doplniť: {profileCompleteness.first.label}</Text>
-                  <Ionicons name="arrow-forward" size={14} color="#fff" />
+            {/* Header row */}
+            <View style={styles.heroHeader}>
+              <TouchableOpacity onPress={() => router.push('/(patient)/notifications')} style={styles.iconBtn} activeOpacity={0.8}>
+                <Ionicons name="notifications-outline" size={20} color={COLORS.cream} />
+                {unreadCount > 0 && <View style={styles.notifDot} />}
+              </TouchableOpacity>
+              <View style={{ flex: 1 }} />
+              {unreadMsgCount > 0 && (
+                <TouchableOpacity onPress={() => router.push('/(patient)/messages')} style={styles.iconBtn} activeOpacity={0.8}>
+                  <Ionicons name="chatbubble-outline" size={20} color={COLORS.cream} />
+                  <View style={styles.msgBadge}><Text style={styles.msgBadgeText}>{unreadMsgCount}</Text></View>
                 </TouchableOpacity>
               )}
+              <TouchableOpacity onPress={() => router.push('/(patient)/profile')} activeOpacity={0.8}>
+                <View style={styles.avatar}>
+                  {profile?.avatar_url
+                    ? <Image source={{ uri: profile.avatar_url }} style={styles.avatarImg} />
+                    : <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>}
+                </View>
+              </TouchableOpacity>
             </View>
+
+            {/* Gold accent line */}
+            <View style={styles.goldLine} />
+
+            {/* Greeting */}
+            <Reanimated.View entering={FadeInDown.delay(100).duration(600)}>
+              <Text style={styles.greeting}>{getGreeting()},</Text>
+              <Text style={styles.name}>{displayName}.</Text>
+              <Text style={styles.heroDate}>{formatDate()}</Text>
+            </Reanimated.View>
+
+            {/* Pending badge */}
+            {pendingAppointments.length > 0 && (
+              <Reanimated.View entering={FadeInDown.delay(200).duration(500)}>
+                <TouchableOpacity style={styles.pendingPill} onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85}>
+                  <Text style={styles.pendingPillText}>⏳ {pendingAppointments.length} žiadosť čaká na schválenie</Text>
+                  <Ionicons name="chevron-forward" size={12} color={COLORS.cream} />
+                </TouchableOpacity>
+              </Reanimated.View>
+            )}
+          </SafeAreaView>
+        </LinearGradient>
+
+        {/* ── NEXT APPOINTMENT CARD (overlap) ── */}
+        <Reanimated.View entering={FadeInUp.delay(150).duration(500)} style={styles.apptCardWrap}>
+          {apptLoading ? (
+            <View style={[styles.apptCard, { alignItems: 'center', justifyContent: 'center', paddingVertical: 28 }]}>
+              <ActivityIndicator color={COLORS.wal} />
+            </View>
+          ) : nextAppointment ? (
+            <TouchableOpacity
+              style={styles.apptCard}
+              onPress={() => router.push('/(patient)/appointments')}
+              activeOpacity={0.92}
+            >
+              <View style={styles.apptCardTop}>
+                <View>
+                  <Text style={styles.apptLabel}>TVOJ ĎALŠÍ TERMÍN</Text>
+                  <Text style={styles.apptTime}>
+                    {new Date(nextAppointment.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                  <Text style={styles.apptDate}>{formatApptDate(nextAppointment.appointment_date)}</Text>
+                </View>
+                <View style={styles.apptRight}>
+                  <View style={styles.apptServiceCircle}>
+                    <Text style={{ fontSize: 22 }}>{nextAppointment.service?.emoji ?? '🦷'}</Text>
+                  </View>
+                  <StatusPill status="scheduled" size="sm" style={{ marginTop: 6 }} />
+                </View>
+              </View>
+              {nextAppointment.service && (
+                <View style={styles.apptService}>
+                  <Text style={styles.apptServiceName}>{nextAppointment.service.name}</Text>
+                </View>
+              )}
+              <View style={styles.apptActions}>
+                <TouchableOpacity style={styles.apptBtnSecondary} onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.8}>
+                  <Text style={styles.apptBtnSecondaryText}>Detail</Text>
+                </TouchableOpacity>
+                <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={styles.apptBtnPrimary}>
+                  <TouchableOpacity onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={styles.apptBtnPrimaryText}>Presunúť</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.apptCardEmpty} onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.88}>
+              <LinearGradient colors={GRADIENTS.cream as [string,string,...string[]]} style={styles.apptCardEmptyGrad}>
+                <View style={styles.apptEmptyIcon}>
+                  <Ionicons name="calendar-outline" size={28} color={COLORS.wal} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.apptEmptyTitle}>Žiadny termín</Text>
+                  <Text style={styles.apptEmptySub}>Rezervujte si prvý termín →</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={COLORS.wal} />
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+        </Reanimated.View>
+
+        {/* ── QUICK ACTIONS ── */}
+        <Reanimated.View entering={FadeInUp.delay(250).duration(500)} style={styles.quickSection}>
+          <Text style={styles.quickLabel}>Rýchle akcie</Text>
+          <View style={styles.quickRow}>
+            {([
+              { icon: 'calendar', label: 'Rezervovať', route: '/(patient)/book-appointment', gold: true },
+              { icon: 'time-outline', label: 'Záznamy', route: '/(patient)/appointments', gold: false },
+              { icon: 'chatbubble-outline', label: 'Správy', route: '/(patient)/messages', gold: false },
+              { icon: 'person-outline', label: 'Doktor', route: '/(patient)/moj-zubar', gold: false },
+            ] as { icon: any; label: string; route: any; gold: boolean }[]).map((item) => (
+              <TouchableOpacity
+                key={item.label}
+                style={[styles.quickBtn, item.gold && styles.quickBtnGold]}
+                onPress={() => router.push(item.route)}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.quickIconWrap, item.gold && styles.quickIconWrapGold]}>
+                  <Ionicons name={item.icon} size={28} color={item.gold ? '#1A110A' : COLORS.gold} />
+                </View>
+                <Text style={[styles.quickBtnLabel, item.gold && styles.quickBtnLabelGold]}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
+        </Reanimated.View>
+
+        {/* ── HEALTH SCORE ── */}
+        <Reanimated.View entering={FadeInUp.delay(350).duration(500)} style={styles.scoreSection}>
+          <LinearGradient colors={GRADIENTS.hero as [string,string,...string[]]} style={styles.scoreCard}>
+            <View style={styles.scoreLeft}>
+              <Text style={styles.scoreSectionLabel}>DENTÁLNE SKÓRE</Text>
+              <Text style={styles.scoreTitle}>
+                {dentalScore == null ? 'Skóre nedostupné'
+                  : dentalScore >= 80 ? '🌟 Výborný chrup!'
+                  : dentalScore >= 60 ? '👍 Dobrý stav'
+                  : dentalScore >= 40 ? '⚠️ Priemerný stav'
+                  : '🔴 Vyžaduje pozornosť'}
+              </Text>
+              <Text style={styles.scoreSub}>
+                {dentalScore == null
+                  ? 'Navštívte doktora pre vyplnenie zubnej karty'
+                  : 'Kliknite pre detailnú analýzu chrupu'}
+              </Text>
+              <TouchableOpacity onPress={() => router.push('/(patient)/score')} activeOpacity={0.85}>
+                <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={styles.scoreBtn}>
+                  <Text style={styles.scoreBtnText}>Zobraziť analýzu</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity onPress={() => router.push('/(patient)/score')} activeOpacity={0.85}>
+              {scoreLoading
+                ? <ActivityIndicator color={COLORS.gold} size="large" />
+                : <ProgressRing
+                    value={dentalScore ?? 0}
+                    size="lg"
+                    color={scoreColor}
+                    trackColor="rgba(255,255,255,0.1)"
+                    label="/100"
+                    style={{ opacity: dentalScore == null ? 0.4 : 1 }}
+                  />
+              }
+            </TouchableOpacity>
+          </LinearGradient>
+        </Reanimated.View>
+
+        {/* ── RECENT ACTIVITY ── */}
+        {recentAppointments.length > 0 && (
+          <Reanimated.View entering={FadeInUp.delay(400).duration(500)}>
+            <SectionHeader
+              title="Posledné návštevy"
+              action={{ text: 'Všetky →', onPress: () => router.push('/(patient)/appointments') }}
+              style={{ marginTop: SPACING.sm }}
+            />
+            <View style={{ paddingHorizontal: SPACING.lg, gap: SPACING.sm }}>
+              {recentAppointments.map((appt, i) => (
+                <Reanimated.View key={appt.id} entering={FadeInUp.delay(420 + i * 60).duration(400)}>
+                  <View style={styles.timelineItem}>
+                    <View style={styles.timelineDot} />
+                    {i < recentAppointments.length - 1 && <View style={styles.timelineLine} />}
+                    <View style={[styles.timelineCard, SHADOWS.sm]}>
+                      <View style={styles.timelineCardRow}>
+                        <Text style={{ fontSize: 20, marginRight: 10 }}>{appt.service?.emoji ?? '🦷'}</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.timelineService}>{appt.service?.name ?? 'Termín'}</Text>
+                          <Text style={styles.timelineDate}>{formatApptDate(appt.appointment_date)}</Text>
+                        </View>
+                        {appt.patient_rating ? (
+                          <View style={styles.ratingMini}>
+                            <Ionicons name="star" size={10} color="#F39C12" />
+                            <Text style={styles.ratingMiniText}>{appt.patient_rating}</Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                  </View>
+                </Reanimated.View>
+              ))}
+            </View>
+          </Reanimated.View>
         )}
 
-        {/* ── Ordinačné hodiny ── */}
-        <View style={styles.body}><Text style={styles.sectionLabel}>ORDINAČNÉ HODINY</Text></View>
-        <OpeningHoursWidget />
-
-        {/* ── Upozornenia ── */}
-        <View style={styles.body}>
-          <Text style={styles.sectionLabel}>UPOZORNENIA</Text>
-          <View style={styles.alertCard}>
-            <Ionicons name="warning-outline" size={15} color="#c0392b" />
-            <Text style={styles.alertText}>Odporúčaná preventívna prehliadka každých 6 mesiacov.</Text>
+        {/* ── DENTAL TIP ── */}
+        <Reanimated.View entering={FadeInUp.delay(500).duration(400)} style={{ paddingHorizontal: SPACING.xl, marginTop: SPACING.xl }}>
+          <View style={styles.tipCard}>
+            <View style={styles.tipIconWrap}>
+              <Text style={styles.tipEmoji}>{tip.emoji}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.tipLabel}>TIP DŇA</Text>
+              <Text style={styles.tipText}>{tip.text}</Text>
+            </View>
           </View>
-        </View>
+        </Reanimated.View>
 
-        {/* ── Dentálne skóre mini-karta ── */}
-        <View style={styles.body}>
-          <Text style={styles.sectionLabel}>DENTÁLNE SKÓRE</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.scoreCard}
-          onPress={() => router.push('/(patient)/score')}
-          activeOpacity={0.85}
-        >
-          {scoreLoading ? (
-            <ActivityIndicator color="#fff" size="small" style={{ marginRight: 8 }} />
-          ) : (
-            <>
-              <View style={[
-                styles.scoreCircleMini,
-                { borderColor: dentalScore == null ? 'rgba(255,255,255,0.3)'
-                    : dentalScore >= 80 ? '#2ECC71'
-                    : dentalScore >= 60 ? '#F4D03F'
-                    : '#E74C3C' }
-              ]}>
-                <Text style={styles.scoreMiniNum}>{dentalScore ?? '?'}</Text>
-                <Text style={styles.scoreMiniSub}>/100</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.scoreMiniTitle}>
-                  {dentalScore == null
-                    ? 'Skóre nedostupné'
-                    : dentalScore >= 80 ? '🌟 Výborný chrup!'
-                    : dentalScore >= 60 ? '👍 Dobrý stav'
-                    : dentalScore >= 40 ? '⚠️ Priemerný stav'
-                    : '🔴 Vyžaduje pozornosť'}
-                </Text>
-                <Text style={styles.scoreMiniSub2}>
-                  {dentalScore == null
-                    ? 'Navštívte doktora pre vyplnenie zubnej karty'
-                    : 'Kliknite pre detailnú analýzu chrupu →'}
-                </Text>
-              </View>
-            </>
-          )}
-          <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.6)" />
-        </TouchableOpacity>
+        {/* ── OPENING HOURS ── */}
+        <Reanimated.View entering={FadeInUp.delay(550).duration(400)}>
+          <SectionHeader title="Ordinačné hodiny" style={{ marginTop: SPACING.lg }} />
+          <OpeningHoursCompact />
+        </Reanimated.View>
 
-        <View style={{ height: 24 }} />
       </ScrollView>
 
-      {/* ── FAB: Rezervovať termín ── */}
-      <TouchableOpacity style={styles.fab}
-        onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.85}>
-        <Ionicons name="add" size={24} color="#fff" />
-      </TouchableOpacity>
-    </SafeAreaView>
+      {/* ── Rating Modal ── */}
+      <Modal visible={!!ratingAppt} transparent animationType="slide" onRequestClose={() => setRatingAppt(null)}>
+        <View style={styles.ratingOverlay}>
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setRatingAppt(null)} />
+          <View style={styles.ratingSheet}>
+            <View style={styles.ratingHandle} />
+            <Text style={styles.ratingTitle}>🦷 Ohodnoť návštevu</Text>
+            <Text style={styles.ratingSubtitle}>
+              {ratingAppt?.service?.emoji ?? '🦷'} {ratingAppt?.service?.name ?? 'Termín'} ·{' '}
+              {ratingAppt ? new Date(ratingAppt.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' }) : ''}
+            </Text>
+            <Animated.View style={[styles.starsRow, { transform: [{ scale: starScale }] }]}>
+              {[1, 2, 3, 4, 5].map(n => (
+                <TouchableOpacity key={n} onPress={() => { setRatingVal(n); animateStar(); }} activeOpacity={0.7}>
+                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#F39C12' : '#ddd'} />
+                </TouchableOpacity>
+              ))}
+            </Animated.View>
+            {ratingVal > 0 && <Text style={styles.ratingLabel}>{['', 'Veľmi zlý 😞', 'Zlý 😐', 'Dobrý 🙂', 'Veľmi dobrý 😊', 'Výborný! 🤩'][ratingVal]}</Text>}
+            <TextInput
+              style={styles.ratingInput}
+              placeholder="Pridaj komentár (voliteľné)..."
+              placeholderTextColor="#999"
+              value={ratingText}
+              onChangeText={setRatingText}
+              multiline numberOfLines={3} textAlignVertical="top"
+            />
+            <View style={styles.ratingActions}>
+              <TouchableOpacity style={styles.ratingBtnSkip} onPress={() => setRatingAppt(null)} activeOpacity={0.8}>
+                <Text style={styles.ratingBtnSkipText}>Neskôr</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.ratingBtnSubmit, (ratingSaving || ratingVal === 0) && { opacity: 0.45 }]}
+                onPress={handleSubmitRating} disabled={ratingSaving || ratingVal === 0} activeOpacity={0.85}
+              >
+                {ratingSaving ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.ratingBtnSubmitText}>Odoslať ★</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: COLORS.esp },
-  scroll: { flex: 1, backgroundColor: COLORS.bg2 },
+  // Hero
+  hero: {
+    minHeight: 280,
+    paddingBottom: 50,
+  },
+  heroSafe: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.md,
+  },
+  decCircle: {
+    position: 'absolute',
+    borderRadius: 9999,
+    backgroundColor: '#C9A84C',
+  },
+  heroHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  iconBtn: {
+    width: 38, height: 38, borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  notifDot: {
+    position: 'absolute', top: 6, right: 6,
+    width: 8, height: 8, borderRadius: 4,
+    backgroundColor: '#E74C3C',
+    borderWidth: 1.5, borderColor: COLORS.esp,
+  },
+  msgBadge: {
+    position: 'absolute', top: 4, right: 4,
+    backgroundColor: '#4A90E2', borderRadius: 9999,
+    minWidth: 14, height: 14,
+    alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  msgBadgeText: { fontSize: 7, fontFamily: 'DMSans_500Medium', color: '#fff' },
+  avatar: {
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: COLORS.wal,
+    borderWidth: 2, borderColor: COLORS.gold,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  avatarImg: { width: 44, height: 44, borderRadius: 22 },
+  avatarText: { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.cream },
+  goldLine: {
+    height: 1, backgroundColor: COLORS.gold, opacity: 0.4,
+    marginBottom: SPACING.lg,
+  },
+  greeting: {
+    ...TYPO.heroItalic,
+    color: COLORS.sand,
+    fontSize: 20,
+    marginBottom: 2,
+  },
+  name: {
+    ...TYPO.hero,
+    color: '#FAF6F0',
+    marginBottom: 6,
+  },
+  heroDate: {
+    ...TYPO.caption,
+    color: COLORS.sand,
+    opacity: 0.7,
+    textTransform: 'capitalize',
+    marginBottom: SPACING.lg,
+  },
+  pendingPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(244,201,93,0.15)',
+    borderRadius: RADII.full,
+    paddingHorizontal: 14, paddingVertical: 7,
+    borderWidth: 1, borderColor: 'rgba(244,201,93,0.3)',
+    alignSelf: 'flex-start',
+  },
+  pendingPillText: {
+    ...TYPO.caption,
+    color: COLORS.cream,
+    fontSize: 11,
+  },
 
-  header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding + 4, paddingTop: 20, paddingBottom: 22, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
-  headerTitle: { fontSize: 22, fontWeight: '500', color: '#fff' },
-  avatar:     { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.wal, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },
-  bellBtn:    { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', marginRight: 4 },
-  bellBadge:  { position: 'absolute', top: 2, right: 2, minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3, borderWidth: 1.5, borderColor: COLORS.esp },
-  bellBadgeText: { fontSize: 8, fontWeight: '800', color: '#fff' },
+  // Next appointment card
+  apptCardWrap: {
+    marginHorizontal: SPACING.lg,
+    marginTop: -36,
+    marginBottom: SPACING.xl,
+  },
+  apptCard: {
+    backgroundColor: '#FFFDF9',
+    borderRadius: RADII.xl,
+    padding: SPACING.lg,
+    borderWidth: 1, borderColor: COLORS.bg3,
+    ...SHADOWS.card,
+  },
+  apptCardTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: SPACING.md,
+  },
+  apptLabel: {
+    ...TYPO.overline,
+    color: COLORS.wal,
+    marginBottom: SPACING.xs,
+  },
+  apptTime: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 32,
+    color: COLORS.esp,
+    lineHeight: 36,
+    letterSpacing: -0.5,
+  },
+  apptDate: {
+    ...TYPO.caption,
+    color: COLORS.wal,
+    marginTop: 2,
+  },
+  apptRight: {
+    alignItems: 'center',
+    marginLeft: 'auto',
+  },
+  apptServiceCircle: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: COLORS.bg2,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  apptService: {
+    backgroundColor: COLORS.bg2,
+    borderRadius: RADII.sm,
+    paddingHorizontal: 10, paddingVertical: 6,
+    marginBottom: SPACING.md,
+  },
+  apptServiceName: {
+    ...TYPO.bodyMedium,
+    color: COLORS.esp,
+  },
+  apptActions: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  apptBtnSecondary: {
+    flex: 1, paddingVertical: 12,
+    borderRadius: RADII.md,
+    borderWidth: 1.5, borderColor: COLORS.bg3,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  apptBtnSecondaryText: {
+    ...TYPO.bodyMedium,
+    color: COLORS.wal,
+    fontSize: 13,
+  },
+  apptBtnPrimary: {
+    flex: 1, height: 44,
+    borderRadius: RADII.md,
+    overflow: 'hidden',
+  },
+  apptBtnPrimaryText: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 13,
+    color: '#1A110A',
+  },
+  apptCardEmpty: {
+    borderRadius: RADII.xl,
+    overflow: 'hidden',
+    ...SHADOWS.md,
+  },
+  apptCardEmptyGrad: {
+    flexDirection: 'row', alignItems: 'center', gap: SPACING.md,
+    padding: SPACING.lg,
+  },
+  apptEmptyIcon: {
+    width: 52, height: 52, borderRadius: 26,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  apptEmptyTitle: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 16, color: COLORS.esp, marginBottom: 2,
+  },
+  apptEmptySub: {
+    ...TYPO.caption,
+    color: COLORS.wal,
+  },
 
-  reminderBanner:     { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 14, marginBottom: 4, paddingVertical: 13, paddingHorizontal: 14, borderWidth: 1.5 },
-  reminderToday:      { backgroundColor: '#FEF0EE', borderColor: '#E8917F' },
-  reminderTomorrow:   { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' },
-  reminderTodayText:  { color: '#7D2A1A' },
-  reminderIcon:       { fontSize: 26 },
-  reminderTitle:      { fontSize: 14, fontWeight: '700', color: '#1A5276', marginBottom: 2 },
-  reminderSub:        { fontSize: 12, color: COLORS.wal },
+  // Quick actions
+  quickSection: {
+    paddingHorizontal: SPACING.xl,
+    marginBottom: SPACING.xl,
+  },
+  quickLabel: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 18, color: COLORS.esp,
+    marginBottom: SPACING.md,
+  },
+  quickRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+  },
+  quickBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: SPACING.md,
+    borderRadius: RADII.lg,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1, borderColor: COLORS.bg3,
+    ...SHADOWS.card,
+    gap: 6,
+  },
+  quickBtnGold: {
+    backgroundColor: COLORS.gold,
+    borderColor: COLORS.goldDark,
+  },
+  quickIconWrap: {
+    width: 48, height: 48, borderRadius: RADII.md,
+    backgroundColor: COLORS.bg2,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  quickIconWrapGold: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  quickBtnLabel: {
+    ...TYPO.caption, fontSize: 10, color: COLORS.wal, textAlign: 'center',
+  },
+  quickBtnLabelGold: {
+    color: '#1A110A',
+  },
 
-  hpBanner: { backgroundColor: '#FAE8E5', borderWidth: 1.5, borderColor: '#CC7060', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 16, marginBottom: 4, paddingVertical: 13, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  hpBannerLeft: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  hpIcon:  { fontSize: 22 },
-  hpTitle: { fontSize: 14, fontWeight: '700', color: '#8C2A18', marginBottom: 2 },
-  hpSub:   { fontSize: 11, color: '#a84030', lineHeight: 16 },
+  // Score
+  scoreSection: {
+    paddingHorizontal: SPACING.lg,
+    marginTop: SPACING.xl,
+  },
+  scoreCard: {
+    borderRadius: RADII.xl,
+    padding: SPACING.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.lg,
+    ...SHADOWS.lg,
+  },
+  scoreLeft: { flex: 1 },
+  scoreSectionLabel: {
+    ...TYPO.overline,
+    color: COLORS.sand,
+    marginBottom: SPACING.sm,
+  },
+  scoreTitle: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 18, color: '#FAF6F0',
+    lineHeight: 24, marginBottom: SPACING.sm,
+  },
+  scoreSub: {
+    ...TYPO.caption,
+    color: COLORS.sand,
+    opacity: 0.7,
+    marginBottom: SPACING.lg,
+    lineHeight: 16,
+  },
+  scoreBtn: {
+    paddingHorizontal: 16, paddingVertical: 9,
+    borderRadius: RADII.md, alignSelf: 'flex-start',
+  },
+  scoreBtnText: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 12, color: '#1A110A',
+  },
 
-  body:    { paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
-  bodyRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '500', textTransform: 'uppercase', marginBottom: 9 },
-  historyBtn:     { flexDirection: 'row', alignItems: 'center', gap: 2, marginBottom: 9 },
-  historyBtnText: { fontSize: 11, fontWeight: '600', color: COLORS.wal },
+  // Section headers
+  sectionHeader: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: SPACING.lg, marginTop: SPACING.xl, marginBottom: SPACING.md,
+  },
+  sectionTitle: {
+    fontFamily: 'PlayfairDisplay_700Bold',
+    fontSize: 18, color: COLORS.esp,
+  },
+  sectionLink: {
+    ...TYPO.caption,
+    color: COLORS.wal,
+  },
 
-  noApptCard: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginBottom: 14, padding: 16, borderWidth: 1.5, borderColor: COLORS.bg3, borderStyle: 'dashed', flexDirection: 'row', alignItems: 'center', gap: 12 },
-  noApptText: { fontSize: 13, fontWeight: '600', color: COLORS.esp, marginBottom: 3 },
-  noApptSub:  { fontSize: 11, color: COLORS.wal },
+  // Timeline
+  timelineItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.md,
+    position: 'relative',
+  },
+  timelineDot: {
+    width: 10, height: 10, borderRadius: 5,
+    backgroundColor: COLORS.gold,
+    marginTop: 14,
+    zIndex: 1,
+  },
+  timelineLine: {
+    position: 'absolute',
+    left: 4, top: 24,
+    width: 2, height: '100%',
+    backgroundColor: COLORS.bg3,
+  },
+  timelineCard: {
+    flex: 1,
+    backgroundColor: '#FFFDF9',
+    borderRadius: RADII.lg,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+    borderWidth: 1, borderColor: COLORS.bg3,
+    ...SHADOWS.sm,
+  },
+  timelineCardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  timelineService: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 13, color: COLORS.esp, marginBottom: 2,
+  },
+  timelineDate: {
+    ...TYPO.caption,
+    color: COLORS.wal,
+  },
+  ratingMini: {
+    flexDirection: 'row', alignItems: 'center', gap: 2,
+    backgroundColor: '#FEF9E7', borderRadius: 6,
+    paddingHorizontal: 6, paddingVertical: 3,
+  },
+  ratingMiniText: {
+    fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#F39C12',
+  },
 
-  alertCard: { backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: SIZES.radius, padding: 12, flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
-  alertText:  { flex: 1, fontSize: 12, color: '#8C2A18', lineHeight: 18 },
+  // Tip card
+  tipCard: {
+    flexDirection: 'row', alignItems: 'center', gap: SPACING.md,
+    borderRadius: RADII.lg, padding: SPACING.lg,
+    backgroundColor: COLORS.infoBg,
+    borderWidth: 1, borderColor: '#AED6F1',
+    ...SHADOWS.sm,
+  },
+  tipIconWrap: {
+    width: 44, height: 44, borderRadius: RADII.md,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  tipEmoji:  { fontSize: 22 },
+  tipLabel:  { ...TYPO.label, color: COLORS.info, marginBottom: 4 },
+  tipText:   { ...TYPO.bodySm, color: COLORS.info, lineHeight: 18 },
 
-  // Kompletnosť profilu
-  completenessCard:      { backgroundColor: '#fff', borderRadius: SIZES.radius, padding: 16, borderWidth: 1.5, borderColor: COLORS.bg3 },
-  completenessTop:       { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
-  completenessTitle:     { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
-  completenessSubtitle:  { fontSize: 11, color: COLORS.wal },
-  completenessPct:       { fontSize: 28, fontWeight: '800', color: COLORS.wal },
-  progressTrack:         { height: 6, backgroundColor: COLORS.bg3, borderRadius: 3, marginBottom: 14, overflow: 'hidden' },
-  progressFill:          { height: 6, backgroundColor: COLORS.wal, borderRadius: 3 },
-  completenessItems:     { gap: 8, marginBottom: 14 },
-  completenessItem:      { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  completenessItemText:  { flex: 1, fontSize: 12, color: COLORS.wal },
-  completenessItemDone:  { color: '#1E8449', textDecorationLine: 'line-through' },
-  completenessPoints:    { backgroundColor: '#EAFAF1', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
-  completenessPointsText:{ fontSize: 9, fontWeight: '700', color: '#1E8449' },
-  completenessBtn:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 11 },
-  completenessBtnText:   { fontSize: 12, fontWeight: '700', color: '#fff' },
+  // FAB
+  fab: {
+    position: 'absolute', bottom: 90, right: 20,
+    width: 56, height: 56, borderRadius: 28,
+    overflow: 'hidden',
+    ...SHADOWS.gold,
+  },
+  fabGrad: {
+    flex: 1, alignItems: 'center', justifyContent: 'center',
+  },
 
-  scoreCard:        { backgroundColor: COLORS.esp, borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginBottom: 14, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14 },
-  scoreCircleMini:  { width: 56, height: 56, borderRadius: 28, borderWidth: 3, alignItems: 'center', justifyContent: 'center' },
-  scoreMiniNum:     { fontSize: 20, fontWeight: '800', color: '#fff', lineHeight: 22 },
-  scoreMiniSub:     { fontSize: 8,  fontWeight: '600', color: 'rgba(255,255,255,0.6)', lineHeight: 10 },
-  scoreMiniTitle:   { fontSize: 14, fontWeight: '700', color: '#fff', marginBottom: 3 },
-  scoreMiniSub2:    { fontSize: 11, color: COLORS.sand },
-
-  fab: { position: 'absolute', bottom: 80, right: 20, width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6 },
+  // Rating modal
+  ratingOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
+  ratingSheet:       { backgroundColor: '#fff', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
+  ratingHandle:      { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
+  ratingTitle:       { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
+  ratingSubtitle:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20, fontFamily: 'DMSans_400Regular' },
+  starsRow:          { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 8 },
+  ratingLabel:       { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F39C12', textAlign: 'center', marginBottom: 16 },
+  ratingInput:       { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 76, backgroundColor: COLORS.bg2, marginBottom: 20, fontFamily: 'DMSans_400Regular' },
+  ratingActions:     { flexDirection: 'row', gap: 10 },
+  ratingBtnSkip:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  ratingBtnSkipText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
+  ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
+  ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
 });
