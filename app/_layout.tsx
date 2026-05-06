@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { LogBox } from 'react-native';
+import { KeyboardAvoidingView, Platform, LogBox } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Updates from 'expo-updates';
 import { useFonts, PlayfairDisplay_700Bold, PlayfairDisplay_700Bold_Italic } from '@expo-google-fonts/playfair-display';
@@ -58,16 +58,22 @@ function InnerLayout() {
 
   return (
     <ToastProvider>
-      <Stack screenOptions={{ animation: 'fade', animationDuration: 220 }}>
-        <Stack.Screen name="index"       options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding"  options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="setup-role"         options={{ headerShown: false }} />
-        <Stack.Screen name="accept-invitation"  options={{ headerShown: false }} />
-        <Stack.Screen name="doctor-onboarding" options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="(patient)"   options={{ headerShown: false }} />
-        <Stack.Screen name="(doctor)"    options={{ headerShown: false }} />
-        <Stack.Screen name="(reception)" options={{ headerShown: false }} />
-      </Stack>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
+      >
+        <Stack screenOptions={{ animation: 'fade', animationDuration: 220 }}>
+          <Stack.Screen name="index"       options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding"  options={{ headerShown: false, gestureEnabled: false }} />
+          <Stack.Screen name="setup-role"         options={{ headerShown: false }} />
+          <Stack.Screen name="accept-invitation"  options={{ headerShown: false }} />
+          <Stack.Screen name="doctor-onboarding" options={{ headerShown: false, gestureEnabled: false }} />
+          <Stack.Screen name="(patient)"   options={{ headerShown: false }} />
+          <Stack.Screen name="(doctor)"    options={{ headerShown: false }} />
+          <Stack.Screen name="(reception)" options={{ headerShown: false }} />
+        </Stack>
+      </KeyboardAvoidingView>
       <StatusBar style={colors.statusBarStyle} />
     </ToastProvider>
   );

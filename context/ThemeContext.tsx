@@ -39,15 +39,15 @@ export const LIGHT_COLORS: AppColors = {
 };
 
 export const DARK_COLORS: AppColors = {
-  esp:           '#2C1F14', // espresso header
-  wal:           '#C4A882', // sand — legible on dark
-  sand:          '#8B6F4E',
+  esp:           '#2C1F14', // espresso — brand header (zostáva)
+  wal:           '#D4B896', // svetlejšia sand — ľahko čitateľná na tmavom
+  sand:          '#A08060', // stredná hnedá
   cream:         '#FAF6F0',
-  bg2:           '#2C1F14', // espresso background (not black)
-  bg3:           '#5A4535', // warm border
-  cardBg:        '#3A2A1E', // dark card
-  inputBg:       '#3A2A1E',
-  textPrimary:   '#FAF6F0', // cream text
+  bg2:           '#3D2E22', // teplá tmavá — nie čierna, skôr tmavý dub
+  bg3:           '#6B5242', // viditeľný teplý border
+  cardBg:        '#4E3C2E', // karta — o odtieň svetlejšia ako bg
+  inputBg:       '#4E3C2E',
+  textPrimary:   '#F5EFE6', // takmer krémová — nie oslňujúca biela
   textSecondary: '#C4A882', // sand text
   statusBarStyle:'light',
 };
