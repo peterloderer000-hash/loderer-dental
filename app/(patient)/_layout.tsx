@@ -1,11 +1,9 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
 import { useAppTheme } from '../../context/ThemeContext';
 import { COLORS } from '../../styles/theme';
 
 export default function PatientLayout() {
-  const { t } = useTranslation();
   const { dark, colors } = useAppTheme();
 
   return (
@@ -35,7 +33,7 @@ export default function PatientLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{
-        title: t('tab.home'),
+        title: 'Domov',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
         ),
@@ -47,19 +45,19 @@ export default function PatientLayout() {
         ),
       }} />
       <Tabs.Screen name="score" options={{
-        title: t('tab.score'),
+        title: 'Skóre',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'star' : 'star-outline'} size={22} color={color} />
         ),
       }} />
       <Tabs.Screen name="chat" options={{
-        title: t('tab.chat'),
+        title: 'AI Chat',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} size={22} color={color} />
         ),
       }} />
       <Tabs.Screen name="profile" options={{
-        title: t('tab.profile'),
+        title: 'Profil',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
         ),

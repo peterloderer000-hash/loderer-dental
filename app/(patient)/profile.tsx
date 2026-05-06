@@ -16,8 +16,6 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
 import { useAppTheme } from '../../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
-import { setLanguage, getLanguage } from '../../i18n';
 
 const AVATAR_BUCKET = 'avatars';
 
@@ -87,9 +85,6 @@ export default function ProfileScreen() {
   const router     = useRouter();
   const navigation = useNavigation();
   const { colors, dark, toggle: toggleTheme } = useAppTheme();
-  const { t } = useTranslation();
-  const [lang, setLang] = useState<'sk' | 'en'>(getLanguage());
-
   const [fullName,    setFullName]    = useState('');
   const [phone,       setPhone]       = useState('');
   const [email,       setEmail]       = useState('');
@@ -279,40 +274,6 @@ export default function ProfileScreen() {
                 />
               </View>
 
-              <View style={[s.toggleRow, { borderTopWidth: 1, borderTopColor: colors.bg3, marginTop: 4, paddingTop: 16 }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  <View style={[s.toggleIcon, { backgroundColor: COLORS.bg2 }]}>
-                    <Text style={{ fontSize: 16 }}>🌐</Text>
-                  </View>
-                  <View>
-                    <Text style={[s.toggleLabel, { color: colors.textPrimary }]}>{t('profile.language')}</Text>
-                    <Text style={[s.toggleSub, { color: colors.textSecondary }]}>
-                      {lang === 'sk' ? t('profile.language_sk') : t('profile.language_en')}
-                    </Text>
-                  </View>
-                </View>
-                <View style={{ flexDirection: 'row', gap: 6 }}>
-                  {(['sk', 'en'] as const).map((l) => (
-                    <TouchableOpacity
-                      key={l}
-                      style={[
-                        s.langBtn,
-                        lang === l && { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
-                        { borderColor: colors.bg3 },
-                      ]}
-                      onPress={async () => {
-                        await setLanguage(l);
-                        setLang(l);
-                      }}
-                      activeOpacity={0.75}
-                    >
-                      <Text style={[s.langBtnText, lang === l && { color: '#fff' }]}>
-                        {l.toUpperCase()}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
             </View>
 
             {/* Personal info */}
@@ -474,9 +435,6 @@ const s = StyleSheet.create({
   toggleIcon: { width: 36, height: 36, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
   toggleLabel:{ ...TYPO.bodyMed },
   toggleSub:  { ...TYPO.bodySm, marginTop: 2 },
-  langBtn:     { borderWidth: 1.5, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: 'transparent' },
-  langBtnText: { fontSize: 12, fontWeight: '700', color: COLORS.wal },
-
   logoutBtn:  {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: COLORS.errorBg, borderRadius: RADII.md, paddingVertical: 14,
