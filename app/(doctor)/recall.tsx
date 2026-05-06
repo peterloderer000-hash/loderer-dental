@@ -7,6 +7,7 @@ import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyRecall } from '../../components/EmptyState';
+import { useAppTheme } from '../../context/ThemeContext';
 
 interface RecallPatient {
   id: string;
@@ -17,6 +18,7 @@ interface RecallPatient {
 
 export default function RecallScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const [patients, setPatients] = useState<RecallPatient[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -91,12 +93,12 @@ export default function RecallScreen() {
   }
 
   const renderItem = ({ item }: { item: RecallPatient }) => (
-    <View style={s.card}>
+    <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       <View style={s.cardInfo}>
-        <Text style={s.name}>{item.full_name}</Text>
-        {!!item.phone_number && <Text style={s.phone}>{item.phone_number}</Text>}
-        <Text style={s.visitText}>
-          Posledná návšteva: <Text style={s.visitValue}>{item.lastVisit}</Text>
+        <Text style={[s.name, { color: colors.textPrimary }]}>{item.full_name}</Text>
+        {!!item.phone_number && <Text style={[s.phone, { color: colors.textSecondary }]}>{item.phone_number}</Text>}
+        <Text style={[s.visitText, { color: colors.textSecondary }]}>
+          Posledná návšteva: <Text style={[s.visitValue, { color: colors.textPrimary }]}>{item.lastVisit}</Text>
         </Text>
       </View>
       <TouchableOpacity style={s.contactBtn} onPress={() => handleContact(item.phone_number)} activeOpacity={0.85}>
@@ -130,7 +132,7 @@ export default function RecallScreen() {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={s.content}
-        style={s.list}
+        style={[s.list, { backgroundColor: colors.bg2 }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.gold} colors={[COLORS.gold]} />
         }

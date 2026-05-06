@@ -14,6 +14,7 @@ import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Patient = {
   id: string;
@@ -39,6 +40,7 @@ function fmtTime(iso: string) {
 
 export default function WaitingRoomScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const [waiting,    setWaiting]    = useState<Patient[]>([]);
   const [inChair,    setInChair]    = useState<Patient[]>([]);
   const [rooms,      setRooms]      = useState<Room[]>([]);
@@ -145,17 +147,17 @@ export default function WaitingRoomScreen() {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={4} />
         </View>
       ) : total === 0 ? (
-        <View style={s.center}>
+        <View style={[s.center, { backgroundColor: colors.bg2 }]}>
           <Text style={s.emptyIcon}>🏥</Text>
-          <Text style={s.emptyTitle}>Čakáreň je prázdna</Text>
-          <Text style={s.emptySub}>Žiadni pacienti momentálne nečakajú</Text>
+          <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Čakáreň je prázdna</Text>
+          <Text style={[s.emptySub, { color: colors.textSecondary }]}>Žiadni pacienti momentálne nečakajú</Text>
         </View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 
           {/* ── V ordinácii ── */}
           {inChair.length > 0 && (
@@ -167,15 +169,15 @@ export default function WaitingRoomScreen() {
               {inChair.map((p) => {
                 const treatMin = waitMins(p.chair_start_at);
                 return (
-                  <View key={p.id} style={[s.card, s.cardInProgress]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, s.cardInProgress]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, { backgroundColor: '#1E8449' }]}>
                         <Ionicons name="medical" size={18} color="#fff" />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={s.name}>{p.patient?.full_name ?? 'Pacient'}</Text>
+                        <Text style={[s.name, { color: colors.textPrimary }]}>{p.patient?.full_name ?? 'Pacient'}</Text>
                         {p.service && (
-                          <Text style={s.service}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
+                          <Text style={[s.service, { color: colors.textSecondary }]}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
                         )}
                         {p.room_name && (
                           <View style={s.roomBadge}>
@@ -215,15 +217,15 @@ export default function WaitingRoomScreen() {
                 const mins = waitMins(p.arrived_at);
                 const isLong = mins >= 20;
                 return (
-                  <View key={p.id} style={[s.card, isLong && s.cardUrgent]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isLong && s.cardUrgent]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, isLong && { backgroundColor: '#C0392B' }]}>
                         <Text style={s.numText}>{idx + 1}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={s.name}>{p.patient?.full_name ?? 'Pacient'}</Text>
+                        <Text style={[s.name, { color: colors.textPrimary }]}>{p.patient?.full_name ?? 'Pacient'}</Text>
                         {p.service && (
-                          <Text style={s.service}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
+                          <Text style={[s.service, { color: colors.textSecondary }]}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
                         )}
                         <Text style={s.apptTime}>Termín: {fmtTime(p.appointment_date)}</Text>
                       </View>
