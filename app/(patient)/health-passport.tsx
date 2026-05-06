@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -16,11 +16,15 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { exportHealthPassport } from '../../utils/exportPDF';
+import { SkeletonList } from '../../components/Skeleton';
 
 const VISIT_REASONS = [
   'Bolesť', 'Estetika úsmevu', 'Kontrola', 'Implantáty',
   'Ortodoncia', 'Výmena starých výplní', 'Komplexná rekonštrukcia chrupu', 'Dentálna hygiena',
 ];
+const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Neviem'];
+const INSURANCE_PROVIDERS = ['VšZP', 'Dôvera', 'Union', 'Iné'];
 const MEDICAL_CONDITIONS = [
   'Vysoký krvný tlak', 'Cukrovka', 'Srdcové ochorenie', 'Epilepsia',
   'Astma', 'Poruchy zrážania krvi', 'Autoimunitné ochorenia',
@@ -70,7 +74,7 @@ function OtherInput({ value, onChange }: { value: string; onChange: (v: string) 
       <TextInput
         style={styles.otherInput}
         placeholder="Upresni..."
-        placeholderTextColor="#bbb"
+        placeholderTextColor="#999"
         value={value}
         onChangeText={onChange}
         autoCapitalize="sentences"
@@ -109,9 +113,20 @@ export default function HealthPassportScreen() {
   const [lifestyleOther, setLifestyleOther] = useState('');
   const [investment, setInvestment] = useState('');
   const [openQ, setOpenQ] = useState('');
+  // ── Nové: Základné údaje ─────────────────────────────────────────────────
+  const [bloodType, setBloodType]                 = useState('');
+  const [insuranceProvider, setInsuranceProvider] = useState('');
+  const [insuranceProviderOther, setInsuranceProviderOther] = useState('');
+  const [insuranceNumber, setInsuranceNumber]     = useState('');
+  const [emergencyName, setEmergencyName]         = useState('');
+  const [emergencyPhone, setEmergencyPhone]       = useState('');
+  const [isPregnant, setIsPregnant]               = useState(false);
+  const [lastDentalVisit, setLastDentalVisit]     = useState('');
   const [loadingData, setLoadingData] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving,      setSaving]      = useState(false);
+  const [exporting,   setExporting]   = useState(false);
+  const [saveError,   setSaveError]   = useState<string | null>(null);
+  const [patientName, setPatientName] = useState('Pacient');
 
   // ── Pomocné funkcie pre „Iné" ──────────────────────────────────────────────
   // Extrahuje vlastný text z "Iné: text" položky v poli
@@ -142,6 +157,9 @@ export default function HealthPassportScreen() {
       const { data: { user } } = await supabase.auth.getUser();
       if (cancelled) return;
       if (!user) { setLoadingData(false); return; }
+      // Načítaj meno pacienta
+      supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle()
+        .then(({ data: p }) => { if (p?.full_name) setPatientName(p.full_name); });
       const { data } = await supabase.from('health_passports').select('*').eq('patient_id', user.id).maybeSingle();
       if (cancelled) return;
       if (data) {
@@ -175,6 +193,21 @@ export default function HealthPassportScreen() {
           }
           if (data.investment_preference) setInvestment(data.investment_preference);
           if (data.open_question)         setOpenQ(data.open_question);
+          // Základné údaje
+          if (data.blood_type)              setBloodType(data.blood_type);
+          if (data.insurance_provider) {
+            if (INSURANCE_PROVIDERS.includes(data.insurance_provider)) {
+              setInsuranceProvider(data.insurance_provider);
+            } else {
+              setInsuranceProvider('Iné');
+              setInsuranceProviderOther(data.insurance_provider);
+            }
+          }
+          if (data.insurance_number)        setInsuranceNumber(data.insurance_number);
+          if (data.emergency_contact_name)  setEmergencyName(data.emergency_contact_name);
+          if (data.emergency_contact_phone) setEmergencyPhone(data.emergency_contact_phone);
+          if (typeof data.is_pregnant === 'boolean') setIsPregnant(data.is_pregnant);
+          if (data.last_dental_visit)       setLastDentalVisit(data.last_dental_visit);
         } catch (e) {
           console.warn('[HealthPassport] Failed to populate form fields:', e);
         }
@@ -184,6 +217,35 @@ export default function HealthPassportScreen() {
     loadExisting();
     return () => { cancelled = true; };
   }, []);
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await exportHealthPassport({
+        patientName,
+        bloodType,
+        insuranceProvider: insuranceProvider === 'Iné' ? insuranceProviderOther : insuranceProvider,
+        insuranceNumber,
+        emergencyName,
+        emergencyPhone,
+        isPregnant,
+        lastDentalVisit,
+        medConditions: medConditions.map((v) => v === 'Iné' ? `Iné: ${medConditionsOther}` : v).filter(Boolean),
+        allergies,
+        medications,
+        visitReasons: visitReasons.map((v) => v === 'Iné' ? `Iné: ${visitReasonsOther}` : v).filter(Boolean),
+        dentalFreq:   dentalFreq === 'Iné' ? `Iné: ${dentalFreqOther}` : dentalFreq,
+        fearLevel,
+        comfort:      comfort === 'Iné' ? `Iné: ${comfortOther}` : comfort,
+        aesthetics:   aesthetics.map((v) => v === 'Iné' ? `Iné: ${aestheticsOther}` : v).filter(Boolean),
+        lifestyle:    lifestyle.map((v) => v === 'Iné' ? `Iné: ${lifestyleOther}` : v).filter(Boolean),
+        investment,
+        openQ,
+      });
+    } finally {
+      setExporting(false);
+    }
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -205,6 +267,16 @@ export default function HealthPassportScreen() {
           lifestyle_habits:       encodeOtherArray(lifestyle, lifestyleOther),
           investment_preference:  investment || null,
           open_question:          openQ.trim() || null,
+          // Základné údaje
+          blood_type:              bloodType || null,
+          insurance_provider:      insuranceProvider === 'Iné'
+                                     ? (insuranceProviderOther.trim() || null)
+                                     : (insuranceProvider || null),
+          insurance_number:        insuranceNumber.trim() || null,
+          emergency_contact_name:  emergencyName.trim() || null,
+          emergency_contact_phone: emergencyPhone.trim() || null,
+          is_pregnant:             isPregnant,
+          last_dental_visit:       lastDentalVisit.trim() || null,
         },
         { onConflict: 'patient_id' },
       );
@@ -220,8 +292,10 @@ export default function HealthPassportScreen() {
 
   if (loadingData) {
     return (
-      <SafeAreaView style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator color={COLORS.sand} size="large" />
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+          <SkeletonList count={6} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -237,6 +311,16 @@ export default function HealthPassportScreen() {
             <Text style={styles.headerLabel}>ZDRAVOTNÝ PAS</Text>
             <Text style={styles.headerTitle}>Anamnestický dotazník</Text>
           </View>
+          <TouchableOpacity
+            style={[styles.exportBtn, exporting && { opacity: 0.5 }]}
+            onPress={handleExport}
+            disabled={exporting}
+            activeOpacity={0.8}
+          >
+            {exporting
+              ? <ActivityIndicator color={COLORS.cream} size="small" />
+              : <Ionicons name="download-outline" size={20} color={COLORS.cream} />}
+          </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
@@ -247,6 +331,79 @@ export default function HealthPassportScreen() {
             <Text style={styles.introText}>
               Dotazník je dôverný. Pomáha nám poskytovať vám bezpečnú a personalizovanú starostlivosť.
             </Text>
+          </View>
+
+          {/* ── NOVÁ SEKCIA: ZÁKLADNÉ ÚDAJE ─────────────────────────────── */}
+          <SectionHeader num="0" title="ZÁKLADNÉ ÚDAJE" />
+          <View style={styles.card}>
+            <Text style={styles.fieldLabel}>KRVNÁ SKUPINA</Text>
+            <View style={styles.chipRow}>
+              {BLOOD_TYPES.map((bt) => (
+                <TouchableOpacity key={bt}
+                  style={[styles.chip, bloodType === bt && styles.chipSel]}
+                  onPress={() => setBloodType(bloodType === bt ? '' : bt)}
+                  activeOpacity={0.75}>
+                  <Text style={[styles.chipText, bloodType === bt && styles.chipTextSel]}>{bt}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.dividerLine} />
+            <Text style={styles.fieldLabel}>ZDRAVOTNÁ POISŤOVŇA</Text>
+            <View style={styles.chipRow}>
+              {INSURANCE_PROVIDERS.map((p) => (
+                <TouchableOpacity key={p}
+                  style={[styles.chip, insuranceProvider === p && styles.chipSel]}
+                  onPress={() => setInsuranceProvider(insuranceProvider === p ? '' : p)}
+                  activeOpacity={0.75}>
+                  <Text style={[styles.chipText, insuranceProvider === p && styles.chipTextSel]}>{p}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {insuranceProvider === 'Iné' && (
+              <OtherInput value={insuranceProviderOther} onChange={setInsuranceProviderOther} />
+            )}
+
+            <Text style={[styles.fieldLabel, { marginTop: 12 }]}>ČÍSLO POISTENCA</Text>
+            <TextInput style={styles.input}
+              placeholder="napr. 8501234567"
+              placeholderTextColor="#999"
+              value={insuranceNumber} onChangeText={setInsuranceNumber}
+              keyboardType="numeric" returnKeyType="done" />
+
+            <View style={styles.dividerLine} />
+            <Text style={styles.fieldLabel}>KONTAKTNÁ OSOBA V PRÍPADE NÚDZE</Text>
+            <TextInput style={styles.input}
+              placeholder="Meno a priezvisko"
+              placeholderTextColor="#999"
+              value={emergencyName} onChangeText={setEmergencyName}
+              autoCapitalize="words" returnKeyType="next" />
+            <TextInput style={[styles.input, { marginTop: 8 }]}
+              placeholder="Telefón"
+              placeholderTextColor="#999"
+              value={emergencyPhone} onChangeText={setEmergencyPhone}
+              keyboardType="phone-pad" returnKeyType="done" />
+
+            <View style={styles.dividerLine} />
+            <Text style={styles.fieldLabel}>POSLEDNÁ NÁVŠTEVA U ZUBÁRA</Text>
+            <TextInput style={styles.input}
+              placeholder="napr. 2024-06-15 alebo 'Pred rokom'"
+              placeholderTextColor="#999"
+              value={lastDentalVisit} onChangeText={setLastDentalVisit}
+              autoCapitalize="sentences" returnKeyType="done" />
+
+            <View style={styles.dividerLine} />
+            <TouchableOpacity
+              style={[styles.option, isPregnant && styles.optionSel]}
+              onPress={() => setIsPregnant((v) => !v)}
+              activeOpacity={0.75}>
+              <View style={[styles.checkbox, isPregnant && styles.checkboxSel]}>
+                {isPregnant && <Ionicons name="checkmark" size={11} color="#fff" />}
+              </View>
+              <Text style={[styles.optionText, isPregnant && styles.optionTextSel]}>
+                🤰 Som tehotná / dojčím
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <SectionHeader num="1" title="HLAVNÝ DÔVOD NÁVŠTEVY" />
@@ -276,11 +433,11 @@ export default function HealthPassportScreen() {
             )}
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>ALERGIE</Text>
-            <TextInput style={styles.input} placeholder="napr. Penicilín, latex..."
+            <TextInput style={[styles.input, { minHeight: 60 }]} placeholder="napr. Penicilín, latex..."
               placeholderTextColor={COLORS.sand} value={allergies} onChangeText={setAllergies}
               multiline numberOfLines={2} textAlignVertical="top" />
             <Text style={[styles.fieldLabel, { marginTop: 14 }]}>LIEKY (pravidelne užívané)</Text>
-            <TextInput style={styles.input} placeholder="napr. Warfarín 5mg..."
+            <TextInput style={[styles.input, { minHeight: 60 }]} placeholder="napr. Warfarín 5mg..."
               placeholderTextColor={COLORS.sand} value={medications} onChangeText={setMedications}
               multiline numberOfLines={2} textAlignVertical="top" />
           </View>
@@ -378,7 +535,7 @@ export default function HealthPassportScreen() {
               ? <ActivityIndicator color="#fff" size="small" />
               : <><Ionicons name="checkmark-circle-outline" size={18} color="#fff" /><Text style={styles.saveBtnText}>Uložiť dotazník</Text></>}
           </TouchableOpacity>
-          <View style={{ height: 40 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -388,19 +545,20 @@ export default function HealthPassportScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { paddingBottom: 20 },
+  content: { paddingBottom: 120 },
   header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  exportBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
   introBanner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', backgroundColor: COLORS.bg3, borderRadius: SIZES.radius, borderLeftWidth: 3, borderLeftColor: COLORS.sand, padding: 12, margin: SIZES.padding, marginBottom: 4 },
-  introText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 19 },
+  introText: { flex: 1, fontSize: 13, color: COLORS.wal, lineHeight: 20 },
   secHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
   secBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   secBadgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
-  secTitle: { fontSize: 11, letterSpacing: 1.5, color: COLORS.esp, fontWeight: '700', textTransform: 'uppercase' },
+  secTitle: { fontSize: 12, letterSpacing: 1.5, color: COLORS.esp, fontWeight: '700', textTransform: 'uppercase' },
   card: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, gap: 6 },
-  cardSub: { fontSize: 11, color: COLORS.wal, marginBottom: 6, lineHeight: 17 },
+  cardSub: { fontSize: 12, color: COLORS.wal, marginBottom: 6, lineHeight: 18 },
   dividerLine: { height: 1, backgroundColor: COLORS.bg3, marginVertical: 10 },
   option: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
   optionSel: { backgroundColor: COLORS.esp, borderColor: COLORS.wal },
@@ -412,11 +570,16 @@ const styles = StyleSheet.create({
   radioSel: { borderColor: COLORS.wal },
   radioDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.wal },
   fieldLabel: { fontSize: 9, letterSpacing: 1.8, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 6 },
-  input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: SIZES.radius - 2, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 60, lineHeight: 20 },
+  input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: SIZES.radius - 2, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 42, lineHeight: 20 },
+  chipRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginBottom: 4 },
+  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  chipSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.wal },
+  chipText:    { fontSize: 13, fontWeight: '600', color: COLORS.esp },
+  chipTextSel: { color: COLORS.cream },
   otherInputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 8, borderWidth: 1.5, borderColor: COLORS.sand, paddingHorizontal: 10, paddingVertical: 4, marginTop: 2 },
   otherInput:     { flex: 1, fontSize: 13, color: COLORS.esp, paddingVertical: 8 },
   errorBox: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: SIZES.radius, padding: 12, marginHorizontal: SIZES.padding, marginTop: 12 },
-  errorText: { flex: 1, fontSize: 12, color: '#8C2A18' },
+  errorText: { flex: 1, fontSize: 13, color: '#8C2A18' },
   saveBtn: { backgroundColor: COLORS.wal, borderRadius: SIZES.radius, paddingVertical: 15, marginHorizontal: SIZES.padding, marginTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, elevation: 4 },
   saveBtnDisabled: { opacity: 0.55 },
   saveBtnText: { fontSize: 15, fontWeight: '600', color: '#fff', letterSpacing: 0.3 },

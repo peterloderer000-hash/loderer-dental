@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+﻿import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { SkeletonList } from '../../components/Skeleton';
 
 type Passport = {
   main_reasons:           string[] | null;
@@ -18,6 +19,14 @@ type Passport = {
   fear_level:             string | null;
   investment_preference:  string | null;
   open_question:          string | null;
+  // Základné údaje
+  blood_type:              string | null;
+  insurance_provider:      string | null;
+  insurance_number:        string | null;
+  emergency_contact_name:  string | null;
+  emergency_contact_phone: string | null;
+  is_pregnant:             boolean | null;
+  last_dental_visit:       string | null;
 };
 
 function Section({ title, emoji }: { title: string; emoji: string }) {
@@ -77,8 +86,8 @@ export default function PatientPassport() {
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={COLORS.wal} size="large" />
+        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+          <SkeletonList count={5} />
         </View>
       ) : !passport ? (
         <View style={styles.center}>
@@ -89,6 +98,77 @@ export default function PatientPassport() {
       ) : (
         <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
+
+          {/* ── KRITICKÉ UPOZORNENIA ───────────────────────────────────── */}
+          {(passport.allergies || passport.is_pregnant ||
+            (passport.medical_history && passport.medical_history.length > 0)) && (
+            <View style={styles.alertBox}>
+              <View style={styles.alertHeader}>
+                <Ionicons name="warning" size={18} color="#C0392B" />
+                <Text style={styles.alertTitle}>KRITICKÉ UPOZORNENIA</Text>
+              </View>
+              {passport.allergies && (
+                <View style={styles.alertRow}>
+                  <Text style={styles.alertEmoji}>🚨</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.alertLbl}>ALERGIE</Text>
+                    <Text style={styles.alertText}>{passport.allergies}</Text>
+                  </View>
+                </View>
+              )}
+              {passport.is_pregnant && (
+                <View style={styles.alertRow}>
+                  <Text style={styles.alertEmoji}>🤰</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.alertLbl}>TEHOTENSTVO / DOJČENIE</Text>
+                    <Text style={styles.alertText}>Pacient/ka je tehotná alebo dojčí</Text>
+                  </View>
+                </View>
+              )}
+              {passport.medical_history && passport.medical_history.length > 0 && (
+                <View style={styles.alertRow}>
+                  <Text style={styles.alertEmoji}>🏥</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.alertLbl}>CHRONICKÉ OCHORENIA</Text>
+                    <Text style={styles.alertText}>{passport.medical_history.join(', ')}</Text>
+                  </View>
+                </View>
+              )}
+              {passport.medications && (
+                <View style={styles.alertRow}>
+                  <Text style={styles.alertEmoji}>💊</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.alertLbl}>LIEKY</Text>
+                    <Text style={styles.alertText}>{passport.medications}</Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* ── ZÁKLADNÉ ÚDAJE ─────────────────────────────────────────── */}
+          {(passport.blood_type || passport.insurance_provider ||
+            passport.emergency_contact_name || passport.last_dental_visit) && (
+            <View style={styles.card}>
+              <Section title="Základné údaje" emoji="📇" />
+              {passport.blood_type && (
+                <View style={styles.bloodRow}>
+                  <Text style={styles.bloodLbl}>🩸 Krvná skupina</Text>
+                  <View style={styles.bloodBadge}>
+                    <Text style={styles.bloodText}>{passport.blood_type}</Text>
+                  </View>
+                </View>
+              )}
+              <InfoRow label="Poisťovňa" value={passport.insurance_provider} />
+              <InfoRow label="Poistenec" value={passport.insurance_number} />
+              <InfoRow label="Núdz. kontakt" value={
+                passport.emergency_contact_name
+                  ? `${passport.emergency_contact_name}${passport.emergency_contact_phone ? ' · ' + passport.emergency_contact_phone : ''}`
+                  : null
+              } />
+              <InfoRow label="Posl. u zubára" value={passport.last_dental_visit} />
+            </View>
+          )}
 
           <View style={styles.card}>
             <Section title="Dôvod návštevy" emoji="🎯" />
@@ -135,7 +215,7 @@ export default function PatientPassport() {
             </View>
           )}
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
       )}
     </SafeAreaView>
@@ -172,4 +252,19 @@ const styles = StyleSheet.create({
 
   emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.esp, marginBottom: 8 },
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
+
+  // Kritické upozornenia
+  alertBox:    { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, padding: 14, marginBottom: 14 },
+  alertHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F5B7B1' },
+  alertTitle:  { fontSize: 12, fontWeight: '800', color: '#C0392B', letterSpacing: 1.5 },
+  alertRow:    { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 6 },
+  alertEmoji:  { fontSize: 18, width: 24, textAlign: 'center' },
+  alertLbl:    { fontSize: 10, fontWeight: '700', color: '#C0392B', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 },
+  alertText:   { fontSize: 13, color: '#6A1A12', lineHeight: 18, fontWeight: '500' },
+
+  // Blood type
+  bloodRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, marginBottom: 2 },
+  bloodLbl:    { fontSize: 12, fontWeight: '600', color: COLORS.esp },
+  bloodBadge:  { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  bloodText:   { fontSize: 14, fontWeight: '800', color: '#C0392B', letterSpacing: 1 },
 });

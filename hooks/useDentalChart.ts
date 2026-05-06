@@ -15,6 +15,7 @@ export type ToothRecord = {
   tooth_number: number;
   status: ToothStatus;
   notes: string | null;
+  photo_url: string | null;
 };
 
 export function useDentalChart(patientId: string) {
@@ -32,7 +33,7 @@ export function useDentalChart(patientId: string) {
       setLoading(true);
       const { data } = await supabase
         .from('dental_charts')
-        .select('tooth_number, status, notes')
+        .select('tooth_number, status, notes, photo_url')
         .eq('patient_id', patientId);
 
       if (!cancelled && data) {
@@ -47,19 +48,22 @@ export function useDentalChart(patientId: string) {
     return () => { cancelled = true; };
   }, [patientId, tick]);
 
-  async function saveTooth(toothNumber: number, status: ToothStatus, notes: string) {
+  async function saveTooth(toothNumber: number, status: ToothStatus, notes: string, photoUrl?: string | null) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Error('Nie si prihlásený.');
 
+    const payload: Record<string, unknown> = {
+      patient_id:   patientId,
+      doctor_id:    user.id,
+      tooth_number: toothNumber,
+      status,
+      notes:        notes.trim() || null,
+      updated_at:   new Date().toISOString(),
+    };
+    if (photoUrl !== undefined) payload.photo_url = photoUrl;
+
     const { error } = await supabase.from('dental_charts').upsert(
-      {
-        patient_id:   patientId,
-        doctor_id:    user.id,
-        tooth_number: toothNumber,
-        status,
-        notes:        notes.trim() || null,
-        updated_at:   new Date().toISOString(),
-      },
+      payload,
       { onConflict: 'patient_id,tooth_number' },
     );
 

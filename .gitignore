@@ -28,12 +28,19 @@ yarn-error.*
 
 # macOS
 .DS_Store
+
+# Claude CLI
+.claude/
 *.pem
 
 # local env files
 .env
 .env.*
 .env*.local
+
+# Google credentials (citlivé — NIKDY nekomitnúť!)
+google-service-account.json
+google-services.json
 
 # typescript
 *.tsbuildinfo

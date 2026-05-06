@@ -1,491 +1,187 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet,
-  Switch, Text, TextInput, TouchableOpacity, View,
+  View, Text, TextInput, Switch, TouchableOpacity,
+  ScrollView, StyleSheet, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS } from '../../styles/theme';
 
-// ─── Konfigurácia ──────────────────────────────────────────────────────────────
-const DAYS = [
-  { num: 1, label: 'Pondelok', short: 'Po', weekend: false },
-  { num: 2, label: 'Utorok',   short: 'Ut', weekend: false },
-  { num: 3, label: 'Streda',   short: 'St', weekend: false },
-  { num: 4, label: 'Štvrtok',  short: 'Št', weekend: false },
-  { num: 5, label: 'Piatok',   short: 'Pi', weekend: false },
-  { num: 6, label: 'Sobota',   short: 'So', weekend: true  },
-  { num: 7, label: 'Nedeľa',   short: 'Ne', weekend: true  },
-];
+const DAYS = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 
-const PRESETS = [
-  { label: '8:00 – 16:00', open: '08:00', close: '16:00' },
-  { label: '8:00 – 17:00', open: '08:00', close: '17:00' },
-  { label: '9:00 – 17:00', open: '09:00', close: '17:00' },
-  { label: '7:00 – 15:00', open: '07:00', close: '15:00' },
-];
-
-// ─── Typ ──────────────────────────────────────────────────────────────────────
 type DayRow = {
+  id: string | null;
   day_of_week: number;
-  open_time:   string;  // 'HH:MM'
-  close_time:  string;  // 'HH:MM'
-  is_closed:   boolean;
-  note:        string;
+  day_index: number;
+  day_name: string;
+  is_open: boolean;
+  is_closed: boolean;
+  time_from: string;
+  time_to: string;
+  open_time: string;
+  close_time: string;
+  clinic_id: string | null;
 };
 
-function defaultRow(day: number): DayRow {
-  return {
-    day_of_week: day,
-    open_time:   '08:00',
-    close_time:  '17:00',
-    is_closed:   day >= 6,
-    note:        '',
-  };
-}
-
-// ─── Pomocné funkcie ───────────────────────────────────────────────────────────
-function timeToMinutes(t: string): number {
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-}
-function minutesToTime(mins: number): string {
-  const h = Math.floor(mins / 60) % 24;
-  const m = mins % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-}
-function durationLabel(open: string, close: string): string {
-  const diff = timeToMinutes(close) - timeToMinutes(open);
-  if (diff <= 0) return '';
-  const h = Math.floor(diff / 60);
-  const m = diff % 60;
-  return m === 0 ? `${h} hod` : `${h} hod ${m} min`;
-}
-
-// ─── Time Stepper komponent ────────────────────────────────────────────────────
-function TimeStepper({ label, value, onChange }: {
-  label: string; value: string; onChange: (v: string) => void;
-}) {
-  const mins = timeToMinutes(value);
-
-  function step(delta: number) {
-    const next = Math.max(0, Math.min(23 * 60 + 55, mins + delta));
-    onChange(minutesToTime(next));
-  }
-
-  return (
-    <View style={ts.wrap}>
-      <Text style={ts.label}>{label}</Text>
-      <View style={ts.timeDisplay}>
-        <Text style={ts.timeText}>{value}</Text>
-      </View>
-      <View style={ts.btnRow}>
-        <TouchableOpacity style={ts.btn} onPress={() => step(-60)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>−1h</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(-15)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>−15</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(-5)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>−5</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(5)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>+5</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(15)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>+15</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={ts.btn} onPress={() => step(60)} activeOpacity={0.7}>
-          <Text style={ts.btnText}>+1h</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-const ts = StyleSheet.create({
-  wrap:        { width: '100%' },
-  label:       { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
-  timeDisplay: { alignItems: 'center', marginBottom: 10 },
-  timeText:    { fontSize: 36, fontWeight: '800', color: COLORS.esp, letterSpacing: 2 },
-  btnRow:      { flexDirection: 'row', gap: 6 },
-  btn:         { flex: 1, height: 44, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
-  btnText:     { fontSize: 13, fontWeight: '800', color: COLORS.wal },
-});
-
-// ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function OpeningHoursScreen() {
   const router = useRouter();
-  const [rows,     setRows]     = useState<DayRow[]>(DAYS.map(d => defaultRow(d.num)));
-  const [loading,  setLoading]  = useState(true);
-  const [saving,   setSaving]   = useState(false);
-  const [doctorId, setDoctorId] = useState('');
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const [hours, setHours] = useState<DayRow[]>(
+    DAYS.map((day, index) => ({
+      id: null,
+      day_index: index,
+      day_name: day,
+      is_open: index < 5,
+      time_from: '08:00',
+      time_to: '17:00',
+      clinic_id: null,
+    }))
+  );
+  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
-      setDoctorId(user.id);
+  useEffect(() => { load(); }, []);
 
-      const { data } = await supabase
-        .from('opening_hours')
-        .select('day_of_week,open_time,close_time,is_closed,note')
-        .eq('doctor_id', user.id)
-        .order('day_of_week');
-
-      if (data && data.length > 0) {
-        setRows(DAYS.map(d => {
-          const f = data.find(r => r.day_of_week === d.num);
-          return f ? {
-            day_of_week: d.num,
-            open_time:   f.open_time?.slice(0, 5)  ?? '08:00',
-            close_time:  f.close_time?.slice(0, 5) ?? '17:00',
-            is_closed:   f.is_closed,
-            note:        f.note ?? '',
-          } : defaultRow(d.num);
-        }));
-      }
-      setLoading(false);
+  async function load() {
+    const { data } = await supabase.from('opening_hours').select('*');
+    if (data && data.length > 0) {
+      setHours((prev) => {
+        const next = [...prev];
+        data.forEach((item: any) => {
+          const idx = (item.day_of_week ?? (item.day_index + 1)) - 1;
+          if (idx >= 0 && idx <= 6) {
+            next[idx] = {
+              ...next[idx],
+              id:          item.id,
+              day_of_week: item.day_of_week ?? item.day_index + 1,
+              is_open:     item.is_open ?? !item.is_closed,
+              is_closed:   item.is_closed ?? !item.is_open,
+              time_from:   item.time_from ?? item.open_time ?? '08:00',
+              time_to:     item.time_to   ?? item.close_time ?? '17:00',
+              open_time:   item.open_time ?? item.time_from ?? '08:00',
+              close_time:  item.close_time ?? item.time_to  ?? '17:00',
+              clinic_id:   item.clinic_id ?? null,
+            };
+          }
+        });
+        return next;
+      });
     }
-    load();
-  }, []);
-
-  function update(day: number, field: keyof DayRow, value: any) {
-    setRows(prev => prev.map(r => r.day_of_week === day ? { ...r, [field]: value } : r));
   }
 
-  // Kopíruj hodiny z jedného dňa na všetky pracovné dni
-  function copyToWeekdays(fromDay: number) {
-    const src = rows.find(r => r.day_of_week === fromDay);
-    if (!src) return;
-    Alert.alert(
-      'Kopírovať hodiny',
-      `Skopírovať ${src.open_time}–${src.close_time} na všetky pracovné dni (Po–Pi)?`,
-      [
-        { text: 'Zrušiť', style: 'cancel' },
-        { text: 'Kopírovať', onPress: () => {
-          setRows(prev => prev.map(r =>
-            r.day_of_week <= 5
-              ? { ...r, open_time: src.open_time, close_time: src.close_time, is_closed: false }
-              : r
-          ));
-        }},
-      ]
-    );
+  function toggle(index: number, value: boolean) {
+    setHours((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], is_open: value, is_closed: !value };
+      return next;
+    });
   }
 
-  // Aplikuj preset na deň
-  function applyPreset(day: number, preset: typeof PRESETS[0]) {
-    update(day, 'open_time', preset.open);
-    update(day, 'close_time', preset.close);
-    update(day, 'is_closed', false);
+  function setTime(index: number, field: 'time_from' | 'time_to', value: string) {
+    setHours((prev) => {
+      const next = [...prev];
+      const mapped = field === 'time_from' ? { time_from: value, open_time: value } : { time_to: value, close_time: value };
+      next[index] = { ...next[index], ...mapped };
+      return next;
+    });
   }
 
-  async function handleSave() {
-    // Validácia
-    for (const row of rows) {
-      if (row.is_closed) continue;
-      if (timeToMinutes(row.open_time) >= timeToMinutes(row.close_time)) {
-        const dayName = DAYS[row.day_of_week - 1].label;
-        Alert.alert('Chyba', `${dayName}: čas otvorenia musí byť pred zatvorením.`);
-        return;
-      }
-    }
-
+  async function save() {
     setSaving(true);
-    const upsertData = rows.map(r => ({
-      doctor_id:   doctorId,
-      day_of_week: r.day_of_week,
-      open_time:   r.is_closed ? null : r.open_time,
-      close_time:  r.is_closed ? null : r.close_time,
-      is_closed:   r.is_closed,
-      note:        r.note.trim() || null,
-      updated_at:  new Date().toISOString(),
+    const payload = hours.map(({ day_name, ...rest }) => ({
+      ...rest,
+      day_of_week: rest.day_index + 1,
+      is_closed:   !rest.is_open,
+      open_time:   rest.time_from,
+      close_time:  rest.time_to,
     }));
-
-    const { error } = await supabase
-      .from('opening_hours')
-      .upsert(upsertData, { onConflict: 'doctor_id,day_of_week' });
-
+    const { error } = await supabase.from('opening_hours').upsert(payload, { onConflict: 'day_of_week' });
     setSaving(false);
     if (error) Alert.alert('Chyba', error.message);
-    else {
-      Alert.alert('Uložené ✓', 'Ordinačné hodiny boli aktualizované.', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
-    }
-  }
-
-  if (loading) {
-    return <View style={styles.center}><ActivityIndicator color={COLORS.wal} size="large" /></View>;
+    else Alert.alert('Uložené', 'Ordinačné hodiny boli uložené.');
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
+    <SafeAreaView style={s.safe} edges={['top']}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>NASTAVENIA</Text>
-          <Text style={styles.headerTitle}>Ordinačné hodiny</Text>
+          <Text style={s.headerSub}>NASTAVENIA</Text>
+          <Text style={s.headerTitle}>Ordinačné hodiny</Text>
         </View>
-        <TouchableOpacity
-          style={[styles.saveTopBtn, saving && { opacity: 0.6 }]}
-          onPress={handleSave} disabled={saving} activeOpacity={0.85}>
-          {saving
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <Text style={styles.saveTopBtnText}>Uložiť</Text>}
-        </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}>
-
-        {/* ── Info ── */}
-        <View style={styles.infoBanner}>
-          <Ionicons name="information-circle-outline" size={15} color="#1A5276" />
-          <Text style={styles.infoText}>
-            Kliknite na deň pre úpravu. Pomocou +/− tlačidiel nastavte čas po 5 alebo 30 minútach.
-          </Text>
-        </View>
-
-        {/* ── Rýchly prehľad — všetky dni ── */}
-        <View style={styles.overviewCard}>
-          <Text style={styles.cardTitle}>PREHĽAD TÝŽDŇA</Text>
-          {rows.map(row => {
-            const day = DAYS[row.day_of_week - 1];
-            const isExp = expanded === row.day_of_week;
-            return (
-              <TouchableOpacity
-                key={row.day_of_week}
-                style={[styles.overviewRow, isExp && styles.overviewRowActive]}
-                onPress={() => setExpanded(isExp ? null : row.day_of_week)}
-                activeOpacity={0.8}
-              >
-                {/* Deň skratka */}
-                <View style={[
-                  styles.dayBadge,
-                  row.is_closed ? styles.dayBadgeClosed : styles.dayBadgeOpen,
-                  day.weekend && !row.is_closed && styles.dayBadgeWeekend,
-                ]}>
-                  <Text style={[styles.dayShort, row.is_closed && styles.dayShortClosed]}>
-                    {day.short}
-                  </Text>
-                </View>
-
-                {/* Čas */}
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.dayFullLabel, row.is_closed && { color: '#bbb' }]}>
-                    {day.label}
-                  </Text>
-                  {row.is_closed ? (
-                    <Text style={styles.closedText}>Zatvorené</Text>
-                  ) : (
-                    <Text style={styles.hoursText}>
-                      {row.open_time} – {row.close_time}
-                      <Text style={styles.durationText}>  {durationLabel(row.open_time, row.close_time)}</Text>
-                    </Text>
-                  )}
-                  {row.note ? <Text style={styles.notePreview} numberOfLines={1}>📝 {row.note}</Text> : null}
-                </View>
-
-                {/* Switch + expand */}
-                <Switch
-                  value={!row.is_closed}
-                  onValueChange={(v) => {
-                    update(row.day_of_week, 'is_closed', !v);
-                    if (v && expanded !== row.day_of_week) setExpanded(row.day_of_week);
-                  }}
-                  trackColor={{ false: COLORS.bg3, true: COLORS.wal }}
-                  thumbColor="#fff"
-                  style={{ transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] }}
-                />
-                <Ionicons
-                  name={isExp ? 'chevron-up' : 'chevron-down'}
-                  size={14}
-                  color={COLORS.bg3}
-                />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        {/* ── Detail editora pre vybraný deň ── */}
-        {expanded !== null && (() => {
-          const row  = rows.find(r => r.day_of_week === expanded)!;
-          const day  = DAYS[expanded - 1];
-          return (
-            <View style={styles.editorCard}>
-              <Text style={styles.cardTitle}>EDITOVAŤ — {day.label.toUpperCase()}</Text>
-
-              {row.is_closed ? (
-                <View style={styles.closedEditor}>
-                  <Text style={styles.closedEditorText}>Tento deň je nastavený ako zatvorený.</Text>
-                  <TouchableOpacity
-                    style={styles.openDayBtn}
-                    onPress={() => update(row.day_of_week, 'is_closed', false)}
-                    activeOpacity={0.8}>
-                    <Text style={styles.openDayBtnText}>Nastaviť ako otvorený</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <>
-                  {/* Time steppers — stacked vertically */}
-                  <View style={styles.steppersCol}>
-                    <TimeStepper
-                      label="Otvorenie"
-                      value={row.open_time}
-                      onChange={(v) => update(row.day_of_week, 'open_time', v)}
-                    />
-                    <View style={styles.stepperDivider} />
-                    <TimeStepper
-                      label="Zatvorenie"
-                      value={row.close_time}
-                      onChange={(v) => update(row.day_of_week, 'close_time', v)}
-                    />
-                  </View>
-
-                  {/* Dĺžka */}
-                  {timeToMinutes(row.close_time) > timeToMinutes(row.open_time) && (
-                    <View style={styles.durationBadge}>
-                      <Ionicons name="time-outline" size={12} color={COLORS.wal} />
-                      <Text style={styles.durationBadgeText}>
-                        Dĺžka ordinačného dňa: {durationLabel(row.open_time, row.close_time)}
-                      </Text>
-                    </View>
-                  )}
-
-                  {/* Rýchle presety */}
-                  <Text style={styles.presetsLabel}>RÝCHLE PRESETY</Text>
-                  <View style={styles.presetsRow}>
-                    {PRESETS.map(p => (
-                      <TouchableOpacity
-                        key={p.label}
-                        style={[
-                          styles.presetBtn,
-                          row.open_time === p.open && row.close_time === p.close && styles.presetBtnActive,
-                        ]}
-                        onPress={() => applyPreset(row.day_of_week, p)}
-                        activeOpacity={0.75}>
-                        <Text style={[
-                          styles.presetText,
-                          row.open_time === p.open && row.close_time === p.close && styles.presetTextActive,
-                        ]}>{p.label}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-
-                  {/* Kopírovať na pracovné dni */}
-                  {row.day_of_week <= 5 && (
-                    <TouchableOpacity
-                      style={styles.copyBtn}
-                      onPress={() => copyToWeekdays(row.day_of_week)}
-                      activeOpacity={0.8}>
-                      <Ionicons name="copy-outline" size={14} color={COLORS.wal} />
-                      <Text style={styles.copyBtnText}>Kopírovať tieto hodiny na všetky pracovné dni (Po–Pi)</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* Poznámka */}
-                  <Text style={styles.noteLabel}>POZNÁMKA (voliteľné)</Text>
-                  <TextInput
-                    style={styles.noteInput}
-                    value={row.note}
-                    onChangeText={(v) => update(row.day_of_week, 'note', v)}
-                    placeholder="napr. Obedná prestávka 12:00 – 13:00"
-                    placeholderTextColor="#bbb"
-                    maxLength={80}
-                  />
-                </>
-              )}
+      <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        {hours.map((item, index) => (
+          <View key={index} style={s.row}>
+            <Text style={s.dayText}>{item.day_name}</Text>
+            <Switch
+              value={item.is_open}
+              onValueChange={(val) => toggle(index, val)}
+              trackColor={{ false: COLORS.bg3, true: COLORS.gold }}
+              thumbColor={COLORS.cream}
+            />
+            <View style={s.timeRow}>
+              <TextInput
+                style={[s.timeInput, !item.is_open && s.disabled]}
+                value={item.time_from}
+                onChangeText={(t) => setTime(index, 'time_from', t)}
+                editable={item.is_open}
+                keyboardType="numeric"
+                maxLength={5}
+              />
+              <Text style={s.sep}>–</Text>
+              <TextInput
+                style={[s.timeInput, !item.is_open && s.disabled]}
+                value={item.time_to}
+                onChangeText={(t) => setTime(index, 'time_to', t)}
+                editable={item.is_open}
+                keyboardType="numeric"
+                maxLength={5}
+              />
             </View>
-          );
-        })()}
+          </View>
+        ))}
 
-        {/* ── Uložiť ── */}
-        <TouchableOpacity
-          style={[styles.saveFullBtn, saving && { opacity: 0.6 }]}
-          onPress={handleSave} disabled={saving} activeOpacity={0.85}>
+        <TouchableOpacity style={[s.saveBtn, saving && { opacity: 0.5 }]} onPress={save} disabled={saving} activeOpacity={0.85}>
           {saving
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <>
-                <Ionicons name="checkmark-circle" size={18} color="#fff" />
-                <Text style={styles.saveFullBtnText}>Uložiť ordinačné hodiny</Text>
-              </>}
+            ? <ActivityIndicator color={COLORS.esp} />
+            : <Text style={s.saveBtnText}>Uložiť</Text>}
         </TouchableOpacity>
-
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12 },
-  center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-
-  header:        { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:       { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:     { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle:   { fontSize: 19, fontWeight: '700', color: '#fff' },
-  saveTopBtn:    { backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 16, paddingVertical: 8 },
-  saveTopBtnText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
-
-  infoBanner: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: '#EBF5FB', borderRadius: 12, padding: 12, marginBottom: 14, borderWidth: 1, borderColor: '#AED6F1' },
-  infoText:   { flex: 1, fontSize: 11, color: '#1A5276', lineHeight: 17 },
-
-  // Prehľad
-  overviewCard:      { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
-  cardTitle:         { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
-  overviewRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  overviewRowActive: { backgroundColor: COLORS.bg2, marginHorizontal: -14, paddingHorizontal: 14, borderRadius: 0 },
-
-  dayBadge:        { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  dayBadgeOpen:    { backgroundColor: COLORS.wal },
-  dayBadgeClosed:  { backgroundColor: COLORS.bg3 },
-  dayBadgeWeekend: { backgroundColor: '#1A5276' },
-  dayShort:        { fontSize: 12, fontWeight: '800', color: '#fff' },
-  dayShortClosed:  { color: COLORS.wal },
-
-  dayFullLabel: { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
-  closedText:   { fontSize: 11, color: '#bbb', fontStyle: 'italic' },
-  hoursText:    { fontSize: 12, fontWeight: '600', color: COLORS.esp },
-  durationText: { fontSize: 10, color: COLORS.wal, fontWeight: '400' },
-  notePreview:  { fontSize: 9, color: COLORS.wal, marginTop: 2 },
-
-  // Editor
-  editorCard:     { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginBottom: 14, borderWidth: 1.5, borderColor: COLORS.wal },
-  steppersCol:    { flexDirection: 'column', gap: 0, marginBottom: 14 },
-  stepperDivider: { height: 1, backgroundColor: COLORS.bg3, marginVertical: 16 },
-  durationBadge:  { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, marginBottom: 14, alignSelf: 'flex-start' },
-  durationBadgeText: { fontSize: 11, color: COLORS.wal, fontWeight: '600' },
-
-  presetsLabel: { fontSize: 8, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
-  presetsRow:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  presetBtn:    { borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: COLORS.bg2 },
-  presetBtnActive: { borderColor: COLORS.wal, backgroundColor: COLORS.wal + '15' },
-  presetText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
-  presetTextActive: { color: COLORS.wal, fontWeight: '800' },
-
-  copyBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 10, padding: 11, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
-  copyBtnText: { flex: 1, fontSize: 11, color: COLORS.wal, fontWeight: '600' },
-
-  noteLabel: { fontSize: 8, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
-  noteInput: { backgroundColor: COLORS.bg2, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 12, color: COLORS.esp, borderWidth: 1, borderColor: COLORS.bg3 },
-
-  closedEditor:     { alignItems: 'center', paddingVertical: 16, gap: 12 },
-  closedEditorText: { fontSize: 13, color: COLORS.wal, fontStyle: 'italic' },
-  openDayBtn:       { backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 },
-  openDayBtnText:   { fontSize: 13, fontWeight: '700', color: '#fff' },
-
-  saveFullBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.esp, borderRadius: 14, paddingVertical: 15 },
-  saveFullBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  content: { padding: 16 },
+  header:  {
+    backgroundColor: COLORS.esp, paddingHorizontal: 16,
+    paddingTop: 14, paddingBottom: 18,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+  },
+  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
+  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
+  row: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 10,
+    borderWidth: 1, borderColor: COLORS.bg3,
+  },
+  dayText:   { width: 30, fontSize: 15, fontWeight: '700', color: COLORS.esp },
+  timeRow:   { flexDirection: 'row', alignItems: 'center' },
+  timeInput: {
+    width: 58, height: 36, borderWidth: 1, borderColor: COLORS.wal,
+    borderRadius: 8, textAlign: 'center', fontSize: 14,
+    fontWeight: '600', color: COLORS.esp, backgroundColor: COLORS.cream,
+  },
+  disabled:    { backgroundColor: COLORS.bg3, color: COLORS.sand, borderColor: COLORS.bg3 },
+  sep:         { marginHorizontal: 6, fontSize: 16, color: COLORS.wal },
+  saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 15, borderRadius: 12, alignItems: 'center', marginTop: 20 },
+  saveBtnText: { color: COLORS.esp, fontSize: 16, fontWeight: '800' },
 });

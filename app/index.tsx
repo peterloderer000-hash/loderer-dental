@@ -15,9 +15,10 @@ const { width } = Dimensions.get('window');
 
 async function getRoleAndNavigate(userId: string, router: any) {
   const { data } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
-  if (data?.role === 'doctor')       router.replace('/(doctor)');
-  else if (data?.role === 'patient') router.replace('/(patient)');
-  else                               router.replace('/setup-role');
+  if      (data?.role === 'doctor')    router.replace('/(doctor)');
+  else if (data?.role === 'patient')   router.replace('/(patient)');
+  else if (data?.role === 'reception') router.replace('/(reception)');
+  else                                 router.replace('/setup-role');
 }
 
 type Mode = 'login' | 'reset';
@@ -41,8 +42,12 @@ export default function AuthScreen() {
       }
       // Bežná kontrola session
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) getRoleAndNavigate(session.user.id, router);
-      else setLoading(false);
+      if (session) {
+        try { await getRoleAndNavigate(session.user.id, router); }
+        catch { setLoading(false); }
+      } else {
+        setLoading(false);
+      }
     }
     init();
   }, []);
@@ -63,7 +68,7 @@ export default function AuthScreen() {
     const { error } = await supabase.auth.signUp({ email, password });
     setLoading(false);
     if (error) { Alert.alert('Chyba registrácie', error.message); return; }
-    router.push('/setup-role');
+    router.replace('/setup-role');
   }
 
   async function handleResetPassword() {

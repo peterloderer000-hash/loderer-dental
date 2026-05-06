@@ -1,693 +1,593 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ActivityIndicator, ScrollView, StyleSheet, Text, View,
+  Animated, Easing, RefreshControl, ScrollView,
+  StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
+import { SkeletonList } from '../../components/Skeleton';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
-type ToothStatus = 'healthy' | 'cavity' | 'filled' | 'crown' | 'extracted' | 'missing' | 'root_canal';
+type ToothStatus =
+  | 'healthy' | 'cavity' | 'early_cavity' | 'watch'
+  | 'filled' | 'large_filling' | 'replace_filling'
+  | 'crown' | 'bridge' | 'implant' | 'veneer' | 'sealant'
+  | 'root_canal' | 'extracted' | 'missing'
+  | 'fracture' | 'erosion' | 'abrasion'
+  | 'hypoplasia' | 'hypomineralization'
+  | 'periodontal' | 'mobility'
+  | 'improve_hygiene' | 'treatment_needed';
 
-type ToothRecord = {
-  tooth_number: number;
-  status: ToothStatus;
-  notes: string | null;
+type ToothRecord = { tooth_number: number; status: ToothStatus; notes: string | null };
+type ApptRow = {
+  id: string; appointment_date: string; status: string;
+  service: { name: string; emoji: string | null } | null;
 };
 
-type DoctorNote = {
-  appointment_date: string;
-  doctor_notes: string;
-  service: { name: string } | null;
+// ─── Scoring ──────────────────────────────────────────────────────────────────
+function getWeight(n: number) {
+  const p = n % 10;
+  if (p === 6 || p === 7) return 3;
+  if (p === 4 || p === 5) return 2;
+  if (p === 3) return 1.5;
+  if (p === 8) return 0.5;
+  return 1;
+}
+function isFront(n: number) { const p = n % 10; return p >= 1 && p <= 3; }
+
+const HEALTH_DED: Partial<Record<ToothStatus, number>> = {
+  cavity: 15, early_cavity: 8, root_canal: 10, extracted: 14,
+  missing: 10, fracture: 12, periodontal: 10, mobility: 8,
+};
+const AESTH_DED: Partial<Record<ToothStatus, number>> = {
+  cavity: 18, early_cavity: 10, extracted: 22, missing: 20,
+  root_canal: 12, erosion: 8, abrasion: 6, hypoplasia: 7, hypomineralization: 7, fracture: 14,
+};
+const HYG_DED: Partial<Record<ToothStatus, number>> = {
+  watch: 5, improve_hygiene: 12, large_filling: 4, early_cavity: 8, treatment_needed: 10,
+};
+const HYG_BONUS: Partial<Record<ToothStatus, number>> = { sealant: 4, filled: 1 };
+
+function calcHealth(t: ToothRecord[]): number {
+  if (!t.length) return 70;
+  let d = 0, h = 0;
+  t.forEach(r => { d += (HEALTH_DED[r.status] ?? 0) * getWeight(r.tooth_number); if (r.status === 'healthy') h++; });
+  return Math.max(0, Math.min(100, Math.round(100 - d + Math.min(15, h * 0.8))));
+}
+function calcAesthetics(t: ToothRecord[]): number {
+  const f = t.filter(r => isFront(r.tooth_number));
+  if (!f.length) return 75;
+  let s = 100, h = 0;
+  f.forEach(r => { s -= AESTH_DED[r.status] ?? 0; if (r.status === 'healthy') h++; });
+  return Math.max(0, Math.min(100, Math.round(s + Math.min(8, h * 1.5))));
+}
+function calcHygiene(t: ToothRecord[], hasPassport: boolean, completed: number): number {
+  if (!t.length) return hasPassport ? 60 : 50;
+  let s = 100;
+  t.forEach(r => { s -= HYG_DED[r.status] ?? 0; s += HYG_BONUS[r.status] ?? 0; });
+  if (hasPassport) s += 5;
+  s += Math.min(10, completed * 3);
+  return Math.max(0, Math.min(100, Math.round(s)));
+}
+function calcPrevention(hasPassport: boolean, hasAppt: boolean, completed: number, hasChart: boolean): number {
+  let s = 0;
+  if (hasChart) s += 25; if (hasPassport) s += 25; if (hasAppt) s += 20;
+  s += Math.min(30, completed * 8);
+  return Math.min(100, s);
+}
+function overall(h: number, a: number, hy: number, p: number) {
+  return Math.round(h * 0.40 + a * 0.20 + hy * 0.25 + p * 0.15);
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function scoreColor(s: number) {
+  if (s >= 80) return COLORS.success;
+  if (s >= 65) return '#27AE60';
+  if (s >= 50) return COLORS.warning;
+  return COLORS.error;
+}
+function scoreLabel(s: number) {
+  if (s >= 80) return 'Výborný chrup';
+  if (s >= 65) return 'Dobrý stav';
+  if (s >= 50) return 'Priemerný stav';
+  return 'Vyžaduje pozornosť';
+}
+function grade(s: number) { return s >= 85 ? 'A' : s >= 70 ? 'B' : s >= 50 ? 'C' : 'D'; }
+function gradeColor(s: number) {
+  return s >= 85 ? COLORS.success : s >= 70 ? '#9A7D0A' : s >= 50 ? COLORS.warning : COLORS.error;
+}
+
+const STATUS_DISPLAY: Partial<Record<ToothStatus, { label: string; color: string; emoji: string }>> = {
+  healthy:         { label: 'Zdravý',        color: COLORS.success, emoji: '✅' },
+  cavity:          { label: 'Kaz',           color: COLORS.error,   emoji: '🔴' },
+  early_cavity:    { label: 'Začín. kaz',    color: '#CB4335',      emoji: '🟠' },
+  filled:          { label: 'Plomba',        color: '#9A7D0A',      emoji: '🟡' },
+  large_filling:   { label: 'Veľká plomba',  color: '#7D6608',      emoji: '🟤' },
+  crown:           { label: 'Korunka',       color: COLORS.info,    emoji: '👑' },
+  implant:         { label: 'Implantát',     color: '#117A65',      emoji: '🔩' },
+  bridge:          { label: 'Mostík',        color: '#154360',      emoji: '🌉' },
+  root_canal:      { label: 'Devitalizácia', color: '#7D3C98',      emoji: '🟣' },
+  extracted:       { label: 'Extrahovaný',   color: '#566573',      emoji: '⚫' },
+  missing:         { label: 'Chýba',         color: '#AAB7B8',      emoji: '⬜' },
+  watch:           { label: 'Pozorovanie',   color: COLORS.warning,  emoji: '👁' },
+  periodontal:     { label: 'Parodont.',     color: COLORS.error,   emoji: '🦷' },
+  improve_hygiene: { label: 'Zlepš hygienu', color: COLORS.info,    emoji: '🪥' },
+  treatment_needed:{ label: 'Na prerobenie', color: '#F39C12',      emoji: '🔧' },
+  fracture:        { label: 'Fraktúra',      color: '#E74C3C',      emoji: '💥' },
 };
 
-// ─── Konfigurácia statusov ────────────────────────────────────────────────────
-const STATUS_CFG: Record<ToothStatus, {
-  label: string; color: string; bg: string; dot: string; emoji: string;
-}> = {
-  healthy:    { label: 'Zdravý',        color: '#1E8449', bg: '#EAFAF1', dot: '#2ECC71', emoji: '✅' },
-  filled:     { label: 'Plomba',        color: '#9A7D0A', bg: '#FEF9E7', dot: '#F4D03F', emoji: '🟡' },
-  crown:      { label: 'Korunka',       color: '#1A5276', bg: '#EBF5FB', dot: '#3498DB', emoji: '👑' },
-  cavity:     { label: 'Kaz',           color: '#922B21', bg: '#FDEDEC', dot: '#E74C3C', emoji: '🔴' },
-  root_canal: { label: 'Devitalizácia', color: '#6C3483', bg: '#F5EEF8', dot: '#9B59B6', emoji: '🟣' },
-  extracted:  { label: 'Extrahovaný',   color: '#566573', bg: '#F2F3F4', dot: '#7F8C8D', emoji: '⚫' },
-  missing:    { label: 'Chýba',         color: '#99A3A4', bg: '#FDFEFE', dot: '#BFC9CA', emoji: '⬜' },
-};
-
-// ─── Dimenzie skóre ───────────────────────────────────────────────────────────
-type DimKey = 'health' | 'aesthetics' | 'hygiene' | 'prevention';
-
-const DIMENSIONS: {
-  key: DimKey; label: string; emoji: string;
-  color: string; bg: string; weight: number;
-  describe: (s: number) => string;
-  tip: string;
-}[] = [
-  {
-    key: 'health', label: 'Zdravie zubov', emoji: '🏥', weight: 0.40,
-    color: '#1E8449', bg: '#EAFAF1',
-    describe: (s) => s >= 85 ? 'Výborný stav chrupu' : s >= 70 ? 'Dobrý stav' : s >= 50 ? 'Vyžaduje pozornosť' : 'Kritický stav',
-    tip: 'Kazy a chýbajúce zuby znižujú skóre. Stoličky majú vyššiu váhu ako rezáky.',
-  },
-  {
-    key: 'aesthetics', label: 'Estetika', emoji: '😁', weight: 0.25,
-    color: '#1A5276', bg: '#EBF5FB',
-    describe: (s) => s >= 85 ? 'Krásny úsmev' : s >= 70 ? 'Dobrý vzhľad' : s >= 50 ? 'Viditeľné problémy' : 'Výrazné estetické problémy',
-    tip: 'Hodnotí predné zuby (rezáky, špičáky). Chýbajúci predný zub výrazne znižuje skóre.',
-  },
-  {
-    key: 'hygiene', label: 'Hygiena', emoji: '🪥', weight: 0.20,
-    color: '#148F77', bg: '#E8F8F5',
-    describe: (s) => s >= 85 ? 'Výborná hygiena' : s >= 70 ? 'Priemerná hygiena' : s >= 50 ? 'Slabá hygiena' : 'Zanedbané čistenie',
-    tip: 'Kazy sú indikátorom hygieny. Čím viac zdravých zubov, tým vyššie skóre.',
-  },
-  {
-    key: 'prevention', label: 'Preventíva', emoji: '📅', weight: 0.15,
-    color: '#7D6608', bg: '#FEF9E7',
-    describe: (s) => s >= 80 ? 'Vzorný pacient' : s >= 60 ? 'Aktívny pacient' : s >= 35 ? 'Nepravidelné návštevy' : 'Žiadna preventíva',
-    tip: 'Vyplnený dotazník, naplánovaný termín a pravidelné návštevy zvyšujú skóre.',
-  },
-];
-
-// ─── Pomocné funkcie ──────────────────────────────────────────────────────────
-/** Váha zuba podľa pozície (1–8 v rámci kvadrantu) */
-function getWeight(toothNum: number): number {
-  const pos = toothNum % 10;
-  if (pos === 6 || pos === 7) return 3.0;
-  if (pos === 4 || pos === 5) return 2.0;
-  if (pos === 3)              return 1.5;
-  if (pos === 1 || pos === 2) return 1.0;
-  if (pos === 8)              return 0.5;
-  return 1.0;
-}
-
-/** Je zub predný (viditeľný) — pozície 1, 2, 3 */
-function isFront(toothNum: number): boolean {
-  const pos = toothNum % 10;
-  return pos >= 1 && pos <= 3;
-}
-
-/** Slovenský názov zuba */
-function getToothName(num: number): string {
-  const q   = Math.floor(num / 10);
-  const pos = num % 10;
-  const qN = ['', 'Horný pravý', 'Horný ľavý', 'Dolný ľavý', 'Dolný pravý'];
-  const pN = ['', 'centrálny rezák', 'postranný rezák', 'špičák',
-    'prvá predstoličky', 'druhá predstoličky', 'prvá stolička',
-    'druhá stolička', 'zub múdrosti'];
-  return `${qN[q] ?? ''} ${pN[pos] ?? ''}`.trim();
-}
-
-/** Odporúčanie pre daný stav */
-function getRecommendation(status: ToothStatus): string {
-  switch (status) {
-    case 'cavity':     return 'Odporúčame ošetrenie — plomba alebo iná rekonštrukcia.';
-    case 'root_canal': return 'Devitalizovaný zub — zvážte korunkovú nadstavbu.';
-    case 'extracted':  return 'Chýbajúci zub — zvážte implantát alebo mostík.';
-    case 'missing':    return 'Zub chýba — konzultujte s doktorom.';
-    default:           return '';
-  }
-}
-
-// ─── Výpočty dimenzií ─────────────────────────────────────────────────────────
-
-/** 🏥 Zdravie — štrukturálna integrita všetkých zubov */
-function calcHealth(teeth: ToothRecord[]): number {
-  if (teeth.length === 0) return 70;
-  const DED: Partial<Record<ToothStatus, number>> = {
-    cavity: 15, root_canal: 10, extracted: 14, missing: 10,
-  };
-  let deduction = 0;
-  let healthyCount = 0;
-  teeth.forEach((t) => {
-    deduction += (DED[t.status] ?? 0) * getWeight(t.tooth_number);
-    if (t.status === 'healthy') healthyCount++;
-  });
-  const bonus = Math.min(15, healthyCount * 0.8);
-  return Math.max(0, Math.min(100, Math.round(100 - deduction + bonus)));
-}
-
-/** 😁 Estetika — stav predných viditeľných zubov (pozície 1–3) */
-function calcAesthetics(teeth: ToothRecord[]): number {
-  const front = teeth.filter((t) => isFront(t.tooth_number));
-  if (front.length === 0) return 75; // žiadne dáta o predných zuboch
-  const DED: Partial<Record<ToothStatus, number>> = {
-    cavity: 18, extracted: 22, missing: 20, root_canal: 12,
-    filled: 4, crown: 3,
-  };
-  let score = 100;
-  let healthyBonus = 0;
-  front.forEach((t) => {
-    score -= DED[t.status] ?? 0;
-    if (t.status === 'healthy') healthyBonus++;
-  });
-  score += Math.min(8, healthyBonus * 1.5);
-  return Math.max(0, Math.min(100, Math.round(score)));
-}
-
-/** 🪥 Hygiena — pomer zdravých zubov + kazy ako indikátor hygieny */
-function calcHygiene(teeth: ToothRecord[], hasPassport: boolean, completedCount: number): number {
-  let base: number;
-  if (teeth.length === 0) {
-    base = 55;
-  } else {
-    const total         = teeth.length;
-    const healthyCount  = teeth.filter((t) => t.status === 'healthy').length;
-    const cavityCount   = teeth.filter((t) => t.status === 'cavity' || t.status === 'root_canal').length;
-    const healthyRatio  = healthyCount / total;
-    const problemRatio  = cavityCount / total;
-    base = Math.round(60 + healthyRatio * 30 - problemRatio * 40);
-  }
-  if (hasPassport)       base += 5;
-  if (completedCount > 0) base += Math.min(10, completedCount * 3);
-  return Math.max(0, Math.min(100, base));
-}
-
-/** 📅 Preventíva — aktívna starostlivosť o chrup */
-function calcPrevention(
-  hasPassport: boolean,
-  hasAppointment: boolean,
-  completedCount: number,
-  hasChartData: boolean,
-): number {
-  let score = 0;
-  if (hasChartData)     score += 25; // doktor vyplnil kartu
-  if (hasPassport)      score += 25; // vyplnený zdravotný dotazník
-  if (hasAppointment)   score += 25; // naplánovaný termín
-  score += Math.min(25, completedCount * 8); // absolvované návštevy
-  return Math.min(100, score);
-}
-
-/** Celkové vážené skóre */
-function calcOverall(scores: Record<DimKey, number>): number {
-  return Math.round(
-    DIMENSIONS.reduce((acc, d) => acc + scores[d.key] * d.weight, 0)
-  );
-}
-
-// ─── Zubná mapa (FDI) ─────────────────────────────────────────────────────────
-const UPPER_RIGHT = [18, 17, 16, 15, 14, 13, 12, 11];
-const UPPER_LEFT  = [21, 22, 23, 24, 25, 26, 27, 28];
-const LOWER_RIGHT = [48, 47, 46, 45, 44, 43, 42, 41];
-const LOWER_LEFT  = [31, 32, 33, 34, 35, 36, 37, 38];
-
-function ToothDot({ num, chart }: { num: number; chart: Record<number, ToothRecord> }) {
-  const rec   = chart[num];
-  const color = rec ? STATUS_CFG[rec.status].dot : '#D5D8DC';
-  const isBad = rec && ['cavity', 'root_canal', 'extracted', 'missing'].includes(rec.status);
-  return (
-    <View style={[
-      styles.toothDot,
-      { backgroundColor: color },
-      isFront(num) && styles.toothDotFront,
-      isBad && { borderColor: color, borderWidth: 1.5 },
-    ]}>
-      {isBad && <View style={styles.toothDotInner} />}
-    </View>
-  );
-}
-
-function DentalMap({ chart }: { chart: Record<number, ToothRecord> }) {
-  return (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>ZUBNÁ MAPA</Text>
-      <Text style={styles.jawLabel}>▲ Horná čeľusť</Text>
-      <View style={styles.jawRow}>
-        <View style={styles.halfRow}>{UPPER_RIGHT.map((n) => <ToothDot key={n} num={n} chart={chart} />)}</View>
-        <View style={styles.midLine} />
-        <View style={styles.halfRow}>{UPPER_LEFT.map((n) => <ToothDot key={n} num={n} chart={chart} />)}</View>
-      </View>
-      <View style={styles.jawRow}>
-        <View style={styles.halfRow}>{LOWER_RIGHT.map((n) => <ToothDot key={n} num={n} chart={chart} />)}</View>
-        <View style={styles.midLine} />
-        <View style={styles.halfRow}>{LOWER_LEFT.map((n) => <ToothDot key={n} num={n} chart={chart} />)}</View>
-      </View>
-      <Text style={styles.jawLabel}>▼ Dolná čeľusť</Text>
-      <View style={styles.mapLegend}>
-        {(['healthy', 'cavity', 'filled', 'crown', 'root_canal', 'extracted'] as ToothStatus[]).map((s) => (
-          <View key={s} style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: STATUS_CFG[s].dot }]} />
-            <Text style={styles.legendText}>{STATUS_CFG[s].label}</Text>
-          </View>
-        ))}
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: '#D5D8DC', borderWidth: 1, borderColor: COLORS.bg3 }]} />
-          <Text style={styles.legendText}>Predné zuby</Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-// ─── Dimenzionálna karta ──────────────────────────────────────────────────────
-function DimCard({ dim, score }: { dim: typeof DIMENSIONS[0]; score: number }) {
-  const pct   = score / 100;
-  const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
-  const gradeColor = score >= 85 ? '#1E8449' : score >= 70 ? '#9A7D0A' : score >= 50 ? '#E67E22' : '#922B21';
-  return (
-    <View style={[styles.dimCard, { borderLeftColor: dim.color }]}>
-      {/* Hlavička */}
-      <View style={styles.dimHeader}>
-        <View style={[styles.dimEmojiBox, { backgroundColor: dim.bg }]}>
-          <Text style={styles.dimEmoji}>{dim.emoji}</Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.dimLabel}>{dim.label}</Text>
-          <Text style={[styles.dimDesc, { color: dim.color }]}>{dim.describe(score)}</Text>
-        </View>
-        <View style={styles.dimScoreBox}>
-          <Text style={[styles.dimScore, { color: gradeColor }]}>{score}</Text>
-          <Text style={styles.dimScoreMax}>/100</Text>
-        </View>
-        <View style={[styles.gradeBox, { backgroundColor: gradeColor }]}>
-          <Text style={styles.gradeText}>{grade}</Text>
-        </View>
-      </View>
-      {/* Progress bar */}
-      <View style={styles.dimTrack}>
-        <View style={[styles.dimFill, { width: `${pct * 100}%`, backgroundColor: dim.color }]} />
-        {/* Marker kvality */}
-        {[25, 50, 75].map((m) => (
-          <View key={m} style={[styles.dimMarker, { left: `${m}%` as any }]} />
-        ))}
-      </View>
-      <View style={styles.dimScaleRow}>
-        <Text style={styles.dimScaleTxt}>Slabý</Text>
-        <Text style={styles.dimScaleTxt}>Priemerný</Text>
-        <Text style={styles.dimScaleTxt}>Dobrý</Text>
-        <Text style={styles.dimScaleTxt}>Výborný</Text>
-      </View>
-    </View>
-  );
-}
-
-// ─── Celkové skóre kruh ───────────────────────────────────────────────────────
-function ScoreCircle({ score, hasData }: { score: number; hasData: boolean }) {
-  const color = score >= 80 ? '#1E8449' : score >= 65 ? '#9A7D0A' : score >= 45 ? '#E67E22' : '#922B21';
-  const label = score >= 80 ? 'Výborný' : score >= 65 ? 'Dobrý' : score >= 45 ? 'Priemerný' : 'Slabý';
-  return (
-    <View style={styles.circleSection}>
-      <View style={[styles.circleWrap, { borderColor: color }]}>
-        <Text style={[styles.scoreNum, { color }]}>{score}</Text>
-        <Text style={[styles.scoreMax, { color }]}>/100</Text>
-        <Text style={[styles.scoreLabel, { color }]}>{label}</Text>
-      </View>
-      {!hasData && (
-        <Text style={styles.noDataNote}>
-          Skóre bude presnejšie po tom, čo doktor vyplní vašu zubnú kartu.
-        </Text>
-      )}
-      {hasData && (
-        <View style={styles.weightRow}>
-          {DIMENSIONS.map((d) => (
-            <View key={d.key} style={styles.weightChip}>
-              <Text style={styles.weightEmoji}>{d.emoji}</Text>
-              <Text style={styles.weightPct}>{Math.round(d.weight * 100)}%</Text>
-            </View>
-          ))}
-        </View>
-      )}
-    </View>
-  );
-}
-
-// ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
-export default function ScoreScreen() {
-  const [chart,           setChart]           = useState<Record<number, ToothRecord>>({});
-  const [hasPassport,     setHasPassport]     = useState(false);
-  const [hasAppointment,  setHasAppointment]  = useState(false);
-  const [completedCount,  setCompletedCount]  = useState(0);
-  const [doctorNotes,     setDoctorNotes]     = useState<DoctorNote[]>([]);
-  const [loading,         setLoading]         = useState(true);
+// ─── Animated score ring ──────────────────────────────────────────────────────
+function ScoreRing({ score, size = 180 }: { score: number; size?: number }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (cancelled) return;
-      if (!user) { setLoading(false); return; }
+    anim.addListener(({ value }) => setDisplay(Math.round(value)));
+    Animated.timing(anim, {
+      toValue: score, duration: 1400,
+      easing: Easing.out(Easing.cubic), useNativeDriver: false,
+    }).start();
+    return () => anim.removeAllListeners();
+  }, [score]);
 
-      // Zubná karta
-      const { data: teeth } = await supabase
-        .from('dental_charts').select('tooth_number, status, notes').eq('patient_id', user.id);
-      if (!cancelled && teeth) {
-        const map: Record<number, ToothRecord> = {};
-        teeth.forEach((t) => { map[t.tooth_number] = t as ToothRecord; });
-        setChart(map);
-      }
+  const col   = scoreColor(score);
+  const stroke = 14;
+  const inner  = size - stroke * 2;
 
-      // Zdravotný pas
-      const { data: pp } = await supabase
-        .from('health_passports').select('patient_id').eq('patient_id', user.id).maybeSingle();
-      if (!cancelled) setHasPassport(!!pp);
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      {/* Track ring */}
+      <View style={{
+        position: 'absolute', width: size, height: size,
+        borderRadius: size / 2, borderWidth: stroke, borderColor: 'rgba(255,255,255,0.10)',
+      }} />
+      {/* Fill arc approximation — gradient ring cap */}
+      <Animated.View style={{
+        position: 'absolute',
+        width: size, height: size,
+        borderRadius: size / 2,
+        borderWidth: stroke,
+        borderColor: 'transparent',
+        borderTopColor: col,
+        borderRightColor: anim.interpolate({ inputRange: [0, 50, 100], outputRange: ['transparent', col, col] }),
+        borderBottomColor: anim.interpolate({ inputRange: [0, 75, 100], outputRange: ['transparent', 'transparent', col] }),
+        transform: [{ rotate: '-90deg' }],
+      }} />
+      {/* Inner glow */}
+      <View style={{
+        position: 'absolute',
+        width: inner - 16, height: inner - 16,
+        borderRadius: (inner - 16) / 2,
+        backgroundColor: col + '12',
+      }} />
+      {/* Center text */}
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: size * 0.22, color: '#FAF6F0', lineHeight: size * 0.26 }}>
+          {display}
+        </Text>
+        <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: size * 0.08, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.5 }}>
+          / 100
+        </Text>
+      </View>
+    </View>
+  );
+}
 
-      // Naplánované termíny
-      const { data: scheduled } = await supabase
-        .from('appointments').select('id').eq('patient_id', user.id).eq('status', 'scheduled').limit(1);
-      if (!cancelled) setHasAppointment((scheduled?.length ?? 0) > 0);
+// ─── Sub-score card ───────────────────────────────────────────────────────────
+function SubScoreCard({ label, score, emoji, colors }: {
+  label: string; score: number; emoji: string; colors: any;
+}) {
+  const anim = useRef(new Animated.Value(0)).current;
 
-      // Počet dokončených termínov
-      const { count } = await supabase
-        .from('appointments').select('id', { count: 'exact', head: true })
-        .eq('patient_id', user.id).eq('status', 'completed');
-      if (!cancelled) setCompletedCount(count ?? 0);
+  useEffect(() => {
+    Animated.timing(anim, { toValue: score / 100, duration: 800, easing: Easing.out(Easing.quad), useNativeDriver: false }).start();
+  }, [score]);
 
-      // Doktorove poznámky
-      const { data: notes } = await supabase
-        .from('appointments')
-        .select('appointment_date, doctor_notes, service:services(name)')
-        .eq('patient_id', user.id).eq('status', 'completed')
-        .not('doctor_notes', 'is', null)
-        .order('appointment_date', { ascending: false }).limit(3);
-      // DB query už filtruje NOT NULL doctor_notes — klientský filter nie je potrebný
-      if (!cancelled && notes) setDoctorNotes(notes as any[]);
+  const col = scoreColor(score);
+  const g   = grade(score);
 
-      if (!cancelled) setLoading(false);
-    }
-    load();
-    return () => { cancelled = true; };
+  return (
+    <View style={[sub.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, SHADOWS.sm]}>
+      <Text style={sub.emoji}>{emoji}</Text>
+      <Text style={[sub.value, { color: col }]}>{score}</Text>
+      <Animated.View style={[sub.bar, { width: anim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }), backgroundColor: col }]} />
+      <Text style={[sub.label, { color: colors.textSecondary }]} numberOfLines={1}>{label}</Text>
+      <View style={[sub.grade, { backgroundColor: col }]}>
+        <Text style={sub.gradeText}>{g}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Dimension bar ────────────────────────────────────────────────────────────
+function DimBar({ label, score, emoji, colors }: { label: string; score: number; emoji: string; colors: any }) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(anim, { toValue: score, duration: 700, easing: Easing.out(Easing.quad), useNativeDriver: false }).start();
+  }, [score]);
+
+  const col = scoreColor(score);
+  const g   = grade(score);
+  const gc  = gradeColor(score);
+
+  return (
+    <View style={db.row}>
+      <Text style={db.emoji}>{emoji}</Text>
+      <Text style={[db.label, { color: colors.textPrimary }]}>{label}</Text>
+      <View style={[db.track, { backgroundColor: colors.bg3 }]}>
+        <Animated.View style={[db.fill, {
+          width: anim.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'] }),
+          backgroundColor: col,
+        }]} />
+      </View>
+      <Text style={[db.score, { color: gc }]}>{score}</Text>
+      <View style={[db.badge, { backgroundColor: gc }]}>
+        <Text style={db.badgeText}>{g}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Tip card ──────────────────────────────────────────────────────────────────
+function TipCard({ icon, title, sub, color, colors }: { icon: string; title: string; sub: string; color: string; colors: any }) {
+  return (
+    <View style={[tip.card, { backgroundColor: colors.bg2, borderLeftColor: color }]}>
+      <View style={[tip.iconWrap, { backgroundColor: color + '18' }]}>
+        <Ionicons name={icon as any} size={18} color={color} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={[tip.title, { color }]}>{title}</Text>
+        <Text style={[tip.sub, { color: colors.textSecondary }]}>{sub}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ─── Main screen ──────────────────────────────────────────────────────────────
+export default function ScoreScreen() {
+  const router = useRouter();
+  const { colors, dark } = useAppTheme();
+
+  const [teeth,        setTeeth]        = useState<ToothRecord[]>([]);
+  const [appointments, setAppointments] = useState<ApptRow[]>([]);
+  const [hasPassport,  setHasPassport]  = useState(false);
+  const [loading,      setLoading]      = useState(true);
+  const [refreshing,   setRefreshing]   = useState(false);
+
+  const load = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+
+    const [teethRes, apptRes, ppRes] = await Promise.all([
+      supabase.from('dental_charts').select('tooth_number,status,notes').eq('patient_id', user.id),
+      supabase.from('appointments')
+        .select('id,appointment_date,status,service:services(name,emoji)')
+        .eq('patient_id', user.id)
+        .order('appointment_date', { ascending: false }),
+      supabase.from('health_passports').select('id').eq('patient_id', user.id).maybeSingle(),
+    ]);
+
+    setTeeth((teethRes.data ?? []) as ToothRecord[]);
+    setAppointments((apptRes.data ?? []) as unknown as ApptRow[]);
+    setHasPassport(!!ppRes.data);
+    setLoading(false);
   }, []);
 
-  // ── Výpočty ───────────────────────────────────────────────────────────────
-  const { dimScores, overall, problemTeeth, stats } = useMemo(() => {
-    const records = Object.values(chart);
-    const hasData = records.length > 0;
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
-    // Štatistiky
-    const st: Partial<Record<ToothStatus, number>> = {};
-    records.forEach((r) => { st[r.status] = (st[r.status] ?? 0) + 1; });
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
 
-    // Dimenzionálne skóre
-    const scores: Record<DimKey, number> = {
-      health:     calcHealth(records),
-      aesthetics: calcAesthetics(records),
-      hygiene:    calcHygiene(records, hasPassport, completedCount),
-      prevention: calcPrevention(hasPassport, hasAppointment, completedCount, hasData),
-    };
+  const sc = useMemo(() => {
+    const completed = appointments.filter(a => a.status === 'completed').length;
+    const hasAppt   = appointments.length > 0;
+    const hasChart  = teeth.length > 0;
+    const h  = calcHealth(teeth);
+    const hy = calcHygiene(teeth, hasPassport, completed);
+    const a  = calcAesthetics(teeth);
+    const p  = calcPrevention(hasPassport, hasAppt, completed, hasChart);
+    return { health: h, hygiene: hy, aesthetics: a, prevention: p, overall: overall(h, a, hy, p) };
+  }, [teeth, appointments, hasPassport]);
 
-    // Celkové skóre
-    const ov = hasData
-      ? calcOverall(scores)
-      : Math.round(
-          scores.health * 0.40 + scores.aesthetics * 0.25 +
-          scores.hygiene * 0.20 + scores.prevention * 0.15
-        );
+  const statusCounts = useMemo(() => {
+    const m: Partial<Record<ToothStatus, number>> = {};
+    teeth.forEach(t => { m[t.status] = (m[t.status] ?? 0) + 1; });
+    return m;
+  }, [teeth]);
 
-    // Problematické zuby (zoradené podľa váhy)
-    const problems = records
-      .filter((r) => ['cavity', 'root_canal', 'extracted', 'missing'].includes(r.status))
-      .map((r) => ({
-        ...r,
-        name: getToothName(r.tooth_number),
-        weight: getWeight(r.tooth_number),
-        rec: r.notes ? r.notes : getRecommendation(r.status),
-        isFrontTooth: isFront(r.tooth_number),
-      }))
-      .sort((a, b) => b.weight - a.weight || b.tooth_number - a.tooth_number);
-
-    return { dimScores: scores, overall: ov, problemTeeth: problems, stats: st };
-  }, [chart, hasPassport, hasAppointment, completedCount]);
-
-  const hasChartData = Object.keys(chart).length > 0;
-
-  // ── Odznaky ──────────────────────────────────────────────────────────────
-  const badges = useMemo(() => {
-    const list: { emoji: string; title: string; sub: string; color: string }[] = [];
-    if (hasPassport)    list.push({ emoji: '📋', title: 'Dotazník vyplnený',   sub: 'Zdravotná anamnéza kompletná',     color: '#1E8449' });
-    if (hasAppointment) list.push({ emoji: '📅', title: 'Termín naplánovaný', sub: 'Máš nadchádzajúcu návštevu',       color: '#1A5276' });
-    if (hasChartData && !stats.cavity && !stats.root_canal)
-      list.push({ emoji: '🌟', title: 'Čistý chrup',     sub: 'Žiadne kazy ani devitalizácie',  color: '#9A7D0A' });
-    if (hasChartData)   list.push({ emoji: '🦷', title: 'Karta vyplnená',     sub: 'Doktor zaznamenal tvoj chrup',    color: '#6C3483' });
-    if (completedCount >= 3) list.push({ emoji: '🏅', title: 'Verný pacient', sub: `${completedCount} absolvovaných návštev`,    color: '#D4A017' });
-    if (overall >= 85)  list.push({ emoji: '🏆', title: 'Skóre 85+',          sub: 'Výnimočná starostlivosť o chrup!', color: '#D4A017' });
-    return list;
-  }, [hasPassport, hasAppointment, hasChartData, stats, completedCount, overall]);
-
-  // ── Dynamické tipy ────────────────────────────────────────────────────────
   const tips = useMemo(() => {
-    const t: { emoji: string; tip: string }[] = [];
-    if (stats.cavity)     t.push({ emoji: '🔴', tip: `${stats.cavity} zub${stats.cavity === 1 ? '' : 'y'} s kazom — navštívte zubára čo najskôr.` });
-    if (stats.root_canal) t.push({ emoji: '🟣', tip: `${stats.root_canal} devitalizovaný zub — zvážte korunkovú ochranu.` });
-    if (stats.extracted)  t.push({ emoji: '⚫', tip: `${stats.extracted} extrahovaný zub — zvážte implantologické riešenie.` });
-    if (dimScores.aesthetics < 70) t.push({ emoji: '😁', tip: 'Problémy na predných zuboch ovplyvňujú estetiku. Konzultujte s doktorom.' });
-    if (dimScores.prevention < 50) t.push({ emoji: '📅', tip: 'Naplánujte si termín a vyplňte zdravotný dotazník pre vyššie preventívne skóre.' });
-    t.push({ emoji: '🪥', tip: 'Čisť zuby 2× denne aspoň 2 minúty s fluóridovou pastou.' });
-    t.push({ emoji: '🧵', tip: 'Zubná niť odstraňuje plak medzi zubami — používaj ju denne.' });
-    t.push({ emoji: '📅', tip: 'Preventívna prehliadka každých 6 mesiacov predchádza komplikáciám.' });
-    return t.slice(0, 5);
-  }, [stats, dimScores]);
+    const list: { icon: string; title: string; sub: string; color: string }[] = [];
+    const cavities    = (statusCounts['cavity'] ?? 0) + (statusCounts['early_cavity'] ?? 0);
+    const hygieneIss  = statusCounts['improve_hygiene'] ?? 0;
+    const watching    = statusCounts['watch'] ?? 0;
+    const periodontal = (statusCounts['periodontal'] ?? 0) + (statusCounts['mobility'] ?? 0);
+    const treatNeeded = statusCounts['treatment_needed'] ?? 0;
+    const completed   = appointments.filter(a => a.status === 'completed').length;
+    const lastVisit   = appointments.find(a => a.status === 'completed');
+    const monthsSince = lastVisit
+      ? Math.round((Date.now() - new Date(lastVisit.appointment_date).getTime()) / (1000*60*60*24*30))
+      : 999;
 
-  // ─────────────────────────────────────────────────────────────────────────
+    if (cavities > 0)      list.push({ icon:'warning-outline',       title:`${cavities} ${cavities===1?'kaz':'kazov'} vyžaduje ošetrenie`,    sub:'Čím skôr ošetríte kaz, tým menej invazívny bude zákrok.', color: COLORS.error });
+    if (hygieneIss > 0)    list.push({ icon:'warning-outline',       title:'Zlepšiť hygienu',      sub:'Odporúčame elektrický kefár a dentálnu niť 2× denne.', color: COLORS.info });
+    if (periodontal > 0)   list.push({ icon:'alert-circle-outline',  title:'Parodontálny problém', sub:'Navštívte doktora — dásne si vyžadujú pozornosť.', color: COLORS.error });
+    if (treatNeeded > 0)   list.push({ icon:'construct-outline',     title:`${treatNeeded} zub${treatNeeded>1?'y':''} na prerobenie`, sub:'Konzultujte s doktorom plán ošetrenia.', color: COLORS.warning });
+    if (watching > 0)      list.push({ icon:'eye-outline',           title:`${watching} zub${watching>1?'y':''} na pozorovanie`, sub:'Odporúčame kontrolu každých 3–6 mesiacov.', color: COLORS.warning });
+    if (!hasPassport)      list.push({ icon:'document-text-outline', title:'Vyplňte zdravotný dotazník', sub:'Pomôže nám poskytnúť vám bezpečnejšiu starostlivosť.', color: COLORS.info });
+    if (monthsSince > 6 || completed === 0)
+                           list.push({ icon:'calendar-outline',      title:'Preventívna prehliadka', sub:`Každých 6 mesiacov${completed>0?`. Posledná pred ${monthsSince} mes.`:'. Ešte ste nás nenavštívili.'}`, color: COLORS.success });
+    if (sc.overall >= 85)  list.push({ icon:'star-outline',          title:'Skvelá starostlivosť!', sub:'Pokračujte — vidíme sa o 6 mesiacov na prehliadke.', color: COLORS.success });
+    return list.slice(0, 5);
+  }, [statusCounts, appointments, hasPassport, sc.overall]);
+
+  const recentAppts = useMemo(
+    () => appointments.filter(a => a.status === 'completed').slice(0, 3),
+    [appointments]
+  );
+
+  const hasData = teeth.length > 0;
+  const col     = scoreColor(sc.overall);
+
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator color={COLORS.wal} size="large" /></View>;
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+        <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
+          <Text style={s.heroLabel}>ANALÝZA CHRUPU</Text>
+          <Text style={s.heroTitle}>Dentálne skóre</Text>
+        </LinearGradient>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 20 }}>
+          <SkeletonList count={5} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <Text style={styles.headerSub}>TVOJE</Text>
-        <Text style={styles.headerTitle}>Dentálne skóre</Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.gold} />}
+      >
+        {/* Hero with ring */}
+        <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
+          {/* Decorative circles */}
+          <View style={[s.circle, { width: 200, height: 200, right: -60, top: -60, opacity: 0.05 }]} />
+          <View style={[s.circle, { width: 120, height: 120, right: 30, bottom: -20, opacity: 0.04 }]} />
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}>
+          <Text style={s.heroLabel}>ANALÝZA CHRUPU</Text>
+          <Text style={s.heroTitle}>Dentálne skóre</Text>
 
-        {/* ── Celkové skóre ── */}
-        <ScoreCircle score={overall} hasData={hasChartData} />
-
-        {/* ── 4 dimenzie ── */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>HODNOTENIE PODĽA DIMENZIÍ</Text>
-          {DIMENSIONS.map((d) => (
-            <DimCard key={d.key} dim={d} score={dimScores[d.key]} />
-          ))}
-        </View>
-
-        {/* ── Metodika ── */}
-        <View style={styles.methodCard}>
-          <Text style={styles.methodTitle}>💡 Ako sa skóre počíta?</Text>
-          {DIMENSIONS.map((d) => (
-            <View key={d.key} style={styles.methodRow}>
-              <Text style={styles.methodEmoji}>{d.emoji}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.methodLabel}>{d.label} <Text style={{ color: d.color, fontWeight: '700' }}>({Math.round(d.weight * 100)}%)</Text></Text>
-                <Text style={styles.methodTip}>{d.tip}</Text>
+          {hasData ? (
+            <View style={s.ringWrap}>
+              <ScoreRing score={sc.overall} size={180} />
+              <View style={s.ringMeta}>
+                <View style={[s.scoreBadge, { backgroundColor: col }]}>
+                  <Text style={s.scoreBadgeText}>{scoreLabel(sc.overall)}</Text>
+                </View>
+                <Text style={s.ringSubtext}>{teeth.length} zaznamenaných zubov</Text>
               </View>
             </View>
-          ))}
-        </View>
-
-        {/* ── Zubná mapa ── */}
-        {hasChartData && <DentalMap chart={chart} />}
-
-        {/* ── Problematické zuby ── */}
-        {problemTeeth.length > 0 && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>PROBLEMATICKÉ ZUBY</Text>
-            {problemTeeth.map((t) => {
-              const cfg = STATUS_CFG[t.status];
-              return (
-                <View key={t.tooth_number} style={[styles.problemRow, { borderLeftColor: cfg.color }]}>
-                  <View style={styles.problemLeft}>
-                    <Text style={styles.problemNum}>Zub {t.tooth_number}</Text>
-                    <Text style={styles.problemName}>{t.name}</Text>
-                    {t.isFrontTooth && (
-                      <Text style={styles.frontBadge}>Predný</Text>
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <View style={[styles.statusBadge, { backgroundColor: cfg.bg }]}>
-                      <Text style={styles.problemEmoji}>{cfg.emoji}</Text>
-                      <Text style={[styles.problemStatus, { color: cfg.color }]}>{cfg.label}</Text>
-                    </View>
-                    {t.rec ? <Text style={styles.problemRec}>{t.rec}</Text> : null}
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-        )}
-
-        {/* ── Rozklad štatistík ── */}
-        {hasChartData && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>ROZKLAD CHRUPU</Text>
-            <View style={styles.statsGrid}>
-              {(Object.keys(STATUS_CFG) as ToothStatus[]).map((key) => {
-                const count = stats[key] ?? 0;
-                if (!count) return null;
-                const s = STATUS_CFG[key];
-                return (
-                  <View key={key} style={[styles.statItem, { backgroundColor: s.bg, borderColor: s.color }]}>
-                    <Text style={styles.statEmoji}>{s.emoji}</Text>
-                    <Text style={[styles.statCount, { color: s.color }]}>{count}</Text>
-                    <Text style={[styles.statLabel, { color: s.color }]}>{s.label}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        )}
-
-        {/* ── Poznámky od doktora ── */}
-        {doctorNotes.length > 0 && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>ZÁZNAMY OD DOKTORA</Text>
-            {doctorNotes.map((n, i) => (
-              <View key={i} style={styles.noteRow}>
-                <View style={styles.noteIcon}>
-                  <Ionicons name="document-text" size={16} color={COLORS.wal} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.noteService}>
-                    {n.service?.name ?? 'Návšteva'} · {new Date(n.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </Text>
-                  <Text style={styles.noteText}>{n.doctor_notes}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* ── Odznaky ── */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>ODZNAKY</Text>
-          {badges.length === 0 ? (
-            <Text style={styles.noBadges}>Zatiaľ žiadne odznaky. Vyplň dotazník a rezervuj termín!</Text>
           ) : (
-            <View style={styles.badgesGrid}>
-              {badges.map((b, i) => (
-                <View key={i} style={[styles.badge, { borderColor: b.color }]}>
-                  <Text style={styles.badgeEmoji}>{b.emoji}</Text>
+            <View style={s.noDataHero}>
+              <Text style={s.noDataEmoji}>🦷</Text>
+              <Text style={s.noDataTitle}>Zubná karta zatiaľ prázdna</Text>
+              <Text style={s.noDataSub}>
+                Doktor vyplní vašu zubnú kartu pri prvej návšteve.
+              </Text>
+            </View>
+          )}
+        </LinearGradient>
+
+        <View style={{ backgroundColor: colors.bg2, paddingBottom: 120 }}>
+          {/* Sub-score cards */}
+          {hasData && (
+            <View style={s.subRow}>
+              <SubScoreCard label="Zdravie"   score={sc.health}     emoji="❤️" colors={colors} />
+              <SubScoreCard label="Hygiena"   score={sc.hygiene}    emoji="🪥" colors={colors} />
+              <SubScoreCard label="Estetika"  score={sc.aesthetics} emoji="✨" colors={colors} />
+              <SubScoreCard label="Prevencia" score={sc.prevention} emoji="🛡️" colors={colors} />
+            </View>
+          )}
+
+          {/* No data CTA */}
+          {!hasData && (
+            <View style={s.noDataCard}>
+              <Text style={[s.noDataCardTitle, { color: colors.textPrimary }]}>Rezervujte si termín</Text>
+              <Text style={[s.noDataCardSub, { color: colors.textSecondary }]}>
+                Po prvej návšteve vám doktor vyplní zubnú kartu a tu uvidíte detailné skóre.
+              </Text>
+              <TouchableOpacity
+                style={s.ctaBtn}
+                onPress={() => router.push('/(patient)/book-appointment')}
+                activeOpacity={0.85}
+              >
+                <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                  <Ionicons name="calendar-outline" size={18} color="#fff" />
+                  <Text style={s.ctaText}>Rezervovať termín</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {hasData && (
+            <>
+              {/* Score breakdown */}
+              <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                <Text style={[s.cardTitle, { color: colors.textSecondary }]}>ROZBOR SKÓRE</Text>
+                <DimBar label="Zdravie"   score={sc.health}     emoji="❤️" colors={colors} />
+                <DimBar label="Hygiena"   score={sc.hygiene}    emoji="🪥" colors={colors} />
+                <DimBar label="Estetika"  score={sc.aesthetics} emoji="✨" colors={colors} />
+                <DimBar label="Prevencia" score={sc.prevention} emoji="🛡️" colors={colors} />
+                <View style={s.legend}>
+                  {([['A','≥85', COLORS.success],['B','≥70','#9A7D0A'],['C','≥50', COLORS.warning],['D','<50', COLORS.error]] as const).map(([g, r, c]) => (
+                    <View key={g} style={s.legendItem}>
+                      <View style={[s.legendDot, { backgroundColor: c }]} />
+                      <Text style={[s.legendText, { color: colors.textSecondary }]}>{g}: {r}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* Tooth status */}
+              <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                <Text style={[s.cardTitle, { color: colors.textSecondary }]}>STAV ZUBOV</Text>
+                <View style={s.statusGrid}>
+                  {(Object.entries(statusCounts) as [ToothStatus, number][])
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([status, count]) => {
+                      const cfg = STATUS_DISPLAY[status];
+                      if (!cfg) return null;
+                      return (
+                        <View key={status} style={[s.statusChip, { borderColor: cfg.color + '50', backgroundColor: cfg.color + '15' }]}>
+                          <Text style={s.statusEmoji}>{cfg.emoji}</Text>
+                          <Text style={[s.statusCount, { color: cfg.color }]}>{count}×</Text>
+                          <Text style={[s.statusLabel, { color: cfg.color }]}>{cfg.label}</Text>
+                        </View>
+                      );
+                    })}
+                </View>
+              </View>
+            </>
+          )}
+
+          {/* Recommendations */}
+          {tips.length > 0 && (
+            <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>ODPORÚČANIA</Text>
+              <View style={{ gap: 8 }}>
+                {tips.map((t, i) => <TipCard key={i} {...t} colors={colors} />)}
+              </View>
+            </View>
+          )}
+
+          {/* Recent visits */}
+          {recentAppts.length > 0 && (
+            <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>NEDÁVNE NÁVŠTEVY</Text>
+              {recentAppts.map((a, i) => (
+                <View key={a.id} style={[s.apptRow, i === recentAppts.length - 1 && { borderBottomWidth: 0 }, { borderBottomColor: colors.bg3 }]}>
+                  <View style={[s.apptIcon, { backgroundColor: colors.bg2 }]}>
+                    <Text style={{ fontSize: 16 }}>{a.service?.emoji ?? '🦷'}</Text>
+                  </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.badgeTitle, { color: b.color }]}>{b.title}</Text>
-                    <Text style={styles.badgeSub}>{b.sub}</Text>
+                    <Text style={[s.apptName, { color: colors.textPrimary }]}>{a.service?.name ?? 'Termín'}</Text>
+                    <Text style={[s.apptDate, { color: colors.textSecondary }]}>
+                      {new Date(a.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </Text>
+                  </View>
+                  <View style={[s.doneBadge, { backgroundColor: COLORS.successBg }]}>
+                    <Text style={[s.doneText, { color: COLORS.success }]}>✓ Hotovo</Text>
                   </View>
                 </View>
               ))}
+              <TouchableOpacity style={s.moreBtn} onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.8}>
+                <Text style={[s.moreBtnText, { color: COLORS.gold }]}>Zobraziť všetky termíny</Text>
+                <Ionicons name="chevron-forward" size={14} color={COLORS.gold} />
+              </TouchableOpacity>
             </View>
           )}
-        </View>
 
-        {/* ── Tipy ── */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>ODPORÚČANIA</Text>
-          {tips.map((t, i) => (
-            <View key={i} style={styles.tipRow}>
-              <Text style={styles.tipEmoji}>{t.emoji}</Text>
-              <Text style={styles.tipText}>{t.tip}</Text>
-            </View>
-          ))}
+          {/* CTA button */}
+          <TouchableOpacity style={s.ctaBtn} onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.85}>
+            <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Ionicons name="calendar-outline" size={18} color="#fff" />
+              <Text style={s.ctaText}>Rezervovať termín</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
-
-        <View style={{ height: 30 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  safe:    { flex: 1, backgroundColor: COLORS.esp },
-  scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 10 },
-  center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+const s = StyleSheet.create({
+  hero: { paddingHorizontal: 20, paddingTop: 14, paddingBottom: 32, overflow: 'hidden' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0' },
+  heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 4 },
+  heroTitle: { ...TYPO.h1, color: '#FAF6F0', marginBottom: 24 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 20 },
-  headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 22, fontWeight: '700', color: '#fff' },
+  ringWrap:     { alignItems: 'center', gap: 16 },
+  ringMeta:     { alignItems: 'center', gap: 8 },
+  scoreBadge:   { borderRadius: RADII.full, paddingHorizontal: 16, paddingVertical: 6 },
+  scoreBadgeText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#fff', letterSpacing: 0.3 },
+  ringSubtext:  { fontFamily: 'DMSans_400Regular', fontSize: 12, color: 'rgba(196,168,130,0.65)' },
 
-  // Celkové skóre
-  circleSection: { alignItems: 'center', paddingVertical: 24 },
-  circleWrap:    { width: 160, height: 160, borderRadius: 80, borderWidth: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', marginBottom: 12 },
-  scoreNum:      { fontSize: 52, fontWeight: '800', lineHeight: 58 },
-  scoreMax:      { fontSize: 14, fontWeight: '600', marginTop: -4 },
-  scoreLabel:    { fontSize: 13, fontWeight: '700', marginTop: 4, textTransform: 'uppercase', letterSpacing: 1 },
-  noDataNote:    { fontSize: 11, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 30, fontStyle: 'italic', marginTop: 8 },
-  weightRow:     { flexDirection: 'row', gap: 8, marginTop: 10 },
-  weightChip:    { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: COLORS.bg3 },
-  weightEmoji:   { fontSize: 13 },
-  weightPct:     { fontSize: 10, fontWeight: '700', color: COLORS.esp },
+  noDataHero:  { alignItems: 'center', gap: 10, paddingBottom: 8 },
+  noDataEmoji: { fontSize: 52 },
+  noDataTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#FAF6F0', textAlign: 'center' },
+  noDataSub:   { fontFamily: 'DMSans_400Regular', fontSize: 13, color: 'rgba(196,168,130,0.75)', textAlign: 'center', lineHeight: 20 },
 
-  // Karta
-  card:      { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
-  cardTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 14 },
+  subRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 },
 
-  // Dimenzionálna karta
-  dimCard:      { marginBottom: 14, paddingLeft: 10, borderLeftWidth: 3, borderRadius: 2 },
-  dimHeader:    { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
-  dimEmojiBox:  { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  dimEmoji:     { fontSize: 20 },
-  dimLabel:     { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 1 },
-  dimDesc:      { fontSize: 10, fontWeight: '600' },
-  dimScoreBox:  { alignItems: 'flex-end' },
-  dimScore:     { fontSize: 24, fontWeight: '800', lineHeight: 26 },
-  dimScoreMax:  { fontSize: 9, color: COLORS.wal, fontWeight: '500' },
-  gradeBox:     { width: 26, height: 26, borderRadius: 6, alignItems: 'center', justifyContent: 'center', marginLeft: 4 },
-  gradeText:    { fontSize: 12, fontWeight: '800', color: '#fff' },
-  dimTrack:     { height: 10, backgroundColor: COLORS.bg3, borderRadius: 5, overflow: 'visible', position: 'relative', marginBottom: 4 },
-  dimFill:      { height: 10, borderRadius: 5, position: 'absolute', top: 0, left: 0 },
-  dimMarker:    { position: 'absolute', top: -2, width: 1, height: 14, backgroundColor: 'rgba(0,0,0,0.12)' },
-  dimScaleRow:  { flexDirection: 'row', justifyContent: 'space-between' },
-  dimScaleTxt:  { fontSize: 8, color: '#bbb', fontWeight: '500' },
+  noDataCard: { margin: 16, borderRadius: RADII.lg, backgroundColor: '#FFFDF9', padding: 20, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3, gap: 10 },
+  noDataCardTitle: { ...TYPO.h2 },
+  noDataCardSub:   { ...TYPO.body },
 
-  // Metodika
-  methodCard:  { backgroundColor: COLORS.esp, borderRadius: 14, padding: 14, marginBottom: 14 },
-  methodTitle: { fontSize: 12, fontWeight: '700', color: '#fff', marginBottom: 12 },
-  methodRow:   { flexDirection: 'row', gap: 10, marginBottom: 10, alignItems: 'flex-start' },
-  methodEmoji: { fontSize: 18, width: 26, textAlign: 'center', marginTop: 1 },
-  methodLabel: { fontSize: 12, color: COLORS.cream, fontWeight: '600', marginBottom: 2 },
-  methodTip:   { fontSize: 11, color: COLORS.sand, lineHeight: 15 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  // Zubná mapa
-  jawLabel:  { fontSize: 9, color: COLORS.wal, fontWeight: '600', textAlign: 'center', marginVertical: 4, letterSpacing: 1 },
-  jawRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 3 },
-  halfRow:   { flexDirection: 'row', gap: 3 },
-  midLine:   { width: 1, height: 14, backgroundColor: COLORS.bg3, marginHorizontal: 4 },
-  toothDot:      { width: 14, height: 14, borderRadius: 7, backgroundColor: '#D5D8DC', alignItems: 'center', justifyContent: 'center' },
-  toothDotFront: { width: 16, height: 16, borderRadius: 8, borderWidth: 1.5, borderColor: COLORS.sand },
-  toothDotInner: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: 'rgba(255,255,255,0.6)' },
-  mapLegend: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 12, justifyContent: 'center' },
-  legendItem:{ flexDirection: 'row', alignItems: 'center', gap: 4 },
-  legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText:{ fontSize: 9, color: COLORS.wal, fontWeight: '500' },
+  card:      { backgroundColor: '#FFFDF9', borderRadius: RADII.lg, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, ...SHADOWS.sm },
+  cardTitle: { ...TYPO.label, marginBottom: 14 },
 
-  // Problematické zuby
-  problemRow:   { flexDirection: 'row', gap: 10, marginBottom: 10, paddingLeft: 10, borderLeftWidth: 3, borderRadius: 2 },
-  problemLeft:  { width: 76 },
-  problemNum:   { fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  problemName:  { fontSize: 9, color: COLORS.wal, marginTop: 1, lineHeight: 12 },
-  frontBadge:   { fontSize: 8, fontWeight: '700', color: '#1A5276', backgroundColor: '#EBF5FB', borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1, alignSelf: 'flex-start', marginTop: 3 },
-  statusBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start', marginBottom: 4 },
-  problemEmoji: { fontSize: 10 },
-  problemStatus:{ fontSize: 10, fontWeight: '700' },
-  problemRec:   { fontSize: 11, color: COLORS.wal, lineHeight: 15 },
+  legend:     { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'flex-end' },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  legendDot:  { width: 7, height: 7, borderRadius: 4 },
+  legendText: { fontFamily: 'DMSans_400Regular', fontSize: 9, letterSpacing: 0.3 },
 
-  // Štatistiky
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  statItem:  { borderRadius: 10, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 8, alignItems: 'center', minWidth: 78 },
-  statEmoji: { fontSize: 16, marginBottom: 2 },
-  statCount: { fontSize: 22, fontWeight: '800', lineHeight: 26 },
-  statLabel: { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, marginTop: 2 },
+  statusGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  statusChip:  { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: RADII.sm, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 6 },
+  statusEmoji: { fontSize: 12 },
+  statusCount: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 13 },
+  statusLabel: { fontFamily: 'DMSans_500Medium', fontSize: 11 },
 
-  // Poznámky doktora
-  noteRow:     { flexDirection: 'row', gap: 10, marginBottom: 10, padding: 10, backgroundColor: COLORS.bg2, borderRadius: 10 },
-  noteIcon:    { width: 30, height: 30, borderRadius: 15, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
-  noteService: { fontSize: 10, color: COLORS.wal, fontWeight: '600', marginBottom: 3, textTransform: 'capitalize' },
-  noteText:    { fontSize: 12, color: COLORS.esp, lineHeight: 17, fontStyle: 'italic' },
+  apptRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: 1 },
+  apptIcon:  { width: 38, height: 38, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
+  apptName:  { ...TYPO.bodyMed, marginBottom: 2 },
+  apptDate:  { ...TYPO.bodySm },
+  doneBadge: { borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 4 },
+  doneText:  { fontFamily: 'DMSans_500Medium', fontSize: 11 },
+  moreBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 12 },
+  moreBtnText: { ...TYPO.bodyMed },
 
-  // Odznaky
-  noBadges:   { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
-  badgesGrid: { gap: 8 },
-  badge:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 10, borderWidth: 1.5, padding: 12, backgroundColor: COLORS.bg2 },
-  badgeEmoji: { fontSize: 26 },
-  badgeTitle: { fontSize: 13, fontWeight: '700' },
-  badgeSub:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
+  ctaBtn:  { marginHorizontal: 16, marginTop: 16, borderRadius: RADII.md, overflow: 'hidden' },
+  ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16 },
+  ctaText: { fontFamily: 'DMSans_500Medium', fontSize: 15, color: '#fff', letterSpacing: 0.3 },
+});
 
-  // Tipy
-  tipRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
-  tipEmoji: { fontSize: 18, width: 24, textAlign: 'center' },
-  tipText:  { flex: 1, fontSize: 13, color: COLORS.esp, lineHeight: 19 },
+const sub = StyleSheet.create({
+  card:      { flex: 1, borderRadius: RADII.md, borderWidth: 1, padding: 10, alignItems: 'center', gap: 4, overflow: 'hidden' },
+  emoji:     { fontSize: 18 },
+  value:     { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, lineHeight: 24 },
+  bar:       { height: 3, borderRadius: 2, alignSelf: 'stretch' },
+  label:     { fontFamily: 'DMSans_500Medium', fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', textAlign: 'center' },
+  grade:     { borderRadius: RADII.xs, paddingHorizontal: 6, paddingVertical: 2 },
+  gradeText: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: '#fff' },
+});
+
+const db = StyleSheet.create({
+  row:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  emoji:     { fontSize: 15, width: 22, textAlign: 'center' },
+  label:     { fontFamily: 'DMSans_500Medium', fontSize: 12, width: 68 },
+  track:     { flex: 1, height: 7, borderRadius: 4, overflow: 'hidden' },
+  fill:      { height: 7, borderRadius: 4 },
+  score:     { fontFamily: 'DMSans_500Medium', fontSize: 12, width: 26, textAlign: 'right' },
+  badge:     { width: 22, height: 22, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
+  badgeText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#fff' },
+});
+
+const tip = StyleSheet.create({
+  card:    { flexDirection: 'row', gap: 12, alignItems: 'flex-start', borderRadius: RADII.md, padding: 12, borderLeftWidth: 3 },
+  iconWrap:{ width: 36, height: 36, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
+  title:   { ...TYPO.bodyMed, marginBottom: 2 },
+  sub:     { ...TYPO.bodySm, lineHeight: 18 },
 });

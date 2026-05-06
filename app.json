@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "Loderer Dental",
-    "slug": "loderer-dental",
+    "slug": "dentalapp",
+    "owner": "peterloderers-organization",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +11,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.loderer.dental"
+      "bundleIdentifier": "com.loderendental.app",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,10 +21,11 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.loderer.dental"
+      "package": "com.loderendental.app",
+      "versionCode": 1
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -31,14 +34,27 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 300,
           "resizeMode": "contain",
-          "backgroundColor": "#2C1F14"
+          "backgroundColor": "#3D1008"
         }
-      ]
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2e9a0cd8-94a5-4015-8c7d-6751065dbcef"
+      },
+      "router": {}
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2e9a0cd8-94a5-4015-8c7d-6751065dbcef"
     }
   }
 }

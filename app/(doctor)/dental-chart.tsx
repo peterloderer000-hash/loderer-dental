@@ -1,14 +1,19 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useCallback } from 'react';
 import {
-  ActivityIndicator, Alert, Dimensions, Modal, ScrollView,
+  ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { SkeletonList } from '../../components/Skeleton';
 import { useDentalChart, ToothStatus, ToothRecord } from '../../hooks/useDentalChart';
+
+const TOOTH_PHOTOS_BUCKET = 'tooth-photos';
 
 const SCREEN_W = Dimensions.get('window').width;
 // 16 teeth per row, gap=1 between teeth (14 gaps each side = 14 total), divider=10, h-padding=(12+10)*2=44
@@ -66,6 +71,7 @@ const Tooth = React.memo(function Tooth({ num, record, onPress }: {
     >
       <Text style={[styles.toothNum, { color: border }]}>{num}</Text>
       {s && s.key !== 'healthy' && <View style={[styles.dot, { backgroundColor: border }]} />}
+      {record?.photo_url && <View style={styles.photoDot} />}
     </TouchableOpacity>
   );
 });
@@ -90,17 +96,49 @@ const JawRow = React.memo(function JawRow({ left, right, chart, onPress }: {
 });
 
 // ─── Edit modal ───────────────────────────────────────────────────────────────
-function EditModal({ tooth, record, visible, onClose, onSave, saving }: {
-  tooth: number; record: ToothRecord | undefined; visible: boolean;
-  onClose: () => void; onSave: (status: ToothStatus, notes: string) => void; saving: boolean;
+function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving }: {
+  tooth: number; record: ToothRecord | undefined; patientId: string; visible: boolean;
+  onClose: () => void; onSave: (status: ToothStatus, notes: string, photoUrl: string | null) => void; saving: boolean;
 }) {
-  const [sel, setSel]     = useState<ToothStatus>(record?.status ?? 'healthy');
-  const [notes, setNotes] = useState(record?.notes ?? '');
+  const [sel,       setSel]       = useState<ToothStatus>(record?.status ?? 'healthy');
+  const [notes,     setNotes]     = useState(record?.notes ?? '');
+  const [photoUrl,  setPhotoUrl]  = useState<string | null>(record?.photo_url ?? null);
+  const [uploading, setUploading] = useState(false);
 
   React.useEffect(() => {
     setSel(record?.status ?? 'healthy');
     setNotes(record?.notes ?? '');
+    setPhotoUrl(record?.photo_url ?? null);
   }, [tooth, record]);
+
+  async function pickPhoto(useCamera: boolean) {
+    const perm = useCamera
+      ? await ImagePicker.requestCameraPermissionsAsync()
+      : await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert('Povolenie', `Potrebujeme prístup k ${useCamera ? 'fotoaparátu' : 'fotkám'}.`);
+      return;
+    }
+    const result = useCamera
+      ? await ImagePicker.launchCameraAsync({ allowsEditing: true, aspect: [4, 3], quality: 0.8 })
+      : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [4, 3], quality: 0.8 });
+    if (result.canceled || !result.assets[0]) return;
+
+    setUploading(true);
+    try {
+      const buf  = await (await fetch(result.assets[0].uri)).arrayBuffer();
+      const path = `${patientId}/tooth-${tooth}.jpg`;
+      const { error: upErr } = await supabase.storage.from(TOOTH_PHOTOS_BUCKET)
+        .upload(path, new Uint8Array(buf), { contentType: 'image/jpeg', upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from(TOOTH_PHOTOS_BUCKET).getPublicUrl(path);
+      setPhotoUrl(`${publicUrl}?t=${Date.now()}`);
+    } catch (e: any) {
+      Alert.alert('Chyba', e?.message ?? 'Nepodarilo sa nahrať fotku.');
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -150,10 +188,32 @@ function EditModal({ tooth, record, visible, onClose, onSave, saving }: {
             numberOfLines={2}
           />
 
+          {/* ── Foto zuba ── */}
+          <Text style={[styles.sectionLabel, { marginTop: 14 }]}>FOTO ZUBA</Text>
+          {photoUrl ? (
+            <View style={styles.photoWrap}>
+              <Image source={{ uri: photoUrl }} style={styles.photoPreview} resizeMode="cover" />
+              <TouchableOpacity style={styles.photoRemoveBtn} onPress={() => setPhotoUrl(null)} activeOpacity={0.8}>
+                <Ionicons name="close-circle" size={22} color="#922B21" />
+              </TouchableOpacity>
+            </View>
+          ) : null}
+          <View style={styles.photoBtnRow}>
+            <TouchableOpacity style={styles.photoBtn} onPress={() => pickPhoto(false)} disabled={uploading} activeOpacity={0.8}>
+              {uploading
+                ? <ActivityIndicator size="small" color={COLORS.wal} />
+                : <><Ionicons name="images-outline" size={16} color={COLORS.wal} /><Text style={styles.photoBtnText}>Galéria</Text></>}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.photoBtn} onPress={() => pickPhoto(true)} disabled={uploading} activeOpacity={0.8}>
+              <Ionicons name="camera-outline" size={16} color={COLORS.wal} />
+              <Text style={styles.photoBtnText}>Odfotiť</Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
-            style={[styles.saveBtn, saving && { opacity: 0.6 }]}
-            onPress={() => onSave(sel, notes)}
-            disabled={saving}
+            style={[styles.saveBtn, (saving || uploading) && { opacity: 0.6 }]}
+            onPress={() => onSave(sel, notes, photoUrl)}
+            disabled={saving || uploading}
             activeOpacity={0.85}
           >
             {saving
@@ -177,10 +237,10 @@ export default function DentalChart() {
 
   const handleToothPress = useCallback((n: number) => setActiveTooth(n), []);
 
-  async function handleSave(status: ToothStatus, notes: string) {
+  async function handleSave(status: ToothStatus, notes: string, photoUrl: string | null) {
     if (!activeTooth) return;
     setSaving(true);
-    const err = await saveTooth(activeTooth, status, notes);
+    const err = await saveTooth(activeTooth, status, notes, photoUrl);
     setSaving(false);
     if (err) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -205,9 +265,8 @@ export default function DentalChart() {
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={COLORS.wal} size="large" />
-          <Text style={{ marginTop: 10, color: COLORS.wal, fontSize: 13 }}>Načítavam kartu...</Text>
+        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+          <SkeletonList count={5} />
         </View>
       ) : (
         <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}
@@ -287,7 +346,7 @@ export default function DentalChart() {
             )}
           </View>
 
-          <View style={{ height: 40 }} />
+          <View style={{ height: 100 }} />
         </ScrollView>
       )}
 
@@ -295,6 +354,7 @@ export default function DentalChart() {
         <EditModal
           tooth={activeTooth}
           record={chart[activeTooth]}
+          patientId={patientId ?? ''}
           visible
           onClose={() => setActiveTooth(null)}
           onSave={handleSave}
@@ -368,4 +428,14 @@ const styles = StyleSheet.create({
   input:       { borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 60, textAlignVertical: 'top', backgroundColor: COLORS.bg2 },
   saveBtn:     { backgroundColor: COLORS.esp, borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginTop: 14 },
   saveBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.cream, letterSpacing: 0.5 },
+
+  photoDot: { position: 'absolute', bottom: 2, right: 2, width: 5, height: 5, borderRadius: 3, backgroundColor: '#1A5276' },
+
+  // Foto
+  photoWrap:      { position: 'relative', marginBottom: 10, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  photoPreview:   { width: '100%', height: 160, borderRadius: 10 },
+  photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: '#fff', borderRadius: 11 },
+  photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
+  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#F4ECE4', borderWidth: 1.5, borderColor: COLORS.sand },
+  photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal },
 });

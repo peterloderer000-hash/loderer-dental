@@ -13,7 +13,14 @@ const ACTIONS: { label: string; icon: IoniconsName; route: string; color: string
   { label: 'Zdravie',    icon: 'clipboard-outline',   route: '/(patient)/health-passport',  color: '#17A589',  bg: '#E8F8F5' },
   { label: 'Skóre',      icon: 'bar-chart-outline',   route: '/(patient)/score',            color: '#1E8449',  bg: '#EAFAF1' },
   { label: 'AI Chat',    icon: 'chatbubble-outline',  route: '/(patient)/chat',             color: '#6C3483',  bg: '#F5EEF8' },
-  { label: 'Shop',       icon: 'bag-outline',         route: '/(patient)/shop',             color: '#9A7D0A',  bg: '#FEF9E7' },
+  { label: 'Recepty',    icon: 'medical-outline',     route: '/(patient)/prescriptions',    color: '#1E8449',  bg: '#EAFAF1' },
+  { label: 'Správy',    icon: 'mail-outline',        route: '/(patient)/messages',          color: '#1A5276',  bg: '#EBF5FB' },
+  { label: 'Liečba',   icon: 'clipboard-outline',   route: '/(patient)/treatment-plan',    color: '#7D3C98',  bg: '#F5EEF8' },
+  { label: 'Rodina',   icon: 'people-outline',      route: '/(patient)/family',            color: '#784212',  bg: '#FEF9E7' },
+  { label: 'Platby',   icon: 'card-outline',        route: '/(patient)/payment-history',   color: '#1A5276',  bg: '#EBF5FB' },
+  { label: 'Shop',     icon: 'bag-outline',         route: '/(patient)/shop',              color: '#9A7D0A',  bg: '#FEF9E7' },
+  { label: 'Môj zubár',icon: 'person-circle-outline',route: '/(patient)/moj-zubar',        color: '#0E6655',  bg: '#E8F8F5' },
+  { label: 'Súhlasy',  icon: 'shield-checkmark-outline', route: '/(patient)/consents',     color: '#6C3483',  bg: '#F5EEF8' },
 ];
 
 export default function QuickActionsGrid() {
