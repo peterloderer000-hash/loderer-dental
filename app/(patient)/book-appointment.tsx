@@ -715,11 +715,8 @@ export default function BookAppointmentScreen() {
                     <Text style={[styles.slotStart, isSel && styles.slotSelText, taken && styles.slotTakenText]}>
                       {slot.start}
                     </Text>
-                    <Text style={[styles.slotEnd, isSel && styles.slotEndSel, taken && styles.slotTakenText]}>
-                      – {slot.end}
-                    </Text>
                     {taken && (
-                      <Text style={styles.slotTakenLabel}>Obsadené</Text>
+                      <Text style={styles.slotTakenLabel}>✗</Text>
                     )}
                   </TouchableOpacity>
                 );
@@ -917,15 +914,15 @@ const styles = StyleSheet.create({
 
   // Slots
   slotsGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  slotCell:       { width: '30%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  slotCell:       { width: '22%', alignItems: 'center', paddingVertical: 12, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
   slotCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   slotCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.55 },
   slotStart:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   slotEnd:        { fontSize: 10, color: '#888', marginTop: 2 },
   slotSelText:    { color: COLORS.cream },
   slotEndSel:     { color: COLORS.sand },
-  slotTakenText:  { color: '#999' },
-  slotTakenLabel: { fontSize: 9, color: '#888', marginTop: 2, textTransform: 'uppercase', letterSpacing: 0.3 },
+  slotTakenText:  { color: '#bbb' },
+  slotTakenLabel: { fontSize: 12, color: '#bbb', marginTop: 1 },
 
   // Summary
   summaryCard:    { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1.5, borderColor: COLORS.sand, padding: 16, marginBottom: 20 },
