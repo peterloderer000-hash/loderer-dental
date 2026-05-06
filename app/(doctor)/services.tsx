@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 const EMOJIS = ['🦷', '🪥', '😁', '💉', '🏥', '👨‍⚕️', '📋', '✨'];
 
@@ -23,6 +24,7 @@ type Service = {
 
 export default function ServicesScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const [services,  setServices]  = useState<Service[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -102,23 +104,23 @@ export default function ServicesScreen() {
       </View>
 
       {loading ? (
-        <View style={{ padding: 16 }}><SkeletonList count={5} /></View>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}><SkeletonList count={5} /></View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
           {services.length === 0 && (
             <View style={s.empty}>
               <Text style={s.emptyIcon}>🦷</Text>
-              <Text style={s.emptyText}>Žiadne služby. Pridajte prvú.</Text>
+              <Text style={[s.emptyText, { color: colors.textSecondary }]}>Žiadne služby. Pridajte prvú.</Text>
             </View>
           )}
           {services.map((svc) => (
-            <TouchableOpacity key={svc.id} style={s.card} onPress={() => openEdit(svc)} activeOpacity={0.85}>
-              <View style={s.cardLeft}>
+            <TouchableOpacity key={svc.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={() => openEdit(svc)} activeOpacity={0.85}>
+              <View style={[s.cardLeft, { backgroundColor: colors.bg2 }]}>
                 <Text style={s.cardEmoji}>{svc.emoji ?? '🦷'}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.cardName}>{svc.name}</Text>
-                <Text style={s.cardDuration}>{svc.duration_minutes} min</Text>
+                <Text style={[s.cardName, { color: colors.textPrimary }]}>{svc.name}</Text>
+                <Text style={[s.cardDuration, { color: colors.textSecondary }]}>{svc.duration_minutes} min</Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
                 <Text style={s.cardPrice}>

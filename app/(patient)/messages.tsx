@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = {
   id: string;
@@ -31,6 +32,7 @@ function fmtTime(d: string) {
 
 export default function PatientMessagesScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
 
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -139,7 +141,7 @@ export default function PatientMessagesScreen() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
         {loading ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+          <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -147,21 +149,22 @@ export default function PatientMessagesScreen() {
             ref={listRef}
             data={messages}
             keyExtractor={(m) => m.id}
+            style={{ backgroundColor: colors.bg2 }}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyEmoji}>💬</Text>
-                <Text style={styles.emptyTitle}>Zatiaľ žiadne správy</Text>
-                <Text style={styles.emptySub}>Napíšte doktorovi otázku alebo poznámku k termínu.</Text>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Zatiaľ žiadne správy</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Napíšte doktorovi otázku alebo poznámku k termínu.</Text>
               </View>
             }
             renderItem={({ item }) => {
               const isMine = item.sender_id === myId;
               return (
-                <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
-                  <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>{item.body}</Text>
-                  <Text style={[styles.bubbleTime, isMine && styles.bubbleTimeMine]}>{fmtTime(item.created_at)}</Text>
+                <View style={[styles.bubble, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
+                  <Text style={[styles.bubbleText, { color: colors.textPrimary }, isMine && styles.bubbleTextMine]}>{item.body}</Text>
+                  <Text style={[styles.bubbleTime, { color: colors.textSecondary }, isMine && styles.bubbleTimeMine]}>{fmtTime(item.created_at)}</Text>
                 </View>
               );
             }}
@@ -169,11 +172,11 @@ export default function PatientMessagesScreen() {
         )}
 
         {/* Input */}
-        <View style={styles.inputRow}>
+        <View style={[styles.inputRow, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Napíšte správu..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={text}
             onChangeText={setText}
             multiline

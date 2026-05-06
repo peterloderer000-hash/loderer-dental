@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
 
@@ -36,6 +37,7 @@ type Patient = { id: string; full_name: string | null; phone_number: string | nu
 
 export default function BroadcastScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [audience,       setAudience]       = useState<Audience>('all');
   const [title,          setTitle]          = useState('');
   const [body,           setBody]           = useState('');
@@ -236,37 +238,37 @@ export default function BroadcastScreen() {
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
           {/* Skupina príjemcov */}
-          <Text style={styles.sectionLabel}>KOMU POŠLEME</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>KOMU POŠLEME</Text>
           <View style={styles.audienceGrid}>
             {AUDIENCE_CFG.map((a) => (
               <TouchableOpacity
                 key={a.key}
-                style={[styles.audienceCard, audience === a.key && { borderColor: a.color, backgroundColor: a.bg }]}
+                style={[styles.audienceCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, audience === a.key && { borderColor: a.color, backgroundColor: a.bg }]}
                 onPress={() => setAudience(a.key)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.audienceIcon, { backgroundColor: audience === a.key ? a.color : COLORS.bg3 }]}>
+                <View style={[styles.audienceIcon, { backgroundColor: audience === a.key ? a.color : colors.bg3 }]}>
                   <Ionicons name={a.icon as any} size={16} color={audience === a.key ? '#fff' : COLORS.wal} />
                 </View>
-                <Text style={[styles.audienceLabel, audience === a.key && { color: a.color }]}>{a.label}</Text>
-                <Text style={styles.audienceDesc}>{a.desc}</Text>
+                <Text style={[styles.audienceLabel, { color: colors.textPrimary }, audience === a.key && { color: a.color }]}>{a.label}</Text>
+                <Text style={[styles.audienceDesc, { color: colors.textSecondary }]}>{a.desc}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Výber pacientov (len pre custom) */}
           {audience === 'custom' && (
-            <View style={styles.customSection}>
-              <View style={styles.searchRow}>
+            <View style={[styles.customSection, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <View style={[styles.searchRow, { borderBottomColor: colors.bg3 }]}>
                 <Ionicons name="search-outline" size={16} color={COLORS.wal} />
                 <TextInput
-                  style={styles.searchInput}
+                  style={[styles.searchInput, { color: colors.textPrimary }]}
                   placeholder="Hľadaj pacienta..."
-                  placeholderTextColor="#999"
+                  placeholderTextColor={dark ? '#666' : '#999'}
                   value={patientSearch}
                   onChangeText={setPatientSearch}
                 />
@@ -285,21 +287,21 @@ export default function BroadcastScreen() {
                   return (
                     <TouchableOpacity
                       key={p.id}
-                      style={[styles.ptRow, sel && styles.ptRowSel]}
+                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && styles.ptRowSel]}
                       onPress={() => togglePatient(p.id)}
                       activeOpacity={0.8}
                     >
-                      <View style={[styles.ptAvatar, sel && { backgroundColor: COLORS.wal }]}>
+                      <View style={[styles.ptAvatar, { backgroundColor: colors.bg3 }, sel && { backgroundColor: COLORS.wal }]}>
                         <Text style={[styles.ptAvatarText, sel && { color: '#fff' }]}>{initials}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={styles.ptName}>{p.full_name ?? 'Pacient'}</Text>
-                        {p.phone_number && <Text style={styles.ptPhone}>{p.phone_number}</Text>}
+                        <Text style={[styles.ptName, { color: colors.textPrimary }]}>{p.full_name ?? 'Pacient'}</Text>
+                        {p.phone_number && <Text style={[styles.ptPhone, { color: colors.textSecondary }]}>{p.phone_number}</Text>}
                       </View>
                       <Ionicons
                         name={sel ? 'checkmark-circle' : 'ellipse-outline'}
                         size={22}
-                        color={sel ? COLORS.wal : '#ccc'}
+                        color={sel ? COLORS.wal : colors.bg3}
                       />
                     </TouchableOpacity>
                   );
@@ -309,40 +311,40 @@ export default function BroadcastScreen() {
           )}
 
           {/* Šablóny */}
-          <Text style={styles.sectionLabel}>ŠABLÓNY</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>ŠABLÓNY</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.templatesRow}>
             {MESSAGE_TEMPLATES.map((t) => (
               <TouchableOpacity
                 key={t.label}
-                style={styles.templateChip}
+                style={[styles.templateChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
                 onPress={() => { setTitle(t.title); setBody(t.body); }}
                 activeOpacity={0.8}
               >
                 <Text style={styles.templateEmoji}>{t.emoji}</Text>
-                <Text style={styles.templateLabel}>{t.label}</Text>
+                <Text style={[styles.templateLabel, { color: colors.textPrimary }]}>{t.label}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
 
           {/* Predmet */}
-          <Text style={styles.sectionLabel}>PREDMET SPRÁVY</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PREDMET SPRÁVY</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
             placeholder="Napr. Oznamenie o zatvorení ordinacie"
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={title}
             onChangeText={setTitle}
             maxLength={80}
           />
-          <Text style={styles.charCount}>{title.length}/80</Text>
+          <Text style={[styles.charCount, { color: colors.textSecondary }]}>{title.length}/80</Text>
 
           {/* Text správy */}
-          <Text style={styles.sectionLabel}>TEXT SPRÁVY</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>TEXT SPRÁVY</Text>
           <TextInput
-            style={[styles.input, styles.bodyInput]}
+            style={[styles.input, styles.bodyInput, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
             placeholder="Text správy pre pacientov..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={body}
             onChangeText={setBody}
             multiline
@@ -350,7 +352,7 @@ export default function BroadcastScreen() {
             textAlignVertical="top"
             maxLength={500}
           />
-          <Text style={styles.charCount}>{body.length}/500</Text>
+          <Text style={[styles.charCount, { color: colors.textSecondary }]}>{body.length}/500</Text>
 
           {/* Preview */}
           {(title || body) && (
@@ -368,7 +370,7 @@ export default function BroadcastScreen() {
           )}
 
           {/* Súhrn príjemcov */}
-          <View style={styles.recipientSummary}>
+          <View style={[styles.recipientSummary, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Ionicons name="people-outline" size={16} color={COLORS.wal} />
             {countLoading
               ? <ActivityIndicator size="small" color={COLORS.wal} style={{ marginLeft: 4 }} />
@@ -380,7 +382,7 @@ export default function BroadcastScreen() {
 
           {/* Naplánovať odoslanie */}
           <TouchableOpacity
-            style={[styles.schedToggle, isScheduled && styles.schedToggleActive]}
+            style={[styles.schedToggle, { backgroundColor: colors.bg3 }, isScheduled && styles.schedToggleActive]}
             onPress={() => setIsScheduled(v => !v)}
             activeOpacity={0.85}
           >
@@ -392,9 +394,9 @@ export default function BroadcastScreen() {
           {isScheduled && (
             <View style={styles.schedRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.schedLabel}>DÁTUM</Text>
+                <Text style={[styles.schedLabel, { color: colors.textSecondary }]}>DÁTUM</Text>
                 <TextInput
-                  style={styles.schedInput}
+                  style={[styles.schedInput, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
                   placeholder="RRRR-MM-DD"
                   placeholderTextColor={COLORS.sand}
                   value={schedDate}
@@ -405,9 +407,9 @@ export default function BroadcastScreen() {
               </View>
               <View style={{ width: 12 }} />
               <View style={{ width: 100 }}>
-                <Text style={styles.schedLabel}>ČAS</Text>
+                <Text style={[styles.schedLabel, { color: colors.textSecondary }]}>ČAS</Text>
                 <TextInput
-                  style={styles.schedInput}
+                  style={[styles.schedInput, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
                   placeholder="HH:MM"
                   placeholderTextColor={COLORS.sand}
                   value={schedTime}
