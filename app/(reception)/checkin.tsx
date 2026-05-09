@@ -18,7 +18,9 @@ type Appointment = {
   appointment_date: string;
   duration_minutes: number;
   clinic_status: string | null;
-  arrived_at: string | null;
+  arrived_at:  string | null;
+  started_at:  string | null;
+  ended_at:    string | null;
   patient: { id: string; full_name: string } | null;
   service: { name: string } | null;
 };
@@ -64,7 +66,7 @@ export default function ReceptionCheckin() {
     if (!silent) setLoading(true);
     const { data } = await supabase
       .from('appointments')
-      .select('id, appointment_date, duration_minutes, clinic_status, arrived_at, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name)')
+      .select('id, appointment_date, duration_minutes, clinic_status, arrived_at, started_at, ended_at, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name)')
       .gte('appointment_date', `${today}T00:00:00`)
       .lte('appointment_date', `${today}T23:59:59`)
       .not('clinic_status', 'eq', 'cancelled')
@@ -100,10 +102,10 @@ export default function ReceptionCheckin() {
       updates.arrived_at = new Date().toISOString();
       updates.status     = 'arrived';
     }
-    if (next === 'in_chair')       updates.chair_start_at   = new Date().toISOString();
+    if (next === 'in_chair')       updates.started_at = new Date().toISOString();
     if (next === 'treatment_done') {
-      updates.treatment_end_at = new Date().toISOString();
-      updates.status           = 'completed';
+      updates.ended_at = new Date().toISOString();
+      updates.status   = 'completed';
     }
     await supabase.from('appointments').update(updates).eq('id', apt.id);
     setUpdating(null);
@@ -245,21 +247,31 @@ function AptRow({ apt, colors, updating, onAdvance }: {
   updating: string | null;
   onAdvance: (a: Appointment) => void;
 }) {
-  const cfg = STATUS_CFG[apt.clinic_status ?? 'scheduled'] ?? STATUS_CFG.scheduled;
+  const cfg       = STATUS_CFG[apt.clinic_status ?? 'scheduled'] ?? STATUS_CFG.scheduled;
   const nextLabel = NEXT_LABEL[apt.clinic_status ?? 'scheduled'];
   const isLoading = updating === apt.id;
+  const now       = Date.now();
 
-  const waitMins = apt.arrived_at
-    ? Math.round((Date.now() - new Date(apt.arrived_at).getTime()) / 60000)
+  // Čakacia doba: arrived_at → now (kým nie je started_at)
+  const waitMins = apt.arrived_at && !apt.started_at
+    ? Math.round((now - new Date(apt.arrived_at).getTime()) / 60000)
+    : apt.arrived_at && apt.started_at
+    ? Math.round((new Date(apt.started_at).getTime() - new Date(apt.arrived_at).getTime()) / 60000)
+    : null;
+
+  // Dĺžka ošetrenia: started_at → now alebo ended_at
+  const treatMins = apt.started_at
+    ? Math.round(((apt.ended_at ? new Date(apt.ended_at).getTime() : now) - new Date(apt.started_at).getTime()) / 60000)
     : null;
 
   const accentColor: Record<string, string> = {
-    arrived:   COLORS.warning,
-    waiting:   COLORS.warning,
-    in_chair:  '#7D3C98',
-    completed: COLORS.success,
-    scheduled: COLORS.gold,
-    late:      COLORS.error,
+    arrived:        COLORS.warning,
+    waiting:        COLORS.warning,
+    in_chair:       '#7D3C98',
+    treatment_done: COLORS.success,
+    completed:      COLORS.success,
+    scheduled:      COLORS.gold,
+    late:           COLORS.error,
   };
 
   return (
@@ -274,17 +286,33 @@ function AptRow({ apt, colors, updating, onAdvance }: {
           <Text style={[ar.service, { color: colors.textSecondary }]} numberOfLines={1}>
             {apt.service?.name ?? '—'} · {fmtTime(apt.appointment_date)}
           </Text>
+          {/* KPI časy */}
+          {(waitMins !== null || treatMins !== null) && (
+            <View style={ar.kpiRow}>
+              {waitMins !== null && (
+                <View style={ar.kpiChip}>
+                  <Ionicons name="time-outline" size={10} color={waitMins > 15 ? COLORS.error : COLORS.success} />
+                  <Text style={[ar.kpiText, { color: waitMins > 15 ? COLORS.error : COLORS.success }]}>
+                    čakanie {waitMins} min
+                  </Text>
+                </View>
+              )}
+              {treatMins !== null && (
+                <View style={ar.kpiChip}>
+                  <Ionicons name="medical-outline" size={10} color="#7D3C98" />
+                  <Text style={[ar.kpiText, { color: '#7D3C98' }]}>
+                    {apt.ended_at ? `výkon ${treatMins} min` : `výkon ${treatMins} min…`}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         <View style={{ alignItems: 'flex-end', gap: 4 }}>
           <View style={[ar.statusPill, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
             <Text style={[ar.statusText, { color: cfg.text }]}>{cfg.label}</Text>
           </View>
-          {waitMins !== null && (
-            <Text style={[ar.waitTime, { color: waitMins > 15 ? COLORS.error : COLORS.success }]}>
-              {waitMins} min
-            </Text>
-          )}
         </View>
       </View>
 
@@ -362,7 +390,9 @@ const ar = StyleSheet.create({
     borderWidth: 1,
   },
   statusText: { fontFamily: 'DMSans_500Medium', fontSize: 11, letterSpacing: 0.3 },
-  waitTime:   { fontFamily: 'DMSans_500Medium', fontSize: 11 },
+  kpiRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
+  kpiChip: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  kpiText: { fontFamily: 'DMSans_500Medium', fontSize: 10 },
   advBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: 'rgba(201,168,76,0.10)',
