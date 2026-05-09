@@ -12,6 +12,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useDentalChart, ToothStatus, ToothRecord } from '../../hooks/useDentalChart';
+import { useAppTheme } from '../../context/ThemeContext';
 
 const TOOTH_PHOTOS_BUCKET = 'tooth-photos';
 
@@ -55,9 +56,10 @@ function getStatus(key: ToothStatus) {
 const Tooth = React.memo(function Tooth({ num, record, onPress }: {
   num: number; record: ToothRecord | undefined; onPress: () => void;
 }) {
+  const { colors } = useAppTheme();
   const s      = record ? getStatus(record.status) : null;
-  const bg     = s ? s.bg    : '#fff';
-  const border = s ? s.color : COLORS.bg3;
+  const bg     = s ? s.bg    : colors.cardBg;
+  const border = s ? s.color : colors.bg3;
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -100,6 +102,7 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving 
   tooth: number; record: ToothRecord | undefined; patientId: string; visible: boolean;
   onClose: () => void; onSave: (status: ToothStatus, notes: string, photoUrl: string | null) => void; saving: boolean;
 }) {
+  const { colors, dark } = useAppTheme();
   const [sel,       setSel]       = useState<ToothStatus>(record?.status ?? 'healthy');
   const [notes,     setNotes]     = useState(record?.notes ?? '');
   const [photoUrl,  setPhotoUrl]  = useState<string | null>(record?.photo_url ?? null);
@@ -143,17 +146,17 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.sheet}>
-          <View style={styles.handle} />
+        <View style={[styles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[styles.handle, { backgroundColor: colors.bg3 }]} />
 
           <View style={styles.sheetHead}>
-            <Text style={styles.sheetTitle}>Zub č. {tooth}</Text>
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>Zub č. {tooth}</Text>
             <TouchableOpacity onPress={onClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
               <Ionicons name="close" size={22} color={COLORS.esp} />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.sectionLabel}>STAV ZUBA</Text>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>STAV ZUBA</Text>
           {/* ScrollView pre 24 statusov */}
           <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>
             <View style={styles.statusGrid}>
@@ -177,19 +180,19 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving 
             </View>
           </ScrollView>
 
-          <Text style={[styles.sectionLabel, { marginTop: 14 }]}>POZNÁMKY</Text>
+          <Text style={[styles.sectionLabel, { marginTop: 14, color: colors.textSecondary }]}>POZNÁMKY</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={notes}
             onChangeText={setNotes}
             placeholder="Napr. distálna plocha..."
-            placeholderTextColor="#bbb"
+            placeholderTextColor={dark ? '#555' : '#bbb'}
             multiline
             numberOfLines={2}
           />
 
           {/* ── Foto zuba ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 14 }]}>FOTO ZUBA</Text>
+          <Text style={[styles.sectionLabel, { marginTop: 14, color: colors.textSecondary }]}>FOTO ZUBA</Text>
           {photoUrl ? (
             <View style={styles.photoWrap}>
               <Image source={{ uri: photoUrl }} style={styles.photoPreview} resizeMode="cover" />
@@ -229,6 +232,7 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function DentalChart() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const { patientId, patientName } = useLocalSearchParams<{ patientId: string; patientName: string }>();
   const { chart, loading, saveTooth, stats } = useDentalChart(patientId ?? '');
 
@@ -265,32 +269,32 @@ export default function DentalChart() {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={5} />
         </View>
       ) : (
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}>
 
           {/* ── Legenda — 2-stĺpcová mriežka ── */}
-          <View style={styles.legendCard}>
-            <Text style={styles.legendTitle}>LEGENDA</Text>
+          <View style={[styles.legendCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.legendTitle, { color: colors.textSecondary }]}>LEGENDA</Text>
             <View style={styles.legendGrid}>
               {STATUS_LIST.map((s) => (
                 <View key={s.key} style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: s.color }]} />
-                  <Text style={styles.legendText} numberOfLines={1}>{s.label}</Text>
+                  <Text style={[styles.legendText, { color: colors.textPrimary }]} numberOfLines={1}>{s.label}</Text>
                 </View>
               ))}
             </View>
           </View>
 
           {/* ── Zubná schéma ── */}
-          <View style={styles.chartCard}>
+          <View style={[styles.chartCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {/* Hlavičky kvadrantov — HORNÁ */}
             <View style={styles.quadHeaderRow}>
-              <Text style={styles.quadHeaderLeft}>Q1 · vpravo hore</Text>
-              <Text style={styles.quadHeaderRight}>Q2 · vľavo hore</Text>
+              <Text style={[styles.quadHeaderLeft, { color: colors.textSecondary }]}>Q1 · vpravo hore</Text>
+              <Text style={[styles.quadHeaderRight, { color: colors.textSecondary }]}>Q2 · vľavo hore</Text>
             </View>
 
             {/* Horná čeľusť */}
@@ -303,9 +307,9 @@ export default function DentalChart() {
 
             {/* Separátor čeľustí */}
             <View style={styles.jawSeparator}>
-              <View style={styles.jawSepLine} />
-              <Text style={styles.jawSepLabel}>⬆ HORNÁ  ·  DOLNÁ ⬇</Text>
-              <View style={styles.jawSepLine} />
+              <View style={[styles.jawSepLine, { backgroundColor: colors.bg3 }]} />
+              <Text style={[styles.jawSepLabel, { color: colors.textSecondary }]}>⬆ HORNÁ  ·  DOLNÁ ⬇</Text>
+              <View style={[styles.jawSepLine, { backgroundColor: colors.bg3 }]} />
             </View>
 
             {/* Dolná čeľusť */}
@@ -318,18 +322,18 @@ export default function DentalChart() {
 
             {/* Hlavičky kvadrantov — DOLNÁ */}
             <View style={[styles.quadHeaderRow, { marginTop: 6 }]}>
-              <Text style={styles.quadHeaderLeft}>Q4 · vpravo dole</Text>
-              <Text style={styles.quadHeaderRight}>Q3 · vľavo dole</Text>
+              <Text style={[styles.quadHeaderLeft, { color: colors.textSecondary }]}>Q4 · vpravo dole</Text>
+              <Text style={[styles.quadHeaderRight, { color: colors.textSecondary }]}>Q3 · vľavo dole</Text>
             </View>
 
             <Text style={styles.chartHint}>Klepnite na zub pre editáciu</Text>
           </View>
 
           {/* ── Štatistiky ── */}
-          <View style={styles.statsCard}>
-            <Text style={styles.statsTitle}>ŠTATISTIKY</Text>
+          <View style={[styles.statsCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.statsTitle, { color: colors.textSecondary }]}>ŠTATISTIKY</Text>
             {STATUS_LIST.filter((s) => (stats[s.key] ?? 0) > 0).length === 0 ? (
-              <Text style={styles.statsEmpty}>Žiadne záznamy — klepnite na zub.</Text>
+              <Text style={[styles.statsEmpty, { color: colors.textSecondary }]}>Žiadne záznamy — klepnite na zub.</Text>
             ) : (
               <View style={styles.statsGrid}>
                 {STATUS_LIST.map((s) => {

@@ -6,6 +6,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme, AppColors } from '../../context/ThemeContext';
 
 type Passport = {
   main_reasons:           string[] | null;
@@ -29,32 +30,32 @@ type Passport = {
   last_dental_visit:       string | null;
 };
 
-function Section({ title, emoji }: { title: string; emoji: string }) {
+function Section({ title, emoji, colors }: { title: string; emoji: string; colors: AppColors }) {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionEmoji}>{emoji}</Text>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{title}</Text>
     </View>
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
+function InfoRow({ label, value, colors }: { label: string; value: string | null | undefined; colors: AppColors }) {
   if (!value) return null;
   return (
     <View style={styles.infoRow}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value}</Text>
+      <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{value}</Text>
     </View>
   );
 }
 
-function TagList({ items }: { items: string[] | null | undefined }) {
-  if (!items || items.length === 0) return <Text style={styles.empty}>Nevyplnené</Text>;
+function TagList({ items, colors }: { items: string[] | null | undefined; colors: AppColors }) {
+  if (!items || items.length === 0) return <Text style={[styles.empty, { color: colors.textSecondary }]}>Nevyplnené</Text>;
   return (
     <View style={styles.tagWrap}>
       {items.map((item) => (
-        <View key={item} style={styles.tag}>
-          <Text style={styles.tagText}>{item}</Text>
+        <View key={item} style={[styles.tag, { backgroundColor: colors.bg3, borderColor: colors.sand }]}>
+          <Text style={[styles.tagText, { color: colors.textPrimary }]}>{item}</Text>
         </View>
       ))}
     </View>
@@ -64,6 +65,7 @@ function TagList({ items }: { items: string[] | null | undefined }) {
 export default function PatientPassport() {
   const router = useRouter();
   const { patientId, patientName } = useLocalSearchParams<{ patientId: string; patientName: string }>();
+  const { colors, dark } = useAppTheme();
   const [passport, setPassport] = useState<Passport | null>(null);
   const [loading, setLoading]   = useState(true);
 
@@ -74,8 +76,8 @@ export default function PatientPassport() {
   }, [patientId]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.esp }]} edges={['top']}>
+      <View style={[styles.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -86,17 +88,17 @@ export default function PatientPassport() {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
           <SkeletonList count={5} />
         </View>
       ) : !passport ? (
-        <View style={styles.center}>
+        <View style={[styles.center, { backgroundColor: colors.bg2 }]}>
           <Text style={{ fontSize: 48, marginBottom: 14 }}>📋</Text>
-          <Text style={styles.emptyTitle}>Dotazník nevyplnený</Text>
-          <Text style={styles.emptySub}>Pacient zatiaľ nevyplnil zdravotný dotazník.</Text>
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Dotazník nevyplnený</Text>
+          <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Pacient zatiaľ nevyplnil zdravotný dotazník.</Text>
         </View>
       ) : (
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}>
 
           {/* ── KRITICKÉ UPOZORNENIA ───────────────────────────────────── */}
@@ -149,69 +151,69 @@ export default function PatientPassport() {
           {/* ── ZÁKLADNÉ ÚDAJE ─────────────────────────────────────────── */}
           {(passport.blood_type || passport.insurance_provider ||
             passport.emergency_contact_name || passport.last_dental_visit) && (
-            <View style={styles.card}>
-              <Section title="Základné údaje" emoji="📇" />
+            <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Section title="Základné údaje" emoji="📇" colors={colors} />
               {passport.blood_type && (
                 <View style={styles.bloodRow}>
-                  <Text style={styles.bloodLbl}>🩸 Krvná skupina</Text>
+                  <Text style={[styles.bloodLbl, { color: colors.textPrimary }]}>🩸 Krvná skupina</Text>
                   <View style={styles.bloodBadge}>
                     <Text style={styles.bloodText}>{passport.blood_type}</Text>
                   </View>
                 </View>
               )}
-              <InfoRow label="Poisťovňa" value={passport.insurance_provider} />
-              <InfoRow label="Poistenec" value={passport.insurance_number} />
+              <InfoRow label="Poisťovňa" value={passport.insurance_provider} colors={colors} />
+              <InfoRow label="Poistenec" value={passport.insurance_number} colors={colors} />
               <InfoRow label="Núdz. kontakt" value={
                 passport.emergency_contact_name
                   ? `${passport.emergency_contact_name}${passport.emergency_contact_phone ? ' · ' + passport.emergency_contact_phone : ''}`
                   : null
-              } />
-              <InfoRow label="Posl. u zubára" value={passport.last_dental_visit} />
+              } colors={colors} />
+              <InfoRow label="Posl. u zubára" value={passport.last_dental_visit} colors={colors} />
             </View>
           )}
 
-          <View style={styles.card}>
-            <Section title="Dôvod návštevy" emoji="🎯" />
-            <TagList items={passport.main_reasons} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Dôvod návštevy" emoji="🎯" colors={colors} />
+            <TagList items={passport.main_reasons} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Zdravotná anamnéza" emoji="🏥" />
-            <TagList items={passport.medical_history} />
-            <InfoRow label="Alergie" value={passport.allergies} />
-            <InfoRow label="Lieky" value={passport.medications} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Zdravotná anamnéza" emoji="🏥" colors={colors} />
+            <TagList items={passport.medical_history} colors={colors} />
+            <InfoRow label="Alergie" value={passport.allergies} colors={colors} />
+            <InfoRow label="Lieky" value={passport.medications} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Dentálna história" emoji="🦷" />
-            <InfoRow label="Frekvencia návštev" value={passport.dental_history} />
-            <InfoRow label="Strach zo zubára" value={passport.fear_level} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Dentálna história" emoji="🦷" colors={colors} />
+            <InfoRow label="Frekvencia návštev" value={passport.dental_history} colors={colors} />
+            <InfoRow label="Strach zo zubára" value={passport.fear_level} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Komfort & preferencie" emoji="🎧" />
-            <TagList items={passport.comfort_preferences} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Komfort & preferencie" emoji="🎧" colors={colors} />
+            <TagList items={passport.comfort_preferences} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Estetické očakávania" emoji="✨" />
-            <TagList items={passport.aesthetic_expectations} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Estetické očakávania" emoji="✨" colors={colors} />
+            <TagList items={passport.aesthetic_expectations} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Životný štýl" emoji="🌿" />
-            <TagList items={passport.lifestyle_habits} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Životný štýl" emoji="🌿" colors={colors} />
+            <TagList items={passport.lifestyle_habits} colors={colors} />
           </View>
 
-          <View style={styles.card}>
-            <Section title="Investícia" emoji="💰" />
-            <InfoRow label="Preferencia" value={passport.investment_preference} />
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Section title="Investícia" emoji="💰" colors={colors} />
+            <InfoRow label="Preferencia" value={passport.investment_preference} colors={colors} />
           </View>
 
           {passport.open_question && (
-            <View style={styles.card}>
-              <Section title="Otvorená otázka" emoji="💬" />
-              <Text style={styles.openText}>{passport.open_question}</Text>
+            <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Section title="Otvorená otázka" emoji="💬" colors={colors} />
+              <Text style={[styles.openText, { color: colors.textPrimary }]}>{passport.open_question}</Text>
             </View>
           )}
 

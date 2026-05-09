@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type ConsentForm = {
   id: string;
@@ -54,6 +55,7 @@ const DEFAULT_TEMPLATES = [
 
 export default function ConsentFormsScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [forms,      setForms]      = useState<ConsentForm[]>([]);
   const [consents,   setConsents]   = useState<PatientConsent[]>([]);
   const [patients,   setPatients]   = useState<Patient[]>([]);
@@ -212,7 +214,7 @@ export default function ConsentFormsScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing}
           onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
@@ -225,10 +227,10 @@ export default function ConsentFormsScreen() {
               <View style={styles.templateSection}>
                 <Text style={styles.templateSectionTitle}>PREDPRIPRAVENÉ ŠABLÓNY</Text>
                 {DEFAULT_TEMPLATES.map((t, i) => (
-                  <TouchableOpacity key={i} style={styles.templateChip}
+                  <TouchableOpacity key={i} style={[styles.templateChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
                     onPress={() => openCreate(t)} activeOpacity={0.8}>
                     <Ionicons name="document-text-outline" size={16} color={COLORS.wal} />
-                    <Text style={styles.templateChipText} numberOfLines={1}>{t.title}</Text>
+                    <Text style={[styles.templateChipText, { color: colors.textPrimary }]} numberOfLines={1}>{t.title}</Text>
                     <Ionicons name="add-circle-outline" size={16} color={COLORS.wal} />
                   </TouchableOpacity>
                 ))}
@@ -238,23 +240,23 @@ export default function ConsentFormsScreen() {
             {forms.length === 0 ? (
               <View style={styles.empty}>
                 <Text style={styles.emptyIcon}>📋</Text>
-                <Text style={styles.emptyTitle}>Žiadne vlastné šablóny</Text>
-                <Text style={styles.emptySub}>Klepni na predpripravenú šablónu vyššie alebo vytvor vlastnú</Text>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne vlastné šablóny</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Klepni na predpripravenú šablónu vyššie alebo vytvor vlastnú</Text>
               </View>
             ) : (
               forms.map(f => (
-                <View key={f.id} style={styles.formCard}>
+                <View key={f.id} style={[styles.formCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   <View style={styles.formCardTop}>
                     <Ionicons name="document-text-outline" size={20} color={COLORS.wal} />
-                    <Text style={styles.formTitle} numberOfLines={2}>{f.title}</Text>
+                    <Text style={[styles.formTitle, { color: colors.textPrimary }]} numberOfLines={2}>{f.title}</Text>
                   </View>
                   <Text style={styles.formPreview} numberOfLines={2}>{f.content}</Text>
                   <View style={styles.formActions}>
-                    <TouchableOpacity style={styles.formActionBtn} onPress={() => setShowPreview(f)} activeOpacity={0.8}>
+                    <TouchableOpacity style={[styles.formActionBtn, { borderColor: colors.bg3 }]} onPress={() => setShowPreview(f)} activeOpacity={0.8}>
                       <Ionicons name="eye-outline" size={14} color={COLORS.wal} />
                       <Text style={styles.formActionText}>Náhľad</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.formActionBtn} onPress={() => openEdit(f)} activeOpacity={0.8}>
+                    <TouchableOpacity style={[styles.formActionBtn, { borderColor: colors.bg3 }]} onPress={() => openEdit(f)} activeOpacity={0.8}>
                       <Ionicons name="create-outline" size={14} color={COLORS.wal} />
                       <Text style={styles.formActionText}>Upraviť</Text>
                     </TouchableOpacity>
@@ -279,22 +281,22 @@ export default function ConsentFormsScreen() {
           consents.length === 0 ? (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>📬</Text>
-              <Text style={styles.emptyTitle}>Zatiaľ nič odoslané</Text>
-              <Text style={styles.emptySub}>Vytvor šablónu a odošli ju pacientovi</Text>
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Zatiaľ nič odoslané</Text>
+              <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Vytvor šablónu a odošli ju pacientovi</Text>
             </View>
           ) : (
             consents.map(c => {
               const st = STATUS_CFG[c.status] ?? STATUS_CFG.pending;
               return (
-                <View key={c.id} style={styles.consentRow}>
+                <View key={c.id} style={[styles.consentRow, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   <View style={[styles.statusDot, { backgroundColor: st.bg, borderColor: st.color + '66' }]}>
                     <Text style={{ fontSize: 14 }}>{st.icon}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.consentPatient} numberOfLines={1}>
+                    <Text style={[styles.consentPatient, { color: colors.textPrimary }]} numberOfLines={1}>
                       {(c.patient as any)?.full_name ?? 'Pacient'}
                     </Text>
-                    <Text style={styles.consentForm} numberOfLines={1}>
+                    <Text style={[styles.consentForm, { color: colors.textSecondary }]} numberOfLines={1}>
                       {(c.form as any)?.title ?? 'Súhlas'}
                     </Text>
                     {c.status === 'signed' && c.signed_at && (
@@ -320,22 +322,22 @@ export default function ConsentFormsScreen() {
       <Modal visible={showFormModal} animationType="slide" transparent onRequestClose={() => setShowFormModal(false)}>
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowFormModal(false)} />
-          <View style={[styles.sheet, { maxHeight: '90%' }]}>
-            <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>{editingForm ? 'Upraviť šablónu' : 'Nová šablóna'}</Text>
+          <View style={[styles.sheet, { maxHeight: '90%', backgroundColor: colors.cardBg }]}>
+            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>{editingForm ? 'Upraviť šablónu' : 'Nová šablóna'}</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.formLabel}>NÁZOV SÚHLASU *</Text>
-              <TextInput style={styles.formInput} value={formTitle} onChangeText={setFormTitle}
-                placeholder="napr. Súhlas s extrakciou zuba" placeholderTextColor="#bbb" />
-              <Text style={styles.formLabel}>TEXT SÚHLASU *</Text>
-              <TextInput style={[styles.formInput, { minHeight: 160, textAlignVertical: 'top' }]}
+              <Text style={[styles.formLabel, { color: colors.textSecondary }]}>NÁZOV SÚHLASU *</Text>
+              <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={formTitle} onChangeText={setFormTitle}
+                placeholder="napr. Súhlas s extrakciou zuba" placeholderTextColor={dark ? '#666' : '#bbb'} />
+              <Text style={[styles.formLabel, { color: colors.textSecondary }]}>TEXT SÚHLASU *</Text>
+              <TextInput style={[styles.formInput, { minHeight: 160, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={formContent} onChangeText={setFormContent}
-                placeholder="Plný text informovaného súhlasu..." placeholderTextColor="#bbb"
+                placeholder="Plný text informovaného súhlasu..." placeholderTextColor={dark ? '#666' : '#bbb'}
                 multiline />
             </ScrollView>
             <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowFormModal(false)} activeOpacity={0.8}>
-                <Text style={styles.modalCancelText}>Zrušiť</Text>
+              <TouchableOpacity style={[styles.modalCancel, { borderColor: colors.bg3 }]} onPress={() => setShowFormModal(false)} activeOpacity={0.8}>
+                <Text style={[styles.modalCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalSave, saving && { opacity: 0.5 }]}
                 onPress={handleSaveForm} disabled={saving} activeOpacity={0.85}>
@@ -351,27 +353,27 @@ export default function ConsentFormsScreen() {
       <Modal visible={showSendModal} animationType="slide" transparent onRequestClose={() => setShowSendModal(false)}>
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowSendModal(false)} />
-          <View style={styles.sheet}>
-            <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>Odoslať súhlas pacientovi</Text>
-            <Text style={styles.formLabel}>VYBER PACIENTA *</Text>
+          <View style={[styles.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>Odoslať súhlas pacientovi</Text>
+            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>VYBER PACIENTA *</Text>
             <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
               {patients.map(p => (
                 <TouchableOpacity key={p.id}
-                  style={[styles.patientOption, sendPatientId === p.id && styles.patientOptionActive]}
+                  style={[styles.patientOption, { borderBottomColor: colors.bg3 }, sendPatientId === p.id && styles.patientOptionActive]}
                   onPress={() => setSendPatientId(p.id)} activeOpacity={0.8}>
-                  <View style={[styles.patientDot, sendPatientId === p.id && { backgroundColor: COLORS.wal }]}>
+                  <View style={[styles.patientDot, { borderColor: colors.bg3 }, sendPatientId === p.id && { backgroundColor: COLORS.wal }]}>
                     {sendPatientId === p.id && <Ionicons name="checkmark" size={12} color="#fff" />}
                   </View>
-                  <Text style={[styles.patientOptionText, sendPatientId === p.id && { color: COLORS.esp, fontWeight: '700' }]}>
+                  <Text style={[styles.patientOptionText, { color: colors.textSecondary }, sendPatientId === p.id && { color: colors.textPrimary, fontWeight: '700' }]}>
                     {p.full_name ?? 'Pacient'}
                   </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
             <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowSendModal(false)} activeOpacity={0.8}>
-                <Text style={styles.modalCancelText}>Zrušiť</Text>
+              <TouchableOpacity style={[styles.modalCancel, { borderColor: colors.bg3 }]} onPress={() => setShowSendModal(false)} activeOpacity={0.8}>
+                <Text style={[styles.modalCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalSave, (sending || !sendPatientId) && { opacity: 0.5 }]}
                 onPress={handleSend} disabled={sending || !sendPatientId} activeOpacity={0.85}>
@@ -388,11 +390,11 @@ export default function ConsentFormsScreen() {
       <Modal visible={!!showPreview} animationType="fade" transparent onRequestClose={() => setShowPreview(null)}>
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowPreview(null)} />
-          <View style={[styles.sheet, { maxHeight: '85%' }]}>
-            <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>{showPreview?.title}</Text>
+          <View style={[styles.sheet, { maxHeight: '85%', backgroundColor: colors.cardBg }]}>
+            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>{showPreview?.title}</Text>
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 16 }}>
-              <Text style={styles.previewText}>{showPreview?.content}</Text>
+              <Text style={[styles.previewText, { color: colors.textPrimary }]}>{showPreview?.content}</Text>
             </ScrollView>
             <TouchableOpacity style={styles.modalSave} onPress={() => setShowPreview(null)} activeOpacity={0.85}>
               <Text style={styles.modalSaveText}>Zatvoriť</Text>

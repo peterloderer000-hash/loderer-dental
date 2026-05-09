@@ -7,11 +7,13 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
+import { useAppTheme } from '../../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
 export default function DoctorOnboardingScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [step,    setStep]    = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -60,16 +62,16 @@ export default function DoctorOnboardingScreen() {
   });
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={[s.container, { backgroundColor: colors.bg2 }]}>
       <View style={s.header}>
         <View style={s.headerSide}>
           {step === 2 && (
             <TouchableOpacity onPress={() => goToStep(step - 1)} style={s.backBtn} activeOpacity={0.75}>
-              <Ionicons name="arrow-back" size={22} color="#2C1F14" />
+              <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
             </TouchableOpacity>
           )}
         </View>
-        <Text style={s.stepText}>Krok {step}/3</Text>
+        <Text style={[s.stepText, { color: colors.textPrimary }]}>Krok {step}/3</Text>
         <View style={s.headerSide} />
       </View>
 
@@ -84,8 +86,8 @@ export default function DoctorOnboardingScreen() {
           <View style={s.slide}>
             <View style={s.center}>
               <Text style={s.emoji}>🦷</Text>
-              <Text style={s.title}>Vitajte v Loderer Dental</Text>
-              <Text style={s.subtitle}>Nastavme vašu ordináciu za 2 minúty</Text>
+              <Text style={[s.title, { color: colors.textPrimary }]}>Vitajte v Loderer Dental</Text>
+              <Text style={[s.subtitle, { color: colors.textSecondary }]}>Nastavme vašu ordináciu za 2 minúty</Text>
             </View>
             <TouchableOpacity style={s.btn} onPress={() => goToStep(2)} activeOpacity={0.85}>
               <Text style={s.btnText}>Začať</Text>
@@ -95,7 +97,7 @@ export default function DoctorOnboardingScreen() {
           {/* Krok 2 — Základné údaje */}
           <View style={s.slide}>
             <View style={{ flex: 1, paddingTop: 24 }}>
-              <Text style={s.stepTitle}>Základné údaje</Text>
+              <Text style={[s.stepTitle, { color: colors.textPrimary }]}>Základné údaje</Text>
               {[
                 { placeholder: 'Vaše meno (MDDr. ...)',  value: fullName,      set: setFullName,      keyboard: 'default' as const },
                 { placeholder: 'Názov kliniky',           value: clinicName,    set: setClinicName,    keyboard: 'default' as const },
@@ -104,9 +106,9 @@ export default function DoctorOnboardingScreen() {
               ].map((f, i) => (
                 <TextInput
                   key={i}
-                  style={s.input}
+                  style={[s.input, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
                   placeholder={f.placeholder}
-                  placeholderTextColor="#C4A882"
+                  placeholderTextColor={dark ? '#666' : '#C4A882'}
                   value={f.value}
                   onChangeText={f.set}
                   keyboardType={f.keyboard}
@@ -122,7 +124,7 @@ export default function DoctorOnboardingScreen() {
           <View style={s.slide}>
             <View style={s.center}>
               <Text style={s.emoji}>✅</Text>
-              <Text style={s.title}>Všetko je pripravené!</Text>
+              <Text style={[s.title, { color: colors.textPrimary }]}>Všetko je pripravené!</Text>
               <View style={s.bullets}>
                 {[
                   'Spravovať termíny a kalendár',
@@ -132,7 +134,7 @@ export default function DoctorOnboardingScreen() {
                 ].map((b, i) => (
                   <View key={i} style={s.bulletRow}>
                     <Text style={s.bulletDot}>•</Text>
-                    <Text style={s.bulletText}>{b}</Text>
+                    <Text style={[s.bulletText, { color: colors.textSecondary }]}>{b}</Text>
                   </View>
                 ))}
               </View>

@@ -9,6 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 type Severity = 'mild' | 'moderate' | 'severe';
@@ -58,6 +59,7 @@ function AddDiagModal({
   onClose: () => void;
   onSave: (diag: Omit<Diagnosis, 'id' | 'created_at' | 'appointment_id'>) => Promise<void>;
 }) {
+  const { colors, dark } = useAppTheme();
   const [icdCode,     setIcdCode]     = useState('');
   const [description, setDescription] = useState('');
   const [severity,    setSeverity]    = useState<Severity>('mild');
@@ -90,35 +92,35 @@ function AddDiagModal({
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={ms.overlay}>
           <TouchableOpacity style={{ flex: 0.3 }} activeOpacity={1} onPress={onClose} />
-          <View style={ms.sheet}>
-            <View style={ms.handle} />
-            <Text style={ms.title}>Pridať diagnózu</Text>
+          <View style={[ms.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[ms.handle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[ms.title, { color: colors.textPrimary }]}>Pridať diagnózu</Text>
 
-            <Text style={ms.label}>KÓD ICD (voliteľné)</Text>
+            <Text style={[ms.label, { color: colors.textSecondary }]}>KÓD ICD (voliteľné)</Text>
             <TextInput
-              style={ms.input}
+              style={[ms.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               value={icdCode}
               onChangeText={setIcdCode}
               placeholder="K02.1 – napr. zubný kaz"
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               autoCapitalize="characters"
               maxLength={10}
             />
 
-            <Text style={ms.label}>POPIS DIAGNÓZY *</Text>
+            <Text style={[ms.label, { color: colors.textSecondary }]}>POPIS DIAGNÓZY *</Text>
             <TextInput
-              style={[ms.input, { minHeight: 90 }]}
+              style={[ms.input, { minHeight: 90, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               value={description}
               onChangeText={setDescription}
               placeholder="Popis diagnózy..."
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
               autoFocus
             />
 
-            <Text style={ms.label}>ZÁVAŽNOSŤ</Text>
+            <Text style={[ms.label, { color: colors.textSecondary }]}>ZÁVAŽNOSŤ</Text>
             <View style={ms.chipRow}>
               {SEVERITY_OPTIONS.map((sev) => {
                 const cfg    = SEVERITY_CFG[sev];
@@ -168,6 +170,7 @@ function AddRxModal({
   onClose: () => void;
   onSave: (rx: Omit<Prescription, 'id' | 'created_at' | 'appointment_id' | 'is_active'>) => Promise<void>;
 }) {
+  const { colors, dark } = useAppTheme();
   const [medication,    setMedication]    = useState('');
   const [dosage,        setDosage]        = useState('');
   const [instructions,  setInstructions]  = useState('');
@@ -207,49 +210,49 @@ function AddRxModal({
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={ms.overlay}>
           <TouchableOpacity style={{ flex: 0.2 }} activeOpacity={1} onPress={onClose} />
-          <View style={[ms.sheet, { maxHeight: '82%' }]}>
+          <View style={[ms.sheet, { maxHeight: '82%', backgroundColor: colors.cardBg }]}>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              <View style={ms.handle} />
-              <Text style={ms.title}>Pridať recept</Text>
+              <View style={[ms.handle, { backgroundColor: colors.bg3 }]} />
+              <Text style={[ms.title, { color: colors.textPrimary }]}>Pridať recept</Text>
 
-              <Text style={ms.label}>LIEK *</Text>
+              <Text style={[ms.label, { color: colors.textSecondary }]}>LIEK *</Text>
               <TextInput
-                style={ms.input}
+                style={[ms.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={medication}
                 onChangeText={setMedication}
                 placeholder="Napr. Ibuprofen 400mg"
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
                 autoFocus
               />
 
-              <Text style={ms.label}>DÁVKOVANIE (voliteľné)</Text>
+              <Text style={[ms.label, { color: colors.textSecondary }]}>DÁVKOVANIE (voliteľné)</Text>
               <TextInput
-                style={ms.input}
+                style={[ms.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={dosage}
                 onChangeText={setDosage}
                 placeholder="Napr. 1×3 denne po jedle"
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
               />
 
-              <Text style={ms.label}>ĎALŠIE POKYNY (voliteľné)</Text>
+              <Text style={[ms.label, { color: colors.textSecondary }]}>ĎALŠIE POKYNY (voliteľné)</Text>
               <TextInput
-                style={[ms.input, { minHeight: 80 }]}
+                style={[ms.input, { minHeight: 80, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={instructions}
                 onChangeText={setInstructions}
                 placeholder="Ďalšie pokyny..."
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
                 multiline
                 numberOfLines={3}
                 textAlignVertical="top"
               />
 
-              <Text style={ms.label}>PLATNÉ DO (voliteľné)</Text>
+              <Text style={[ms.label, { color: colors.textSecondary }]}>PLATNÉ DO (voliteľné)</Text>
               <TextInput
-                style={ms.input}
+                style={[ms.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={validUntil}
                 onChangeText={setValidUntil}
                 placeholder="YYYY-MM-DD – napr. 2026-05-31"
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
                 keyboardType="numbers-and-punctuation"
                 maxLength={10}
               />
@@ -299,6 +302,7 @@ const ms = StyleSheet.create({
 export default function PrescriptionsScreen() {
   const router = useRouter();
   const { patientId, patientName } = useLocalSearchParams<{ patientId: string; patientName: string }>();
+  const { colors, dark } = useAppTheme();
 
   const [activeTab,   setActiveTab]   = useState<Tab>('diagnoses');
   const [diagnoses,   setDiagnoses]   = useState<Diagnosis[]>([]);
@@ -430,7 +434,7 @@ export default function PrescriptionsScreen() {
   function renderDiagCard(item: Diagnosis) {
     const sev = SEVERITY_CFG[item.severity] ?? SEVERITY_CFG.mild;
     return (
-      <View key={item.id} style={styles.card}>
+      <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
         <View style={styles.cardTopRow}>
           {item.icd_code ? (
             <View style={styles.icdChip}>
@@ -445,7 +449,7 @@ export default function PrescriptionsScreen() {
             <Ionicons name="trash-outline" size={16} color="#C0392B" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.descText}>{item.description}</Text>
+        <Text style={[styles.descText, { color: colors.textPrimary }]}>{item.description}</Text>
       </View>
     );
   }
@@ -456,9 +460,9 @@ export default function PrescriptionsScreen() {
       ? { label: 'Aktívny',    color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF' }
       : { label: 'Neaktívny',  color: '#7F8C8D', bg: '#F4F6F7', border: '#D5D8DC' };
     return (
-      <View key={item.id} style={styles.card}>
+      <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
         <View style={styles.cardTopRow}>
-          <Text style={styles.medicationText} numberOfLines={1}>{item.medication}</Text>
+          <Text style={[styles.medicationText, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
           <TouchableOpacity
             style={[styles.activeBadge, { backgroundColor: activeCfg.bg, borderColor: activeCfg.border }]}
             onPress={() => handleToggleActive(item)}
@@ -472,13 +476,13 @@ export default function PrescriptionsScreen() {
           </TouchableOpacity>
         </View>
         {item.dosage ? (
-          <Text style={styles.rxMeta}>{'💊 '}{item.dosage}</Text>
+          <Text style={[styles.rxMeta, { color: colors.textSecondary }]}>{'💊 '}{item.dosage}</Text>
         ) : null}
         {item.instructions ? (
-          <Text style={styles.rxMeta}>{item.instructions}</Text>
+          <Text style={[styles.rxMeta, { color: colors.textSecondary }]}>{item.instructions}</Text>
         ) : null}
         {item.valid_until ? (
-          <Text style={styles.rxMeta}>{'📅 Platné do: '}{item.valid_until}</Text>
+          <Text style={[styles.rxMeta, { color: colors.textSecondary }]}>{'📅 Platné do: '}{item.valid_until}</Text>
         ) : null}
       </View>
     );
@@ -490,8 +494,8 @@ export default function PrescriptionsScreen() {
     return (
       <View style={styles.emptyWrap}>
         <Text style={styles.emptyEmoji}>{isDiag ? '🩺' : '💊'}</Text>
-        <Text style={styles.emptyTitle}>{isDiag ? 'Žiadne diagnózy' : 'Žiadne recepty'}</Text>
-        <Text style={styles.emptySubtitle}>
+        <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>{isDiag ? 'Žiadne diagnózy' : 'Žiadne recepty'}</Text>
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           {isDiag
             ? 'Pre tohto pacienta zatiaľ nie sú zaznamenané žiadne diagnózy.'
             : 'Pre tohto pacienta zatiaľ nie sú vystavené žiadne recepty.'}
@@ -529,13 +533,13 @@ export default function PrescriptionsScreen() {
       </View>
 
       {/* Taby */}
-      <View style={styles.tabRow}>
+      <View style={[styles.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'diagnoses' && styles.tabActive]}
           onPress={() => setActiveTab('diagnoses')}
           activeOpacity={0.8}
         >
-          <Text style={[styles.tabText, activeTab === 'diagnoses' && styles.tabTextActive]}>
+          <Text style={[styles.tabText, activeTab === 'diagnoses' && styles.tabTextActive, activeTab !== 'diagnoses' && { color: colors.textSecondary }]}>
             {'🩺 Diagnózy ('}
             {diagnoses.length}
             {')'}
@@ -546,7 +550,7 @@ export default function PrescriptionsScreen() {
           onPress={() => setActiveTab('prescriptions')}
           activeOpacity={0.8}
         >
-          <Text style={[styles.tabText, activeTab === 'prescriptions' && styles.tabTextActive]}>
+          <Text style={[styles.tabText, activeTab === 'prescriptions' && styles.tabTextActive, activeTab !== 'prescriptions' && { color: colors.textSecondary }]}>
             {'💊 Recepty ('}
             {prescriptions.length}
             {')'}
@@ -559,7 +563,7 @@ export default function PrescriptionsScreen() {
         <SkeletonList count={4} />
       ) : (
         <ScrollView
-          style={styles.scroll}
+          style={[styles.scroll, { backgroundColor: colors.bg2 }]}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

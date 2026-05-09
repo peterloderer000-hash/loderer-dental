@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useTimeBlocks, BLOCK_CONFIG, BlockType, TimeBlock } from '../../hooks/useTimeBlocks';
+import { useAppTheme } from '../../context/ThemeContext';
 import { SK_DAYS_SHORT, SK_MONTHS_SHORT } from '../../utils/timeSlots';
 
 // ─── Pomocné ──────────────────────────────────────────────────────────────────
@@ -130,6 +131,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
   onClose: () => void;
   onSave: (data: { title: string; block_type: BlockType; start_time: string; end_time: string; note?: string }) => Promise<any>;
 }) {
+  const { colors, dark } = useAppTheme();
   const days = useMemo(() => getNext30Days(), []);
   const [selDate,    setSelDate]    = useState<Date>(days[0]);
   const [blockType,  setBlockType]  = useState<BlockType>('other');
@@ -190,23 +192,23 @@ function AddBlockModal({ visible, onClose, onSave }: {
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={mStyles.overlay}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-        <View style={mStyles.sheet}>
-          <View style={mStyles.handle} />
-          <Text style={mStyles.title}>Pridať blokovanie</Text>
+        <View style={[mStyles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[mStyles.handle, { backgroundColor: colors.bg3 }]} />
+          <Text style={[mStyles.title, { color: colors.textPrimary }]}>Pridať blokovanie</Text>
 
           {/* Typ */}
-          <Text style={mStyles.label}>TYP</Text>
+          <Text style={[mStyles.label, { color: colors.textSecondary }]}>TYP</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {(Object.entries(BLOCK_CONFIG) as [BlockType, typeof BLOCK_CONFIG[BlockType]][]).map(([key, cfg]) => (
                 <TouchableOpacity
                   key={key}
-                  style={[mStyles.typeChip, blockType === key && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
+                  style={[mStyles.typeChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }, blockType === key && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
                   onPress={() => setBlockType(key)}
                   activeOpacity={0.8}
                 >
                   <Text>{cfg.icon}</Text>
-                  <Text style={[mStyles.typeLabel, blockType === key && { color: cfg.color, fontWeight: '700' }]}>
+                  <Text style={[mStyles.typeLabel, { color: colors.textSecondary }, blockType === key && { color: cfg.color, fontWeight: '700' }]}>
                     {cfg.label}
                   </Text>
                 </TouchableOpacity>
@@ -215,20 +217,20 @@ function AddBlockModal({ visible, onClose, onSave }: {
           </ScrollView>
 
           {/* Názov */}
-          <Text style={mStyles.label}>NÁZOV</Text>
-          <View style={mStyles.inputWrap}>
+          <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV</Text>
+          <View style={[mStyles.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
             <TextInput
-              style={mStyles.input}
+              style={[mStyles.input, { color: colors.textPrimary }]}
               value={title}
               onChangeText={setTitle}
               placeholder="Názov blokovania..."
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               maxLength={60}
             />
           </View>
 
           {/* Dátum */}
-          <Text style={mStyles.label}>DÁTUM</Text>
+          <Text style={[mStyles.label, { color: colors.textSecondary }]}>DÁTUM</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {days.map((d, i) => {
@@ -237,7 +239,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
                 return (
                   <TouchableOpacity
                     key={i}
-                    style={[mStyles.dayCell, isSel && mStyles.dayCellSel]}
+                    style={[mStyles.dayCell, { backgroundColor: colors.bg2, borderColor: colors.bg3 }, isSel && mStyles.dayCellSel]}
                     onPress={() => setSelDate(d)}
                     activeOpacity={0.8}
                   >
@@ -253,29 +255,29 @@ function AddBlockModal({ visible, onClose, onSave }: {
           </ScrollView>
 
           {/* Čas */}
-          <Text style={mStyles.label}>ČAS (HH:MM)</Text>
+          <Text style={[mStyles.label, { color: colors.textSecondary }]}>ČAS (HH:MM)</Text>
           <View style={mStyles.timeRow}>
-            <View style={[mStyles.timeWrap, { flex: 1 }, startErr && mStyles.inputErr]}>
+            <View style={[mStyles.timeWrap, { flex: 1, backgroundColor: colors.bg2, borderColor: colors.bg3 }, startErr && mStyles.inputErr]}>
               <Ionicons name="play-outline" size={13} color={COLORS.wal} />
               <TextInput
-                style={mStyles.timeInput}
+                style={[mStyles.timeInput, { color: colors.textPrimary }]}
                 value={startStr}
                 onChangeText={(t) => { setStartStr(t); setStartErr(false); }}
                 placeholder="08:00"
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
                 keyboardType="numeric"
                 maxLength={5}
               />
             </View>
             <Text style={{ color: COLORS.wal, fontWeight: '700', paddingHorizontal: 6 }}>–</Text>
-            <View style={[mStyles.timeWrap, { flex: 1 }, endErr && mStyles.inputErr]}>
+            <View style={[mStyles.timeWrap, { flex: 1, backgroundColor: colors.bg2, borderColor: colors.bg3 }, endErr && mStyles.inputErr]}>
               <Ionicons name="stop-outline" size={13} color={COLORS.wal} />
               <TextInput
-                style={mStyles.timeInput}
+                style={[mStyles.timeInput, { color: colors.textPrimary }]}
                 value={endStr}
                 onChangeText={(t) => { setEndStr(t); setEndErr(false); }}
                 placeholder="09:00"
-                placeholderTextColor="#bbb"
+                placeholderTextColor={dark ? '#666' : '#bbb'}
                 keyboardType="numeric"
                 maxLength={5}
               />
@@ -288,14 +290,14 @@ function AddBlockModal({ visible, onClose, onSave }: {
           )}
 
           {/* Poznámka */}
-          <Text style={[mStyles.label, { marginTop: 12 }]}>POZNÁMKA (voliteľné)</Text>
-          <View style={mStyles.inputWrap}>
+          <Text style={[mStyles.label, { marginTop: 12, color: colors.textSecondary }]}>POZNÁMKA (voliteľné)</Text>
+          <View style={[mStyles.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
             <TextInput
-              style={[mStyles.input, { minHeight: 52, textAlignVertical: 'top' }]}
+              style={[mStyles.input, { minHeight: 52, textAlignVertical: 'top', color: colors.textPrimary }]}
               value={note}
               onChangeText={setNote}
               placeholder="Dôvod, upozornenie..."
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               multiline
               numberOfLines={2}
               maxLength={200}
@@ -304,8 +306,8 @@ function AddBlockModal({ visible, onClose, onSave }: {
 
           {/* Tlačidlá */}
           <View style={mStyles.btnRow}>
-            <TouchableOpacity style={mStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-              <Text style={mStyles.btnCancelText}>Zrušiť</Text>
+            <TouchableOpacity style={[mStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+              <Text style={[mStyles.btnCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
@@ -353,6 +355,7 @@ const mStyles = StyleSheet.create({
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function TimeBlocksScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const [doctorId, setDoctorId] = useState('');
   const { blocks, loading, refetch, addBlock, deleteBlock } = useTimeBlocks(doctorId || null);
   const [showModal, setShowModal] = useState(false);
@@ -423,7 +426,7 @@ export default function TimeBlocksScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
 
         {/* Info banner */}
@@ -435,14 +438,14 @@ export default function TimeBlocksScreen() {
         </View>
 
         {/* Rýchle šablóny */}
-        <Text style={styles.sectionLabel}>RÝCHLE BLOKOVANIE</Text>
+        <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>RÝCHLE BLOKOVANIE</Text>
         <View style={styles.quickGrid}>
           {templates.map((tpl) => {
             const isSaving = quickSaving === tpl.label;
             return (
               <TouchableOpacity
                 key={tpl.label}
-                style={styles.quickCard}
+                style={[styles.quickCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
                 onPress={() => handleQuickAdd(tpl)}
                 disabled={!!quickSaving}
                 activeOpacity={0.8}
@@ -451,8 +454,8 @@ export default function TimeBlocksScreen() {
                   ? <ActivityIndicator color={COLORS.wal} size="small" />
                   : <Text style={styles.quickIcon}>{tpl.label.split(' ')[0]}</Text>}
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.quickLabel}>{tpl.label.split(' ').slice(1).join(' ')}</Text>
-                  <Text style={styles.quickSub}>{tpl.sub}</Text>
+                  <Text style={[styles.quickLabel, { color: colors.textPrimary }]}>{tpl.label.split(' ').slice(1).join(' ')}</Text>
+                  <Text style={[styles.quickSub, { color: colors.textSecondary }]}>{tpl.sub}</Text>
                 </View>
                 <Ionicons name="add-circle-outline" size={20} color={COLORS.wal} />
               </TouchableOpacity>
@@ -461,13 +464,13 @@ export default function TimeBlocksScreen() {
         </View>
 
         {/* Vlastné blokovanie */}
-        <TouchableOpacity style={styles.customBtn} onPress={() => setShowModal(true)} activeOpacity={0.85}>
+        <TouchableOpacity style={[styles.customBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={() => setShowModal(true)} activeOpacity={0.85}>
           <Ionicons name="settings-outline" size={17} color={COLORS.wal} />
-          <Text style={styles.customBtnText}>Vlastné blokovanie...</Text>
+          <Text style={[styles.customBtnText, { color: colors.textSecondary }]}>Vlastné blokovanie...</Text>
         </TouchableOpacity>
 
         {/* Zoznam blokovaní */}
-        <Text style={[styles.sectionLabel, { marginTop: 22 }]}>
+        <Text style={[styles.sectionLabel, { marginTop: 22, color: colors.textSecondary }]}>
           NADCHÁDZAJÚCE BLOKOVANIA {blocks.length > 0 ? `(${blocks.length})` : ''}
         </Text>
 
@@ -476,15 +479,15 @@ export default function TimeBlocksScreen() {
         ) : blocks.length === 0 ? (
           <View style={styles.emptyCenter}>
             <Ionicons name="checkmark-circle-outline" size={48} color={COLORS.bg3} />
-            <Text style={styles.emptyTitle}>Žiadne blokovania</Text>
-            <Text style={styles.emptySub}>Ordinačný čas je plne dostupný pre pacientov.</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne blokovania</Text>
+            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Ordinačný čas je plne dostupný pre pacientov.</Text>
           </View>
         ) : (
           Object.entries(grouped).map(([day, dayBlocks]) => (
             <View key={day}>
               <View style={styles.dayHeader}>
                 <View style={styles.dayHeaderDot} />
-                <Text style={styles.dayHeaderText}>{day.toUpperCase()}</Text>
+                <Text style={[styles.dayHeaderText, { color: colors.textSecondary }]}>{day.toUpperCase()}</Text>
               </View>
               {dayBlocks.map((b) => (
                 <BlockCard key={b.id} block={b} onDelete={() => handleDelete(b)} />

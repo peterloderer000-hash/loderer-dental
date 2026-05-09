@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Consent = {
   id: string;
@@ -33,6 +34,7 @@ const STATUS_CFG: Record<string, { label: string; icon: string; color: string; b
 
 export default function ConsentsScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [consents,   setConsents]   = useState<Consent[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -116,7 +118,7 @@ export default function ConsentsScreen() {
             <Text style={styles.headerTitle}>Informované súhlasy</Text>
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
           <SkeletonList count={4} />
         </View>
       </SafeAreaView>
@@ -141,7 +143,7 @@ export default function ConsentsScreen() {
         )}
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing}
           onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
@@ -151,17 +153,17 @@ export default function ConsentsScreen() {
           <>
             <View style={styles.sectionHeader}>
               <Ionicons name="alert-circle" size={14} color="#7D6608" />
-              <Text style={styles.sectionTitle}>VYŽADUJE PODPIS</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>VYŽADUJE PODPIS</Text>
             </View>
             {pending.map(c => (
-              <View key={c.id} style={[styles.card, styles.cardPending]}>
+              <View key={c.id} style={[styles.card, styles.cardPending, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 <View style={styles.cardTop}>
                   <Text style={styles.cardIcon}>📋</Text>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.cardTitle} numberOfLines={2}>
+                    <Text style={[styles.cardTitle, { color: colors.textPrimary }]} numberOfLines={2}>
                       {(c.form as any)?.title ?? 'Súhlas'}
                     </Text>
-                    <Text style={styles.cardDate}>
+                    <Text style={[styles.cardDate, { color: colors.textSecondary }]}>
                       Doručené: {new Date(c.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' })}
                     </Text>
                   </View>
@@ -183,20 +185,20 @@ export default function ConsentsScreen() {
           <>
             <View style={styles.sectionHeader}>
               <Ionicons name="checkmark-circle-outline" size={14} color={COLORS.wal} />
-              <Text style={styles.sectionTitle}>HISTÓRIA</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>HISTÓRIA</Text>
             </View>
             {done.map(c => {
               const st = STATUS_CFG[c.status] ?? STATUS_CFG.signed;
               return (
-                <View key={c.id} style={styles.card}>
+                <View key={c.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   <View style={styles.cardTop}>
                     <Text style={styles.cardIcon}>{st.icon}</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.cardTitle} numberOfLines={1}>
+                      <Text style={[styles.cardTitle, { color: colors.textPrimary }]} numberOfLines={1}>
                         {(c.form as any)?.title ?? 'Súhlas'}
                       </Text>
                       {c.signed_at && (
-                        <Text style={styles.cardDate}>
+                        <Text style={[styles.cardDate, { color: colors.textSecondary }]}>
                           {c.status === 'signed' ? 'Podpísané' : 'Odmietnuté'}:{' '}
                           {new Date(c.signed_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </Text>
@@ -218,8 +220,8 @@ export default function ConsentsScreen() {
         {consents.length === 0 && (
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>📄</Text>
-            <Text style={styles.emptyTitle}>Žiadne súhlasy</Text>
-            <Text style={styles.emptySub}>Doktor ti zašle súhlas pred zákrokom na podpis.</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne súhlasy</Text>
+            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Doktor ti zašle súhlas pred zákrokom na podpis.</Text>
           </View>
         )}
 
@@ -230,30 +232,30 @@ export default function ConsentsScreen() {
       <Modal visible={!!signing} animationType="slide" transparent onRequestClose={() => setSigning(null)}>
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 0.2 }} activeOpacity={1} onPress={() => setSigning(null)} />
-          <View style={[styles.sheet, { maxHeight: '85%' }]}>
-            <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>Informovaný súhlas</Text>
-            <Text style={styles.sheetSubtitle}>{(signing?.form as any)?.title}</Text>
+          <View style={[styles.sheet, { maxHeight: '85%', backgroundColor: colors.cardBg }]}>
+            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>Informovaný súhlas</Text>
+            <Text style={[styles.sheetSubtitle, { color: colors.textSecondary }]}>{(signing?.form as any)?.title}</Text>
 
             {/* Text súhlasu */}
-            <ScrollView style={styles.consentTextBox} showsVerticalScrollIndicator>
-              <Text style={styles.consentText}>{(signing?.form as any)?.content}</Text>
+            <ScrollView style={[styles.consentTextBox, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]} showsVerticalScrollIndicator>
+              <Text style={[styles.consentText, { color: colors.textPrimary }]}>{(signing?.form as any)?.content}</Text>
             </ScrollView>
 
             {/* Checkbox */}
             <TouchableOpacity style={styles.checkRow} onPress={() => setAgreed(v => !v)} activeOpacity={0.8}>
-              <View style={[styles.checkbox, agreed && styles.checkboxChecked]}>
+              <View style={[styles.checkbox, { borderColor: colors.bg3 }, agreed && styles.checkboxChecked]}>
                 {agreed && <Ionicons name="checkmark" size={14} color="#fff" />}
               </View>
-              <Text style={styles.checkLabel}>
+              <Text style={[styles.checkLabel, { color: colors.textPrimary }]}>
                 Prečítal/a som si súhlas a rozumiem jeho obsahu
               </Text>
             </TouchableOpacity>
 
             {/* Podpis — meno */}
-            <Text style={styles.signLabel}>PODPIS — ZADAJ CELÉ MENO</Text>
-            <TextInput style={styles.signInput} value={signName} onChangeText={setSignName}
-              placeholder="Meno a priezvisko" placeholderTextColor="#999"
+            <Text style={[styles.signLabel, { color: colors.textSecondary }]}>PODPIS — ZADAJ CELÉ MENO</Text>
+            <TextInput style={[styles.signInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={signName} onChangeText={setSignName}
+              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#666' : '#999'}
               autoCapitalize="words" />
 
             {/* Akcie */}

@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Attachment = {
   id: string;
@@ -47,6 +48,7 @@ export default function PatientAttachmentsScreen() {
   const router = useRouter();
   const { patientId, patientName } =
     useLocalSearchParams<{ patientId: string; patientName: string }>();
+  const { colors, dark } = useAppTheme();
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -193,7 +195,7 @@ export default function PatientAttachmentsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
         <SkeletonList count={4} />
       </View>
     );
@@ -240,19 +242,19 @@ export default function PatientAttachmentsScreen() {
 
       {/* ── Upload form ── */}
       {showForm && (
-        <View style={styles.formCard}>
+        <View style={[styles.formCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           {pendingUri && (
             <Image source={{ uri: pendingUri }} style={styles.previewImg} resizeMode="cover" />
           )}
-          <TextInput style={styles.formInput} value={formName} onChangeText={setFormName}
-            placeholder="Názov prílohy *" placeholderTextColor="#bbb" />
+          <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={formName} onChangeText={setFormName}
+            placeholder="Názov prílohy *" placeholderTextColor={dark ? '#666' : '#bbb'} />
 
           {/* Kategória */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
             <View style={{ flexDirection: 'row', gap: 6 }}>
               {Object.entries(CAT_CFG).map(([key, cfg]) => (
                 <TouchableOpacity key={key} activeOpacity={0.8}
-                  style={[styles.catChip, formCategory === key && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
+                  style={[styles.catChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, formCategory === key && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
                   onPress={() => setFormCategory(key)}>
                   <Text style={styles.catChipIcon}>{cfg.icon}</Text>
                   <Text style={[styles.catChipLabel, formCategory === key && { color: cfg.color, fontWeight: '700' }]}>
@@ -263,13 +265,13 @@ export default function PatientAttachmentsScreen() {
             </View>
           </ScrollView>
 
-          <TextInput style={[styles.formInput, { minHeight: 54, textAlignVertical: 'top' }]}
+          <TextInput style={[styles.formInput, { minHeight: 54, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={formNotes} onChangeText={setFormNotes}
-            placeholder="Poznámka (nepovinné)" placeholderTextColor="#bbb" multiline />
+            placeholder="Poznámka (nepovinné)" placeholderTextColor={dark ? '#666' : '#bbb'} multiline />
 
           <View style={styles.formActions}>
-            <TouchableOpacity style={styles.formCancel} onPress={cancelForm} activeOpacity={0.8}>
-              <Text style={styles.formCancelText}>Zrušiť</Text>
+            <TouchableOpacity style={[styles.formCancel, { borderColor: colors.bg3 }]} onPress={cancelForm} activeOpacity={0.8}>
+              <Text style={[styles.formCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.formSave, uploading && { opacity: 0.5 }]}
               onPress={handleUpload} disabled={uploading} activeOpacity={0.85}>
@@ -283,7 +285,7 @@ export default function PatientAttachmentsScreen() {
       )}
 
       {/* ── Zoznam príloh ── */}
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing}
           onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
@@ -291,8 +293,8 @@ export default function PatientAttachmentsScreen() {
         {filtered.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>📂</Text>
-            <Text style={styles.emptyTitle}>Žiadne prílohy</Text>
-            <Text style={styles.emptySub}>Klepni „Pridať" a nahraj RTG, fotku alebo dokument</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne prílohy</Text>
+            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Klepni „Pridať" a nahraj RTG, fotku alebo dokument</Text>
           </View>
         ) : (
           filtered.map(att => {
@@ -300,7 +302,7 @@ export default function PatientAttachmentsScreen() {
             const d   = new Date(att.created_at);
             const kb  = att.size_bytes ? `${Math.round(att.size_bytes / 1024)} KB` : null;
             return (
-              <View key={att.id} style={styles.attCard}>
+              <View key={att.id} style={[styles.attCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 {att.file_type === 'image' ? (
                   <Image source={{ uri: att.file_url }} style={styles.attThumb} resizeMode="cover" />
                 ) : (
@@ -309,12 +311,12 @@ export default function PatientAttachmentsScreen() {
                   </View>
                 )}
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.attName} numberOfLines={1}>{att.name}</Text>
+                  <Text style={[styles.attName, { color: colors.textPrimary }]} numberOfLines={1}>{att.name}</Text>
                   <View style={styles.attMetaRow}>
                     <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
                       <Text style={[styles.catBadgeText, { color: cat.color }]}>{cat.icon} {cat.label}</Text>
                     </View>
-                    <Text style={styles.attDate}>
+                    <Text style={[styles.attDate, { color: colors.textSecondary }]}>
                       {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </Text>
                     {kb && <Text style={styles.attSize}>{kb}</Text>}

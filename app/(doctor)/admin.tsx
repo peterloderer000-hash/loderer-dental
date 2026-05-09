@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,6 +71,7 @@ function InviteModal({
   onClose: () => void;
   onSent: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const [email, setEmail]   = useState('');
   const [role, setRole]     = useState<'doctor' | 'reception' | 'hygienist'>('doctor');
   const [loading, setLoading] = useState(false);
@@ -107,18 +109,18 @@ function InviteModal({
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={im.backdrop} activeOpacity={1} onPress={onClose} />
-      <View style={im.sheet}>
-        <View style={im.handle} />
-        <Text style={im.title}>Pozvať člena tímu</Text>
-        <Text style={im.sub}>Pošlite kód novému zamestnancovi</Text>
+      <View style={[im.sheet, { backgroundColor: colors.cardBg }]}>
+        <View style={[im.handle, { backgroundColor: colors.bg3 }]} />
+        <Text style={[im.title, { color: colors.textPrimary }]}>Pozvať člena tímu</Text>
+        <Text style={[im.sub, { color: colors.textSecondary }]}>Pošlite kód novému zamestnancovi</Text>
 
-        <Text style={im.label}>E-MAIL</Text>
-        <View style={im.inputWrap}>
+        <Text style={[im.label, { color: colors.textSecondary }]}>E-MAIL</Text>
+        <View style={[im.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
           <Ionicons name="mail-outline" size={17} color={COLORS.wal} style={{ marginRight: 8 }} />
           <TextInput
-            style={im.input}
+            style={[im.input, { color: colors.textPrimary }]}
             placeholder="meno@klinika.sk"
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -127,7 +129,7 @@ function InviteModal({
           />
         </View>
 
-        <Text style={[im.label, { marginTop: 16 }]}>ROLA</Text>
+        <Text style={[im.label, { marginTop: 16, color: colors.textSecondary }]}>ROLA</Text>
         <View style={im.roleRow}>
           {ROLES.map(r => (
             <TouchableOpacity
@@ -161,6 +163,7 @@ function InviteModal({
 type AdminTab = 'team' | 'clinic' | 'stats';
 
 export default function AdminScreen() {
+  const { colors, dark } = useAppTheme();
   const [tab, setTab]           = useState<AdminTab>('team');
   const [team, setTeam]         = useState<TeamMember[]>([]);
   const [clinic, setClinic]     = useState<ClinicInfo | null>(null);
@@ -271,7 +274,7 @@ export default function AdminScreen() {
   ];
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
 
       {/* ── Header ── */}
       <View style={s.header}>
@@ -297,11 +300,11 @@ export default function AdminScreen() {
       </View>
 
       {/* ── Tab row ── */}
-      <View style={s.tabRow}>
+      <View style={[s.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
         {TABS.map(t => (
           <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
-            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? COLORS.esp : '#aaa'} />
-            <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive]}>{t.label}</Text>
+            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? colors.textPrimary : '#aaa'} />
+            <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive, tab === t.key && { color: colors.textPrimary }]}>{t.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -315,6 +318,7 @@ export default function AdminScreen() {
             <FlatList
               data={team}
               keyExtractor={m => m.id}
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
@@ -334,20 +338,20 @@ export default function AdminScreen() {
               renderItem={({ item: m }) => {
                 const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, text: COLORS.wal };
                 return (
-                  <View style={s.memberCard}>
+                  <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.memberAvatar}>
                       <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
                       <View style={s.memberTop}>
-                        <Text style={s.memberName}>{m.full_name}</Text>
+                        <Text style={[s.memberName, { color: colors.textPrimary }]}>{m.full_name}</Text>
                         <View style={[s.roleBadge, { backgroundColor: rc.bg }]}>
                           <Text style={[s.roleBadgeText, { color: rc.text }]}>
                             {ROLE_LABELS[m.role] ?? m.role}
                           </Text>
                         </View>
                       </View>
-                      {m.specialty && <Text style={s.memberSub}>{m.specialty}</Text>}
+                      {m.specialty && <Text style={[s.memberSub, { color: colors.textSecondary }]}>{m.specialty}</Text>}
                       {m.phone && (
                         <Text style={s.memberPhone}>
                           <Ionicons name="call-outline" size={11} color={COLORS.wal} /> {m.phone}
@@ -368,13 +372,14 @@ export default function AdminScreen() {
           {/* ── CLINIC ── */}
           {tab === 'clinic' && (
             <ScrollView
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               {clinic ? (
                 editing ? (
-                  <View style={s.clinicCard}>
-                    <Text style={s.clinicEditTitle}>Upraviť kliniku</Text>
+                  <View style={[s.clinicCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                    <Text style={[s.clinicEditTitle, { color: colors.textPrimary }]}>Upraviť kliniku</Text>
                     {[
                       { key: 'name',    label: 'NÁZOV KLINIKY',  icon: 'business-outline',  placeholder: 'Loderer Dental' },
                       { key: 'address', label: 'ADRESA',         icon: 'location-outline',  placeholder: 'Hlavná 1, Bratislava' },
@@ -383,23 +388,23 @@ export default function AdminScreen() {
                       { key: 'website', label: 'WEBSTRÁNKA',     icon: 'globe-outline',     placeholder: 'www.klinika.sk' },
                     ].map(f => (
                       <View key={f.key} style={{ marginBottom: 14 }}>
-                        <Text style={s.label}>{f.label}</Text>
-                        <View style={s.inputWrap}>
+                        <Text style={[s.label, { color: colors.textSecondary }]}>{f.label}</Text>
+                        <View style={[s.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                           <Ionicons name={f.icon as any} size={16} color={COLORS.wal} style={{ marginRight: 8 }} />
                           <TextInput
-                            style={s.input}
+                            style={[s.input, { color: colors.textPrimary }]}
                             value={(editForm as any)[f.key] ?? ''}
                             onChangeText={v => setEditForm(prev => ({ ...prev, [f.key]: v }))}
                             placeholder={f.placeholder}
-                            placeholderTextColor="#999"
+                            placeholderTextColor={dark ? '#666' : '#999'}
                             autoCapitalize={f.key === 'email' || f.key === 'website' ? 'none' : 'words'}
                           />
                         </View>
                       </View>
                     ))}
                     <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-                      <TouchableOpacity style={s.cancelBtn} onPress={() => { setEditing(false); setEditForm(clinic); }} activeOpacity={0.8}>
-                        <Text style={s.cancelBtnText}>Zrušiť</Text>
+                      <TouchableOpacity style={[s.cancelBtn, { borderColor: colors.bg3, backgroundColor: colors.cardBg }]} onPress={() => { setEditing(false); setEditForm(clinic); }} activeOpacity={0.8}>
+                        <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={[s.saveBtn, savingClinic && { opacity: 0.5 }]} onPress={saveClinic} disabled={savingClinic} activeOpacity={0.85}>
                         {savingClinic ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.saveBtnText}>Uložiť</Text>}
@@ -407,12 +412,12 @@ export default function AdminScreen() {
                     </View>
                   </View>
                 ) : (
-                  <View style={s.clinicCard}>
+                  <View style={[s.clinicCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.clinicHeader}>
                       <View style={s.clinicIcon}>
                         <Ionicons name="business" size={24} color={COLORS.sand} />
                       </View>
-                      <Text style={s.clinicName}>{clinic.name}</Text>
+                      <Text style={[s.clinicName, { color: colors.textPrimary }]}>{clinic.name}</Text>
                     </View>
                     {[
                       { icon: 'location-outline', value: clinic.address },
@@ -422,7 +427,7 @@ export default function AdminScreen() {
                     ].map((row, i) => row.value ? (
                       <View key={i} style={s.clinicRow}>
                         <Ionicons name={row.icon as any} size={16} color={COLORS.wal} />
-                        <Text style={s.clinicRowText}>{row.value}</Text>
+                        <Text style={[s.clinicRowText, { color: colors.textSecondary }]}>{row.value}</Text>
                       </View>
                     ) : null)}
                   </View>
@@ -440,10 +445,11 @@ export default function AdminScreen() {
           {/* ── STATS ── */}
           {tab === 'stats' && stats && (
             <ScrollView
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
-              <Text style={s.statsSection}>PACIENTI & TERMÍNY</Text>
+              <Text style={[s.statsSection, { color: colors.textSecondary }]}>PACIENTI & TERMÍNY</Text>
               <View style={s.statsGrid}>
                 {[
                   { label: 'Pacienti',         value: stats.totalPatients,         icon: 'people-outline',    color: '#1A5276' },
@@ -451,15 +457,15 @@ export default function AdminScreen() {
                   { label: 'Tento mesiac',      value: stats.thisMonthAppointments, icon: 'today-outline',     color: '#7D6608' },
                   { label: 'Čakajú na potvrd.', value: stats.pendingAppointments,   icon: 'hourglass-outline', color: '#922B21' },
                 ].map((card, i) => (
-                  <View key={i} style={s.statCard}>
+                  <View key={i} style={[s.statCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <Ionicons name={card.icon as any} size={22} color={card.color} />
                     <Text style={[s.statValue, { color: card.color }]}>{card.value}</Text>
-                    <Text style={s.statLabel}>{card.label}</Text>
+                    <Text style={[s.statLabel, { color: colors.textSecondary }]}>{card.label}</Text>
                   </View>
                 ))}
               </View>
 
-              <Text style={[s.statsSection, { marginTop: 20 }]}>PLATBY</Text>
+              <Text style={[s.statsSection, { marginTop: 20, color: colors.textSecondary }]}>PLATBY</Text>
               <View style={s.payCards}>
                 <View style={s.payCard}>
                   <Text style={s.payCardLabel}>Celkový obrat</Text>

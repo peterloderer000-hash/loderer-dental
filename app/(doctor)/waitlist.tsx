@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyWaitlist } from '../../components/EmptyState';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type WaitlistRow = {
   id: string;
@@ -33,6 +34,7 @@ function timeAgo(dateStr: string): string {
 
 export default function WaitlistScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [items,      setItems]      = useState<WaitlistRow[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -108,9 +110,9 @@ export default function WaitlistScreen() {
   if (loading) return <SkeletonList count={4} />;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.esp }]} edges={['top']}>
       {/* Hlavička */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -126,7 +128,7 @@ export default function WaitlistScreen() {
       </View>
 
       <ScrollView
-        style={styles.scroll}
+        style={[styles.scroll, { backgroundColor: colors.bg2 }]}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}
@@ -148,7 +150,7 @@ export default function WaitlistScreen() {
                 ? new Date(item.preferred_date).toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })
                 : null;
               return (
-                <View key={item.id} style={styles.card}>
+                <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   {/* Hlavička karty */}
                   <View style={styles.cardHeader}>
                     <View style={styles.avatar}>
@@ -157,9 +159,9 @@ export default function WaitlistScreen() {
                       </Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.patientName}>{item.patient?.full_name ?? 'Pacient'}</Text>
+                      <Text style={[styles.patientName, { color: colors.textPrimary }]}>{item.patient?.full_name ?? 'Pacient'}</Text>
                       {item.patient?.phone_number && (
-                        <Text style={styles.patientPhone}>{item.patient.phone_number}</Text>
+                        <Text style={[styles.patientPhone, { color: colors.textSecondary }]}>{item.patient.phone_number}</Text>
                       )}
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -179,9 +181,9 @@ export default function WaitlistScreen() {
                   {/* Detaily */}
                   <View style={styles.detailsRow}>
                     {item.service && (
-                      <View style={styles.detailChip}>
+                      <View style={[styles.detailChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                         <Text style={styles.detailChipEmoji}>{item.service.emoji ?? '🦷'}</Text>
-                        <Text style={styles.detailChipText}>{item.service.name}</Text>
+                        <Text style={[styles.detailChipText, { color: colors.textPrimary }]}>{item.service.name}</Text>
                       </View>
                     )}
                     {prefDate && (
@@ -193,9 +195,9 @@ export default function WaitlistScreen() {
                   </View>
 
                   {item.notes && (
-                    <View style={styles.notesRow}>
-                      <Ionicons name="document-text-outline" size={12} color={COLORS.wal} />
-                      <Text style={styles.notesText}>{item.notes}</Text>
+                    <View style={[styles.notesRow, { backgroundColor: colors.bg2 }]}>
+                      <Ionicons name="document-text-outline" size={12} color={colors.textSecondary} />
+                      <Text style={[styles.notesText, { color: colors.textSecondary }]}>{item.notes}</Text>
                     </View>
                   )}
 

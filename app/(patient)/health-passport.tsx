@@ -18,6 +18,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { exportHealthPassport } from '../../utils/exportPDF';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 const VISIT_REASONS = [
   'Bolesť', 'Estetika úsmevu', 'Kontrola', 'Implantáty',
@@ -46,35 +47,38 @@ function toggle(arr: string[], val: string): string[] {
 }
 
 function CheckItem({ label, selected, onToggle }: { label: string; selected: boolean; onToggle: () => void }) {
+  const { colors } = useAppTheme();
   return (
-    <TouchableOpacity style={[styles.option, selected && styles.optionSel]} onPress={onToggle} activeOpacity={0.75}>
-      <View style={[styles.checkbox, selected && styles.checkboxSel]}>
+    <TouchableOpacity style={[styles.option, { borderColor: colors.bg3, backgroundColor: colors.cardBg }, selected && styles.optionSel]} onPress={onToggle} activeOpacity={0.75}>
+      <View style={[styles.checkbox, { borderColor: colors.bg3 }, selected && styles.checkboxSel]}>
         {selected && <Ionicons name="checkmark" size={11} color="#fff" />}
       </View>
-      <Text style={[styles.optionText, selected && styles.optionTextSel]}>{label}</Text>
+      <Text style={[styles.optionText, { color: colors.textPrimary }, selected && styles.optionTextSel]}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
 function RadioItem({ label, selected, onSelect }: { label: string; selected: boolean; onSelect: () => void }) {
+  const { colors } = useAppTheme();
   return (
-    <TouchableOpacity style={[styles.option, selected && styles.optionSel]} onPress={onSelect} activeOpacity={0.75}>
-      <View style={[styles.radio, selected && styles.radioSel]}>
+    <TouchableOpacity style={[styles.option, { borderColor: colors.bg3, backgroundColor: colors.cardBg }, selected && styles.optionSel]} onPress={onSelect} activeOpacity={0.75}>
+      <View style={[styles.radio, { borderColor: colors.bg3 }, selected && styles.radioSel]}>
         {selected && <View style={styles.radioDot} />}
       </View>
-      <Text style={[styles.optionText, selected && styles.optionTextSel]}>{label}</Text>
+      <Text style={[styles.optionText, { color: colors.textPrimary }, selected && styles.optionTextSel]}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
 function OtherInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={styles.otherInputWrap}>
+    <View style={[styles.otherInputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
       <Ionicons name="create-outline" size={15} color={COLORS.wal} style={{ marginTop: 2 }} />
       <TextInput
-        style={styles.otherInput}
+        style={[styles.otherInput, { color: colors.textPrimary }]}
         placeholder="Upresni..."
-        placeholderTextColor="#999"
+        placeholderTextColor={dark ? '#666' : '#999'}
         value={value}
         onChangeText={onChange}
         autoCapitalize="sentences"
@@ -95,6 +99,7 @@ function SectionHeader({ num, title }: { num: string; title: string }) {
 
 export default function HealthPassportScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
 
   const [visitReasons, setVisitReasons] = useState<string[]>([]);
   const [visitReasonsOther, setVisitReasonsOther] = useState('');
@@ -293,7 +298,7 @@ export default function HealthPassportScreen() {
   if (loadingData) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
           <SkeletonList count={6} />
         </View>
       </SafeAreaView>
@@ -323,7 +328,7 @@ export default function HealthPassportScreen() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 
           <View style={styles.introBanner}>
@@ -335,7 +340,7 @@ export default function HealthPassportScreen() {
 
           {/* ── NOVÁ SEKCIA: ZÁKLADNÉ ÚDAJE ─────────────────────────────── */}
           <SectionHeader num="0" title="ZÁKLADNÉ ÚDAJE" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.fieldLabel}>KRVNÁ SKUPINA</Text>
             <View style={styles.chipRow}>
               {BLOOD_TYPES.map((bt) => (
@@ -365,30 +370,30 @@ export default function HealthPassportScreen() {
             )}
 
             <Text style={[styles.fieldLabel, { marginTop: 12 }]}>ČÍSLO POISTENCA</Text>
-            <TextInput style={styles.input}
+            <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="napr. 8501234567"
-              placeholderTextColor="#999"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={insuranceNumber} onChangeText={setInsuranceNumber}
               keyboardType="numeric" returnKeyType="done" />
 
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>KONTAKTNÁ OSOBA V PRÍPADE NÚDZE</Text>
-            <TextInput style={styles.input}
+            <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="Meno a priezvisko"
-              placeholderTextColor="#999"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={emergencyName} onChangeText={setEmergencyName}
               autoCapitalize="words" returnKeyType="next" />
-            <TextInput style={[styles.input, { marginTop: 8 }]}
+            <TextInput style={[styles.input, { marginTop: 8, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="Telefón"
-              placeholderTextColor="#999"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={emergencyPhone} onChangeText={setEmergencyPhone}
               keyboardType="phone-pad" returnKeyType="done" />
 
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>POSLEDNÁ NÁVŠTEVA U ZUBÁRA</Text>
-            <TextInput style={styles.input}
+            <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="napr. 2024-06-15 alebo 'Pred rokom'"
-              placeholderTextColor="#999"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={lastDentalVisit} onChangeText={setLastDentalVisit}
               autoCapitalize="sentences" returnKeyType="done" />
 
@@ -407,7 +412,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="1" title="HLAVNÝ DÔVOD NÁVŠTEVY" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {VISIT_REASONS.map((item) => (
               <CheckItem key={item} label={item} selected={visitReasons.includes(item)}
                 onToggle={() => setVisitReasons((p) => toggle(p, item))} />
@@ -420,7 +425,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="2" title="MEDICÍNSKA ANAMNÉZA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Zaškrtnite, čo sa Vás týka:</Text>
             {MEDICAL_CONDITIONS.map((item) => (
               <CheckItem key={item} label={item} selected={medConditions.includes(item)}
@@ -433,17 +438,17 @@ export default function HealthPassportScreen() {
             )}
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>ALERGIE</Text>
-            <TextInput style={[styles.input, { minHeight: 60 }]} placeholder="napr. Penicilín, latex..."
-              placeholderTextColor={COLORS.sand} value={allergies} onChangeText={setAllergies}
+            <TextInput style={[styles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} placeholder="napr. Penicilín, latex..."
+              placeholderTextColor={dark ? '#666' : '#999'} value={allergies} onChangeText={setAllergies}
               multiline numberOfLines={2} textAlignVertical="top" />
             <Text style={[styles.fieldLabel, { marginTop: 14 }]}>LIEKY (pravidelne užívané)</Text>
-            <TextInput style={[styles.input, { minHeight: 60 }]} placeholder="napr. Warfarín 5mg..."
-              placeholderTextColor={COLORS.sand} value={medications} onChangeText={setMedications}
+            <TextInput style={[styles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} placeholder="napr. Warfarín 5mg..."
+              placeholderTextColor={dark ? '#666' : '#999'} value={medications} onChangeText={setMedications}
               multiline numberOfLines={2} textAlignVertical="top" />
           </View>
 
           <SectionHeader num="3" title="DENTÁLNA ANAMNÉZA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Ako často chodíte k zubárovi?</Text>
             {DENTAL_FREQUENCY.map((item) => (
               <RadioItem key={item} label={item} selected={dentalFreq === item}
@@ -457,7 +462,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="4" title="STRACH ZO ZUBÁRA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {FEAR_LEVELS.map((item) => (
               <RadioItem key={item} label={item} selected={fearLevel === item}
                 onSelect={() => setFearLevel(item)} />
@@ -465,7 +470,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="5" title="KOMFORT POČAS OŠETRENIA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Čo vám pomáha relaxovať?</Text>
             {COMFORT_OPTIONS.map((item) => (
               <RadioItem key={item} label={item} selected={comfort === item}
@@ -479,7 +484,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="6" title="ESTETICKÉ OČAKÁVANIA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Čo by ste chceli zlepšiť?</Text>
             {AESTHETIC_OPTIONS.map((item) => (
               <CheckItem key={item} label={item} selected={aesthetics.includes(item)}
@@ -493,7 +498,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="7" title="ŽIVOTNÝ ŠTÝL" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {LIFESTYLE_OPTIONS.map((item) => (
               <CheckItem key={item} label={item} selected={lifestyle.includes(item)}
                 onToggle={() => setLifestyle((p) => toggle(p, item))} />
@@ -506,7 +511,7 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="8" title="INVESTIČNÉ OČAKÁVANIA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {INVESTMENT_OPTIONS.map((item) => (
               <RadioItem key={item} label={item} selected={investment === item}
                 onSelect={() => setInvestment(item)} />
@@ -514,10 +519,10 @@ export default function HealthPassportScreen() {
           </View>
 
           <SectionHeader num="9" title="OTVORENÁ OTÁZKA" />
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Čo by sme mohli urobiť, aby bola vaša návšteva čo najpríjemnejšia?</Text>
-            <TextInput style={[styles.input, { minHeight: 90 }]}
-              placeholder="Napíšte nám..." placeholderTextColor={COLORS.sand}
+            <TextInput style={[styles.input, { minHeight: 90, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+              placeholder="Napíšte nám..." placeholderTextColor={dark ? '#666' : '#999'}
               value={openQ} onChangeText={setOpenQ}
               multiline numberOfLines={4} textAlignVertical="top" />
           </View>

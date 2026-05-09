@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type DateRange    = 'today' | 'week' | 'month';
 type FilterStatus = 'all' | 'pending' | 'paid' | 'refunded';
@@ -64,6 +65,7 @@ function fmtDate(iso: string) {
 function NewPaymentModal({ visible, onClose, onCreated }: {
   visible: boolean; onClose: () => void; onCreated: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const [patientSearch, setPatientSearch] = useState('');
   const [patients, setPatients]           = useState<PatientOption[]>([]);
   const [selectedPatient, setSelected]    = useState<PatientOption | null>(null);
@@ -140,9 +142,9 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={m.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={m.sheet}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[m.sheet, { backgroundColor: colors.cardBg }]}>
           {/* Handle */}
-          <View style={m.handle} />
+          <View style={[m.handle, { backgroundColor: colors.bg3 }]} />
           <View style={m.sheetHeader}>
             <Text style={m.sheetTitle}>💰 Nová platba</Text>
             <TouchableOpacity onPress={onClose} activeOpacity={0.8}>
@@ -152,13 +154,13 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
 
           <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             {/* Pacient */}
-            <Text style={m.label}>PACIENT</Text>
-            <View style={m.inputWrap}>
+            <Text style={[m.label, { color: colors.textSecondary }]}>PACIENT</Text>
+            <View style={[m.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
               <Ionicons name="person-outline" size={16} color={COLORS.wal} />
               <TextInput
-                style={m.input}
+                style={[m.input, { color: colors.textPrimary }]}
                 placeholder="Hľadaj pacienta..."
-                placeholderTextColor="#aaa"
+                placeholderTextColor={dark ? '#666' : '#aaa'}
                 value={selectedPatient ? (selectedPatient.full_name ?? '') : patientSearch}
                 onChangeText={onSearchChange}
                 onFocus={() => { if (selectedPatient) { setSelected(null); setPatientSearch(''); } }}
@@ -166,25 +168,25 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
               {selectedPatient && <Ionicons name="checkmark-circle" size={18} color="#1E8449" />}
             </View>
             {patients.length > 0 && !selectedPatient && (
-              <View style={m.dropdown}>
+              <View style={[m.dropdown, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 {patients.map(p => (
-                  <TouchableOpacity key={p.id} style={m.dropdownItem}
+                  <TouchableOpacity key={p.id} style={[m.dropdownItem, { borderBottomColor: colors.bg3 }]}
                     onPress={() => { setSelected(p); setPatients([]); setPatientSearch(p.full_name ?? ''); }}>
                     <Ionicons name="person-outline" size={14} color={COLORS.wal} />
-                    <Text style={m.dropdownText}>{p.full_name ?? '—'}</Text>
+                    <Text style={[m.dropdownText, { color: colors.textPrimary }]}>{p.full_name ?? '—'}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
 
             {/* Suma */}
-            <Text style={m.label}>SUMA (€)</Text>
-            <View style={m.inputWrap}>
+            <Text style={[m.label, { color: colors.textSecondary }]}>SUMA (€)</Text>
+            <View style={[m.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
               <Ionicons name="cash-outline" size={16} color={COLORS.wal} />
               <TextInput
-                style={m.input}
+                style={[m.input, { color: colors.textPrimary }]}
                 placeholder="0,00"
-                placeholderTextColor="#aaa"
+                placeholderTextColor={dark ? '#666' : '#aaa'}
                 value={amountStr}
                 onChangeText={setAmountStr}
                 keyboardType="decimal-pad"
@@ -192,11 +194,11 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
             </View>
 
             {/* Metóda */}
-            <Text style={m.label}>SPÔSOB PLATBY</Text>
+            <Text style={[m.label, { color: colors.textSecondary }]}>SPÔSOB PLATBY</Text>
             <View style={m.methodRow}>
               {(['cash', 'card', 'online', 'insurance'] as Method[]).map(mt => (
                 <TouchableOpacity key={mt}
-                  style={[m.methodBtn, method === mt && m.methodBtnActive]}
+                  style={[m.methodBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }, method === mt && m.methodBtnActive]}
                   onPress={() => setMethod(mt)} activeOpacity={0.8}>
                   <Ionicons name={METHOD_ICONS[mt] as any} size={18}
                     color={method === mt ? '#fff' : COLORS.wal} />
@@ -208,12 +210,12 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
             </View>
 
             {/* Poznámky */}
-            <Text style={m.label}>POZNÁMKY (voliteľné)</Text>
-            <View style={[m.inputWrap, { alignItems: 'flex-start', paddingTop: 10 }]}>
+            <Text style={[m.label, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
+            <View style={[m.inputWrap, { alignItems: 'flex-start', paddingTop: 10, backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
               <TextInput
-                style={[m.input, { minHeight: 60 }]}
+                style={[m.input, { minHeight: 60, color: colors.textPrimary }]}
                 placeholder="Napr. záloha, doplatenie..."
-                placeholderTextColor="#aaa"
+                placeholderTextColor={dark ? '#666' : '#aaa'}
                 value={notes}
                 onChangeText={setNotes}
                 multiline
@@ -243,6 +245,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function PaymentsScreen() {
+  const { colors, dark } = useAppTheme();
   const router = useRouter();
   const [filter, setFilter]     = useState<FilterStatus>('all');
   const [range, setRange]       = useState<DateRange>('today');
@@ -322,7 +325,7 @@ export default function PaymentsScreen() {
   const totalPending = payments.filter(p => p.status === 'pending').reduce((s, p) => s + p.amount_cents, 0);
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -348,17 +351,17 @@ export default function PaymentsScreen() {
       </View>
 
       {/* Summary cards */}
-      <View style={s.summaryRow}>
+      <View style={[s.summaryRow, { backgroundColor: colors.cardBg }]}>
         <View style={s.summaryCard}>
           <Text style={s.summaryLbl}>Spolu</Text>
           <Text style={[s.summaryAmt, { color: COLORS.esp }]}>{fmtEur(totalAll)}</Text>
         </View>
-        <View style={[s.summaryCard, { borderLeftWidth: 1, borderLeftColor: COLORS.bg3 }]}>
-          <Text style={s.summaryLbl}>Zaplatené</Text>
+        <View style={[s.summaryCard, { borderLeftWidth: 1, borderLeftColor: colors.bg3 }]}>
+          <Text style={[s.summaryLbl, { color: colors.textSecondary }]}>Zaplatené</Text>
           <Text style={[s.summaryAmt, { color: '#1A5C35' }]}>{fmtEur(totalPaid)}</Text>
         </View>
-        <View style={[s.summaryCard, { borderLeftWidth: 1, borderLeftColor: COLORS.bg3 }]}>
-          <Text style={s.summaryLbl}>Čakajú</Text>
+        <View style={[s.summaryCard, { borderLeftWidth: 1, borderLeftColor: colors.bg3 }]}>
+          <Text style={[s.summaryLbl, { color: colors.textSecondary }]}>Čakajú</Text>
           <Text style={[s.summaryAmt, { color: '#B7770D' }]}>{fmtEur(totalPending)}</Text>
         </View>
       </View>

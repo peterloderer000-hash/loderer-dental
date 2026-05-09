@@ -13,6 +13,7 @@ import {
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Action definitions per status ───────────────────────────────────────────
 
@@ -38,13 +39,14 @@ type CardProps = {
 };
 
 function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoom, tick, actionLoading }: CardProps) {
+  const { colors } = useAppTheme();
   const cfg      = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   const waitMins = getWaitingMinutes(appt);
   const treatMin = getTreatmentMinutes(appt);
   const tooLong  = waitMins !== null && waitMins > 15 && appt.clinic_status === 'waiting';
 
   return (
-    <View style={[s.card, expanded && s.cardExpanded, { borderLeftColor: cfg.border, borderLeftWidth: 4 }]}>
+    <View style={[s.card, expanded && s.cardExpanded, { borderLeftColor: cfg.border, borderLeftWidth: 4, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       <TouchableOpacity onPress={onToggle} activeOpacity={0.85}>
         {/* ── Row 1: status + name + time ── */}
         <View style={s.cardRow}>
@@ -53,17 +55,17 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
             <Text style={[s.statusLabel, { color: cfg.color }]}>{cfg.label}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={s.patientName} numberOfLines={1}>
+            <Text style={[s.patientName, { color: colors.textPrimary }]} numberOfLines={1}>
               {appt.patient?.full_name ?? 'Pacient'}
             </Text>
             {appt.service && (
-              <Text style={s.serviceName} numberOfLines={1}>
+              <Text style={[s.serviceName, { color: colors.textSecondary }]} numberOfLines={1}>
                 {appt.service.emoji ?? '🦷'} {appt.service.name}
               </Text>
             )}
           </View>
           <View style={s.timeCol}>
-            <Text style={s.scheduledTime}>{fmtTime(appt.appointment_date)}</Text>
+            <Text style={[s.scheduledTime, { color: colors.textPrimary }]}>{fmtTime(appt.appointment_date)}</Text>
             {appt.room && (
               <View style={[s.roomChip, { backgroundColor: appt.room.color + '22', borderColor: appt.room.color + '66' }]}>
                 <Text style={[s.roomChipText, { color: appt.room.color }]}>{appt.room.name}</Text>
@@ -72,7 +74,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           </View>
           <Ionicons
             name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={16} color={COLORS.wal} style={{ marginLeft: 6 }}
+            size={16} color={colors.textSecondary} style={{ marginLeft: 6 }}
           />
         </View>
 
@@ -103,27 +105,27 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 
       {/* ── Expanded: rooms + actions ── */}
       {expanded && (
-        <View style={s.expandedSection}>
+        <View style={[s.expandedSection, { backgroundColor: colors.bg2, borderTopColor: colors.bg3 }]}>
           {/* Room picker */}
           {rooms.length > 0 && (
             <View style={s.roomRow}>
-              <Text style={s.expandLabel}>MIESTNOSŤ</Text>
+              <Text style={[s.expandLabel, { color: colors.textSecondary }]}>MIESTNOSŤ</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
                 <TouchableOpacity
-                  style={[s.roomBtn, !appt.room_id && s.roomBtnActive]}
+                  style={[s.roomBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, !appt.room_id && s.roomBtnActive]}
                   onPress={() => onAssignRoom(appt, null)}
                   activeOpacity={0.8}
                 >
-                  <Text style={[s.roomBtnText, !appt.room_id && s.roomBtnTextActive]}>—</Text>
+                  <Text style={[s.roomBtnText, { color: colors.textSecondary }, !appt.room_id && s.roomBtnTextActive]}>—</Text>
                 </TouchableOpacity>
                 {rooms.map(r => (
                   <TouchableOpacity
                     key={r.id}
-                    style={[s.roomBtn, appt.room_id === r.id && { backgroundColor: r.color, borderColor: r.color }]}
+                    style={[s.roomBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, appt.room_id === r.id && { backgroundColor: r.color, borderColor: r.color }]}
                     onPress={() => onAssignRoom(appt, r.id)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[s.roomBtnText, appt.room_id === r.id && { color: '#fff' }]}>{r.name}</Text>
+                    <Text style={[s.roomBtnText, { color: colors.textSecondary }, appt.room_id === r.id && { color: '#fff' }]}>{r.name}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -133,11 +135,11 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           {/* Action buttons */}
           {actions.length > 0 && (
             <View style={s.actionsWrap}>
-              <Text style={s.expandLabel}>AKCIE</Text>
+              <Text style={[s.expandLabel, { color: colors.textSecondary }]}>AKCIE</Text>
               {actionLoading ? (
                 <View style={s.loadingRow}>
-                  <ActivityIndicator size="small" color={COLORS.wal} />
-                  <Text style={s.loadingText}>Ukladám...</Text>
+                  <ActivityIndicator size="small" color={colors.textSecondary} />
+                  <Text style={[s.loadingText, { color: colors.textSecondary }]}>Ukladám...</Text>
                 </View>
               ) : (
                 <View style={s.actionsGrid}>
@@ -170,11 +172,12 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 }
 
 function MetricPill({ icon, label, value, urgent }: { icon: string; label: string; value: string; urgent?: boolean }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={[s.pill, urgent && s.pillUrgent]}>
-      <Ionicons name={icon as any} size={11} color={urgent ? '#C0392B' : COLORS.wal} />
-      <Text style={[s.pillLabel, urgent && { color: '#C0392B' }]}>{label}</Text>
-      <Text style={[s.pillValue, urgent && { color: '#C0392B' }]}>{value}</Text>
+    <View style={[s.pill, urgent && s.pillUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
+      <Ionicons name={icon as any} size={11} color={urgent ? '#C0392B' : colors.textSecondary} />
+      <Text style={[s.pillLabel, { color: colors.textSecondary }, urgent && { color: '#C0392B' }]}>{label}</Text>
+      <Text style={[s.pillValue, { color: colors.textPrimary }, urgent && { color: '#C0392B' }]}>{value}</Text>
     </View>
   );
 }
@@ -184,6 +187,7 @@ function MetricPill({ icon, label, value, urgent }: { icon: string; label: strin
 export default function ClinicLiveScreen() {
   const router   = useRouter();
   const clinic   = useClinic();
+  const { colors } = useAppTheme();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [tick,     setTick]     = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -355,17 +359,17 @@ export default function ClinicLiveScreen() {
 
       {/* Content */}
       {clinic.loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={4} />
         </View>
       ) : activeAppts.length === 0 ? (
-        <View style={s.center}>
+        <View style={[s.center, { backgroundColor: colors.bg2 }]}>
           <Text style={s.emptyIcon}>🏥</Text>
-          <Text style={s.emptyTitle}>Žiadne termíny dnes</Text>
-          <Text style={s.emptySub}>Všetky termíny sú dokončené alebo žiadne nie sú naplánované</Text>
+          <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Žiadne termíny dnes</Text>
+          <Text style={[s.emptySub, { color: colors.textSecondary }]}>Všetky termíny sú dokončené alebo žiadne nie sú naplánované</Text>
         </View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
           {activeAppts.map(appt => (
             <AppointmentCard
               key={appt.id}

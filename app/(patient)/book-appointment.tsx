@@ -14,6 +14,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 import { useServices, Service, formatPrice, formatPriceRange, formatDuration } from '../../hooks/useServices';
 import { scheduleAppointmentReminder } from '../../hooks/usePushNotifications';
@@ -99,6 +100,7 @@ export default function BookAppointmentScreen() {
   const { forFamily, familyName, familyId } =
     useLocalSearchParams<{ forFamily?: string; familyName?: string; familyId?: string }>();
   const isForFamily = forFamily === '1' && !!familyName;
+  const { colors, dark } = useAppTheme();
 
   const { grouped, flat, loading: loadingServices } = useServices();
 
@@ -397,13 +399,13 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 0 — VÝBER DOKTORA */}
       {step === 0 && (
         loadingDoctors ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={3} />
           </View>
         ) : (
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <Text style={styles.sectionLabel}>S KÝM CHCEŠ ÍSŤ?</Text>
+            <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>S KÝM CHCEŠ ÍSŤ?</Text>
 
             {doctors.length === 0 ? (
               <View style={styles.emptyDays}>
@@ -419,7 +421,7 @@ export default function BookAppointmentScreen() {
                   return (
                     <TouchableOpacity
                       key={doc.id}
-                      style={[styles.doctorCard, selected && styles.doctorCardSel]}
+                      style={[styles.doctorCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, selected && styles.doctorCardSel]}
                       onPress={() => {
                         setDoctorId(doc.id);
                         setDoctorName(doc.full_name);
@@ -435,13 +437,13 @@ export default function BookAppointmentScreen() {
                         <Text style={styles.doctorInitials}>{initials}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.doctorName, selected && { color: COLORS.esp }]}>
+                        <Text style={[styles.doctorName, { color: colors.textPrimary }, selected && { color: COLORS.esp }]}>
                           {doc.full_name}
                         </Text>
                         {doc.specialty ? (
-                          <Text style={styles.doctorSpec}>{doc.specialty}</Text>
+                          <Text style={[styles.doctorSpec, { color: colors.textSecondary }]}>{doc.specialty}</Text>
                         ) : (
-                          <Text style={styles.doctorSpec}>Zubný lekár</Text>
+                          <Text style={[styles.doctorSpec, { color: colors.textSecondary }]}>Zubný lekár</Text>
                         )}
                         <Text style={styles.doctorAvail}>Dostupné termíny ›</Text>
                       </View>
@@ -453,7 +455,7 @@ export default function BookAppointmentScreen() {
 
                 {/* Nevadí mi kto */}
                 <TouchableOpacity
-                  style={[styles.doctorCard, { borderStyle: 'dashed' }, doctorId === '__any__' && styles.doctorCardSel]}
+                  style={[styles.doctorCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3, borderStyle: 'dashed' }, doctorId === '__any__' && styles.doctorCardSel]}
                   onPress={() => {
                     const first = doctors[0];
                     if (!first) return;
@@ -466,12 +468,12 @@ export default function BookAppointmentScreen() {
                   }}
                   activeOpacity={0.8}
                 >
-                  <View style={[styles.doctorAvatar, { backgroundColor: COLORS.bg3 }]}>
+                  <View style={[styles.doctorAvatar, { backgroundColor: colors.bg3 }]}>
                     <Ionicons name="shuffle-outline" size={22} color={COLORS.wal} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.doctorName}>Nevadí mi kto</Text>
-                    <Text style={styles.doctorSpec}>Prvý dostupný termín u ľubovoľného doktora</Text>
+                    <Text style={[styles.doctorName, { color: colors.textPrimary }]}>Nevadí mi kto</Text>
+                    <Text style={[styles.doctorSpec, { color: colors.textSecondary }]}>Prvý dostupný termín u ľubovoľného doktora</Text>
                   </View>
                   <Ionicons name="chevron-forward" size={18} color="#ccc" />
                 </TouchableOpacity>
@@ -485,7 +487,7 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 1 — SLUŽBA */}
       {step === 1 && (
         loadingServices ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -493,12 +495,12 @@ export default function BookAppointmentScreen() {
             contentContainerStyle={styles.content}>
 
             {/* ── Search bar ── */}
-            <View style={styles.searchBar}>
+            <View style={[styles.searchBar, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <Ionicons name="search-outline" size={16} color={COLORS.wal} />
               <TextInput
-                style={styles.searchInput}
+                style={[styles.searchInput, { color: colors.textPrimary }]}
                 placeholder="Vyhľadaj službu..."
-                placeholderTextColor="#999"
+                placeholderTextColor={dark ? '#666' : '#999'}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 autoCapitalize="none"
@@ -524,21 +526,21 @@ export default function BookAppointmentScreen() {
                 );
                 return results.length === 0 ? (
                   <View style={styles.searchEmpty}>
-                    <Text style={styles.searchEmptyText}>Žiadna služba nenájdená pre „{searchQuery}"</Text>
+                    <Text style={[styles.searchEmptyText, { color: colors.textSecondary }]}>Žiadna služba nenájdená pre „{searchQuery}"</Text>
                   </View>
                 ) : results.map((svc) => {
                   const selected = selectedService?.id === svc.id;
                   return (
                     <TouchableOpacity key={svc.id}
-                      style={[styles.serviceCard, selected && styles.serviceCardSel]}
+                      style={[styles.serviceCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, selected && styles.serviceCardSel]}
                       onPress={() => { setService(svc); setTime(''); setSearchQuery(''); setStep(2); }}
                       activeOpacity={0.8}>
                       <View style={[styles.serviceEmoji, selected && styles.serviceEmojiSel]}>
                         <Text style={{ fontSize: 26 }}>{svc.emoji ?? '🦷'}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.serviceName, selected && styles.serviceNameSel]}>{svc.name}</Text>
-                        <Text style={styles.serviceDesc} numberOfLines={1}>{svc.category}</Text>
+                        <Text style={[styles.serviceName, { color: colors.textPrimary }, selected && styles.serviceNameSel]}>{svc.name}</Text>
+                        <Text style={[styles.serviceDesc, { color: colors.textSecondary }]} numberOfLines={1}>{svc.category}</Text>
                         <View style={styles.serviceMeta}>
                           <View style={styles.metaPill}>
                             <Ionicons name="time-outline" size={10} color={COLORS.wal} />
@@ -559,23 +561,23 @@ export default function BookAppointmentScreen() {
             // Normálne grupované kategórie
             Object.entries(grouped).map(([category, items]) => (
               <View key={category}>
-                <Text style={styles.categoryLabel}>{category}</Text>
+                <Text style={[styles.categoryLabel, { color: colors.textPrimary }]}>{category}</Text>
                 {items.map((svc) => {
                   const selected = selectedService?.id === svc.id;
                   return (
                     <TouchableOpacity key={svc.id}
-                      style={[styles.serviceCard, selected && styles.serviceCardSel]}
+                      style={[styles.serviceCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, selected && styles.serviceCardSel]}
                       onPress={() => { setService(svc); setTime(''); setStep(2); }}
                       activeOpacity={0.8}>
                       <View style={[styles.serviceEmoji, selected && styles.serviceEmojiSel]}>
                         <Text style={{ fontSize: 26 }}>{svc.emoji ?? '🦷'}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={[styles.serviceName, selected && styles.serviceNameSel]}>
+                        <Text style={[styles.serviceName, { color: colors.textPrimary }, selected && styles.serviceNameSel]}>
                           {svc.name}
                         </Text>
                         {svc.description && (
-                          <Text style={styles.serviceDesc} numberOfLines={1}>{svc.description}</Text>
+                          <Text style={[styles.serviceDesc, { color: colors.textSecondary }]} numberOfLines={1}>{svc.description}</Text>
                         )}
                         <View style={styles.serviceMeta}>
                           <View style={styles.metaPill}>
@@ -607,7 +609,7 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 2 — DÁTUM */}
       {step === 2 && (
         loadingHours ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -615,21 +617,21 @@ export default function BookAppointmentScreen() {
             contentContainerStyle={styles.content}>
 
             {selectedService && (
-              <View style={styles.selectedServiceChip}>
+              <View style={[styles.selectedServiceChip, { backgroundColor: colors.cardBg }]}>
                 <Text style={styles.chipEmoji}>{selectedService.emoji ?? '🦷'}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.chipName}>{selectedService.name}</Text>
-                  <Text style={styles.chipDur}>⏱ ~{formatDuration(selectedService.duration_minutes)} · orientačný čas</Text>
+                  <Text style={[styles.chipName, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                  <Text style={[styles.chipDur, { color: colors.textSecondary }]}>⏱ ~{formatDuration(selectedService.duration_minutes)} · orientačný čas</Text>
                 </View>
               </View>
             )}
 
-            <Text style={styles.sectionLabel}>VYBERTE DÁTUM</Text>
+            <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>VYBERTE DÁTUM</Text>
             {days.length === 0 ? (
               <View style={styles.emptyDays}>
                 <Ionicons name="calendar-outline" size={36} color={COLORS.bg3} />
-                <Text style={styles.emptyDaysText}>Momentálne nie sú dostupné žiadne termíny.</Text>
-                <Text style={styles.emptyDaysSub}>Skúste nás kontaktovať telefonicky.</Text>
+                <Text style={[styles.emptyDaysText, { color: colors.textPrimary }]}>Momentálne nie sú dostupné žiadne termíny.</Text>
+                <Text style={[styles.emptyDaysSub, { color: colors.textSecondary }]}>Skúste nás kontaktovať telefonicky.</Text>
               </View>
             ) : (
               <View style={styles.datesGrid}>
@@ -640,18 +642,18 @@ export default function BookAppointmentScreen() {
                   const hours   = openingHoursMap.get(dbDay);
                   return (
                     <TouchableOpacity key={d.toISOString()}
-                      style={[styles.dateCell, isSel && styles.dateCellSel]}
+                      style={[styles.dateCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.dateCellSel]}
                       onPress={() => { setDate(d); setTime(''); }}
                       activeOpacity={0.75}>
-                      <Text style={[styles.dateDayName, isSel && styles.dateSelText]}>
+                      <Text style={[styles.dateDayName, { color: colors.textSecondary }, isSel && styles.dateSelText]}>
                         {isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}
                       </Text>
-                      <Text style={[styles.dateDayNum, isSel && styles.dateSelText]}>{d.getDate()}</Text>
-                      <Text style={[styles.dateMonth, isSel && styles.dateSelText]}>
+                      <Text style={[styles.dateDayNum, { color: colors.textPrimary }, isSel && styles.dateSelText]}>{d.getDate()}</Text>
+                      <Text style={[styles.dateMonth, { color: colors.textSecondary }, isSel && styles.dateSelText]}>
                         {SK_MONTHS_SHORT[d.getMonth()]}
                       </Text>
                       {hours && (
-                        <Text style={[styles.dateHours, isSel && styles.dateHoursSel]}>
+                        <Text style={[styles.dateHours, { color: colors.textSecondary }, isSel && styles.dateHoursSel]}>
                           {hours.open_time}–{hours.close_time}
                         </Text>
                       )}
@@ -678,28 +680,28 @@ export default function BookAppointmentScreen() {
           contentContainerStyle={styles.content}>
 
           {selectedService && selectedDate && (
-            <View style={styles.selectedServiceChip}>
+            <View style={[styles.selectedServiceChip, { backgroundColor: colors.cardBg }]}>
               <Text style={styles.chipEmoji}>{selectedService.emoji ?? '🦷'}</Text>
               <View style={{ flex: 1 }}>
-                <Text style={styles.chipName}>{selectedService.name}</Text>
-                <Text style={styles.chipDur}>
+                <Text style={[styles.chipName, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                <Text style={[styles.chipDur, { color: colors.textSecondary }]}>
                   {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </Text>
               </View>
             </View>
           )}
 
-          <Text style={styles.sectionLabel}>VYBERTE ČAS</Text>
-          <Text style={styles.sectionSub}>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>VYBERTE ČAS</Text>
+          <Text style={[styles.sectionSub, { color: colors.textSecondary }]}>
             {selectedDayHours
               ? `Ordinačné hodiny: ${selectedDayHours.open_time} – ${selectedDayHours.close_time}  ·  ~${selectedService ? formatDuration(selectedService.duration_minutes) : ''} (orientačný čas)`
               : `~${selectedService ? formatDuration(selectedService.duration_minutes) : ''} (orientačný čas)`}
           </Text>
 
           {loadingSlots ? (
-            <View style={[styles.center, { flex: 0, paddingVertical: 20 }]}>
+            <View style={[styles.center, { flex: 0, paddingVertical: 20, backgroundColor: colors.bg2 }]}>
               <ActivityIndicator color={COLORS.wal} />
-              <Text style={[styles.loadingText, { marginTop: 8 }]}>Kontrolujem dostupnosť...</Text>
+              <Text style={[styles.loadingText, { marginTop: 8, color: colors.textSecondary }]}>Kontrolujem dostupnosť...</Text>
             </View>
           ) : (
             <View style={styles.slotsGrid}>
@@ -708,11 +710,11 @@ export default function BookAppointmentScreen() {
                 const taken  = isSlotTaken(slot.start, selectedService?.duration_minutes ?? 30);
                 return (
                   <TouchableOpacity key={slot.start}
-                    style={[styles.slotCell, isSel && styles.slotCellSel, taken && styles.slotCellTaken]}
+                    style={[styles.slotCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.slotCellSel, taken && styles.slotCellTaken]}
                     onPress={() => { if (!taken) setTime(slot.start); }}
                     activeOpacity={taken ? 1 : 0.75}
                     disabled={taken}>
-                    <Text style={[styles.slotStart, isSel && styles.slotSelText, taken && styles.slotTakenText]}>
+                    <Text style={[styles.slotStart, { color: colors.textPrimary }, isSel && styles.slotSelText, taken && styles.slotTakenText]}>
                       {slot.start}
                     </Text>
                     {taken && (
@@ -767,15 +769,15 @@ export default function BookAppointmentScreen() {
 
           {/* Zhrnutie */}
           {selectedService && selectedDate && (
-            <View style={styles.summaryCard}>
+            <View style={[styles.summaryCard, { backgroundColor: colors.cardBg }]}>
               <View style={styles.summaryHeader}>
                 <Text style={styles.summaryEmoji}>{selectedService.emoji ?? '🦷'}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.summaryService}>{selectedService.name}</Text>
-                  <Text style={styles.summaryDoctor}>👨‍⚕️  {doctorName}</Text>
+                  <Text style={[styles.summaryService, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                  <Text style={[styles.summaryDoctor, { color: colors.textSecondary }]}>👨‍⚕️  {doctorName}</Text>
                 </View>
               </View>
-              <View style={styles.summaryDivider} />
+              <View style={[styles.summaryDivider, { backgroundColor: colors.bg3 }]} />
               {[
                 { icon: 'calendar-outline' as const, text: selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) },
                 { icon: 'time-outline' as const,     text: `${selectedTime} – ${slots.find(s => s.start === selectedTime)?.end ?? ''}  (~${formatDuration(selectedService.duration_minutes)}, orientačný čas)` },
@@ -783,7 +785,7 @@ export default function BookAppointmentScreen() {
               ].map((row) => (
                 <View key={row.icon} style={styles.summaryRow}>
                   <Ionicons name={row.icon} size={15} color={COLORS.wal} />
-                  <Text style={styles.summaryRowText}>{row.text}</Text>
+                  <Text style={[styles.summaryRowText, { color: colors.textPrimary }]}>{row.text}</Text>
                 </View>
               ))}
             </View>
@@ -791,27 +793,27 @@ export default function BookAppointmentScreen() {
 
           {/* Urgentná rezervácia */}
           <TouchableOpacity
-            style={[styles.urgentCard, isUrgent && styles.urgentCardActive]}
+            style={[styles.urgentCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isUrgent && styles.urgentCardActive]}
             onPress={() => setIsUrgent(v => !v)}
             activeOpacity={0.8}>
             <View style={styles.urgentLeft}>
               <Text style={styles.urgentEmoji}>🚨</Text>
               <View>
-                <Text style={[styles.urgentTitle, isUrgent && styles.urgentTitleActive]}>Urgentná rezervácia</Text>
-                <Text style={styles.urgentSub}>Upozorní doktora, aby termín vybavil prednostne</Text>
+                <Text style={[styles.urgentTitle, { color: colors.textPrimary }, isUrgent && styles.urgentTitleActive]}>Urgentná rezervácia</Text>
+                <Text style={[styles.urgentSub, { color: colors.textSecondary }]}>Upozorní doktora, aby termín vybavil prednostne</Text>
               </View>
             </View>
-            <View style={[styles.urgentToggle, isUrgent && styles.urgentToggleActive]}>
+            <View style={[styles.urgentToggle, { backgroundColor: colors.bg3 }, isUrgent && styles.urgentToggleActive]}>
               <View style={[styles.urgentThumb, isUrgent && styles.urgentThumbActive]} />
             </View>
           </TouchableOpacity>
 
           {/* Poznámky */}
-          <Text style={styles.sectionLabel}>POZNÁMKY (voliteľné)</Text>
-          <View style={styles.notesCard}>
-            <TextInput style={styles.notesInput}
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
+          <View style={[styles.notesCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <TextInput style={[styles.notesInput, { color: colors.textPrimary }]}
               placeholder="Ďalšie informácie pre doktora..."
-              placeholderTextColor="#999"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={notes} onChangeText={setNotes}
               multiline numberOfLines={3} textAlignVertical="top" />
           </View>

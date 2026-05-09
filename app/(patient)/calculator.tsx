@@ -8,10 +8,12 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useServices, Service, formatDuration } from '../../hooks/useServices';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function CalculatorScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const { grouped, loading } = useServices();
   const [basket, setBasket] = useState<Service[]>([]);
   const [openCat, setOpenCat] = useState<string | null>(null);
@@ -95,7 +97,7 @@ export default function CalculatorScreen() {
         )}
       </View>
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
 
         {/* ── Info banner ── */}
@@ -113,11 +115,11 @@ export default function CalculatorScreen() {
             <View key={category} style={styles.categoryBlock}>
               {/* Kategória hlavička */}
               <TouchableOpacity
-                style={[styles.catHeader, isOpen && styles.catHeaderOpen]}
+                style={[styles.catHeader, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isOpen && styles.catHeaderOpen]}
                 onPress={() => setOpenCat(isOpen ? null : category)}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.catLabel, isOpen && styles.catLabelOpen]}>{category}</Text>
+                <Text style={[styles.catLabel, { color: colors.textPrimary }, isOpen && styles.catLabelOpen]}>{category}</Text>
                 <View style={styles.catRight}>
                   {items.some((s) => (basketCounts[s.id] ?? 0) > 0) && (
                     <View style={styles.catBadge}>
@@ -139,10 +141,10 @@ export default function CalculatorScreen() {
                 const count = basketCounts[svc.id] ?? 0;
                 const isFree = svc.price_min === 0 && svc.price_max === 0;
                 return (
-                  <View key={svc.id} style={styles.svcRow}>
+                  <View key={svc.id} style={[styles.svcRow, { backgroundColor: colors.cardBg }]}>
                     <Text style={styles.svcEmoji}>{svc.emoji ?? '🦷'}</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.svcName}>{svc.name}</Text>
+                      <Text style={[styles.svcName, { color: colors.textPrimary }]}>{svc.name}</Text>
                       <View style={styles.svcMeta}>
                         <Text style={styles.svcPrice}>
                           {isFree ? 'Zadarmo'
@@ -158,7 +160,7 @@ export default function CalculatorScreen() {
                     <View style={styles.qtyRow}>
                       {count > 0 && (
                         <TouchableOpacity
-                          style={styles.qtyBtn}
+                          style={[styles.qtyBtn, { backgroundColor: colors.bg3 }]}
                           onPress={() => {
                             // Odstráni posledný výskyt tejto služby
                             const idx = basket.map((b) => b.id).lastIndexOf(svc.id);
@@ -170,7 +172,7 @@ export default function CalculatorScreen() {
                         </TouchableOpacity>
                       )}
                       {count > 0 && (
-                        <Text style={styles.qtyCount}>{count}</Text>
+                        <Text style={[styles.qtyCount, { color: colors.textPrimary }]}>{count}</Text>
                       )}
                       <TouchableOpacity
                         style={[styles.qtyBtn, styles.qtyBtnAdd]}
@@ -191,7 +193,7 @@ export default function CalculatorScreen() {
       </ScrollView>
 
       {/* ── Súhrnný panel (fixný dole) ── */}
-      <View style={styles.summaryPanel}>
+      <View style={[styles.summaryPanel, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
         {basket.length === 0 ? (
           <View style={styles.emptyBasket}>
             <Ionicons name="calculator-outline" size={20} color={COLORS.wal} />
@@ -209,9 +211,9 @@ export default function CalculatorScreen() {
               {Object.entries(basketGrouped).map(([id, { svc, count }]) => (
                 <View key={id} style={styles.basketRow}>
                   <Text style={styles.basketEmoji}>{svc.emoji ?? '🦷'}</Text>
-                  <Text style={styles.basketName} numberOfLines={1}>{svc.name}</Text>
+                  <Text style={[styles.basketName, { color: colors.textPrimary }]} numberOfLines={1}>{svc.name}</Text>
                   {count > 1 && <Text style={styles.basketCount}>×{count}</Text>}
-                  <Text style={styles.basketPrice}>
+                  <Text style={[styles.basketPrice, { color: colors.textPrimary }]}>
                     {svc.price_min === 0 && svc.price_max === 0
                       ? 'Zadarmo'
                       : svc.price_min === svc.price_max
@@ -223,15 +225,15 @@ export default function CalculatorScreen() {
             </ScrollView>
 
             {/* Oddeľovač */}
-            <View style={styles.panelDivider} />
+            <View style={[styles.panelDivider, { backgroundColor: colors.bg3 }]} />
 
             {/* Celková suma */}
             <View style={styles.totalRow}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.totalLabel}>
+                <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>
                   Celkový odhad · {formatTotalDuration(totals.durationTotal)}
                 </Text>
-                <Text style={styles.totalPrice}>
+                <Text style={[styles.totalPrice, { color: colors.textPrimary }]}>
                   {formatTotalPrice(totals.minTotal, totals.maxTotal)}
                 </Text>
               </View>

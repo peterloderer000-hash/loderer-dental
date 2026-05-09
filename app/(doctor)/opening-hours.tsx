@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 const DAYS = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 
@@ -27,6 +28,7 @@ type DayRow = {
 
 export default function OpeningHoursScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [hours, setHours] = useState<DayRow[]>(
     DAYS.map((day, index) => ({
       id: null,
@@ -102,8 +104,8 @@ export default function OpeningHoursScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <View style={s.header}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top']}>
+      <View style={[s.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -113,33 +115,35 @@ export default function OpeningHoursScreen() {
         </View>
       </View>
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {hours.map((item, index) => (
-          <View key={index} style={s.row}>
-            <Text style={s.dayText}>{item.day_name}</Text>
+          <View key={index} style={[s.row, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[s.dayText, { color: colors.textPrimary }]}>{item.day_name}</Text>
             <Switch
               value={item.is_open}
               onValueChange={(val) => toggle(index, val)}
-              trackColor={{ false: COLORS.bg3, true: COLORS.gold }}
+              trackColor={{ false: colors.bg3, true: COLORS.gold }}
               thumbColor={COLORS.cream}
             />
             <View style={s.timeRow}>
               <TextInput
-                style={[s.timeInput, !item.is_open && s.disabled]}
+                style={[s.timeInput, !item.is_open && s.disabled, { color: colors.textPrimary, borderColor: colors.wal, backgroundColor: item.is_open ? (dark ? colors.inputBg : COLORS.cream) : colors.bg3 }]}
                 value={item.time_from}
                 onChangeText={(t) => setTime(index, 'time_from', t)}
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
+                placeholderTextColor={dark ? '#666' : '#999'}
               />
-              <Text style={s.sep}>–</Text>
+              <Text style={[s.sep, { color: colors.textSecondary }]}>–</Text>
               <TextInput
-                style={[s.timeInput, !item.is_open && s.disabled]}
+                style={[s.timeInput, !item.is_open && s.disabled, { color: colors.textPrimary, borderColor: colors.wal, backgroundColor: item.is_open ? (dark ? colors.inputBg : COLORS.cream) : colors.bg3 }]}
                 value={item.time_to}
                 onChangeText={(t) => setTime(index, 'time_to', t)}
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
+                placeholderTextColor={dark ? '#666' : '#999'}
               />
             </View>
           </View>

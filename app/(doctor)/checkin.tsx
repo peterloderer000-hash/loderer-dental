@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type FoundAppt = {
   id: string;
@@ -19,6 +20,7 @@ type FoundAppt = {
 
 export default function CheckInScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [code, setCode]           = useState('');
   const [searching, setSearching] = useState(false);
   const [found, setFound]         = useState<FoundAppt | null>(null);
@@ -67,9 +69,9 @@ export default function CheckInScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top']}>
       {/* Hlavička */}
-      <View style={s.header}>
+      <View style={[s.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -80,19 +82,19 @@ export default function CheckInScreen() {
         <Ionicons name="qr-code-outline" size={28} color={COLORS.sand} />
       </View>
 
-      <View style={s.body}>
+      <View style={[s.body, { backgroundColor: colors.bg2 }]}>
         {/* Input karta */}
-        <View style={s.card}>
-          <Text style={s.cardTitle}>Zadajte check-in kód</Text>
-          <Text style={s.cardSub}>
+        <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <Text style={[s.cardTitle, { color: colors.textPrimary }]}>Zadajte check-in kód</Text>
+          <Text style={[s.cardSub, { color: colors.textSecondary }]}>
             Pacient vidí kód v aplikácii pod detailom termínu (sekcia „Kód pre príchod").
           </Text>
 
           <View style={s.inputRow}>
             <TextInput
-              style={s.input}
+              style={[s.input, { borderColor: colors.bg3, backgroundColor: colors.bg2, color: colors.textPrimary }]}
               placeholder="napr. A1B2C3D4"
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#999'}
               value={code}
               onChangeText={(t) => { setCode(t.toUpperCase()); setFound(null); }}
               autoCapitalize="characters"
@@ -121,9 +123,9 @@ export default function CheckInScreen() {
                   <Ionicons name="person" size={22} color={COLORS.wal} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.resultName}>{found.patient?.full_name ?? 'Pacient'}</Text>
+                  <Text style={[s.resultName, { color: colors.textPrimary }]}>{found.patient?.full_name ?? 'Pacient'}</Text>
                   {found.service && (
-                    <Text style={s.resultService}>
+                    <Text style={[s.resultService, { color: colors.textSecondary }]}>
                       {found.service.emoji ?? '🦷'} {found.service.name}
                     </Text>
                   )}
@@ -153,9 +155,9 @@ export default function CheckInScreen() {
         </View>
 
         {/* Hint */}
-        <View style={s.hintCard}>
-          <Ionicons name="information-circle-outline" size={20} color={COLORS.wal} />
-          <Text style={s.hintText}>
+        <View style={[s.hintCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <Ionicons name="information-circle-outline" size={20} color={colors.textSecondary} />
+          <Text style={[s.hintText, { color: colors.textSecondary }]}>
             Stačí zadať prvých 4–8 znakov kódu. Systém automaticky nájde zodpovedajúci naplánovaný termín.
           </Text>
         </View>

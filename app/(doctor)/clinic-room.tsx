@@ -17,6 +17,7 @@ import {
   getTreatmentMinutes, fmtMins,
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Live timer hook ──────────────────────────────────────────────────────────
 
@@ -38,12 +39,13 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
   isLoading: boolean;
   isDoctor:  boolean;
 }) {
+  const { colors } = useAppTheme();
   const cfg      = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   const waitMins = getWaitingMinutes(appt);
   const treatMin = getTreatmentMinutes(appt);
 
   return (
-    <View style={[pc.card, { borderColor: cfg.border, borderTopWidth: 4, borderTopColor: cfg.color }]}>
+    <View style={[pc.card, { borderColor: colors.bg3, borderTopWidth: 4, borderTopColor: cfg.color, backgroundColor: colors.cardBg }]}>
       {/* Status badge */}
       <View style={[pc.statusBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
         <Text style={pc.statusEmoji}>{cfg.emoji}</Text>
@@ -51,15 +53,15 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
       </View>
 
       {/* Patient info */}
-      <Text style={pc.patientName}>{appt.patient?.full_name ?? 'Pacient'}</Text>
+      <Text style={[pc.patientName, { color: colors.textPrimary }]}>{appt.patient?.full_name ?? 'Pacient'}</Text>
       {appt.service && (
-        <Text style={pc.serviceName}>
+        <Text style={[pc.serviceName, { color: colors.textSecondary }]}>
           {appt.service.emoji ?? '🦷'} {appt.service.name}
           {appt.service.duration_minutes ? `  ·  ${appt.service.duration_minutes} min` : ''}
         </Text>
       )}
       {appt.patient?.phone_number && (
-        <Text style={pc.phone}>{appt.patient.phone_number}</Text>
+        <Text style={[pc.phone, { color: colors.textSecondary }]}>{appt.patient.phone_number}</Text>
       )}
 
       {/* Time metrics */}
@@ -77,8 +79,8 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
       {/* Action buttons */}
       {isLoading ? (
         <View style={pc.loadingRow}>
-          <ActivityIndicator size="small" color={COLORS.wal} />
-          <Text style={pc.loadingText}>Ukladám...</Text>
+          <ActivityIndicator size="small" color={colors.textSecondary} />
+          <Text style={[pc.loadingText, { color: colors.textSecondary }]}>Ukladám...</Text>
         </View>
       ) : (
         <ActionButtons status={appt.clinic_status} onAction={onAction} isDoctor={isDoctor} />
@@ -88,11 +90,12 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
 }
 
 function TimerCell({ label, value, icon, urgent }: { label: string; value: string; icon: string; urgent?: boolean }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={[pc.timerCell, urgent && pc.timerCellUrgent]}>
-      <Ionicons name={icon as any} size={14} color={urgent ? '#C0392B' : COLORS.wal} />
-      <Text style={[pc.timerLabel, urgent && { color: '#C0392B' }]}>{label}</Text>
-      <Text style={[pc.timerValue, urgent && { color: '#C0392B' }]}>{value}</Text>
+    <View style={[pc.timerCell, urgent && pc.timerCellUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
+      <Ionicons name={icon as any} size={14} color={urgent ? '#C0392B' : colors.textSecondary} />
+      <Text style={[pc.timerLabel, { color: colors.textSecondary }, urgent && { color: '#C0392B' }]}>{label}</Text>
+      <Text style={[pc.timerValue, { color: colors.textPrimary }, urgent && { color: '#C0392B' }]}>{value}</Text>
     </View>
   );
 }
@@ -194,6 +197,7 @@ export default function ClinicRoomScreen() {
   const router    = useRouter();
   const params    = useLocalSearchParams<{ roomId?: string }>();
   const clinic    = useClinic();
+  const { colors } = useAppTheme();
   const tick      = useTick(10_000);
   const [selectedRoom,    setSelectedRoom]    = useState<string | null>(params.roomId ?? null);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
@@ -300,15 +304,15 @@ export default function ClinicRoomScreen() {
         </ScrollView>
       )}
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {/* Patients in this room */}
         {sorted.length === 0 ? (
           <View style={s.emptyRoom}>
             <Text style={s.emptyIcon}>🦷</Text>
-            <Text style={s.emptyTitle}>
+            <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>
               {currentRoom ? `${currentRoom.name} je prázdne` : 'Žiadni pacienti'}
             </Text>
-            <Text style={s.emptySub}>Priraďte pacienta z čakárne nižšie</Text>
+            <Text style={[s.emptySub, { color: colors.textSecondary }]}>Priraďte pacienta z čakárne nižšie</Text>
           </View>
         ) : (
           sorted.map(appt => (
@@ -326,15 +330,15 @@ export default function ClinicRoomScreen() {
         {/* Unassigned patients */}
         {unassigned.length > 0 && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>⏳ Čaká na priradenie ({unassigned.length})</Text>
+            <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>⏳ Čaká na priradenie ({unassigned.length})</Text>
             {unassigned.map(appt => {
               const cfg = CLINIC_STATUS_CFG[appt.clinic_status];
               return (
-                <View key={appt.id} style={s.waitCard}>
+                <View key={appt.id} style={[s.waitCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   <View style={[s.waitStatusDot, { backgroundColor: cfg.color }]} />
                   <View style={{ flex: 1 }}>
-                    <Text style={s.waitName}>{appt.patient?.full_name ?? 'Pacient'}</Text>
-                    <Text style={s.waitService}>
+                    <Text style={[s.waitName, { color: colors.textPrimary }]}>{appt.patient?.full_name ?? 'Pacient'}</Text>
+                    <Text style={[s.waitService, { color: colors.textSecondary }]}>
                       {appt.service?.emoji ?? '🦷'} {appt.service?.name ?? '—'} · {fmtTime(appt.appointment_date)}
                     </Text>
                   </View>

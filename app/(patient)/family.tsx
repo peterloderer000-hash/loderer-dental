@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type FamilyMember = {
   id: string;
@@ -48,6 +49,7 @@ const EMPTY_FORM = { full_name: '', date_of_birth: '', relationship: 'dieťa', n
 
 export default function FamilyScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [members,    setMembers]    = useState<FamilyMember[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -163,7 +165,7 @@ export default function FamilyScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing}
           onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
@@ -181,8 +183,8 @@ export default function FamilyScreen() {
         ) : members.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>👨‍👩‍👧‍👦</Text>
-            <Text style={styles.emptyTitle}>Žiadni rodinní príslušníci</Text>
-            <Text style={styles.emptySub}>Klepni „Pridať" a sprav profil pre dieťa alebo partnera</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadni rodinní príslušníci</Text>
+            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Klepni „Pridať" a sprav profil pre dieťa alebo partnera</Text>
             <TouchableOpacity style={styles.emptyBtn} onPress={openAdd} activeOpacity={0.85}>
               <Ionicons name="add-circle-outline" size={16} color="#fff" />
               <Text style={styles.emptyBtnText}>Pridať prvého člena</Text>
@@ -194,7 +196,7 @@ export default function FamilyScreen() {
             const age = calcAge(m.date_of_birth);
             const initials = m.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
             return (
-              <View key={m.id} style={styles.card}>
+              <View key={m.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 <View style={styles.cardTop}>
                   {/* Avatar */}
                   <View style={[styles.avatar, { backgroundColor: cfg.bg, borderColor: cfg.color + '55' }]}>
@@ -203,13 +205,13 @@ export default function FamilyScreen() {
 
                   {/* Info */}
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.memberName}>{m.full_name}</Text>
+                    <Text style={[styles.memberName, { color: colors.textPrimary }]}>{m.full_name}</Text>
                     <View style={styles.metaRow}>
                       <View style={[styles.relBadge, { backgroundColor: cfg.bg, borderColor: cfg.color + '44' }]}>
                         <Text style={[styles.relBadgeText, { color: cfg.color }]}>{m.relationship}</Text>
                       </View>
                       {age !== null && (
-                        <Text style={styles.ageText}>{age} rokov</Text>
+                        <Text style={[styles.ageText, { color: colors.textSecondary }]}>{age} rokov</Text>
                       )}
                     </View>
                     {m.notes ? (
@@ -255,19 +257,19 @@ export default function FamilyScreen() {
       <Modal visible={showModal} animationType="slide" transparent onRequestClose={() => setShowModal(false)}>
         <View style={styles.overlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowModal(false)} />
-          <View style={styles.sheet}>
-            <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>{editing ? 'Upraviť profil' : 'Pridať rodinného príslušníka'}</Text>
+          <View style={[styles.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>{editing ? 'Upraviť profil' : 'Pridať rodinného príslušníka'}</Text>
 
             {/* Meno */}
-            <Text style={styles.formLabel}>CELÉ MENO *</Text>
-            <TextInput style={styles.formInput} value={form.full_name}
+            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>CELÉ MENO *</Text>
+            <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={form.full_name}
               onChangeText={v => setForm(f => ({ ...f, full_name: v }))}
-              placeholder="Meno a priezvisko" placeholderTextColor="#999"
+              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#666' : '#999'}
               autoCapitalize="words" />
 
             {/* Vzťah */}
-            <Text style={styles.formLabel}>VZŤAH</Text>
+            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>VZŤAH</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
               <View style={{ flexDirection: 'row', gap: 8, flexShrink: 0 }}>
                 {RELATIONSHIPS.map(r => {
@@ -288,17 +290,17 @@ export default function FamilyScreen() {
             </ScrollView>
 
             {/* Dátum narodenia */}
-            <Text style={styles.formLabel}>DÁTUM NARODENIA</Text>
-            <TextInput style={styles.formInput} value={form.date_of_birth}
+            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>DÁTUM NARODENIA</Text>
+            <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={form.date_of_birth}
               onChangeText={v => setForm(f => ({ ...f, date_of_birth: v }))}
-              placeholder="DD.MM.RRRR" placeholderTextColor="#999"
+              placeholder="DD.MM.RRRR" placeholderTextColor={dark ? '#666' : '#999'}
               keyboardType="numbers-and-punctuation" maxLength={10} />
 
             {/* Poznámka */}
-            <Text style={styles.formLabel}>POZNÁMKA</Text>
-            <TextInput style={[styles.formInput, { minHeight: 60, textAlignVertical: 'top' }]}
+            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>POZNÁMKA</Text>
+            <TextInput style={[styles.formInput, { minHeight: 60, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               value={form.notes} onChangeText={v => setForm(f => ({ ...f, notes: v }))}
-              placeholder="Alergie, špeciálne potreby..." placeholderTextColor="#999"
+              placeholder="Alergie, špeciálne potreby..." placeholderTextColor={dark ? '#666' : '#999'}
               multiline />
 
             {/* Tlačidlá */}
