@@ -41,24 +41,24 @@ export function diffMinutes(
 }
 
 export function getWaitingMinutes(appt: {
-  arrived_at?:    Date | string | null;
-  chair_start_at?: Date | string | null;
+  arrived_at?:  Date | string | null;
+  started_at?:  Date | string | null;
 }): number | null {
   if (!appt.arrived_at) return null;
-  return diffMinutes(appt.arrived_at, appt.chair_start_at ?? new Date());
+  return diffMinutes(appt.arrived_at, appt.started_at ?? new Date());
 }
 
 export function getTreatmentMinutes(appt: {
-  chair_start_at?:   Date | string | null;
-  treatment_end_at?: Date | string | null;
+  started_at?: Date | string | null;
+  ended_at?:   Date | string | null;
 }): number | null {
-  if (!appt.chair_start_at) return null;
-  return diffMinutes(appt.chair_start_at, appt.treatment_end_at ?? new Date());
+  if (!appt.started_at) return null;
+  return diffMinutes(appt.started_at, appt.ended_at ?? new Date());
 }
 
 export function isWaitingTooLong(appt: {
-  arrived_at?:    Date | string | null;
-  chair_start_at?: Date | string | null;
+  arrived_at?:  Date | string | null;
+  started_at?:  Date | string | null;
 }): boolean {
   const w = getWaitingMinutes(appt);
   return w !== null && w > 15;
@@ -118,10 +118,10 @@ export type ClinicDayMetrics = {
 };
 
 export function computeDayMetrics(appointments: Array<{
-  clinic_status:     ClinicStatus;
-  arrived_at?:       string | null;
-  chair_start_at?:   string | null;
-  treatment_end_at?: string | null;
+  clinic_status: ClinicStatus;
+  arrived_at?:   string | null;
+  started_at?:   string | null;
+  ended_at?:     string | null;
 }>): ClinicDayMetrics {
   const total       = appointments.length;
   const waitingNow  = appointments.filter(a => a.clinic_status === 'waiting').length;
@@ -136,15 +136,15 @@ export function computeDayMetrics(appointments: Array<{
 
   // Avg waiting — len pre tých čo prišli
   const waitMins = appointments
-    .filter(a => a.arrived_at && a.chair_start_at)
-    .map(a => diffMinutes(a.arrived_at, a.chair_start_at))
+    .filter(a => a.arrived_at && a.started_at)
+    .map(a => diffMinutes(a.arrived_at, a.started_at))
     .filter((m): m is number => m !== null);
   const avgWaiting = waitMins.length ? Math.round(waitMins.reduce((s, v) => s + v, 0) / waitMins.length) : null;
 
   // Avg treatment — len pre dokončené
   const treatMins = appointments
-    .filter(a => a.chair_start_at && a.treatment_end_at)
-    .map(a => diffMinutes(a.chair_start_at, a.treatment_end_at))
+    .filter(a => a.started_at && a.ended_at)
+    .map(a => diffMinutes(a.started_at, a.ended_at))
     .filter((m): m is number => m !== null);
   const avgTreat = treatMins.length ? Math.round(treatMins.reduce((s, v) => s + v, 0) / treatMins.length) : null;
 
