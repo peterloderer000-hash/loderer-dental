@@ -252,9 +252,10 @@ const STATUS_CONFIG = {
 };
 
 function StatusBadge({ status }: { status: Appointment['status'] }) {
+  const { dark } = useAppTheme();
   const c = STATUS_CONFIG[status] ?? STATUS_CONFIG.scheduled;
   return (
-    <View style={[styles.badge, { backgroundColor: c.bg, borderColor: c.border }]}>
+    <View style={[styles.badge, { backgroundColor: dark ? c.color + '22' : c.bg, borderColor: c.border }]}>
       <Text style={[styles.badgeText, { color: c.color }]}>{c.label}</Text>
     </View>
   );
@@ -263,12 +264,14 @@ function StatusBadge({ status }: { status: Appointment['status'] }) {
 function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
   item: Appointment; onComplete: () => void; onCancel: () => void; onDentalChart: () => void; onPassport: () => void; onViewPatient: () => void; onReschedule: () => void; onApproveRequest?: () => void;
 }) {
-  const { colors: ac } = useAppTheme();
+  const { colors: ac, dark } = useAppTheme();
   const adyn = {
     card: { backgroundColor: ac.cardBg, borderColor: ac.bg3 },
     text: { color: ac.textPrimary },
     sub:  { color: ac.textSecondary },
   };
+  // Dark-mode aware button backgrounds
+  const db = (lightBg: string, accent: string) => dark ? { backgroundColor: accent + '22', borderColor: accent + '44' } : { backgroundColor: lightBg };
 
   const accentColor = item.is_urgent ? COLORS.error
     : item.status === 'arrived'   ? COLORS.success
@@ -335,7 +338,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       <View style={styles.actionsGrid}>
         {item.status === 'arrived' && (
           <View style={[styles.actionsRow, { marginBottom: 6 }]}>
-            <TouchableOpacity style={[styles.btnComplete, { flex: 1, backgroundColor: '#E8F8F5', borderWidth: 1, borderColor: '#A2D9CE' }]} onPress={onComplete} activeOpacity={0.8}>
+            <TouchableOpacity style={[styles.btnComplete, { flex: 1 }, db('#E8F8F5', '#0E6655')]} onPress={onComplete} activeOpacity={0.8}>
               <Ionicons name="walk-outline" size={15} color="#0E6655" />
               <Text style={[styles.btnCompleteText, { color: '#0E6655' }]}>Zavolať dnu ✓</Text>
             </TouchableOpacity>
@@ -344,17 +347,17 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
         {item.status === 'scheduled' && (
           <>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.btnComplete} onPress={onComplete} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnComplete, db('#EAFAF1', '#1E8449')]} onPress={onComplete} activeOpacity={0.8}>
                 <Ionicons name="checkmark-circle-outline" size={15} color="#1E8449" />
                 <Text style={styles.btnCompleteText}>Dokončiť</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btnCancel} onPress={onCancel} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnCancel, db('#FDEDEC', '#922B21')]} onPress={onCancel} activeOpacity={0.8}>
                 <Ionicons name="close-circle-outline" size={15} color="#922B21" />
                 <Text style={styles.btnCancelText}>Zrušiť</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.btnReschedule} onPress={onReschedule} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnReschedule, db('#EBF5FB', '#1A5276')]} onPress={onReschedule} activeOpacity={0.8}>
                 <Ionicons name="calendar-outline" size={15} color="#1A5276" />
                 <Text style={styles.btnRescheduleText}>Presunúť termín</Text>
               </TouchableOpacity>
@@ -362,17 +365,17 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
           </>
         )}
         {item.status === 'pending' && onApproveRequest && (
-          <TouchableOpacity style={[styles.btnReschedule, { flex: 1 }]} onPress={onApproveRequest} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnReschedule, { flex: 1 }, db('#EBF5FB', '#1A5276')]} onPress={onApproveRequest} activeOpacity={0.8}>
             <Ionicons name="shield-checkmark-outline" size={15} color="#1A5276" />
             <Text style={styles.btnRescheduleText}>Vybaviť žiadosť</Text>
           </TouchableOpacity>
         )}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.btnChart} onPress={onDentalChart} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnChart, db('#F4ECE4', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
             <Ionicons name="clipboard-outline" size={15} color={COLORS.wal} />
             <Text style={styles.btnChartText}>Zubná karta</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnPassport} onPress={onPassport} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnPassport, db('#EBF5FB', '#1A5276')]} onPress={onPassport} activeOpacity={0.8}>
             <Ionicons name="document-text-outline" size={15} color="#1A5276" />
             <Text style={styles.btnPassportText}>Anamnéza</Text>
           </TouchableOpacity>

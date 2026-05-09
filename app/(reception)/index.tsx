@@ -218,13 +218,14 @@ function StatPill({ value, label, color, urgent }: {
 function QuickAction({ icon, label, sub, color, onPress }: {
   icon: string; label: string; sub: string; color: string; onPress: () => void;
 }) {
+  const { colors } = useAppTheme();
   return (
-    <TouchableOpacity style={qa.card} onPress={onPress} activeOpacity={0.82}>
+    <TouchableOpacity style={[qa.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={onPress} activeOpacity={0.82}>
       <View style={[qa.iconWrap, { backgroundColor: color + '18' }]}>
         <Ionicons name={icon as any} size={24} color={color} />
       </View>
-      <Text style={qa.label}>{label}</Text>
-      <Text style={qa.sub} numberOfLines={1}>{sub}</Text>
+      <Text style={[qa.label, { color: colors.textPrimary }]}>{label}</Text>
+      <Text style={[qa.sub, { color: colors.textSecondary }]} numberOfLines={1}>{sub}</Text>
     </TouchableOpacity>
   );
 }
