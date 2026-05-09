@@ -80,7 +80,7 @@ const STATUS_COLOR: Record<Appointment['status'], string> = {
 
 export default function DoctorCalendar() {
   const router  = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const { appointments, loading, refetch } = useAppointments('doctor');
 
   const [weekOffset,  setWeekOffset]  = useState(0);
@@ -356,12 +356,12 @@ export default function DoctorCalendar() {
             const count      = scheduledByDay.get(d.toDateString()) ?? 0;
             return (
               <TouchableOpacity key={i}
-                style={[styles.dayCell, isSelected && styles.dayCellSel, isToday && !isSelected && styles.dayCellToday]}
+                style={[styles.dayCell, isSelected && styles.dayCellSel, isToday && !isSelected && (dark ? { backgroundColor: '#3B2A1A' } : styles.dayCellToday)]}
                 onPress={() => setSelectedDay(d)} activeOpacity={0.75}>
-                <Text style={[styles.dayName, isSelected && styles.dayNameSel, isToday && !isSelected && styles.dayNameToday]}>
+                <Text style={[styles.dayName, { color: colors.textSecondary }, isSelected && styles.dayNameSel, isToday && !isSelected && styles.dayNameToday]}>
                   {SK_DAYS[i]}
                 </Text>
-                <Text style={[styles.dayNum, isSelected && styles.dayNumSel, isToday && !isSelected && styles.dayNumToday]}>
+                <Text style={[styles.dayNum, { color: colors.textPrimary }, isSelected && styles.dayNumSel, isToday && !isSelected && styles.dayNumToday]}>
                   {d.getDate()}
                 </Text>
                 {count > 0
@@ -378,7 +378,7 @@ export default function DoctorCalendar() {
       {/* ── Deň-header + prepínač pohľadu ── */}
       <View style={[styles.dayHeader, dyn.bg, { borderBottomColor: colors.bg3 }]}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.dayHeaderText}>
+          <Text style={[styles.dayHeaderText, { color: colors.textPrimary }]}>
             {selectedDay.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
           </Text>
           <Text style={styles.dayHeaderSub}>{dayAppts.length} {pluralizeAppointments(dayAppts.length)}</Text>
@@ -409,9 +409,9 @@ export default function DoctorCalendar() {
               { mode: 'month',    icon: 'calendar-outline' },
             ] as { mode: 'list' | 'timeline' | 'month'; icon: any }[]).map(({ mode, icon }) => (
               <TouchableOpacity key={mode}
-                style={[styles.toggleBtn, viewMode === mode && styles.toggleBtnActive]}
+                style={[styles.toggleBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, viewMode === mode && styles.toggleBtnActive]}
                 onPress={() => setViewMode(mode)} activeOpacity={0.75}>
-                <Ionicons name={icon} size={15} color={viewMode === mode ? '#fff' : COLORS.wal} />
+                <Ionicons name={icon} size={15} color={viewMode === mode ? '#fff' : colors.textSecondary} />
               </TouchableOpacity>
             ))}
           </View>
@@ -420,7 +420,7 @@ export default function DoctorCalendar() {
 
       {/* ── Obsah ── */}
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
           <SkeletonList count={5} />
         </View>
 
@@ -446,13 +446,14 @@ export default function DoctorCalendar() {
                   style={[
                     styles.monthCell,
                     isSel    && styles.monthCellSel,
-                    isToday  && !isSel && styles.monthCellToday,
+                    isToday  && !isSel && (dark ? { backgroundColor: '#3B2A1A' } : styles.monthCellToday),
                     !inMonth && styles.monthCellOut,
                   ]}
                   onPress={() => { setSelectedDay(d); }}
                   activeOpacity={0.75}>
                   <Text style={[
                     styles.monthCellNum,
+                    { color: colors.textPrimary },
                     isSel    && styles.monthCellNumSel,
                     isToday  && !isSel && styles.monthCellNumToday,
                     !inMonth && styles.monthCellNumOut,
@@ -490,7 +491,7 @@ export default function DoctorCalendar() {
                     })}
                     activeOpacity={0.78}>
                     <View style={styles.apptTimeCol}>
-                      <Text style={styles.apptTimeStart}>{fmtTime(a.appointment_date)}</Text>
+                      <Text style={[styles.apptTimeStart, { color: colors.textPrimary }]}>{fmtTime(a.appointment_date)}</Text>
                       {dur > 0 && <Text style={styles.apptTimeEnd}>{fmtEnd(a.appointment_date, dur)}</Text>}
                     </View>
                     <View style={[styles.apptTimeLine, { backgroundColor: color }]} />
@@ -551,7 +552,7 @@ export default function DoctorCalendar() {
 
                   {/* Čas stĺpec */}
                   <View style={styles.apptTimeCol}>
-                    <Text style={styles.apptTimeStart} numberOfLines={1}>{fmtTime(a.appointment_date)}</Text>
+                    <Text style={[styles.apptTimeStart, { color: colors.textPrimary }]} numberOfLines={1}>{fmtTime(a.appointment_date)}</Text>
                     {dur > 0 && (
                       <Text style={styles.apptTimeEnd} numberOfLines={1}>{fmtEnd(a.appointment_date, dur)}</Text>
                     )}
@@ -695,18 +696,18 @@ export default function DoctorCalendar() {
       {/* ── Modal: Blokovať čas ── */}
       <Modal visible={showBlockModal} transparent animationType="slide" onRequestClose={() => setShowBlockModal(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowBlockModal(false)} />
-        <View style={styles.modalSheet}>
-          <View style={styles.modalHandle} />
-          <Text style={styles.modalTitle}>🔒 Blokovať čas</Text>
-          <Text style={styles.modalDate}>
+        <View style={[styles.modalSheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[styles.modalHandle, { backgroundColor: colors.bg3 }]} />
+          <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>🔒 Blokovať čas</Text>
+          <Text style={[styles.modalDate, { color: colors.textSecondary }]}>
             {selectedDay.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
           </Text>
 
           <View style={styles.timeRow}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.timeLabel}>Od</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Od</Text>
               <TextInput
-                style={styles.timeInput}
+                style={[styles.timeInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
                 value={blockStart}
                 onChangeText={setBlockStart}
                 placeholder="08:00"
@@ -717,9 +718,9 @@ export default function DoctorCalendar() {
             </View>
             <Ionicons name="arrow-forward" size={18} color={COLORS.wal} style={{ marginTop: 26 }} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.timeLabel}>Do</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Do</Text>
               <TextInput
-                style={styles.timeInput}
+                style={[styles.timeInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
                 value={blockEnd}
                 onChangeText={setBlockEnd}
                 placeholder="09:00"
@@ -748,9 +749,9 @@ export default function DoctorCalendar() {
             ))}
           </ScrollView>
 
-          <Text style={styles.timeLabel}>Dôvod (voliteľné)</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Dôvod (voliteľné)</Text>
           <TextInput
-            style={styles.reasonInput}
+            style={[styles.reasonInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
             value={blockReason}
             onChangeText={setBlockReason}
             placeholder="Napr. Obed, Školenie, Dovolenka..."
