@@ -274,10 +274,9 @@ export default function StatsScreen() {
         .select('avg_wait_minutes, avg_treatment_minutes, room_id, total, day');
 
       const { data: chairsData } = await supabase
-        .from('clinic_rooms')
+        .from('chairs')
         .select('id, name, color')
-        .eq('is_active', true)
-        .eq('doctor_id', user.id);
+        .eq('is_active', true);
 
       if (kpiData && kpiData.length > 0) {
         const waits = kpiData.map((r: any) => r.avg_wait_minutes).filter((v: any) => v != null);
@@ -584,7 +583,8 @@ export default function StatsScreen() {
         <Text style={styles.sectionLabel}>KLINICKÉ KPI</Text>
         <View style={[styles.card, dyn.card, { marginBottom: 14 }]}>
           <Text style={styles.cardTitle}>ČAKACIE & OŠETROVACIE ČASY (30 DNÍ)</Text>
-          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
+          {/* 30-dňový priemer */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
             <View style={[styles.kpiBox, { backgroundColor: '#EBF5FB' }]}>
               <Ionicons name="time-outline" size={20} color="#1A5276" />
               <Text style={[styles.kpiNum, { color: '#1A5276' }]}>
@@ -600,6 +600,26 @@ export default function StatsScreen() {
               <Text style={styles.kpiLabel}>Priem. ošetrenie</Text>
             </View>
           </View>
+          {/* Dnešné KPI */}
+          {(kpi.todayWait != null || kpi.todayTreatment != null) && (
+            <View style={styles.kpiTodayRow}>
+              <View style={styles.kpiTodayBadge}>
+                <Text style={styles.kpiTodayBadgeText}>DNES</Text>
+              </View>
+              <Ionicons name="time-outline" size={13} color={COLORS.wal} />
+              <Text style={styles.kpiTodayStat}>
+                Čakanie: <Text style={{ fontWeight: '800', color: '#1A5276' }}>
+                  {kpi.todayWait != null ? `${kpi.todayWait} min` : '—'}
+                </Text>
+              </Text>
+              <Text style={[styles.kpiTodayStat, { marginLeft: 10 }]}>
+                Ošetrenie: <Text style={{ fontWeight: '800', color: '#1E8449' }}>
+                  {kpi.todayTreatment != null ? `${kpi.todayTreatment} min` : '—'}
+                </Text>
+              </Text>
+            </View>
+          )}
+          <View style={{ height: 10 }} />
           {kpi.chairs.length > 0 && (
             <>
               <Text style={[styles.cardTitle, { marginBottom: 8 }]}>VYUŽITIE KRESIEL</Text>
@@ -1054,12 +1074,16 @@ const styles = StyleSheet.create({
   summaryValue: { fontSize: 14, fontWeight: '800', color: COLORS.esp },
 
   // KPI boxy
-  kpiBox:    { flex: 1, borderRadius: 12, padding: 12, alignItems: 'center', gap: 4 },
-  kpiNum:    { fontSize: 22, fontWeight: '800', lineHeight: 26 },
-  kpiLabel:  { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, color: COLORS.wal, textAlign: 'center' },
-  chairDot:  { width: 10, height: 10, borderRadius: 5 },
-  chairName: { width: 72, fontSize: 11, fontWeight: '600', color: COLORS.esp },
-  chairCount:{ fontSize: 12, fontWeight: '800', color: COLORS.wal, width: 28, textAlign: 'right' },
+  kpiBox:          { flex: 1, borderRadius: 12, padding: 12, alignItems: 'center', gap: 4 },
+  kpiNum:          { fontSize: 22, fontWeight: '800', lineHeight: 26 },
+  kpiLabel:        { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, color: COLORS.wal, textAlign: 'center' },
+  kpiTodayRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg3, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 10 },
+  kpiTodayBadge:   { backgroundColor: COLORS.wal, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 },
+  kpiTodayBadgeText:{ fontSize: 8, fontWeight: '800', color: '#fff', letterSpacing: 1 },
+  kpiTodayStat:    { fontSize: 11, color: COLORS.wal },
+  chairDot:        { width: 10, height: 10, borderRadius: 5 },
+  chairName:       { width: 72, fontSize: 11, fontWeight: '600', color: COLORS.esp },
+  chairCount:      { fontSize: 12, fontWeight: '800', color: COLORS.wal, width: 28, textAlign: 'right' },
 
   // Mesačné fakturácie
   invoiceCardHeader:     { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 },
