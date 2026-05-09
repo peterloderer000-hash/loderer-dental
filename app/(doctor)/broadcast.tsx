@@ -356,9 +356,9 @@ export default function BroadcastScreen() {
 
           {/* Preview */}
           {(title || body) && (
-            <View style={styles.previewBox}>
-              <Text style={styles.previewLabel}>NÁHĽAD NOTIFIKÁCIE</Text>
-              <View style={styles.previewCard}>
+            <View style={[styles.previewBox, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>NÁHĽAD NOTIFIKÁCIE</Text>
+              <View style={[styles.previewCard, { backgroundColor: colors.bg2 }]}>
                 <View style={styles.previewHeader}>
                   <Ionicons name="notifications" size={14} color={COLORS.wal} />
                   <Text style={styles.previewApp}>Loderer Dental</Text>

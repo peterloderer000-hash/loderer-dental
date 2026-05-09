@@ -302,7 +302,7 @@ export default function AdminScreen() {
       {/* ── Tab row ── */}
       <View style={[s.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
         {TABS.map(t => (
-          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
+          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive, tab === t.key && dark && { borderBottomColor: COLORS.gold }]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
             <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? colors.textPrimary : '#aaa'} />
             <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive, tab === t.key && { color: colors.textPrimary }]}>{t.label}</Text>
           </TouchableOpacity>
@@ -328,8 +328,8 @@ export default function AdminScreen() {
               ListEmptyComponent={
                 <View style={s.empty}>
                   <Text style={{ fontSize: 36 }}>👥</Text>
-                  <Text style={s.emptyTitle}>Tím je prázdny</Text>
-                  <Text style={s.emptySub}>Pozvite prvého člena tímu.</Text>
+                  <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Tím je prázdny</Text>
+                  <Text style={[s.emptySub, { color: colors.textSecondary }]}>Pozvite prvého člena tímu.</Text>
                   <TouchableOpacity style={s.emptyCta} onPress={() => setInviteOpen(true)}>
                     <Text style={s.emptyCtaText}>Pozvať člena</Text>
                   </TouchableOpacity>
@@ -435,8 +435,8 @@ export default function AdminScreen() {
               ) : (
                 <View style={s.empty}>
                   <Text style={{ fontSize: 36 }}>🏥</Text>
-                  <Text style={s.emptyTitle}>Klinika nenájdená</Text>
-                  <Text style={s.emptySub}>Pridajte kliniku cez Supabase dashboard.</Text>
+                  <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Klinika nenájdená</Text>
+                  <Text style={[s.emptySub, { color: colors.textSecondary }]}>Pridajte kliniku cez Supabase dashboard.</Text>
                 </View>
               )}
             </ScrollView>
@@ -467,13 +467,13 @@ export default function AdminScreen() {
 
               <Text style={[s.statsSection, { marginTop: 20, color: colors.textSecondary }]}>PLATBY</Text>
               <View style={s.payCards}>
-                <View style={s.payCard}>
-                  <Text style={s.payCardLabel}>Celkový obrat</Text>
-                  <Text style={s.payCardValue}>{euros(stats.totalPayments)}</Text>
+                <View style={[s.payCard, dark && { backgroundColor: colors.cardBg, borderColor: '#1A527644' }]}>
+                  <Text style={[s.payCardLabel, dark && { color: '#5DADE2' }]}>Celkový obrat</Text>
+                  <Text style={[s.payCardValue, dark && { color: '#5DADE2' }]}>{euros(stats.totalPayments)}</Text>
                 </View>
-                <View style={[s.payCard, { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
-                  <Text style={[s.payCardLabel, { color: '#1E8449' }]}>Zaplatené</Text>
-                  <Text style={[s.payCardValue, { color: '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
+                <View style={[s.payCard, dark ? { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' } : { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
+                  <Text style={[s.payCardLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Zaplatené</Text>
+                  <Text style={[s.payCardValue, { color: dark ? '#27AE60' : '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
                 </View>
               </View>
             </ScrollView>

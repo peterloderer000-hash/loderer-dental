@@ -559,10 +559,10 @@ export default function DoctorAddAppointment() {
 
           {/* ── Zhrnutie ── */}
           {selectedPatient && selectedDate && selectedTime && (
-            <View style={styles.summaryCard}>
-              <Ionicons name="checkmark-circle" size={20} color="#1E8449" />
+            <View style={[styles.summaryCard, dark && { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' }]}>
+              <Ionicons name="checkmark-circle" size={20} color={dark ? '#27AE60' : '#1E8449'} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.summaryTitle}>Zhrnutie termínu</Text>
+                <Text style={[styles.summaryTitle, { color: dark ? '#27AE60' : '#1E8449' }]}>Zhrnutie termínu</Text>
                 <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                   👤 {selectedPatient.full_name}
                 </Text>

@@ -24,7 +24,7 @@ type Service = {
 
 export default function ServicesScreen() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const [services,  setServices]  = useState<Service[]>([]);
   const [loading,   setLoading]   = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -141,14 +141,14 @@ export default function ServicesScreen() {
 
       <Modal visible={modalOpen} transparent animationType="slide" onRequestClose={() => setModalOpen(false)}>
         <View style={s.overlay}>
-          <View style={s.modal}>
-            <Text style={s.modalTitle}>{editingId ? 'Upraviť službu' : 'Nová služba'}</Text>
+          <View style={[s.modal, { backgroundColor: colors.cardBg }]}>
+            <Text style={[s.modalTitle, { color: colors.textPrimary }]}>{editingId ? 'Upraviť službu' : 'Nová služba'}</Text>
 
             <View style={s.emojiRow}>
               {EMOJIS.map((e) => (
                 <TouchableOpacity
                   key={e}
-                  style={[s.emojiBtn, emoji === e && s.emojiBtnActive]}
+                  style={[s.emojiBtn, { backgroundColor: dark ? colors.bg3 : '#fff', borderColor: colors.bg3 }, emoji === e && s.emojiBtnActive]}
                   onPress={() => setEmoji(e)}
                 >
                   <Text style={s.emojiText}>{e}</Text>
@@ -156,15 +156,15 @@ export default function ServicesScreen() {
               ))}
             </View>
 
-            <TextInput style={s.input} placeholder="Názov služby" placeholderTextColor={COLORS.sand}
+            <TextInput style={[s.input, { backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Názov služby" placeholderTextColor={COLORS.sand}
               value={name} onChangeText={setName} />
-            <TextInput style={s.input} placeholder="Trvanie (min)" placeholderTextColor={COLORS.sand}
+            <TextInput style={[s.input, { backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Trvanie (min)" placeholderTextColor={COLORS.sand}
               value={duration} onChangeText={setDuration} keyboardType="numeric" />
             <View style={s.priceRow}>
-              <TextInput style={[s.input, { flex: 1 }]} placeholder="Cena od (€)" placeholderTextColor={COLORS.sand}
+              <TextInput style={[s.input, { flex: 1, backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Cena od (€)" placeholderTextColor={COLORS.sand}
                 value={priceMin} onChangeText={setPriceMin} keyboardType="numeric" />
               <View style={{ width: 10 }} />
-              <TextInput style={[s.input, { flex: 1 }]} placeholder="Cena do (€)" placeholderTextColor={COLORS.sand}
+              <TextInput style={[s.input, { flex: 1, backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Cena do (€)" placeholderTextColor={COLORS.sand}
                 value={priceMax} onChangeText={setPriceMax} keyboardType="numeric" />
             </View>
 
