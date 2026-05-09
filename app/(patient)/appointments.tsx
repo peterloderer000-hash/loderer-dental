@@ -62,6 +62,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
   item: Appointment; onCancel: () => void; onReschedule: () => void;
   onDetail: () => void; onRate: () => void; onCheckIn: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const cfg = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.scheduled;
   const now = new Date();
   const apptDate = new Date(item.appointment_date);
@@ -72,7 +73,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
   const canCheckIn    = item.status === 'scheduled' && isToday(item.appointment_date) && (apptDate.getTime() - now.getTime()) < 2 * 60 * 60 * 1000; // 2h pred
 
   return (
-    <TouchableOpacity style={[styles.card, isPast && item.status === 'scheduled' && styles.cardMissed]} onPress={onDetail} activeOpacity={0.9}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isPast && item.status === 'scheduled' && styles.cardMissed]} onPress={onDetail} activeOpacity={0.9}>
       {/* Čas + status */}
       <View style={styles.cardTop}>
         <View style={styles.timeBox}>
@@ -87,7 +88,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
             {new Date(item.appointment_date).toLocaleDateString('sk-SK', { weekday: 'long' })}
           </Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+        <View style={[styles.statusBadge, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: dark ? cfg.color + '44' : cfg.border }]}>
           <Ionicons name={cfg.icon} size={11} color={cfg.color} />
           <Text style={[styles.statusText, { color: cfg.color }]}>{cfg.label}</Text>
         </View>
@@ -229,6 +230,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   onClose: () => void;
   onDone: () => void;
 }) {
+  const { colors } = useAppTheme();
   const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [selDate, setSelDate] = useState<Date | null>(null);
@@ -334,7 +336,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={rs.overlay}>
-        <View style={rs.sheet}>
+        <View style={[rs.sheet, { backgroundColor: colors.cardBg }]}>
           <View style={rs.handle} />
           <View style={rs.sheetHeader}>
             <View style={{ flex: 1 }}>
@@ -555,6 +557,7 @@ const rStyles = StyleSheet.create({
 function AppointmentDetailSheet({ appointment, onClose }: {
   appointment: Appointment | null; onClose: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   if (!appointment) return null;
   const cfg = STATUS_CONFIG[appointment.status] ?? STATUS_CONFIG.scheduled;
   const d   = new Date(appointment.appointment_date);
@@ -588,8 +591,8 @@ function AppointmentDetailSheet({ appointment, onClose }: {
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
       <View style={dsStyles.overlay}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-        <View style={dsStyles.sheet}>
-          <View style={dsStyles.handle} />
+        <View style={[dsStyles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[dsStyles.handle, { backgroundColor: colors.bg3 }]} />
 
           {/* Status chip */}
           <View style={[dsStyles.statusChip, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
@@ -598,19 +601,19 @@ function AppointmentDetailSheet({ appointment, onClose }: {
           </View>
 
           {/* Title */}
-          <Text style={dsStyles.title}>{svc?.name ?? 'Termín'}</Text>
-          <Text style={dsStyles.subtitle}>
+          <Text style={[dsStyles.title, { color: colors.textPrimary }]}>{svc?.name ?? 'Termín'}</Text>
+          <Text style={[dsStyles.subtitle, { color: colors.textSecondary }]}>
             {svc?.emoji ?? '🦷'} {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
             {' · '}{d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
           </Text>
 
           {/* Detail rows */}
-          <View style={dsStyles.rows}>
+          <View style={[dsStyles.rows, { backgroundColor: colors.bg2 }]}>
             {rows.map((r) => (
-              <View key={r.label} style={dsStyles.row}>
+              <View key={r.label} style={[dsStyles.row, { borderBottomColor: colors.bg3 }]}>
                 <Text style={dsStyles.rowIcon}>{r.icon}</Text>
-                <Text style={dsStyles.rowLabel}>{r.label}</Text>
-                <Text style={dsStyles.rowValue} numberOfLines={2}>{r.value}</Text>
+                <Text style={[dsStyles.rowLabel, { color: colors.textSecondary }]}>{r.label}</Text>
+                <Text style={[dsStyles.rowValue, { color: colors.textPrimary }]} numberOfLines={2}>{r.value}</Text>
               </View>
             ))}
           </View>
@@ -899,7 +902,7 @@ export default function AppointmentsScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.wlScroll}>
             {waitingList.map((entry) => (
-              <View key={entry.id} style={styles.wlCard}>
+              <View key={entry.id} style={[styles.wlCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#27AE6044' : '#A2D9CE' }]}>
                 <Text style={styles.wlEmoji}>{entry.service?.emoji ?? '⏳'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.wlService} numberOfLines={1}>
@@ -925,7 +928,7 @@ export default function AppointmentsScreen() {
         style={styles.filterScroll} contentContainerStyle={styles.filterContent}>
         {FILTERS.map((f) => (
           <TouchableOpacity key={f.key}
-            style={[styles.filterTab, filter === f.key && { backgroundColor: f.color, borderColor: f.color }]}
+            style={[styles.filterTab, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, filter === f.key && { backgroundColor: f.color, borderColor: f.color }]}
             onPress={() => setFilter(f.key)} activeOpacity={0.75}>
             <Text style={[styles.filterTabText, filter === f.key && styles.filterTabTextActive]}>
               {f.label}
