@@ -63,7 +63,7 @@ export default function ReceptionProfile() {
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={5} />
         </View>
       </SafeAreaView>
