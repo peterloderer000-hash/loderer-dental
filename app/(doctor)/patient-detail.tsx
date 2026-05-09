@@ -666,12 +666,12 @@ export default function PatientDetailScreen() {
 
         {/* ── KRITICKÉ UPOZORNENIA ── */}
         {crit && (crit.allergies || crit.isPregnant || (crit.medicalHistory && crit.medicalHistory.length > 0) || crit.bloodType) && (
-          <View style={styles.critBox}>
+          <View style={[styles.critBox, dark && { backgroundColor: '#4A1010', borderColor: '#C0392B55' }]}>
             <View style={styles.critHeader}>
               <Ionicons name="warning" size={15} color="#C0392B" />
               <Text style={styles.critTitle}>KRITICKÉ ÚDAJE</Text>
               {crit.bloodType && (
-                <View style={styles.critBlood}>
+                <View style={[styles.critBlood, dark && { backgroundColor: '#3B0D0D' }]}>
                   <Text style={styles.critBloodText}>🩸 {crit.bloodType}</Text>
                 </View>
               )}
