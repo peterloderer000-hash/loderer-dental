@@ -501,7 +501,7 @@ export default function PatientDetailScreen() {
         return (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             style={{ backgroundColor: COLORS.esp, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' }}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 8, gap: 6 }}>
+            contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 6, gap: 6 }}>
             {TABS.map(tab => {
               const active = activeTab === tab.id;
               return (
@@ -1247,13 +1247,13 @@ const styles = StyleSheet.create({
   content: { padding: SIZES.padding, paddingTop: 12, paddingBottom: 120 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:        { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle:    { fontSize: 18, fontWeight: '700', color: '#fff' },
-  scoreChip:      { width: 52, height: 52, borderRadius: 26, borderWidth: 3, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
-  scoreChipNum:   { fontSize: 18, fontWeight: '800', lineHeight: 20 },
-  scoreChipLabel: { fontSize: 8, fontWeight: '600', textTransform: 'uppercase' },
+  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
+  headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },
+  scoreChip:      { width: 44, height: 44, borderRadius: 22, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
+  scoreChipNum:   { fontSize: 16, fontWeight: '800', lineHeight: 18 },
+  scoreChipLabel: { fontSize: 7, fontWeight: '600', textTransform: 'uppercase' },
 
   // Info karta
   infoCard:    { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },

@@ -647,14 +647,14 @@ const styles = StyleSheet.create({
 
   // Times
   timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 3, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
   timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   timeSel:        { color: COLORS.cream },
   timeTakenText:  { color: '#ccc' },
   timeTakenLabel: { fontSize: 9, color: '#E74C3C', marginTop: 2, fontWeight: '700' },
-  timeEndText:    { fontSize: 9, color: '#aaa', marginTop: 2 },
+  timeEndText:    { fontSize: 10, color: '#aaa', marginTop: 2 },
   slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
 
   // Service picker

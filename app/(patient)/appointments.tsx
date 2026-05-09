@@ -444,6 +444,7 @@ const rs = StyleSheet.create({
 function RatingModal({ appointment, onClose, onDone }: {
   appointment: Appointment | null; onClose: () => void; onDone: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const [rating,  setRating]  = useState(0);
   const [review,  setReview]  = useState('');
   const [saving,  setSaving]  = useState(false);
@@ -483,10 +484,10 @@ function RatingModal({ appointment, onClose, onDone }: {
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
       <View style={rStyles.overlay}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-        <View style={rStyles.sheet}>
-          <View style={rStyles.handle} />
-          <Text style={rStyles.title}>Ohodnoť návštevu</Text>
-          <Text style={rStyles.subtitle}>
+        <View style={[rStyles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[rStyles.handle, { backgroundColor: colors.bg3 }]} />
+          <Text style={[rStyles.title, { color: colors.textPrimary }]}>Ohodnoť návštevu</Text>
+          <Text style={[rStyles.subtitle, { color: colors.textSecondary }]}>
             {appointment.service?.emoji ?? '🦷'} {appointment.service?.name ?? 'Termín'} ·{' '}
             {new Date(appointment.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' })}
           </Text>
@@ -506,9 +507,9 @@ function RatingModal({ appointment, onClose, onDone }: {
 
           {/* Komentár */}
           <TextInput
-            style={rStyles.input}
+            style={[rStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Pridaj komentár (voliteľné)..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={review}
             onChangeText={setReview}
             multiline
@@ -517,8 +518,8 @@ function RatingModal({ appointment, onClose, onDone }: {
           />
 
           <View style={rStyles.actions}>
-            <TouchableOpacity style={rStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-              <Text style={rStyles.btnCancelText}>Neskôr</Text>
+            <TouchableOpacity style={[rStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+              <Text style={[rStyles.btnCancelText, { color: colors.textSecondary }]}>Neskôr</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[rStyles.btnSubmit, (saving || rating === 0) && { opacity: 0.5 }]}

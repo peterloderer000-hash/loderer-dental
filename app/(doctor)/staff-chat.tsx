@@ -165,7 +165,7 @@ function ChatView({
           <View style={cv.empty}>
             <Text style={cv.emptyIcon}>💬</Text>
             <Text style={[cv.emptyTitle, { color: cvc.textPrimary }]}>Žiadne správy</Text>
-            <Text style={cv.emptySub}>Začnite konverzáciu s tímom</Text>
+            <Text style={[cv.emptySub, { color: cvc.textSecondary }]}>Začnite konverzáciu s tímom</Text>
           </View>
         }
         renderItem={({ item: group }) => (
@@ -230,7 +230,7 @@ function NewConvoModal({
       <View style={[nm.sheet, { backgroundColor: nc.cardBg }]}>
         <View style={[nm.handle, { backgroundColor: nc.bg3 }]} />
         <Text style={[nm.title, { color: nc.textPrimary }]}>Nová konverzácia</Text>
-        <Text style={nm.sub}>Vyber člena tímu</Text>
+        <Text style={[nm.sub, { color: nc.textSecondary }]}>Vyber člena tímu</Text>
         <ScrollView style={{ maxHeight: 360 }}>
           {others.map(s => (
             <TouchableOpacity key={s.id} style={nm.row} onPress={() => onSelect(s)} activeOpacity={0.75}>
@@ -238,8 +238,8 @@ function NewConvoModal({
                 <Text style={nm.avatarText}>{initials(s.full_name)}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={nm.name}>{s.full_name}</Text>
-                <Text style={nm.role}>{ROLE_LABELS[s.role] ?? s.role}</Text>
+                <Text style={[nm.name, { color: nc.textPrimary }]}>{s.full_name}</Text>
+                <Text style={[nm.role, { color: nc.textSecondary }]}>{ROLE_LABELS[s.role] ?? s.role}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={COLORS.sand} />
             </TouchableOpacity>
