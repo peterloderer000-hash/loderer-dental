@@ -510,7 +510,7 @@ export default function StatsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -565,7 +565,7 @@ export default function StatsScreen() {
             <View style={styles.upcomingDot} />
             <View style={{ flex: 1 }}>
               <Text style={styles.upcomingLabel}>NAJBLIŽŠÍ TERMÍN</Text>
-              <Text style={styles.upcomingTime}>
+              <Text style={[styles.upcomingTime, dyn.text]}>
                 {new Date(stats.upcoming.appointment_date).toLocaleString('sk-SK', {
                   weekday: 'short', day: 'numeric', month: 'short',
                   hour: '2-digit', minute: '2-digit',
@@ -608,7 +608,7 @@ export default function StatsScreen() {
                 return (
                   <View key={ch.name} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                     <View style={[styles.chairDot, { backgroundColor: ch.color }]} />
-                    <Text style={styles.chairName}>{ch.name}</Text>
+                    <Text style={[styles.chairName, dyn.text]}>{ch.name}</Text>
                     <View style={bar.track}>
                       <View style={[bar.fill, { width: `${max > 0 ? (ch.count / max) * 100 : 0}%`, backgroundColor: ch.color }]} />
                     </View>
@@ -658,7 +658,7 @@ export default function StatsScreen() {
           {stats.busiestDay && (
             <View style={styles.busiestRow}>
               <Ionicons name="flame-outline" size={13} color={COLORS.wal} />
-              <Text style={styles.busiestText}>Najvyťaženejší deň: <Text style={{ fontWeight: '700', color: COLORS.esp }}>{stats.busiestDay}</Text></Text>
+              <Text style={[styles.busiestText, dyn.sub]}>Najvyťaženejší deň: <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{stats.busiestDay}</Text></Text>
             </View>
           )}
         </View>
@@ -712,14 +712,14 @@ export default function StatsScreen() {
           ].filter(row => row.count > 0 || row.label !== 'Čakajú').map((row) => (
             <View key={row.label} style={styles.statusRow}>
               <Text style={styles.statusEmoji}>{row.emoji}</Text>
-              <Text style={styles.statusLabel}>{row.label}</Text>
+              <Text style={[styles.statusLabel, dyn.text]}>{row.label}</Text>
               <MiniBar value={row.count} max={stats.totalCount} color={row.color} />
               <Text style={[styles.statusCount, { color: row.color }]}>{row.count}</Text>
             </View>
           ))}
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Celkom termínov</Text>
-            <Text style={styles.totalCount}>{stats.totalCount}</Text>
+          <View style={[styles.totalRow, { borderTopColor: colors.bg3 }]}>
+            <Text style={[styles.totalLabel, dyn.text]}>Celkom termínov</Text>
+            <Text style={[styles.totalCount, dyn.text]}>{stats.totalCount}</Text>
           </View>
         </View>
 
@@ -739,7 +739,7 @@ export default function StatsScreen() {
                     />
                   ))}
                 </View>
-                <Text style={styles.ratingAvgText}>
+                <Text style={[styles.ratingAvgText, dyn.text]}>
                   {stats.avgRating!.toFixed(1)} / 5
                 </Text>
                 <Text style={styles.ratingCountText}>
@@ -747,7 +747,7 @@ export default function StatsScreen() {
                 </Text>
               </View>
               <View style={styles.ratingCircle}>
-                <Text style={styles.ratingCircleNum}>{stats.avgRating!.toFixed(1)}</Text>
+                <Text style={[styles.ratingCircleNum, dyn.text]}>{stats.avgRating!.toFixed(1)}</Text>
                 <Text style={styles.ratingCircleSub}>/ 5</Text>
               </View>
             </View>
@@ -812,11 +812,11 @@ export default function StatsScreen() {
           </View>
 
           {/* Month picker */}
-          <View style={styles.monthPicker}>
+          <View style={[styles.monthPicker, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
             <TouchableOpacity style={styles.monthArrow} onPress={prevInvoiceMonth} activeOpacity={0.75}>
               <Ionicons name="chevron-back" size={18} color={COLORS.wal} />
             </TouchableOpacity>
-            <Text style={styles.monthPickerLabel}>
+            <Text style={[styles.monthPickerLabel, dyn.text]}>
               {SK_MONTHS_FULL[invoiceMonth]} {invoiceYear}
             </Text>
             <TouchableOpacity
@@ -832,7 +832,7 @@ export default function StatsScreen() {
           {/* Summary */}
           <View style={styles.invoiceSummary}>
             <View style={styles.invoiceSummaryItem}>
-              <Text style={styles.invoiceSummaryNum}>{invoiceAppts.length}</Text>
+              <Text style={[styles.invoiceSummaryNum, dyn.text]}>{invoiceAppts.length}</Text>
               <Text style={styles.invoiceSummaryLabel}>termínov</Text>
             </View>
             <View style={styles.invoiceSummaryDivider} />
@@ -855,13 +855,13 @@ export default function StatsScreen() {
               const d     = new Date(a.appointment_date);
               const price = a.service?.price_min ?? 0;
               return (
-                <View key={a.id} style={[styles.invoiceRow, i === invoiceAppts.length - 1 && { borderBottomWidth: 0 }]}>
-                  <View style={styles.invoiceDateBox}>
-                    <Text style={styles.invoiceDateDay}>{d.getDate()}</Text>
+                <View key={a.id} style={[styles.invoiceRow, { borderBottomColor: colors.bg3 }, i === invoiceAppts.length - 1 && { borderBottomWidth: 0 }]}>
+                  <View style={[styles.invoiceDateBox, { backgroundColor: colors.bg2 }]}>
+                    <Text style={[styles.invoiceDateDay, dyn.text]}>{d.getDate()}</Text>
                     <Text style={styles.invoiceDateMon}>{SK_MONTHS_FULL[d.getMonth()].slice(0, 3)}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.invoicePatient} numberOfLines={1}>
+                    <Text style={[styles.invoicePatient, dyn.text]} numberOfLines={1}>
                       {a.patient?.full_name ?? 'Pacient'}
                     </Text>
                     {a.service && (
@@ -904,7 +904,7 @@ export default function StatsScreen() {
                   <Text style={styles.svcRankText}>{i + 1}</Text>
                 </View>
                 <Text style={styles.svcEmoji}>{svc.emoji ?? '🦷'}</Text>
-                <Text style={styles.svcName} numberOfLines={1}>{svc.name}</Text>
+                <Text style={[styles.svcName, dyn.text]} numberOfLines={1}>{svc.name}</Text>
                 <MiniBar value={svc.count} max={stats.topServices[0].count} color={COLORS.wal} />
                 <Text style={styles.svcCount}>{svc.count}×</Text>
               </View>
@@ -922,7 +922,7 @@ export default function StatsScreen() {
             { label: 'Miera úspešnosti',   value: `${stats.completionRate}%`, emoji: '📊' },
             { label: 'Priem. hodnotenie',   value: stats.avgRating != null ? `${stats.avgRating.toFixed(1)} ⭐` : '—', emoji: '⭐' },
           ].map((row, idx, arr) => (
-            <View key={row.label} style={[styles.summaryRow, idx === arr.length - 1 && { borderBottomWidth: 0 }]}>
+            <View key={row.label} style={[styles.summaryRow, { borderBottomColor: colors.bg3 }, idx === arr.length - 1 && { borderBottomWidth: 0 }]}>
               <Text style={styles.summaryEmoji}>{row.emoji}</Text>
               <Text style={[styles.summaryLabel, dyn.text]}>{row.label}</Text>
               <Text style={[styles.summaryValue, dyn.text]}>{row.value}</Text>

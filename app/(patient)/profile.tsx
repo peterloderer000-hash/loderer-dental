@@ -11,20 +11,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
 import { useAppTheme } from '../../context/ThemeContext';
+import { setAppLanguage } from '../../i18n';
 
 const AVATAR_BUCKET = 'avatars';
 
 // ─── Loyalty card ─────────────────────────────────────────────────────────────
 const LEVELS = [
-  { name: 'Bronz',    min: 0,    max: 299,   color: '#CD7F32', bg: '#FDF3E7', icon: '🥉' },
-  { name: 'Striebro', min: 300,  max: 599,   color: '#A0A0A0', bg: '#F4F4F4', icon: '🥈' },
-  { name: 'Zlato',    min: 600,  max: 999,   color: '#D4A017', bg: '#FEF9E7', icon: '🥇' },
-  { name: 'Platina',  min: 1000, max: 99999, color: '#6C3483', bg: '#F5EEF8', icon: '💎' },
+  { key: 'bronze'  as const, min: 0,    max: 299,   color: '#CD7F32', bg: '#FDF3E7', icon: '🥉' },
+  { key: 'silver'  as const, min: 300,  max: 599,   color: '#A0A0A0', bg: '#F4F4F4', icon: '🥈' },
+  { key: 'gold'    as const, min: 600,  max: 999,   color: '#D4A017', bg: '#FEF9E7', icon: '🥇' },
+  { key: 'platinum'as const, min: 1000, max: 99999, color: '#6C3483', bg: '#F5EEF8', icon: '💎' },
 ];
 
 function getLoyaltyLevel(points: number) {
@@ -32,22 +34,26 @@ function getLoyaltyLevel(points: number) {
 }
 
 function LoyaltyCard({ completed }: { completed: number }) {
+  const { t } = useTranslation();
   const points    = completed * 100;
   const level     = getLoyaltyLevel(points);
   const nextLevel = LEVELS[LEVELS.indexOf(level) + 1];
   const progress  = nextLevel ? (points - level.min) / (nextLevel.min - level.min) : 1;
+
+  const levelName = t(`profile.loyalty.${level.key}`);
+  const nextName  = nextLevel ? t(`profile.loyalty.${nextLevel.key}`) : '';
 
   return (
     <View style={[loy.card, { backgroundColor: level.bg, borderColor: level.color + '55' }]}>
       <View style={loy.header}>
         <Text style={loy.icon}>{level.icon}</Text>
         <View style={{ flex: 1 }}>
-          <Text style={loy.title}>Vernostné body</Text>
-          <Text style={[loy.level, { color: level.color }]}>{level.name}</Text>
+          <Text style={loy.title}>{t('profile.loyalty.title')}</Text>
+          <Text style={[loy.level, { color: level.color }]}>{levelName}</Text>
         </View>
         <View style={[loy.badge, { backgroundColor: level.color }]}>
           <Text style={loy.badgeNum}>{points}</Text>
-          <Text style={loy.badgeLabel}>bodov</Text>
+          <Text style={loy.badgeLabel}>{t('profile.loyalty.points')}</Text>
         </View>
       </View>
 
@@ -57,7 +63,7 @@ function LoyaltyCard({ completed }: { completed: number }) {
             <View style={[loy.progressFill, { width: `${Math.round(progress * 100)}%` as any, backgroundColor: level.color }]} />
           </View>
           <Text style={[loy.progressLabel, { color: level.color }]}>
-            {nextLevel.min - points} bodov do úrovne {nextLevel.name} {nextLevel.icon}
+            {nextLevel.min - points} {t('profile.loyalty.toLevel')} {nextName} {nextLevel.icon}
           </Text>
         </>
       )}
@@ -66,12 +72,12 @@ function LoyaltyCard({ completed }: { completed: number }) {
         <Ionicons name="information-circle-outline" size={13} color={level.color} />
         <Text style={[loy.infoText, { color: level.color }]}>
           {points >= 1000
-            ? '💎 Platina — získavaš 15 % zľavu na každú návštevu!'
+            ? t('profile.loyalty.infoPlatinum')
             : points >= 600
-            ? '🥇 Zlato — získavaš 10 % zľavu na každú návštevu'
+            ? t('profile.loyalty.infoGold')
             : points >= 300
-            ? '🥈 Striebro — získavaš 5 % zľavu na každú návštevu'
-            : '100 bodov za každú absolvovanú návštevu'}
+            ? t('profile.loyalty.infoSilver')
+            : t('profile.loyalty.infoBronze')}
         </Text>
       </View>
     </View>
@@ -85,6 +91,10 @@ export default function ProfileScreen() {
   const router     = useRouter();
   const navigation = useNavigation();
   const { colors, dark, toggle: toggleTheme } = useAppTheme();
+  const { t, i18n: i18nInst } = useTranslation();
+  const [lang, setLang] = useState<'sk' | 'en'>(
+    (i18nInst.language?.startsWith('en') ? 'en' : 'sk') as 'sk' | 'en'
+  );
   const [fullName,    setFullName]    = useState('');
   const [phone,       setPhone]       = useState('');
   const [email,       setEmail]       = useState('');
@@ -136,7 +146,7 @@ export default function ProfileScreen() {
 
   async function pickAndUpload() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) { Alert.alert('Povolenie', 'Potrebujeme prístup k fotkám.'); return; }
+    if (!perm.granted) { Alert.alert(t('profile.permissions.photoTitle'), t('profile.permissions.photoMsg')); return; }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.85,
     });
@@ -152,12 +162,12 @@ export default function ProfileScreen() {
       await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', userId);
       setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
     } catch (e: any) {
-      Alert.alert('Chyba', e?.message ?? 'Nepodarilo sa nahrať fotku.');
+      Alert.alert(t('profile.chyba'), e?.message ?? t('profile.uploadError'));
     } finally { setUploading(false); }
   }
 
   async function handleSave() {
-    if (!fullName.trim()) { Alert.alert('Chyba', 'Zadaj meno.'); return; }
+    if (!fullName.trim()) { Alert.alert(t('profile.chyba'), t('profile.personal.errorName')); return; }
     let parsedDob: string | null = null;
     if (dateOfBirth.trim()) {
       const parts = dateOfBirth.trim().split('.');
@@ -165,7 +175,7 @@ export default function ProfileScreen() {
         const [d, m, y] = parts;
         if (d && m && y && y.length === 4) parsedDob = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
       }
-      if (!parsedDob) { Alert.alert('Chyba', 'Dátum narodenia musí byť vo formáte DD.MM.RRRR'); return; }
+      if (!parsedDob) { Alert.alert(t('profile.chyba'), t('profile.personal.errorDob')); return; }
     }
     setSaving(true);
     const { error } = await supabase.from('profiles').update({
@@ -174,14 +184,19 @@ export default function ProfileScreen() {
       date_of_birth: parsedDob,
     }).eq('id', userId);
     setSaving(false);
-    if (error) Alert.alert('Chyba', error.message);
-    else Alert.alert('Uložené ✓', 'Profil bol aktualizovaný.');
+    if (error) Alert.alert(t('profile.chyba'), error.message);
+    else Alert.alert(t('profile.personal.savedTitle'), t('profile.personal.savedMsg'));
   }
 
   async function handleSignOut() {
     await supabase.auth.signOut();
     const parent = navigation.getParent() ?? navigation;
     parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+  }
+
+  async function handleLanguage(l: 'sk' | 'en') {
+    setLang(l);
+    await setAppLanguage(l);
   }
 
   const initials = fullName.trim().split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
@@ -225,16 +240,16 @@ export default function ProfileScreen() {
 
             <Text style={s.heroName}>{fullName || 'Pacient'}</Text>
             <View style={s.roleBadge}>
-              <Text style={s.roleText}>🦷  Pacient</Text>
+              <Text style={s.roleText}>{t('profile.role')}</Text>
             </View>
 
             {/* Stats row */}
             <View style={s.statRow}>
-              <StatPill value={apptStats.total}     label="Termínov"       />
+              <StatPill value={apptStats.total}     label={t('profile.stats.total')}     />
               <View style={s.statDivider} />
-              <StatPill value={apptStats.completed}  label="Absolvovaných"  />
+              <StatPill value={apptStats.completed}  label={t('profile.stats.completed')}  />
               <View style={s.statDivider} />
-              <StatPill value={apptStats.upcoming}   label="Plánovaných"    />
+              <StatPill value={apptStats.upcoming}   label={t('profile.stats.upcoming')}   />
             </View>
           </LinearGradient>
 
@@ -244,7 +259,7 @@ export default function ProfileScreen() {
               <View style={[s.lastVisit, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 <Ionicons name="time-outline" size={15} color={COLORS.gold} />
                 <Text style={[s.lastVisitText, { color: colors.textSecondary }]}>
-                  Posledná návšteva: <Text style={{ color: colors.textPrimary, fontFamily: 'DMSans_500Medium' }}>{apptStats.lastVisit}</Text>
+                  {t('profile.lastVisit')}{' '}<Text style={{ color: colors.textPrimary, fontFamily: 'DMSans_500Medium' }}>{apptStats.lastVisit}</Text>
                 </Text>
               </View>
             )}
@@ -252,17 +267,19 @@ export default function ProfileScreen() {
             {/* Loyalty */}
             <LoyaltyCard completed={apptStats.completed} />
 
-            {/* Dark mode toggle */}
+            {/* Settings card — dark mode + language */}
             <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>NASTAVENIA</Text>
+              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>{t('profile.settings.title')}</Text>
+
+              {/* Dark mode row */}
               <View style={s.toggleRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <View style={[s.toggleIcon, { backgroundColor: dark ? COLORS.esp : COLORS.bg2 }]}>
                     <Ionicons name={dark ? 'moon' : 'moon-outline'} size={18} color={dark ? COLORS.sand : COLORS.wal} />
                   </View>
                   <View>
-                    <Text style={[s.toggleLabel, { color: colors.textPrimary }]}>Tmavý režim</Text>
-                    <Text style={[s.toggleSub, { color: colors.textSecondary }]}>{dark ? 'Zapnutý' : 'Vypnutý'}</Text>
+                    <Text style={[s.toggleLabel, { color: colors.textPrimary }]}>{t('profile.settings.darkMode')}</Text>
+                    <Text style={[s.toggleSub, { color: colors.textSecondary }]}>{dark ? t('profile.settings.darkOn') : t('profile.settings.darkOff')}</Text>
                   </View>
                 </View>
                 <Switch
@@ -274,20 +291,51 @@ export default function ProfileScreen() {
                 />
               </View>
 
+              {/* Language row */}
+              <View style={[s.toggleRow, { marginTop: 14 }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <View style={[s.toggleIcon, { backgroundColor: colors.bg2 }]}>
+                    <Ionicons name="language-outline" size={18} color={COLORS.wal} />
+                  </View>
+                  <View>
+                    <Text style={[s.toggleLabel, { color: colors.textPrimary }]}>{t('profile.settings.language')}</Text>
+                    <Text style={[s.toggleSub, { color: colors.textSecondary }]}>
+                      {lang === 'sk' ? t('profile.settings.languageSk') : t('profile.settings.languageEn')}
+                    </Text>
+                  </View>
+                </View>
+                {/* SK / EN pill toggle */}
+                <View style={ls.langToggle}>
+                  <TouchableOpacity
+                    style={[ls.langBtn, lang === 'sk' && ls.langBtnActive]}
+                    onPress={() => handleLanguage('sk')}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[ls.langBtnText, lang === 'sk' && ls.langBtnTextActive]}>SK</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[ls.langBtn, lang === 'en' && ls.langBtnActive]}
+                    onPress={() => handleLanguage('en')}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[ls.langBtnText, lang === 'en' && ls.langBtnTextActive]}>EN</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
 
             {/* Personal info */}
             <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>OSOBNÉ ÚDAJE</Text>
+              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>{t('profile.personal.title')}</Text>
 
-              <InputField label="CELÉ MENO" value={fullName} onChange={setFullName}
-                placeholder="Meno a priezvisko" autoCapitalize="words" colors={colors} />
-              <InputField label="TELEFÓN" value={phone} onChange={setPhone}
-                placeholder="+421 900 000 000" keyboardType="phone-pad" colors={colors} />
-              <InputField label="DÁTUM NARODENIA" value={dateOfBirth} onChange={setDateOfBirth}
-                placeholder="DD.MM.RRRR" keyboardType="numbers-and-punctuation" maxLength={10} colors={colors} />
+              <InputField label={t('profile.personal.fullName')} value={fullName} onChange={setFullName}
+                placeholder={t('profile.personal.namePlaceholder')} autoCapitalize="words" colors={colors} />
+              <InputField label={t('profile.personal.phone')} value={phone} onChange={setPhone}
+                placeholder={t('profile.personal.phonePlaceholder')} keyboardType="phone-pad" colors={colors} />
+              <InputField label={t('profile.personal.dob')} value={dateOfBirth} onChange={setDateOfBirth}
+                placeholder={t('profile.personal.dobPlaceholder')} keyboardType="numbers-and-punctuation" maxLength={10} colors={colors} />
 
-              <Text style={[s.inputLabel, { color: colors.textSecondary }]}>EMAIL</Text>
+              <Text style={[s.inputLabel, { color: colors.textSecondary }]}>{t('profile.personal.email')}</Text>
               <View style={[s.inputDisabled, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                 <Text style={[s.inputDisabledText, { color: colors.textSecondary }]}>{email}</Text>
               </View>
@@ -301,23 +349,23 @@ export default function ProfileScreen() {
                 <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.saveGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
                   {saving
                     ? <ActivityIndicator color="#fff" size="small" />
-                    : <Text style={s.saveBtnText}>Uložiť zmeny</Text>}
+                    : <Text style={s.saveBtnText}>{t('profile.personal.save')}</Text>}
                 </LinearGradient>
               </TouchableOpacity>
             </View>
 
             {/* Quick nav */}
             <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>RÝCHLY PRÍSTUP</Text>
+              <Text style={[s.cardTitle, { color: colors.textSecondary }]}>{t('profile.quickAccess.title')}</Text>
               {[
-                { icon: 'clipboard-outline'     as const, label: 'Zdravotný dotazník',   sub: hasPassport ? 'Vyplnený ✓' : 'Nevyplnený', route: '/(patient)/health-passport', bg: hasPassport ? COLORS.successBg : COLORS.warningBg, color: hasPassport ? COLORS.success : COLORS.warning },
-                { icon: 'bar-chart-outline'     as const, label: 'Dentálne skóre',        sub: 'Môj stav chrupu',            route: '/(patient)/score',            bg: COLORS.infoBg,     color: COLORS.info    },
-                { icon: 'list-outline'          as const, label: 'História termínov',     sub: `${apptStats.total} ${pluralizeAppointments(apptStats.total)}`, route: '/(patient)/appointments', bg: COLORS.bg2, color: COLORS.wal },
-                { icon: 'chatbubble-outline'    as const, label: 'AI Dentálny asistent',  sub: 'Otázky o zdraví zubov',      route: '/(patient)/chat',             bg: '#F5EEF8',         color: '#7D3C98' },
-                { icon: 'card-outline'          as const, label: 'História platieb',      sub: 'Zaplatené & dlžoby',         route: '/(patient)/payment-history',  bg: COLORS.successBg,  color: COLORS.success },
-                { icon: 'people-outline'        as const, label: 'Rodinné profily',       sub: 'Rezervuj za rodinných',      route: '/(patient)/family',           bg: COLORS.infoBg,     color: COLORS.info    },
-                { icon: 'document-text-outline' as const, label: 'Informované súhlasy',   sub: 'Podpis dokumentov',          route: '/(patient)/consents',         bg: '#F5EEF8',         color: '#7D3C98' },
-                { icon: 'list-outline'          as const, label: 'Liečebný plán',         sub: 'Môj plán ošetrenia',         route: '/(patient)/treatment-plan',   bg: COLORS.successBg,  color: COLORS.success },
+                { icon: 'clipboard-outline'     as const, label: t('profile.quickAccess.passport'),  sub: hasPassport ? t('profile.quickAccess.passportSub') : t('profile.quickAccess.passportSubNo'), route: '/(patient)/health-passport', bg: hasPassport ? COLORS.successBg : COLORS.warningBg, color: hasPassport ? COLORS.success : COLORS.warning },
+                { icon: 'bar-chart-outline'     as const, label: t('profile.quickAccess.score'),     sub: t('profile.quickAccess.scoreSub'),  route: '/(patient)/score',            bg: COLORS.infoBg,     color: COLORS.info    },
+                { icon: 'list-outline'          as const, label: t('profile.quickAccess.history'),   sub: `${apptStats.total} ${pluralizeAppointments(apptStats.total)}`,                               route: '/(patient)/appointments', bg: COLORS.bg2, color: COLORS.wal },
+                { icon: 'chatbubble-outline'    as const, label: t('profile.quickAccess.chat'),      sub: t('profile.quickAccess.chatSub'),   route: '/(patient)/chat',             bg: '#F5EEF8',         color: '#7D3C98' },
+                { icon: 'card-outline'          as const, label: t('profile.quickAccess.payments'),  sub: t('profile.quickAccess.paymentsSub'), route: '/(patient)/payment-history', bg: COLORS.successBg,  color: COLORS.success },
+                { icon: 'people-outline'        as const, label: t('profile.quickAccess.family'),    sub: t('profile.quickAccess.familySub'), route: '/(patient)/family',           bg: COLORS.infoBg,     color: COLORS.info    },
+                { icon: 'document-text-outline' as const, label: t('profile.quickAccess.consents'),  sub: t('profile.quickAccess.consentsSub'), route: '/(patient)/consents',       bg: '#F5EEF8',         color: '#7D3C98' },
+                { icon: 'list-outline'          as const, label: t('profile.quickAccess.plan'),      sub: t('profile.quickAccess.planSub'),  route: '/(patient)/treatment-plan',   bg: COLORS.successBg,  color: COLORS.success },
               ].map((item, idx, arr) => (
                 <TouchableOpacity
                   key={item.label}
@@ -340,7 +388,7 @@ export default function ProfileScreen() {
             {/* Logout */}
             <TouchableOpacity style={s.logoutBtn} onPress={handleSignOut} activeOpacity={0.85}>
               <Ionicons name="log-out-outline" size={18} color={COLORS.error} />
-              <Text style={s.logoutText}>Odhlásiť sa</Text>
+              <Text style={s.logoutText}>{t('profile.logout')}</Text>
             </TouchableOpacity>
 
             <View style={{ alignItems: 'center', paddingVertical: 24 }}>
@@ -464,4 +512,32 @@ const loy = StyleSheet.create({
   progressLabel: { ...TYPO.bodySm, marginBottom: 12, textAlign: 'center' },
   infoRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 6 },
   infoText:      { flex: 1, ...TYPO.bodySm, lineHeight: 16 },
+});
+
+// ── Language toggle styles ─────────────────────────────────────────────────────
+const ls = StyleSheet.create({
+  langToggle: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.bg2,
+    borderRadius: RADII.full,
+    padding: 3,
+    gap: 2,
+  },
+  langBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: RADII.full,
+  },
+  langBtnActive: {
+    backgroundColor: COLORS.wal,
+  },
+  langBtnText: {
+    fontFamily: 'DMSans_500Medium',
+    fontSize: 12,
+    color: COLORS.wal,
+    letterSpacing: 0.5,
+  },
+  langBtnTextActive: {
+    color: '#fff',
+  },
 });

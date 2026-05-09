@@ -56,7 +56,8 @@ function fmtEur(n: number | null) {
 }
 
 // ─── Komponent: jeden plán ────────────────────────────────────────────────────
-function PlanCard({ plan }: { plan: Plan }) {
+type PlanCardProps = { plan: Plan; colors: ReturnType<typeof useAppTheme>['colors']; dark: boolean };
+function PlanCard({ plan, colors, dark }: PlanCardProps) {
   const [expanded, setExpanded] = useState(plan.status === 'active');
   const pCfg      = PLAN_CFG[plan.status];
   const total     = plan.items.reduce((s, i) => s + (i.estimated_cost ?? 0), 0);
@@ -66,18 +67,18 @@ function PlanCard({ plan }: { plan: Plan }) {
   const pct       = Math.round(progress * 100);
 
   return (
-    <View style={styles.planCard}>
+    <View style={[styles.planCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       {/* Hlavička */}
       <TouchableOpacity style={styles.planHeader} onPress={() => setExpanded(e => !e)} activeOpacity={0.8}>
         <View style={{ flex: 1 }}>
           <View style={styles.planTitleRow}>
-            <Text style={styles.planTitle}>{plan.title}</Text>
+            <Text style={[styles.planTitle, { color: colors.textPrimary }]}>{plan.title}</Text>
             <View style={[styles.planBadge, { backgroundColor: pCfg.bg }]}>
               <Text style={[styles.planBadgeText, { color: pCfg.color }]}>{pCfg.label}</Text>
             </View>
           </View>
           {plan.doctor_name && (
-            <Text style={styles.planDoctor}>👨‍⚕️ {plan.doctor_name} · {fmtDate(plan.created_at)}</Text>
+            <Text style={[styles.planDoctor, { color: colors.textSecondary }]}>👨‍⚕️ {plan.doctor_name} · {fmtDate(plan.created_at)}</Text>
           )}
 
           {/* Progress */}
@@ -88,7 +89,7 @@ function PlanCard({ plan }: { plan: Plan }) {
               </View>
               <View style={styles.progressRow}>
                 <Text style={[styles.progressPct, { color: pCfg.color }]}>{pct}%</Text>
-                <Text style={styles.progressLabel}>
+                <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>
                   {doneCount} z {plan.items.length} výkonov hotových
                 </Text>
               </View>
@@ -104,17 +105,17 @@ function PlanCard({ plan }: { plan: Plan }) {
         <>
           {/* Poznámky doktora */}
           {plan.notes ? (
-            <View style={styles.notesBox}>
+            <View style={[styles.notesBox, { backgroundColor: dark ? colors.bg2 : '#FDFBF8', borderTopColor: colors.bg3 }]}>
               <Ionicons name="information-circle-outline" size={15} color={COLORS.wal} />
-              <Text style={styles.notesText}>{plan.notes}</Text>
+              <Text style={[styles.notesText, { color: colors.textSecondary }]}>{plan.notes}</Text>
             </View>
           ) : null}
 
           {/* Zoznam výkonov */}
           {plan.items.length === 0 ? (
-            <Text style={styles.noItems}>Žiadne výkony v pláne.</Text>
+            <Text style={[styles.noItems, { color: colors.textSecondary }]}>Žiadne výkony v pláne.</Text>
           ) : (
-            <View style={styles.itemsList}>
+            <View style={[styles.itemsList, { borderTopColor: colors.bg3 }]}>
               {plan.items.map((item, idx) => {
                 const iCfg = ITEM_CFG[item.status];
                 const price = fmtEur(item.estimated_cost);
@@ -122,6 +123,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                   <View key={item.id} style={[
                     styles.itemRow,
                     idx < plan.items.length - 1 && styles.itemRowBorder,
+                    idx < plan.items.length - 1 && { borderBottomColor: colors.bg3 },
                   ]}>
                     {/* Status ikona */}
                     <View style={[styles.itemIcon, { backgroundColor: iCfg.bg }]}>
@@ -132,6 +134,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                     <View style={{ flex: 1 }}>
                       <Text style={[
                         styles.itemTitle,
+                        { color: colors.textPrimary },
                         item.status === 'completed' && styles.itemTitleDone,
                         item.status === 'skipped'   && styles.itemTitleSkipped,
                       ]}>
@@ -142,11 +145,11 @@ function PlanCard({ plan }: { plan: Plan }) {
                           <Text style={[styles.itemStatusText, { color: iCfg.color }]}>{iCfg.label}</Text>
                         </View>
                         {item.tooth_number != null && (
-                          <Text style={styles.itemTooth}>🦷 Zub {item.tooth_number}</Text>
+                          <Text style={[styles.itemTooth, { color: colors.textSecondary }]}>🦷 Zub {item.tooth_number}</Text>
                         )}
                       </View>
                       {item.description ? (
-                        <Text style={styles.itemDesc}>{item.description}</Text>
+                        <Text style={[styles.itemDesc, { color: colors.textSecondary }]}>{item.description}</Text>
                       ) : null}
                     </View>
 
@@ -162,19 +165,19 @@ function PlanCard({ plan }: { plan: Plan }) {
 
           {/* Finančný súhrn */}
           {total > 0 && (
-            <View style={styles.summary}>
+            <View style={[styles.summary, { backgroundColor: colors.bg2, borderTopColor: colors.bg3 }]}>
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>Celková cena</Text>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Celková cena</Text>
                 <Text style={[styles.summaryVal, { color: COLORS.wal }]}>{fmtEur(total)}</Text>
               </View>
-              <View style={styles.summaryDivider} />
+              <View style={[styles.summaryDivider, { backgroundColor: colors.bg3 }]} />
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>Hotové výkony</Text>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Hotové výkony</Text>
                 <Text style={[styles.summaryVal, { color: '#1E8449' }]}>{fmtEur(completed) ?? '0,00 €'}</Text>
               </View>
-              <View style={styles.summaryDivider} />
+              <View style={[styles.summaryDivider, { backgroundColor: colors.bg3 }]} />
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>Zostatok</Text>
+                <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Zostatok</Text>
                 <Text style={[styles.summaryVal, { color: '#922B21' }]}>{fmtEur(total - completed) ?? '0,00 €'}</Text>
               </View>
             </View>
@@ -283,7 +286,7 @@ export default function PatientTreatmentPlanScreen() {
                   PREBIEHAJÚCE ({activePlans.length})
                 </Text>
               </View>
-              {activePlans.map(p => <PlanCard key={p.id} plan={p} />)}
+              {activePlans.map(p => <PlanCard key={p.id} plan={p} colors={colors} dark={dark} />)}
             </>
           )}
 
@@ -296,7 +299,7 @@ export default function PatientTreatmentPlanScreen() {
                   HISTÓRIA ({completedPlans.length})
                 </Text>
               </View>
-              {completedPlans.map(p => <PlanCard key={p.id} plan={p} />)}
+              {completedPlans.map(p => <PlanCard key={p.id} plan={p} colors={colors} dark={dark} />)}
             </>
           )}
 

@@ -61,6 +61,7 @@ const OH_DAYS = ['', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 type OHRow = { day_of_week: number; open_time: string | null; close_time: string | null; is_closed: boolean; note: string | null };
 
 function OpeningHoursCompact() {
+  const { colors } = useAppTheme();
   const [hours, setHours] = React.useState<OHRow[]>([]);
   const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
 
@@ -76,7 +77,7 @@ function OpeningHoursCompact() {
   const isOpen = todayRow && !todayRow.is_closed;
 
   return (
-    <View style={ohS.card}>
+    <View style={[ohS.card, { backgroundColor: colors.cardBg }]}>
       <LinearGradient colors={isOpen ? ['#EAFAF1', '#D5F5E3'] : ['#FDEDEC', '#F5B7B1']} style={ohS.banner}>
         <View style={[ohS.dot, { backgroundColor: isOpen ? '#2ECC71' : '#E74C3C' }]} />
         <Text style={[ohS.bannerText, { color: isOpen ? '#1E8449' : '#922B21' }]}>
@@ -84,9 +85,9 @@ function OpeningHoursCompact() {
         </Text>
       </LinearGradient>
       {hours.map(h => (
-        <View key={h.day_of_week} style={[ohS.row, h.day_of_week === todayNum && ohS.rowToday]}>
-          <Text style={[ohS.day, h.day_of_week === todayNum && { color: COLORS.esp, fontFamily: 'DMSans_500Medium' }]}>{OH_DAYS[h.day_of_week]}</Text>
-          <Text style={ohS.time}>{h.is_closed ? 'Zatvorené' : `${h.open_time?.slice(0, 5)} – ${h.close_time?.slice(0, 5)}`}</Text>
+        <View key={h.day_of_week} style={[ohS.row, { borderTopColor: colors.bg3 }, h.day_of_week === todayNum && [ohS.rowToday, { backgroundColor: colors.bg2 }]]}>
+          <Text style={[ohS.day, { color: colors.textSecondary }, h.day_of_week === todayNum && { color: colors.textPrimary, fontFamily: 'DMSans_500Medium' }]}>{OH_DAYS[h.day_of_week]}</Text>
+          <Text style={[ohS.time, { color: colors.textPrimary }]}>{h.is_closed ? 'Zatvorené' : `${h.open_time?.slice(0, 5)} – ${h.close_time?.slice(0, 5)}`}</Text>
         </View>
       ))}
     </View>
@@ -279,38 +280,38 @@ export default function PatientHome() {
         {/* ── NEXT APPOINTMENT CARD (overlap) ── */}
         <Reanimated.View entering={FadeInUp.delay(150).duration(500)} style={styles.apptCardWrap}>
           {apptLoading ? (
-            <View style={[styles.apptCard, { alignItems: 'center', justifyContent: 'center', paddingVertical: 28 }]}>
+            <View style={[styles.apptCard, { alignItems: 'center', justifyContent: 'center', paddingVertical: 28, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <ActivityIndicator color={COLORS.wal} />
             </View>
           ) : nextAppointment ? (
             <TouchableOpacity
-              style={styles.apptCard}
+              style={[styles.apptCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
               onPress={() => router.push('/(patient)/appointments')}
               activeOpacity={0.92}
             >
               <View style={styles.apptCardTop}>
                 <View>
                   <Text style={styles.apptLabel}>TVOJ ĎALŠÍ TERMÍN</Text>
-                  <Text style={styles.apptTime}>
+                  <Text style={[styles.apptTime, { color: colors.textPrimary }]}>
                     {new Date(nextAppointment.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
                   </Text>
                   <Text style={styles.apptDate}>{formatApptDate(nextAppointment.appointment_date)}</Text>
                 </View>
                 <View style={styles.apptRight}>
-                  <View style={styles.apptServiceCircle}>
+                  <View style={[styles.apptServiceCircle, { backgroundColor: colors.bg2 }]}>
                     <Text style={{ fontSize: 22 }}>{nextAppointment.service?.emoji ?? '🦷'}</Text>
                   </View>
                   <StatusPill status="scheduled" size="sm" style={{ marginTop: 6 }} />
                 </View>
               </View>
               {nextAppointment.service && (
-                <View style={styles.apptService}>
-                  <Text style={styles.apptServiceName}>{nextAppointment.service.name}</Text>
+                <View style={[styles.apptService, { backgroundColor: colors.bg2 }]}>
+                  <Text style={[styles.apptServiceName, { color: colors.textPrimary }]}>{nextAppointment.service.name}</Text>
                 </View>
               )}
               <View style={styles.apptActions}>
-                <TouchableOpacity style={styles.apptBtnSecondary} onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.8}>
-                  <Text style={styles.apptBtnSecondaryText}>Detail</Text>
+                <TouchableOpacity style={[styles.apptBtnSecondary, { borderColor: colors.bg3 }]} onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.8}>
+                  <Text style={[styles.apptBtnSecondaryText, { color: colors.textSecondary }]}>Detail</Text>
                 </TouchableOpacity>
                 <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={styles.apptBtnPrimary}>
                   <TouchableOpacity onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -337,7 +338,7 @@ export default function PatientHome() {
 
         {/* ── QUICK ACTIONS ── */}
         <Reanimated.View entering={FadeInUp.delay(250).duration(500)} style={styles.quickSection}>
-          <Text style={styles.quickLabel}>Rýchle akcie</Text>
+          <Text style={[styles.quickLabel, { color: colors.textPrimary }]}>Rýchle akcie</Text>
           <View style={styles.quickRow}>
             {([
               { icon: 'calendar', label: 'Rezervovať', route: '/(patient)/book-appointment', gold: true },
@@ -347,14 +348,14 @@ export default function PatientHome() {
             ] as { icon: any; label: string; route: any; gold: boolean }[]).map((item) => (
               <TouchableOpacity
                 key={item.label}
-                style={[styles.quickBtn, item.gold && styles.quickBtnGold]}
+                style={[styles.quickBtn, item.gold && styles.quickBtnGold, !item.gold && { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
                 onPress={() => router.push(item.route)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.quickIconWrap, item.gold && styles.quickIconWrapGold]}>
+                <View style={[styles.quickIconWrap, item.gold && styles.quickIconWrapGold, !item.gold && { backgroundColor: colors.bg2 }]}>
                   <Ionicons name={item.icon} size={28} color={item.gold ? '#1A110A' : COLORS.gold} />
                 </View>
-                <Text style={[styles.quickBtnLabel, item.gold && styles.quickBtnLabelGold]}>{item.label}</Text>
+                <Text style={[styles.quickBtnLabel, item.gold && styles.quickBtnLabelGold, !item.gold && { color: colors.textSecondary }]}>{item.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -412,13 +413,13 @@ export default function PatientHome() {
                 <Reanimated.View key={appt.id} entering={FadeInUp.delay(420 + i * 60).duration(400)}>
                   <View style={styles.timelineItem}>
                     <View style={styles.timelineDot} />
-                    {i < recentAppointments.length - 1 && <View style={styles.timelineLine} />}
-                    <View style={[styles.timelineCard, SHADOWS.sm]}>
+                    {i < recentAppointments.length - 1 && <View style={[styles.timelineLine, { backgroundColor: colors.bg3 }]} />}
+                    <View style={[styles.timelineCard, SHADOWS.sm, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                       <View style={styles.timelineCardRow}>
                         <Text style={{ fontSize: 20, marginRight: 10 }}>{appt.service?.emoji ?? '🦷'}</Text>
                         <View style={{ flex: 1 }}>
-                          <Text style={styles.timelineService}>{appt.service?.name ?? 'Termín'}</Text>
-                          <Text style={styles.timelineDate}>{formatApptDate(appt.appointment_date)}</Text>
+                          <Text style={[styles.timelineService, { color: colors.textPrimary }]}>{appt.service?.name ?? 'Termín'}</Text>
+                          <Text style={[styles.timelineDate, { color: colors.textSecondary }]}>{formatApptDate(appt.appointment_date)}</Text>
                         </View>
                         {appt.patient_rating ? (
                           <View style={styles.ratingMini}>
@@ -460,10 +461,10 @@ export default function PatientHome() {
       <Modal visible={!!ratingAppt} transparent animationType="slide" onRequestClose={() => setRatingAppt(null)}>
         <View style={styles.ratingOverlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setRatingAppt(null)} />
-          <View style={styles.ratingSheet}>
-            <View style={styles.ratingHandle} />
-            <Text style={styles.ratingTitle}>🦷 Ohodnoť návštevu</Text>
-            <Text style={styles.ratingSubtitle}>
+          <View style={[styles.ratingSheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[styles.ratingHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.ratingTitle, { color: colors.textPrimary }]}>🦷 Ohodnoť návštevu</Text>
+            <Text style={[styles.ratingSubtitle, { color: colors.textSecondary }]}>
               {ratingAppt?.service?.emoji ?? '🦷'} {ratingAppt?.service?.name ?? 'Termín'} ·{' '}
               {ratingAppt ? new Date(ratingAppt.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' }) : ''}
             </Text>
@@ -476,16 +477,16 @@ export default function PatientHome() {
             </Animated.View>
             {ratingVal > 0 && <Text style={styles.ratingLabel}>{['', 'Veľmi zlý 😞', 'Zlý 😐', 'Dobrý 🙂', 'Veľmi dobrý 😊', 'Výborný! 🤩'][ratingVal]}</Text>}
             <TextInput
-              style={styles.ratingInput}
+              style={[styles.ratingInput, { borderColor: colors.bg3, color: colors.textPrimary, backgroundColor: colors.bg2 }]}
               placeholder="Pridaj komentár (voliteľné)..."
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.textSecondary}
               value={ratingText}
               onChangeText={setRatingText}
               multiline numberOfLines={3} textAlignVertical="top"
             />
             <View style={styles.ratingActions}>
-              <TouchableOpacity style={styles.ratingBtnSkip} onPress={() => setRatingAppt(null)} activeOpacity={0.8}>
-                <Text style={styles.ratingBtnSkipText}>Neskôr</Text>
+              <TouchableOpacity style={[styles.ratingBtnSkip, { borderColor: colors.bg3 }]} onPress={() => setRatingAppt(null)} activeOpacity={0.8}>
+                <Text style={[styles.ratingBtnSkipText, { color: colors.textSecondary }]}>Neskôr</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.ratingBtnSubmit, (ratingSaving || ratingVal === 0) && { opacity: 0.45 }]}

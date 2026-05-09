@@ -29,6 +29,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
   visible: boolean; appointment: Appointment | null; doctorId: string;
   onClose: () => void; onDone: () => void;
 }) {
+  const { colors: rc } = useAppTheme();
   const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [selDate, setSelDate] = useState<Date | null>(null);
@@ -131,15 +132,15 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={rsStyles.overlay}>
         <TouchableOpacity style={{ flex: 0.3 }} activeOpacity={1} onPress={onClose} />
-        <View style={rsStyles.sheet}>
+        <View style={[rsStyles.sheet, { backgroundColor: rc.cardBg }]}>
           <View style={rsStyles.handle} />
-          <Text style={rsStyles.title}>Presunúť termín</Text>
-          <Text style={rsStyles.subtitle}>
+          <Text style={[rsStyles.title, { color: rc.textPrimary }]}>Presunúť termín</Text>
+          <Text style={[rsStyles.subtitle, { color: rc.textSecondary }]}>
             {appointment.patient?.full_name ?? 'Pacient'} · {appointment.service?.name ?? 'Termín'}
           </Text>
 
           {/* Dátumy */}
-          <Text style={rsStyles.sectionLabel}>DÁTUM</Text>
+          <Text style={[rsStyles.sectionLabel, { color: rc.textSecondary }]}>DÁTUM</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
             <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 2 }}>
               {days.map((d, i) => {
@@ -147,12 +148,12 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                 const dbDay = jsDayToDb(d.getDay());
                 const oh    = openingHoursMap.get(dbDay);
                 return (
-                  <TouchableOpacity key={i} style={[rsStyles.dateCell, isSel && rsStyles.dateCellSel]}
+                  <TouchableOpacity key={i} style={[rsStyles.dateCell, { backgroundColor: rc.bg3, borderColor: rc.bg3 }, isSel && rsStyles.dateCellSel]}
                     onPress={() => { setSelDate(d); setSelTime(''); }} activeOpacity={0.8}>
-                    <Text style={[rsStyles.dateName, isSel && rsStyles.dateSelTxt]}>{SK_DAYS_SHORT[d.getDay()]}</Text>
-                    <Text style={[rsStyles.dateNum,  isSel && rsStyles.dateSelTxt]}>{d.getDate()}</Text>
-                    <Text style={[rsStyles.dateMon,  isSel && rsStyles.dateSelTxt]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
-                    {oh && <Text style={[rsStyles.dateHours, isSel && { color: COLORS.sand }]}>{oh.open_time}–{oh.close_time}</Text>}
+                    <Text style={[rsStyles.dateName, { color: rc.textSecondary }, isSel && rsStyles.dateSelTxt]}>{SK_DAYS_SHORT[d.getDay()]}</Text>
+                    <Text style={[rsStyles.dateNum,  { color: rc.textPrimary },   isSel && rsStyles.dateSelTxt]}>{d.getDate()}</Text>
+                    <Text style={[rsStyles.dateMon,  { color: rc.textSecondary }, isSel && rsStyles.dateSelTxt]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
+                    {oh && <Text style={[rsStyles.dateHours, { color: rc.textSecondary }, isSel && { color: COLORS.sand }]}>{oh.open_time}–{oh.close_time}</Text>}
                   </TouchableOpacity>
                 );
               })}
@@ -162,7 +163,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
           {/* Sloty */}
           {selDate && (
             <>
-              <Text style={rsStyles.sectionLabel}>ČAS</Text>
+              <Text style={[rsStyles.sectionLabel, { color: rc.textSecondary }]}>ČAS</Text>
               {loadingSlots
                 ? <ActivityIndicator color={COLORS.wal} style={{ marginVertical: 10 }} />
                 : <View style={rsStyles.slotsGrid}>
@@ -171,9 +172,9 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                       const isSel = selTime === s.start;
                       return (
                         <TouchableOpacity key={s.start}
-                          style={[rsStyles.slot, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
+                          style={[rsStyles.slot, { backgroundColor: rc.cardBg, borderColor: rc.bg3 }, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
                           onPress={() => !taken && setSelTime(s.start)} disabled={taken} activeOpacity={0.8}>
-                          <Text style={[rsStyles.slotText, isSel && { color: '#fff' }, taken && { color: '#ccc' }]}>
+                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#fff' }, taken && { color: '#ccc' }]}>
                             {s.start}
                           </Text>
                           {taken && <Text style={rsStyles.slotTakenLbl}>✗</Text>}
@@ -185,8 +186,8 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
           )}
 
           <View style={rsStyles.actions}>
-            <TouchableOpacity style={rsStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-              <Text style={rsStyles.btnCancelText}>Zrušiť</Text>
+            <TouchableOpacity style={[rsStyles.btnCancel, { borderColor: rc.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+              <Text style={[rsStyles.btnCancelText, { color: rc.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[rsStyles.btnConfirm, (!selDate || !selTime || saving) && { opacity: 0.4 }]}
@@ -391,6 +392,7 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
   onReject: () => void;
   saving: boolean;
 }) {
+  const { colors: mc } = useAppTheme();
   const defaultDur = appointment?.service?.duration_minutes ?? 30;
   const [selectedDur, setSelectedDur] = useState(defaultDur);
   const [customText,  setCustomText]  = useState('');
@@ -411,44 +413,44 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.sheet}>
+        <View style={[styles.sheet, { backgroundColor: mc.cardBg }]}>
           <View style={styles.sheetHandle} />
-          <Text style={styles.sheetTitle}>Schváliť termín</Text>
-          <Text style={styles.sheetSub}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
+          <Text style={[styles.sheetTitle, { color: mc.textPrimary }]}>Schváliť termín</Text>
+          <Text style={[styles.sheetSub, { color: mc.textSecondary }]}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
 
           {/* Info o termíne */}
-          <View style={aStyles.infoBox}>
+          <View style={[aStyles.infoBox, { backgroundColor: mc.bg3 }]}>
             {appointment.service && (
-              <Text style={aStyles.infoRow}>
+              <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>
                 {appointment.service.emoji ?? '🦷'} {appointment.service.name}
               </Text>
             )}
-            <Text style={aStyles.infoRow}>📅 {dateLabel} o {timeLabel}</Text>
-            {appointment.notes ? <Text style={aStyles.infoRow}>📝 {appointment.notes}</Text> : null}
+            <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>📅 {dateLabel} o {timeLabel}</Text>
+            {appointment.notes ? <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>📝 {appointment.notes}</Text> : null}
           </View>
 
           {/* Dĺžka ošetrenia */}
-          <Text style={styles.sheetLabel}>DĹŽKA OŠETRENIA</Text>
+          <Text style={[styles.sheetLabel, { color: mc.textSecondary }]}>DĹŽKA OŠETRENIA</Text>
           <View style={aStyles.chipRow}>
             {[15, 30, 45, 60, 90, 120].map((min) => (
               <TouchableOpacity
                 key={min}
-                style={[aStyles.chip, selectedDur === min && aStyles.chipActive]}
+                style={[aStyles.chip, { backgroundColor: mc.cardBg, borderColor: mc.bg3 }, selectedDur === min && aStyles.chipActive]}
                 onPress={() => { setSelectedDur(min); setCustomText(''); }}
                 activeOpacity={0.75}
               >
-                <Text style={[aStyles.chipText, selectedDur === min && aStyles.chipTextActive]}>
+                <Text style={[aStyles.chipText, { color: mc.textSecondary }, selectedDur === min && aStyles.chipTextActive]}>
                   {min < 60 ? `${min} min` : `${min / 60} hod`}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
-          <View style={aStyles.customRow}>
+          <View style={[aStyles.customRow, { backgroundColor: mc.cardBg, borderColor: mc.bg3 }]}>
             <Ionicons name="time-outline" size={15} color={COLORS.wal} />
             <TextInput
-              style={aStyles.customInput}
+              style={[aStyles.customInput, { color: mc.textPrimary }]}
               placeholder={`Vlastná (min) · teraz: ${selectedDur} min`}
-              placeholderTextColor="#bbb"
+              placeholderTextColor={mc.textSecondary}
               keyboardType="numeric"
               value={customText}
               onChangeText={(t) => {
@@ -522,6 +524,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
   visible: boolean; patientName: string; onClose: () => void;
   onConfirm: (notes: string, careInstructions: string) => void; saving: boolean;
 }) {
+  const { colors: cm } = useAppTheme();
   const [notes, setNotes]         = useState('');
   const [careInstr, setCareInstr] = useState('');
   const [showCare, setShowCare]   = useState(false);
@@ -536,17 +539,17 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
         <View style={styles.overlay}>
           <ScrollView style={{ width: '100%' }} contentContainerStyle={{ justifyContent: 'flex-end', flexGrow: 1 }}
             keyboardShouldPersistTaps="handled">
-            <View style={styles.sheet}>
+            <View style={[styles.sheet, { backgroundColor: cm.cardBg }]}>
               <View style={styles.sheetHandle} />
-              <Text style={styles.sheetTitle}>Dokončiť termín</Text>
-              <Text style={styles.sheetSub}>{patientName}</Text>
+              <Text style={[styles.sheetTitle, { color: cm.textPrimary }]}>Dokončiť termín</Text>
+              <Text style={[styles.sheetSub, { color: cm.textSecondary }]}>{patientName}</Text>
 
               {/* Klinické poznámky */}
-              <Text style={styles.sheetLabel}>KLINICKÉ POZNÁMKY (interné)</Text>
+              <Text style={[styles.sheetLabel, { color: cm.textSecondary }]}>KLINICKÉ POZNÁMKY (interné)</Text>
               <TextInput
-                style={styles.sheetInput}
+                style={[styles.sheetInput, { color: cm.textPrimary, backgroundColor: cm.bg3 }]}
                 placeholder="Čo sa robilo, ďalší postup..."
-                placeholderTextColor="#bbb"
+                placeholderTextColor={cm.textSecondary}
                 value={notes}
                 onChangeText={setNotes}
                 multiline numberOfLines={3}
@@ -580,9 +583,9 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
                     ))}
                   </ScrollView>
                   <TextInput
-                    style={[styles.sheetInput, { marginTop: 8, marginBottom: 0 }]}
+                    style={[styles.sheetInput, { marginTop: 8, marginBottom: 0, color: cm.textPrimary, backgroundColor: cm.bg3 }]}
                     placeholder="Pokyny, lieky, obmedzenia po ošetrení..."
-                    placeholderTextColor="#bbb"
+                    placeholderTextColor={cm.textSecondary}
                     value={careInstr}
                     onChangeText={setCareInstr}
                     multiline numberOfLines={3}
@@ -1112,12 +1115,12 @@ export default function DoctorHome() {
                 return (
                   <TouchableOpacity
                     key={appt.id}
-                    style={styles.pendingCard}
+                    style={[styles.pendingCard, { backgroundColor: colors.cardBg }]}
                     onPress={() => setApprovingAppt(appt)}
                     activeOpacity={0.85}
                   >
                     <View style={styles.pendingCardTop}>
-                      <Text style={styles.pendingPatient} numberOfLines={1}>
+                      <Text style={[styles.pendingPatient, { color: colors.textPrimary }]} numberOfLines={1}>
                         {appt.patient?.full_name ?? 'Pacient'}
                       </Text>
                       <View style={[styles.pendingBadge, appt.is_urgent && { backgroundColor: '#C0392B' }]}>
@@ -1128,7 +1131,7 @@ export default function DoctorHome() {
                       <Text style={styles.familyTag}>👶 Pre: {appt.family_member_name}</Text>
                     ) : null}
                     {appt.service && (
-                      <Text style={styles.pendingService} numberOfLines={1}>
+                      <Text style={[styles.pendingService, { color: colors.textSecondary }]} numberOfLines={1}>
                         {appt.service.emoji ?? '🦷'} {appt.service.name}
                       </Text>
                     )}
@@ -1192,12 +1195,12 @@ export default function DoctorHome() {
                 return (
                   <TouchableOpacity
                     key={appt.id}
-                    style={styles.arrivedCard}
+                    style={[styles.arrivedCard, { backgroundColor: colors.cardBg }]}
                     onPress={() => router.push({ pathname: '/(doctor)/patient-detail', params: { patientId: appt.patient_id } })}
                     activeOpacity={0.85}
                   >
                     <View style={styles.arrivedCardTop}>
-                      <Text style={styles.arrivedPatient} numberOfLines={1}>
+                      <Text style={[styles.arrivedPatient, { color: colors.textPrimary }]} numberOfLines={1}>
                         {appt.patient?.full_name ?? 'Pacient'}
                       </Text>
                       <View style={styles.arrivedWaitBadge}>
@@ -1205,7 +1208,7 @@ export default function DoctorHome() {
                       </View>
                     </View>
                     {appt.service && (
-                      <Text style={styles.arrivedService} numberOfLines={1}>
+                      <Text style={[styles.arrivedService, { color: colors.textSecondary }]} numberOfLines={1}>
                         {appt.service.emoji ?? '🦷'} {appt.service.name}
                       </Text>
                     )}
@@ -1247,9 +1250,9 @@ export default function DoctorHome() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: SPACING.lg, gap: 10, paddingBottom: 4 }}>
               {birthdays.map((b) => (
-                <View key={b.id} style={styles.bdCard}>
+                <View key={b.id} style={[styles.bdCard, { backgroundColor: colors.cardBg }]}>
                   <Text style={styles.bdEmoji}>{b.daysUntil === 0 ? '🎉' : '🎂'}</Text>
-                  <Text style={styles.bdName} numberOfLines={1}>{b.name}</Text>
+                  <Text style={[styles.bdName, { color: colors.textPrimary }]} numberOfLines={1}>{b.name}</Text>
                   <Text style={styles.bdDays}>
                     {b.daysUntil === 0 ? 'Dnes!' : b.daysUntil === 1 ? 'Zajtra' : `Za ${b.daysUntil} dní`}
                   </Text>

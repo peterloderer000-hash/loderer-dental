@@ -205,7 +205,7 @@ export default function BillingScreen() {
           {/* Celková miera úhrady */}
           {summary.total > 0 && (
             <View style={styles.rateRow}>
-              <Text style={styles.rateLabel}>Miera úhrady</Text>
+              <Text style={[styles.rateLabel, dyn.sub]}>Miera úhrady</Text>
               <View style={styles.rateTrack}>
                 <View style={[styles.rateFill, {
                   width: `${Math.round((summary.paidCount / summary.total) * 100)}%` as any
@@ -225,7 +225,7 @@ export default function BillingScreen() {
             <TouchableOpacity key={p}
               style={[styles.periodTab, dyn.card, period === p && styles.periodTabActive]}
               onPress={() => setPeriod(p)} activeOpacity={0.8}>
-              <Text style={[styles.periodTabText, period === p && styles.periodTabTextActive]}>
+              <Text style={[styles.periodTabText, dyn.sub, period === p && styles.periodTabTextActive]}>
                 {PERIOD_LABELS[p]}
               </Text>
             </TouchableOpacity>
@@ -241,7 +241,7 @@ export default function BillingScreen() {
               <TouchableOpacity key={f.key}
                 style={[styles.payFilterTab, dyn.card, active && { backgroundColor: cfg?.color ?? COLORS.wal, borderColor: cfg?.color ?? COLORS.wal }]}
                 onPress={() => setPayFilter(f.key)} activeOpacity={0.8}>
-                <Text style={[styles.payFilterText, active && { color: '#fff' }]}>{f.label}</Text>
+                <Text style={[styles.payFilterText, dyn.sub, active && { color: '#fff' }]}>{f.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -265,7 +265,7 @@ export default function BillingScreen() {
                 {/* Dátum */}
                 <View style={styles.dateBox}>
                   <Text style={[styles.dateDay, dyn.text]}>{d.getDate()}</Text>
-                  <Text style={styles.dateMon}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
+                  <Text style={[styles.dateMon, dyn.sub]}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
                 </View>
 
                 {/* Info */}
