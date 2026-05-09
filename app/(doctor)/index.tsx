@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
   RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
@@ -760,6 +761,7 @@ export default function DoctorHome() {
 
   async function confirmComplete(notes: string, careInstructions: string) {
     if (!completingItem) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCompleteSaving(true);
     const saved = completingItem;
     const err = await updateStatus(saved.id, 'completed', notes, careInstructions);
@@ -782,6 +784,7 @@ export default function DoctorHome() {
 
   async function handleApprove(durationMinutes: number) {
     if (!approvingAppt) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setApproveSaving(true);
     const saved = approvingAppt;
     const err = await approvePending(saved.id, durationMinutes);

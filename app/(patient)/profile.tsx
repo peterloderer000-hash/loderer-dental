@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -167,6 +168,7 @@ export default function ProfileScreen() {
   }
 
   async function handleSave() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (!fullName.trim()) { Alert.alert(t('profile.chyba'), t('profile.personal.errorName')); return; }
     let parsedDob: string | null = null;
     if (dateOfBirth.trim()) {
@@ -189,12 +191,14 @@ export default function ProfileScreen() {
   }
 
   async function handleSignOut() {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     await supabase.auth.signOut();
     const parent = navigation.getParent() ?? navigation;
     parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
   }
 
   async function handleLanguage(l: 'sk' | 'en') {
+    Haptics.selectionAsync();
     setLang(l);
     await setAppLanguage(l);
   }
