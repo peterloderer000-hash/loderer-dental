@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ActivityIndicator, RefreshControl, ScrollView, StyleSheet,
+  ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +12,8 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS, SPACING } from '../../styles/t
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { fmtTime } from '../../utils/clinicMetrics';
+
+type Chair = { id: string; name: string; color: string };
 
 type Appointment = {
   id: string;
@@ -54,11 +56,13 @@ const NEXT_LABEL: Record<string, string> = {
 
 export default function ReceptionCheckin() {
   const { colors, dark } = useAppTheme();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [refreshing, setRefreshing]     = useState(false);
-  const [query, setQuery]               = useState('');
-  const [updating, setUpdating]         = useState<string | null>(null);
+  const [appointments,    setAppointments]    = useState<Appointment[]>([]);
+  const [loading,         setLoading]         = useState(true);
+  const [refreshing,      setRefreshing]      = useState(false);
+  const [query,           setQuery]           = useState('');
+  const [updating,        setUpdating]        = useState<string | null>(null);
+  const [chairs,          setChairs]          = useState<Chair[]>([]);
+  const [pendingChairApt, setPendingChairApt] = useState<Appointment | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -75,6 +79,12 @@ export default function ReceptionCheckin() {
     setLoading(false);
     setRefreshing(false);
   }
+
+  // Načítaj stoličky raz pri monte
+  useEffect(() => {
+    supabase.from('chairs').select('id, name, color').eq('is_active', true).order('sort_order')
+      .then(({ data }) => { if (data) setChairs(data as Chair[]); });
+  }, []);
 
   useEffect(() => {
     load();
@@ -95,6 +105,15 @@ export default function ReceptionCheckin() {
   async function advance(apt: Appointment) {
     const next = NEXT_STATUS[apt.clinic_status ?? 'scheduled'];
     if (!next) return;
+    // Pre prechod do kresla — najprv vyber stoličku
+    if (next === 'in_chair' && chairs.length > 0) {
+      setPendingChairApt(apt);
+      return;
+    }
+    await doAdvance(apt, next);
+  }
+
+  async function doAdvance(apt: Appointment, next: string, chairId?: string) {
     setUpdating(apt.id);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const updates: Record<string, any> = { clinic_status: next };
@@ -102,7 +121,10 @@ export default function ReceptionCheckin() {
       updates.arrived_at = new Date().toISOString();
       updates.status     = 'arrived';
     }
-    if (next === 'in_chair')       updates.started_at = new Date().toISOString();
+    if (next === 'in_chair') {
+      updates.started_at = new Date().toISOString();
+      if (chairId) updates.chair_id = chairId;
+    }
     if (next === 'treatment_done') {
       updates.ended_at = new Date().toISOString();
       updates.status   = 'completed';
@@ -110,6 +132,13 @@ export default function ReceptionCheckin() {
     await supabase.from('appointments').update(updates).eq('id', apt.id);
     setUpdating(null);
     load(true);
+  }
+
+  async function confirmChair(chairId: string) {
+    if (!pendingChairApt) return;
+    const apt = pendingChairApt;
+    setPendingChairApt(null);
+    await doAdvance(apt, 'in_chair', chairId);
   }
 
   const filtered = query.trim()
@@ -126,6 +155,56 @@ export default function ReceptionCheckin() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      {/* ── Chair picker modal ── */}
+      <Modal
+        visible={!!pendingChairApt}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setPendingChairApt(null)}
+      >
+        <View style={cp.overlay}>
+          <TouchableOpacity style={{ flex: 0.45 }} activeOpacity={1} onPress={() => setPendingChairApt(null)} />
+          <View style={[cp.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[cp.handle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[cp.title, { color: colors.textPrimary }]}>Vyber kreslo</Text>
+            {pendingChairApt && (
+              <Text style={[cp.sub, { color: colors.textSecondary }]}>
+                {pendingChairApt.patient?.full_name ?? 'Pacient'} · {pendingChairApt.service?.name ?? ''}
+              </Text>
+            )}
+            <View style={{ gap: 10, marginTop: 16 }}>
+              {chairs.map(ch => (
+                <TouchableOpacity
+                  key={ch.id}
+                  style={[cp.chairBtn, { borderColor: ch.color }]}
+                  onPress={() => confirmChair(ch.id)}
+                  activeOpacity={0.8}
+                >
+                  <View style={[cp.chairDot, { backgroundColor: ch.color }]} />
+                  <Text style={[cp.chairName, { color: colors.textPrimary }]}>{ch.name}</Text>
+                  <Ionicons name="arrow-forward-circle-outline" size={20} color={ch.color} />
+                </TouchableOpacity>
+              ))}
+              {/* Bez stoličky */}
+              <TouchableOpacity
+                style={[cp.chairBtn, { borderColor: colors.bg3 }]}
+                onPress={() => {
+                  if (pendingChairApt) {
+                    const apt = pendingChairApt;
+                    setPendingChairApt(null);
+                    doAdvance(apt, 'in_chair');
+                  }
+                }}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="close-outline" size={18} color={colors.textSecondary} />
+                <Text style={[cp.chairName, { color: colors.textSecondary }]}>Bez výberu kresla</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <Text style={s.heroLabel}>RECEPCIA</Text>
@@ -402,4 +481,15 @@ const ar = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   advText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: COLORS.gold },
+});
+
+const cp = StyleSheet.create({
+  overlay:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
+  sheet:     { borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, paddingBottom: 36 },
+  handle:    { width: 36, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 16 },
+  title:     { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, textAlign: 'center', marginBottom: 4 },
+  sub:       { fontFamily: 'DMSans_500Medium', fontSize: 13, textAlign: 'center', marginBottom: 0 },
+  chairBtn:  { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: RADII.lg, borderWidth: 1.5, paddingHorizontal: 16, paddingVertical: 14 },
+  chairDot:  { width: 14, height: 14, borderRadius: 7 },
+  chairName: { flex: 1, fontFamily: 'DMSans_500Medium', fontSize: 15 },
 });
