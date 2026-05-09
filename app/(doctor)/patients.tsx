@@ -347,7 +347,7 @@ export default function PatientsScreen() {
           ] as { key: PatientFilter; label: string; count: number }[]).map((f) => (
             <TouchableOpacity
               key={f.key}
-              style={[styles.filterChip, activeFilter === f.key && styles.filterChipActive]}
+              style={[styles.filterChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, activeFilter === f.key && styles.filterChipActive]}
               onPress={() => setActiveFilter(f.key)}
               activeOpacity={0.8}
             >
@@ -399,9 +399,9 @@ export default function PatientsScreen() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: SIZES.padding, gap: 10, paddingBottom: 4 }}>
                 {waitingList.map((entry) => (
-                  <View key={entry.id} style={styles.wlCard}>
+                  <View key={entry.id} style={[styles.wlCard, { backgroundColor: colors.cardBg }]}>
                     <View style={styles.wlCardTop}>
-                      <Text style={styles.wlPatient} numberOfLines={1}>{entry.patientName}</Text>
+                      <Text style={[styles.wlPatient, { color: colors.textPrimary }]} numberOfLines={1}>{entry.patientName}</Text>
                     </View>
                     {entry.serviceName && (
                       <Text style={styles.wlService} numberOfLines={1}>
