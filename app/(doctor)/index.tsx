@@ -936,8 +936,9 @@ export default function DoctorHome() {
     appointments.filter((a) => a.status === 'pending')
       .sort((a, b) => (b.is_urgent ? 1 : 0) - (a.is_urgent ? 1 : 0)),
   [appointments]);
-  const todayCount    = appointments.filter((a) => isToday(a.appointment_date) && (a.status === 'scheduled' || a.status === 'arrived')).length;
-  const upcomingCount = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
+  const todayCount      = appointments.filter((a) => isToday(a.appointment_date) && (a.status === 'scheduled' || a.status === 'arrived')).length;
+  const upcomingCount   = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
+  const completedToday  = appointments.filter((a) => isToday(a.appointment_date) && a.status === 'completed').length;
 
   // Ďalší naplánovaný termín (najbližší v čase)
   const nextAppt = useMemo(() => {
@@ -1026,6 +1027,11 @@ export default function DoctorHome() {
           <View style={styles.heroStatItem}>
             <Text style={styles.heroStatNum}>{arrivedAppts.length}</Text>
             <Text style={styles.heroStatLbl}>V čakárni</Text>
+          </View>
+          <View style={styles.heroStatDivider} />
+          <View style={styles.heroStatItem}>
+            <Text style={[styles.heroStatNum, { color: '#52C896' }]}>{completedToday}</Text>
+            <Text style={[styles.heroStatLbl, { color: 'rgba(196,168,130,0.8)' }]}>Hotovo</Text>
           </View>
           {pendingAppts.length > 0 && (
             <>
