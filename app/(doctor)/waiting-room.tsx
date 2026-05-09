@@ -56,10 +56,10 @@ export default function WaitingRoomScreen() {
     const [{ data: appts }, { data: roomData }] = await Promise.all([
       supabase
         .from('appointments')
-        .select('id, appointment_date, arrived_at, started_at, room_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
+        .select('id, appointment_date, arrived_at, started_at, chair_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
         .in('clinic_status', ['waiting', 'in_chair'])
         .order('arrived_at', { ascending: true }),
-      supabase.from('clinic_rooms').select('id, name, color').eq('is_active', true).order('sort_order'),
+      supabase.from('chairs').select('id, name, color').eq('is_active', true).order('sort_order'),
     ]);
 
     const rData = (roomData ?? []) as Room[];
@@ -67,10 +67,10 @@ export default function WaitingRoomScreen() {
     const mapped = (appts ?? []).map((r: any) => ({
       id:               r.id,
       appointment_date: r.appointment_date,
-      arrived_at:  r.arrived_at,
-      started_at:  r.started_at,
-      room_id:          r.room_id,
-      room_name:        rData.find((rm) => rm.id === r.room_id)?.name ?? null,
+      arrived_at:       r.arrived_at,
+      started_at:       r.started_at,
+      room_id:          r.chair_id,   // chair_id is the v40 replacement for room_id
+      room_name:        rData.find((rm) => rm.id === r.chair_id)?.name ?? null,
       clinic_status:    r.clinic_status,
       patient:  Array.isArray(r.patient) ? r.patient[0] : r.patient,
       service:  Array.isArray(r.service) ? r.service[0] : r.service,
@@ -98,14 +98,14 @@ export default function WaitingRoomScreen() {
     return () => clearInterval(t);
   }, []);
 
-  async function callToRoom(roomId: string) {
+  async function callToRoom(chairId: string) {
     if (!pickerApptId) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSaving(true);
     await supabase.from('appointments').update({
       clinic_status: 'in_chair',
       started_at:    new Date().toISOString(),
-      room_id:       roomId,
+      chair_id:      chairId,
     }).eq('id', pickerApptId);
     setSaving(false);
     setPickerOpen(false);
