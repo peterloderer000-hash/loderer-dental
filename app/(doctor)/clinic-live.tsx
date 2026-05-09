@@ -83,11 +83,11 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           {appt.arrived_at && (
             <MetricPill icon="enter-outline" label="Príchod" value={fmtTime(appt.arrived_at)} />
           )}
-          {appt.chair_start_at && (
-            <MetricPill icon="medical-outline" label="Začiatok" value={fmtTime(appt.chair_start_at)} />
+          {appt.started_at && (
+            <MetricPill icon="medical-outline" label="Začiatok" value={fmtTime(appt.started_at)} />
           )}
-          {appt.treatment_end_at && (
-            <MetricPill icon="checkmark-circle-outline" label="Koniec" value={fmtTime(appt.treatment_end_at)} />
+          {appt.ended_at && (
+            <MetricPill icon="checkmark-circle-outline" label="Koniec" value={fmtTime(appt.ended_at)} />
           )}
           {waitMins !== null && appt.clinic_status === 'waiting' && (
             <MetricPill

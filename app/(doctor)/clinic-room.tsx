@@ -68,8 +68,8 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
       <View style={pc.timerRow}>
         <TimerCell label="TERMÍN"   value={fmtTime(appt.appointment_date)} icon="calendar-outline" />
         {appt.arrived_at   && <TimerCell label="PRÍCHOD"  value={fmtTime(appt.arrived_at)}         icon="enter-outline" />}
-        {appt.chair_start_at && <TimerCell label="ZAČIATOK" value={fmtTime(appt.chair_start_at)}   icon="medical-outline" />}
-        {appt.treatment_end_at && <TimerCell label="KONIEC" value={fmtTime(appt.treatment_end_at)} icon="flag-outline" />}
+        {appt.started_at && <TimerCell label="ZAČIATOK" value={fmtTime(appt.started_at)}   icon="medical-outline" />}
+        {appt.ended_at && <TimerCell label="KONIEC" value={fmtTime(appt.ended_at)} icon="flag-outline" />}
         {waitMins !== null && appt.clinic_status === 'waiting' &&
           <TimerCell label="ČAKÁ"    value={fmtMins(waitMins)}  icon="hourglass-outline" urgent={waitMins > 15} />}
         {treatMin !== null && ['in_chair','treatment_done','checkout','paid'].includes(appt.clinic_status) &&

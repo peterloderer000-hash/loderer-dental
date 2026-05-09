@@ -1,6 +1,6 @@
 /**
  * Čakáreň — recepcia/doktor
- * waiting → Zavolať (room picker → chair_start_at) → Ukončiť (treatment_end_at)
+ * waiting → Zavolať (room picker → started_at) → Ukončiť (ended_at)
  */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -19,9 +19,9 @@ import { useAppTheme } from '../../context/ThemeContext';
 type Patient = {
   id: string;
   appointment_date: string;
-  arrived_at: string | null;
-  chair_start_at: string | null;
-  room_id: string | null;
+  arrived_at:  string | null;
+  started_at:  string | null;
+  room_id:     string | null;
   room_name: string | null;
   clinic_status: string;
   patient: { full_name: string } | null;
@@ -56,7 +56,7 @@ export default function WaitingRoomScreen() {
     const [{ data: appts }, { data: roomData }] = await Promise.all([
       supabase
         .from('appointments')
-        .select('id, appointment_date, arrived_at, chair_start_at, room_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
+        .select('id, appointment_date, arrived_at, started_at, room_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
         .in('clinic_status', ['waiting', 'in_chair'])
         .order('arrived_at', { ascending: true }),
       supabase.from('clinic_rooms').select('id, name, color').eq('is_active', true).order('sort_order'),
@@ -67,8 +67,8 @@ export default function WaitingRoomScreen() {
     const mapped = (appts ?? []).map((r: any) => ({
       id:               r.id,
       appointment_date: r.appointment_date,
-      arrived_at:       r.arrived_at,
-      chair_start_at:   r.chair_start_at,
+      arrived_at:  r.arrived_at,
+      started_at:  r.started_at,
       room_id:          r.room_id,
       room_name:        rData.find((rm) => rm.id === r.room_id)?.name ?? null,
       clinic_status:    r.clinic_status,
@@ -103,9 +103,9 @@ export default function WaitingRoomScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSaving(true);
     await supabase.from('appointments').update({
-      clinic_status:  'in_chair',
-      chair_start_at: new Date().toISOString(),
-      room_id:        roomId,
+      clinic_status: 'in_chair',
+      started_at:    new Date().toISOString(),
+      room_id:       roomId,
     }).eq('id', pickerApptId);
     setSaving(false);
     setPickerOpen(false);
@@ -117,9 +117,9 @@ export default function WaitingRoomScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSaving(true);
     await supabase.from('appointments').update({
-      clinic_status:    'treatment_done',
-      treatment_end_at: new Date().toISOString(),
-      status:           'completed',
+      clinic_status: 'treatment_done',
+      ended_at:      new Date().toISOString(),
+      status:        'completed',
     }).eq('id', apptId);
     setSaving(false);
     load();
@@ -167,7 +167,7 @@ export default function WaitingRoomScreen() {
                 <Text style={s.sectionLabel}>V ORDINÁCII ({inChair.length})</Text>
               </View>
               {inChair.map((p) => {
-                const treatMin = waitMins(p.chair_start_at);
+                const treatMin = waitMins(p.started_at);
                 return (
                   <View key={p.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, s.cardInProgress]}>
                     <View style={s.cardTop}>
