@@ -58,15 +58,16 @@ const SK_MONTHS = ['jan','feb','mar','apr','máj','jún','júl','aug','sep','okt
 
 // ─── Mini progress bar ────────────────────────────────────────────────────────
 function MiniBar({ value, max, color }: { value: number; max: number; color: string }) {
+  const { colors } = useAppTheme();
   const pct = max > 0 ? Math.min(1, value / max) : 0;
   return (
-    <View style={bar.track}>
+    <View style={[bar.track, { backgroundColor: colors.bg3 }]}>
       <View style={[bar.fill, { width: `${pct * 100}%`, backgroundColor: color }]} />
     </View>
   );
 }
 const bar = StyleSheet.create({
-  track: { height: 6, backgroundColor: COLORS.bg3, borderRadius: 3, overflow: 'hidden', flex: 1 },
+  track: { height: 6, borderRadius: 3, overflow: 'hidden', flex: 1 },
   fill:  { height: 6, borderRadius: 3 },
 });
 
@@ -87,14 +88,15 @@ function StatCard({ emoji, label, value, sub, color = COLORS.esp, bg = '#fff' }:
 
 // ─── Trend chip ───────────────────────────────────────────────────────────────
 function TrendChip({ current, previous }: { current: number; previous: number }) {
+  const { dark } = useAppTheme();
   if (previous === 0 && current === 0) return null;
   const diff = current - previous;
   const pct  = previous > 0 ? Math.round((diff / previous) * 100) : null;
   const up   = diff >= 0;
   return (
-    <View style={[styles.trendChip, { backgroundColor: up ? '#EAFAF1' : '#FDEDEC' }]}>
-      <Ionicons name={up ? 'trending-up' : 'trending-down'} size={11} color={up ? '#1E8449' : '#922B21'} />
-      <Text style={[styles.trendText, { color: up ? '#1E8449' : '#922B21' }]}>
+    <View style={[styles.trendChip, { backgroundColor: up ? (dark ? '#1A3D2B' : '#EAFAF1') : (dark ? '#3D1A1A' : '#FDEDEC') }]}>
+      <Ionicons name={up ? 'trending-up' : 'trending-down'} size={11} color={up ? '#2ECC71' : '#E74C3C'} />
+      <Text style={[styles.trendText, { color: up ? '#2ECC71' : '#E74C3C' }]}>
         {diff >= 0 ? '+' : ''}{pct !== null ? `${pct}%` : `${diff}`}
       </Text>
     </View>
@@ -103,6 +105,7 @@ function TrendChip({ current, previous }: { current: number; previous: number })
 
 // ─── Horizontálny revenue graf (príjem po mesiacoch) ─────────────────────────
 function RevenueBarChart({ data }: { data: { label: string; revenue: number; isCurrent: boolean }[] }) {
+  const { colors } = useAppTheme();
   const maxR = Math.max(...data.map((d) => d.revenue), 1);
   return (
     <View style={{ gap: 9 }}>
@@ -113,7 +116,7 @@ function RevenueBarChart({ data }: { data: { label: string; revenue: number; isC
             <Text style={[revenueBarStyles.label, d.isCurrent && { color: COLORS.wal, fontWeight: '700' }]}>
               {d.label}
             </Text>
-            <View style={revenueBarStyles.track}>
+            <View style={[revenueBarStyles.track, { backgroundColor: colors.bg3 }]}>
               <View style={[
                 revenueBarStyles.fill,
                 { width: `${Math.max(pct, d.revenue > 0 ? 4 : 0)}%`, backgroundColor: d.isCurrent ? COLORS.wal : '#C4A882' },
@@ -136,7 +139,7 @@ function RevenueBarChart({ data }: { data: { label: string; revenue: number; isC
 }
 const revenueBarStyles = StyleSheet.create({
   label:     { width: 28, fontSize: 9, color: COLORS.wal },
-  track:     { flex: 1, height: 22, backgroundColor: COLORS.bg3, borderRadius: 5, overflow: 'hidden' },
+  track:     { flex: 1, height: 22, borderRadius: 5, overflow: 'hidden' },
   fill:      { height: 22, borderRadius: 5, justifyContent: 'center', paddingLeft: 6 },
   fillLabel: { fontSize: 9, color: '#fff', fontWeight: '700' },
   value:     { fontSize: 9, color: COLORS.wal, width: 38, textAlign: 'right' },
@@ -147,7 +150,8 @@ function ServiceBreakdown({ services, total }: {
   services: { name: string; emoji: string | null; count: number }[];
   total: number;
 }) {
-  const colors = ['#2C1F14', '#6B4F35', '#C4A882', '#1A5276', '#1E8449', '#7D3C98'];
+  const { colors } = useAppTheme();
+  const palette = ['#2C1F14', '#6B4F35', '#C4A882', '#1A5276', '#1E8449', '#7D3C98'];
   return (
     <View style={{ gap: 8 }}>
       {services.slice(0, 6).map((svc, i) => {
@@ -155,9 +159,9 @@ function ServiceBreakdown({ services, total }: {
         return (
           <View key={svc.name} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Text style={{ fontSize: 14, width: 22 }}>{svc.emoji ?? '🦷'}</Text>
-            <Text style={svcBreakdownStyles.name} numberOfLines={1}>{svc.name}</Text>
-            <View style={svcBreakdownStyles.track}>
-              <View style={[svcBreakdownStyles.fill, { width: `${pct}%`, backgroundColor: colors[i % colors.length] }]} />
+            <Text style={[svcBreakdownStyles.name, { color: colors.textPrimary }]} numberOfLines={1}>{svc.name}</Text>
+            <View style={[svcBreakdownStyles.track, { backgroundColor: colors.bg3 }]}>
+              <View style={[svcBreakdownStyles.fill, { width: `${pct}%`, backgroundColor: palette[i % palette.length] }]} />
             </View>
             <Text style={svcBreakdownStyles.pct}>{pct}%</Text>
           </View>
@@ -167,14 +171,15 @@ function ServiceBreakdown({ services, total }: {
   );
 }
 const svcBreakdownStyles = StyleSheet.create({
-  name:  { width: 100, fontSize: 11, color: COLORS.esp, fontWeight: '500' },
-  track: { flex: 1, height: 10, backgroundColor: COLORS.bg3, borderRadius: 5, overflow: 'hidden' },
+  name:  { width: 100, fontSize: 11, fontWeight: '500' },
+  track: { flex: 1, height: 10, borderRadius: 5, overflow: 'hidden' },
   fill:  { height: 10, borderRadius: 5 },
   pct:   { fontSize: 10, fontWeight: '700', color: COLORS.wal, width: 30, textAlign: 'right' },
 });
 
 // ─── Mesačný stĺpcový graf ────────────────────────────────────────────────────
 function MonthChart({ data }: { data: { label: string; count: number; revenue: number; isCurrent: boolean }[] }) {
+  const { colors } = useAppTheme();
   const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <View style={styles.weekChart}>
@@ -184,7 +189,7 @@ function MonthChart({ data }: { data: { label: string; count: number; revenue: n
           <View style={styles.weekBarWrap}>
             <View style={[
               styles.weekBar,
-              { height: Math.max(4, (d.count / max) * 80), backgroundColor: d.isCurrent ? COLORS.wal : COLORS.bg3 },
+              { height: Math.max(4, (d.count / max) * 80), backgroundColor: d.isCurrent ? COLORS.wal : colors.bg3 },
               d.isCurrent && styles.weekBarToday,
             ]} />
           </View>
@@ -197,6 +202,7 @@ function MonthChart({ data }: { data: { label: string; count: number; revenue: n
 
 // ─── Týždenný stĺpcový graf ───────────────────────────────────────────────────
 function WeekChart({ data }: { data: { label: string; count: number; isToday: boolean }[] }) {
+  const { colors } = useAppTheme();
   const max = Math.max(...data.map((d) => d.count), 1);
   return (
     <View style={styles.weekChart}>
@@ -206,7 +212,7 @@ function WeekChart({ data }: { data: { label: string; count: number; isToday: bo
           <View style={styles.weekBarWrap}>
             <View style={[
               styles.weekBar,
-              { height: Math.max(4, (d.count / max) * 80), backgroundColor: d.isToday ? COLORS.wal : COLORS.bg3 },
+              { height: Math.max(4, (d.count / max) * 80), backgroundColor: d.isToday ? COLORS.wal : colors.bg3 },
               d.isToday && styles.weekBarToday,
             ]} />
           </View>
