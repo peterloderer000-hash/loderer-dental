@@ -21,9 +21,9 @@ function StatCard({ label, value, sub, icon, color, bg }: {
   label: string; value: string | number; sub?: string;
   icon: string; color: string; bg: string;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={[sc.card, { backgroundColor: bg, borderColor: color + '44' }]}>
+    <View style={[sc.card, { backgroundColor: dark ? colors.cardBg : bg, borderColor: color + '44' }]}>
       <View style={[sc.iconWrap, { backgroundColor: color + '22' }]}>
         <Ionicons name={icon as any} size={18} color={color} />
       </View>

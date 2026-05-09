@@ -39,7 +39,7 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
   isLoading: boolean;
   isDoctor:  boolean;
 }) {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const cfg      = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   const waitMins = getWaitingMinutes(appt);
   const treatMin = getTreatmentMinutes(appt);
@@ -47,7 +47,7 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
   return (
     <View style={[pc.card, { borderColor: colors.bg3, borderTopWidth: 4, borderTopColor: cfg.color, backgroundColor: colors.cardBg }]}>
       {/* Status badge */}
-      <View style={[pc.statusBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+      <View style={[pc.statusBadge, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.border }]}>
         <Text style={pc.statusEmoji}>{cfg.emoji}</Text>
         <Text style={[pc.statusLabel, { color: cfg.color }]}>{cfg.label}</Text>
       </View>
@@ -90,9 +90,9 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
 }
 
 function TimerCell({ label, value, icon, urgent }: { label: string; value: string; icon: string; urgent?: boolean }) {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={[pc.timerCell, urgent && pc.timerCellUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
+    <View style={[pc.timerCell, urgent && pc.timerCellUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }, urgent && dark && { backgroundColor: '#4A1010', borderColor: '#C0392B' }]}>
       <Ionicons name={icon as any} size={14} color={urgent ? '#C0392B' : colors.textSecondary} />
       <Text style={[pc.timerLabel, { color: colors.textSecondary }, urgent && { color: '#C0392B' }]}>{label}</Text>
       <Text style={[pc.timerValue, { color: colors.textPrimary }, urgent && { color: '#C0392B' }]}>{value}</Text>
@@ -103,6 +103,7 @@ function TimerCell({ label, value, icon, urgent }: { label: string; value: strin
 function ActionButtons({ status, onAction, isDoctor }: {
   status: string; onAction: (a: string) => void; isDoctor: boolean;
 }) {
+  const { dark } = useAppTheme();
   type BtnDef = { label: string; icon: string; color: string; bg: string; action: string; big?: boolean };
   let buttons: BtnDef[] = [];
 
@@ -146,7 +147,7 @@ function ActionButtons({ status, onAction, isDoctor }: {
       {buttons.map(b => (
         <TouchableOpacity
           key={b.action}
-          style={[pc.btn, { backgroundColor: b.bg, borderColor: b.color + '55' }, b.big && pc.btnBig]}
+          style={[pc.btn, { backgroundColor: dark ? b.color + '22' : b.bg, borderColor: b.color + '55' }, b.big && pc.btnBig]}
           onPress={() => onAction(b.action)}
           activeOpacity={0.8}
         >

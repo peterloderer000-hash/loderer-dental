@@ -40,7 +40,7 @@ function fmtTime(iso: string) {
 
 export default function WaitingRoomScreen() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const [waiting,    setWaiting]    = useState<Patient[]>([]);
   const [inChair,    setInChair]    = useState<Patient[]>([]);
   const [rooms,      setRooms]      = useState<Room[]>([]);
@@ -164,12 +164,12 @@ export default function WaitingRoomScreen() {
             <>
               <View style={s.sectionHeader}>
                 <View style={[s.sectionDot, { backgroundColor: '#2ECC71' }]} />
-                <Text style={s.sectionLabel}>V ORDINÁCII ({inChair.length})</Text>
+                <Text style={[s.sectionLabel, { color: colors.textSecondary }]}>V ORDINÁCII ({inChair.length})</Text>
               </View>
               {inChair.map((p) => {
                 const treatMin = waitMins(p.started_at);
                 return (
-                  <View key={p.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, s.cardInProgress]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#0D3B1F' : '#F0FAF4', borderColor: dark ? '#2ECC7155' : '#A9DFBF' }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, { backgroundColor: '#1E8449' }]}>
                         <Ionicons name="medical" size={18} color="#fff" />
@@ -211,13 +211,13 @@ export default function WaitingRoomScreen() {
             <>
               <View style={s.sectionHeader}>
                 <View style={[s.sectionDot, { backgroundColor: COLORS.gold }]} />
-                <Text style={s.sectionLabel}>ČAKÁ ({waiting.length})</Text>
+                <Text style={[s.sectionLabel, { color: colors.textSecondary }]}>ČAKÁ ({waiting.length})</Text>
               </View>
               {waiting.map((p, idx) => {
                 const mins = waitMins(p.arrived_at);
                 const isLong = mins >= 20;
                 return (
-                  <View key={p.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isLong && s.cardUrgent]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: isLong ? (dark ? '#3B0D0D' : '#FFF8F8') : colors.cardBg, borderColor: isLong ? '#F1948A' : colors.bg3 }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, isLong && { backgroundColor: '#C0392B' }]}>
                         <Text style={s.numText}>{idx + 1}</Text>
@@ -253,17 +253,17 @@ export default function WaitingRoomScreen() {
         </ScrollView>
       )}
 
-      <View style={s.footer}>
-        <Ionicons name="sync-outline" size={11} color={COLORS.wal} />
-        <Text style={s.footerText}>Živá aktualizácia cez Supabase Realtime</Text>
+      <View style={[s.footer, { backgroundColor: colors.bg3, borderTopColor: colors.bg3 }]}>
+        <Ionicons name="sync-outline" size={11} color={colors.textSecondary} />
+        <Text style={[s.footerText, { color: colors.textSecondary }]}>Živá aktualizácia cez Supabase Realtime</Text>
       </View>
 
       {/* ── Room picker modal ── */}
       <Modal visible={pickerOpen} transparent animationType="slide" onRequestClose={() => setPickerOpen(false)}>
         <View style={s.modalOverlay}>
-          <View style={s.modalCard}>
-            <Text style={s.modalTitle}>Vyber kreslo</Text>
-            <Text style={s.modalSub}>Pacient bude presunutý do ordinácie</Text>
+          <View style={[s.modalCard, { backgroundColor: colors.cardBg }]}>
+            <Text style={[s.modalTitle, { color: colors.textPrimary }]}>Vyber kreslo</Text>
+            <Text style={[s.modalSub, { color: colors.textSecondary }]}>Pacient bude presunutý do ordinácie</Text>
             {rooms.length === 0 && (
               <Text style={{ color: COLORS.wal, textAlign: 'center', marginVertical: 12 }}>
                 Žiadne kreslá nie sú definované.
@@ -283,7 +283,7 @@ export default function WaitingRoomScreen() {
               </TouchableOpacity>
             ))}
             <TouchableOpacity style={s.cancelBtn} onPress={() => setPickerOpen(false)}>
-              <Text style={s.cancelBtnText}>Zrušiť</Text>
+              <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
           </View>
         </View>

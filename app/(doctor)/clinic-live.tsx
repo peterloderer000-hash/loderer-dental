@@ -39,7 +39,7 @@ type CardProps = {
 };
 
 function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoom, tick, actionLoading }: CardProps) {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const cfg      = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   const waitMins = getWaitingMinutes(appt);
   const treatMin = getTreatmentMinutes(appt);
@@ -50,7 +50,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
       <TouchableOpacity onPress={onToggle} activeOpacity={0.85}>
         {/* ── Row 1: status + name + time ── */}
         <View style={s.cardRow}>
-          <View style={[s.statusChip, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+          <View style={[s.statusChip, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.border }]}>
             <Text style={s.statusEmoji}>{cfg.emoji}</Text>
             <Text style={[s.statusLabel, { color: cfg.color }]}>{cfg.label}</Text>
           </View>
@@ -146,7 +146,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
                   {actions.map(a => (
                     <TouchableOpacity
                       key={a.label}
-                      style={[s.actionBtn, { backgroundColor: a.bg, borderColor: a.color + '44' }]}
+                      style={[s.actionBtn, { backgroundColor: dark ? a.color + '22' : a.bg, borderColor: a.color + '44' }]}
                       onPress={() => a.handler(appt)}
                       activeOpacity={0.8}
                     >
@@ -172,9 +172,9 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 }
 
 function MetricPill({ icon, label, value, urgent }: { icon: string; label: string; value: string; urgent?: boolean }) {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={[s.pill, urgent && s.pillUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
+    <View style={[s.pill, urgent && s.pillUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }, urgent && dark && { backgroundColor: '#4A1010', borderColor: '#C0392B' }]}>
       <Ionicons name={icon as any} size={11} color={urgent ? '#C0392B' : colors.textSecondary} />
       <Text style={[s.pillLabel, { color: colors.textSecondary }, urgent && { color: '#C0392B' }]}>{label}</Text>
       <Text style={[s.pillValue, { color: colors.textPrimary }, urgent && { color: '#C0392B' }]}>{value}</Text>
