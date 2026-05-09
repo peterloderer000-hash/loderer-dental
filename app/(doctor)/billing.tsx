@@ -63,7 +63,7 @@ function getPeriodRange(period: Period): { from: Date | null; to: Date | null } 
 }
 
 export default function BillingScreen() {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const router = useRouter();
   const [appts,      setAppts]      = useState<BillingAppt[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -287,7 +287,7 @@ export default function BillingScreen() {
 
                 {/* Platba badge — kliknuteľné */}
                 <TouchableOpacity
-                  style={[styles.payBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}
+                  style={[styles.payBadge, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.border }]}
                   onPress={() => handleTogglePayment(a)}
                   activeOpacity={0.75}>
                   <Text style={styles.payBadgeIcon}>{cfg.icon}</Text>

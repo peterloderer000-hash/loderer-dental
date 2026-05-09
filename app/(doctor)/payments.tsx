@@ -370,7 +370,7 @@ export default function PaymentsScreen() {
       <View style={s.filterRow}>
         {(['all', 'pending', 'paid', 'refunded'] as FilterStatus[]).map(f => (
           <TouchableOpacity key={f} onPress={() => setFilter(f)}
-            style={[s.filterChip, filter === f && s.filterChipActive]} activeOpacity={0.8}>
+            style={[s.filterChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, filter === f && s.filterChipActive]} activeOpacity={0.8}>
             <Text style={[s.filterText, filter === f && s.filterTextActive]}>
               {STATUS_LABEL[f] ?? 'Všetky'}
             </Text>
@@ -400,10 +400,10 @@ export default function PaymentsScreen() {
             </View>
           )}
           renderItem={({ item: p }) => (
-            <View style={s.card}>
+            <View style={[s.card, { backgroundColor: colors.cardBg }]}>
               <View style={s.cardTop}>
                 <View style={{ flex: 1 }}>
-                  <Text style={s.patientName} numberOfLines={1}>{p.patient?.full_name ?? '—'}</Text>
+                  <Text style={[s.patientName, { color: colors.textPrimary }]} numberOfLines={1}>{p.patient?.full_name ?? '—'}</Text>
                   <View style={s.metaRow}>
                     <Ionicons name={METHOD_ICONS[p.method] as any} size={12} color={COLORS.wal} />
                     <Text style={s.metaText}>{METHOD_LABELS[p.method]}</Text>
@@ -412,7 +412,7 @@ export default function PaymentsScreen() {
                   </View>
                 </View>
                 <View style={{ alignItems: 'flex-end', gap: 4 }}>
-                  <Text style={s.amount}>{fmtEur(p.amount_cents)}</Text>
+                  <Text style={[s.amount, { color: colors.textPrimary }]}>{fmtEur(p.amount_cents)}</Text>
                   <View style={[s.statusBadge, { backgroundColor: STATUS_BG[p.status] ?? '#F2F2F2' }]}>
                     <Text style={[s.statusText, { color: STATUS_COLOR[p.status] ?? '#888' }]}>
                       {STATUS_LABEL[p.status] ?? p.status}
