@@ -1,139 +1,107 @@
 /**
  * Dental Twin — Digitálny dvojník chrupu
- * Interaktívna SVG mapa + 5-ročná predikcia vývoja + cenové porovnanie
+ * SVG arch mapa + 5-ročná predikcia + cenové porovnanie
+ * Optimalizované pre telefón — bez PanResponder slidera
  */
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ActivityIndicator, Alert, Animated, Dimensions, Modal, PanResponder,
-  RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator, Dimensions, Modal, RefreshControl,
+  ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, {
-  Ellipse, Rect, Text as SvgText, Defs, RadialGradient, Stop, G, Circle,
-} from 'react-native-svg';
+import Svg, { Ellipse, G, Text as SvgText } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { useAppTheme } from '../../context/ThemeContext';
 import {
   generatePredictions, YearSnapshot, ToothStatus, STATUS_CFG,
-  toothName, getPredictionSummary, PROCEDURE_COSTS, PREVENTION_COST, RiskFactors,
+  toothName, getPredictionSummary, PREVENTION_COST, RiskFactors,
 } from '../../utils/dentalPrediction';
 
 const { width: W } = Dimensions.get('window');
-const CHART_W = W - 32;
-const DISCLAIMER = 'Predikcia je orientačná, založená na klinických štatistikách. Nenahrádza odbornú diagnostiku.';
+const CHART_W  = W - 32;
+const ARCH_H   = 130;
+const DISCLAIMER = 'Predikcia je orientačná. Nenahrádza odbornú diagnostiku.';
 
-// ─── FDI tooth layout (arch shape) ───────────────────────────────────────────
-// Pozície pre hornú a dolnú čeľusť — arch tvar (percentá šírky a výšky)
-const ARCH_H = 120;
-
+// ─── FDI arch pozície ─────────────────────────────────────────────────────────
 interface ToothPos { fdi: number; x: number; y: number; rx: number; ry: number }
 
 function buildUpperArch(): ToothPos[] {
-  // Q1 (upper right, patient view): 18,17,16,15,14,13,12,11
-  // Q2 (upper left):  21,22,23,24,25,26,27,28
-  const W2 = CHART_W;
+  const CW = CHART_W;
   return [
-    // Right side (Q1) — back to front
-    { fdi:18, x:14,  y:12, rx:12, ry:10 },
-    { fdi:17, x:32,  y:18, rx:11, ry:9  },
-    { fdi:16, x:50,  y:25, rx:11, ry:9  },
-    { fdi:15, x:67,  y:33, rx:9,  ry:8  },
-    { fdi:14, x:82,  y:40, rx:9,  ry:8  },
-    { fdi:13, x:96,  y:49, rx:7,  ry:8  },
-    { fdi:12, x:107, y:57, rx:6,  ry:8  },
-    { fdi:11, x:116, y:62, rx:6,  ry:8  },
-    // Left side (Q2) — front to back
-    { fdi:21, x:W2-116, y:62, rx:6,  ry:8  },
-    { fdi:22, x:W2-107, y:57, rx:6,  ry:8  },
-    { fdi:23, x:W2-96,  y:49, rx:7,  ry:8  },
-    { fdi:24, x:W2-82,  y:40, rx:9,  ry:8  },
-    { fdi:25, x:W2-67,  y:33, rx:9,  ry:8  },
-    { fdi:26, x:W2-50,  y:25, rx:11, ry:9  },
-    { fdi:27, x:W2-32,  y:18, rx:11, ry:9  },
-    { fdi:28, x:W2-14,  y:12, rx:12, ry:10 },
+    { fdi:18, x:14,    y:14,  rx:13, ry:11 },
+    { fdi:17, x:33,    y:22,  rx:12, ry:10 },
+    { fdi:16, x:52,    y:30,  rx:12, ry:10 },
+    { fdi:15, x:70,    y:39,  rx:10, ry:9  },
+    { fdi:14, x:86,    y:48,  rx:10, ry:9  },
+    { fdi:13, x:100,   y:58,  rx:8,  ry:9  },
+    { fdi:12, x:112,   y:67,  rx:7,  ry:9  },
+    { fdi:11, x:121,   y:73,  rx:7,  ry:9  },
+    { fdi:21, x:CW-121,y:73,  rx:7,  ry:9  },
+    { fdi:22, x:CW-112,y:67,  rx:7,  ry:9  },
+    { fdi:23, x:CW-100,y:58,  rx:8,  ry:9  },
+    { fdi:24, x:CW-86, y:48,  rx:10, ry:9  },
+    { fdi:25, x:CW-70, y:39,  rx:10, ry:9  },
+    { fdi:26, x:CW-52, y:30,  rx:12, ry:10 },
+    { fdi:27, x:CW-33, y:22,  rx:12, ry:10 },
+    { fdi:28, x:CW-14, y:14,  rx:13, ry:11 },
   ];
 }
 
 function buildLowerArch(): ToothPos[] {
-  const W2 = CHART_W;
+  const CW = CHART_W;
+  const B  = ARCH_H;
   return [
-    // Q4 (lower right): 48,47,46,45,44,43,42,41
-    { fdi:48, x:14,  y:ARCH_H-12, rx:12, ry:10 },
-    { fdi:47, x:32,  y:ARCH_H-18, rx:11, ry:9  },
-    { fdi:46, x:50,  y:ARCH_H-25, rx:11, ry:9  },
-    { fdi:45, x:67,  y:ARCH_H-33, rx:9,  ry:8  },
-    { fdi:44, x:82,  y:ARCH_H-40, rx:9,  ry:8  },
-    { fdi:43, x:96,  y:ARCH_H-49, rx:7,  ry:8  },
-    { fdi:42, x:107, y:ARCH_H-57, rx:6,  ry:8  },
-    { fdi:41, x:116, y:ARCH_H-62, rx:6,  ry:8  },
-    // Q3 (lower left): 31,32,33,34,35,36,37,38
-    { fdi:31, x:W2-116, y:ARCH_H-62, rx:6,  ry:8  },
-    { fdi:32, x:W2-107, y:ARCH_H-57, rx:6,  ry:8  },
-    { fdi:33, x:W2-96,  y:ARCH_H-49, rx:7,  ry:8  },
-    { fdi:34, x:W2-82,  y:ARCH_H-40, rx:9,  ry:8  },
-    { fdi:35, x:W2-67,  y:ARCH_H-33, rx:9,  ry:8  },
-    { fdi:36, x:W2-50,  y:ARCH_H-25, rx:11, ry:9  },
-    { fdi:37, x:W2-32,  y:ARCH_H-18, rx:11, ry:9  },
-    { fdi:38, x:W2-14,  y:ARCH_H-12, rx:12, ry:10 },
+    { fdi:48, x:14,    y:B-14, rx:13, ry:11 },
+    { fdi:47, x:33,    y:B-22, rx:12, ry:10 },
+    { fdi:46, x:52,    y:B-30, rx:12, ry:10 },
+    { fdi:45, x:70,    y:B-39, rx:10, ry:9  },
+    { fdi:44, x:86,    y:B-48, rx:10, ry:9  },
+    { fdi:43, x:100,   y:B-58, rx:8,  ry:9  },
+    { fdi:42, x:112,   y:B-67, rx:7,  ry:9  },
+    { fdi:41, x:121,   y:B-73, rx:7,  ry:9  },
+    { fdi:31, x:CW-121,y:B-73, rx:7,  ry:9  },
+    { fdi:32, x:CW-112,y:B-67, rx:7,  ry:9  },
+    { fdi:33, x:CW-100,y:B-58, rx:8,  ry:9  },
+    { fdi:34, x:CW-86, y:B-48, rx:10, ry:9  },
+    { fdi:35, x:CW-70, y:B-39, rx:10, ry:9  },
+    { fdi:36, x:CW-52, y:B-30, rx:12, ry:10 },
+    { fdi:37, x:CW-33, y:B-22, rx:12, ry:10 },
+    { fdi:38, x:CW-14, y:B-14, rx:13, ry:11 },
   ];
 }
 
 const UPPER_ARCH = buildUpperArch();
 const LOWER_ARCH = buildLowerArch();
 
-// ─── Animated tooth color ─────────────────────────────────────────────────────
-function toothFill(status: ToothStatus, isDark: boolean, isPredicted: boolean): string {
-  const cfg = STATUS_CFG[status] ?? STATUS_CFG.healthy;
-  const base = isDark ? cfg.darkColor : cfg.color;
-  if (!isPredicted) return base;
-  return base; // predikcia — rovnaká farba, ale s efektom
-}
-
+// ─── Tooth shape ─────────────────────────────────────────────────────────────
 function ToothShape({
-  pos, status, selected, isPredicted, onPress, pulseAnim,
+  pos, status, selected, isPredicted, onPress,
 }: {
-  pos: ToothPos;
-  status: ToothStatus;
-  selected: boolean;
-  isPredicted: boolean;
-  onPress: () => void;
-  pulseAnim?: Animated.Value;
+  pos: ToothPos; status: ToothStatus; selected: boolean;
+  isPredicted: boolean; onPress: () => void;
 }) {
   const { dark } = useAppTheme();
   const cfg    = STATUS_CFG[status] ?? STATUS_CFG.healthy;
-  const fill   = toothFill(status, dark, isPredicted);
-  const border = selected ? '#C9A84C' : (isPredicted && cfg.glowColor ? cfg.glowColor : (dark ? '#555' : '#ccc'));
-  const bw     = selected ? 2.5 : (isPredicted && cfg.glowColor ? 1.5 : 1);
+  const fill   = dark ? cfg.darkColor : cfg.color;
+  const stroke = selected ? '#C9A84C' : isPredicted && cfg.glowColor ? cfg.glowColor : (dark ? '#444' : '#bbb');
+  const sw     = selected ? 2.5 : isPredicted && cfg.glowColor ? 1.5 : 0.8;
 
   return (
     <G onPress={onPress}>
-      {/* Glow effect for selected or predicted issues */}
       {(selected || (isPredicted && cfg.severity >= 2)) && (
-        <Ellipse
-          cx={pos.x} cy={pos.y}
-          rx={pos.rx + 4} ry={pos.ry + 4}
-          fill={selected ? '#C9A84C' : (cfg.glowColor ?? '#FF9800')}
-          opacity={0.3}
-        />
+        <Ellipse cx={pos.x} cy={pos.y} rx={pos.rx + 5} ry={pos.ry + 5}
+          fill={selected ? '#C9A84C' : (cfg.glowColor ?? '#FF9800')} opacity={0.25} />
       )}
-      <Ellipse
-        cx={pos.x} cy={pos.y}
-        rx={pos.rx} ry={pos.ry}
-        fill={fill}
-        stroke={border}
-        strokeWidth={bw}
-        opacity={status === 'missing' || status === 'extracted' ? 0.4 : 1}
-      />
-      {/* Tooth highlight (top gloss effect) */}
-      <Ellipse
-        cx={pos.x} cy={pos.y - pos.ry * 0.3}
-        rx={pos.rx * 0.5} ry={pos.ry * 0.25}
-        fill="rgba(255,255,255,0.45)"
-      />
+      <Ellipse cx={pos.x} cy={pos.y} rx={pos.rx} ry={pos.ry}
+        fill={fill} stroke={stroke} strokeWidth={sw}
+        opacity={status === 'missing' || status === 'extracted' ? 0.35 : 1} />
+      <Ellipse cx={pos.x} cy={pos.y - pos.ry * 0.28}
+        rx={pos.rx * 0.45} ry={pos.ry * 0.22}
+        fill="rgba(255,255,255,0.38)" />
     </G>
   );
 }
@@ -142,128 +110,86 @@ function ToothShape({
 function ArchMap({
   teeth, selected, predictedTeeth, onSelect,
 }: {
-  teeth: Record<number, ToothStatus>;
-  selected: number | null;
-  predictedTeeth: Set<number>;
-  onSelect: (fdi: number) => void;
+  teeth: Record<number, ToothStatus>; selected: number | null;
+  predictedTeeth: Set<number>; onSelect: (fdi: number) => void;
 }) {
   const { dark } = useAppTheme();
-  const svgH = ARCH_H * 2 + 24;
-  const bgColor = dark ? '#1A1209' : '#0D0D0D';
-  const divColor = dark ? '#3D3010' : '#2A1F0A';
+  const svgH    = ARCH_H * 2 + 28;
+  const bgColor = dark ? '#1A1209' : '#111';
+  const divClr  = dark ? '#3D3010' : '#2A1F0A';
 
   return (
     <View style={[s.archWrap, { backgroundColor: bgColor }]}>
       <Svg width={CHART_W} height={svgH}>
-        {/* Upper jaw label */}
-        <SvgText x={CHART_W / 2} y={8} textAnchor="middle" fontSize={7}
-          fill={dark ? '#A08060' : '#6B4F3A'} fontFamily="DMSans_500Medium">
+        <SvgText x={CHART_W / 2} y={10} textAnchor="middle" fontSize={8}
+          fill={dark ? '#A08060' : '#7B6040'} fontFamily="DMSans_500Medium">
           HORNÁ ČEĽUSŤ
         </SvgText>
         {UPPER_ARCH.map(pos => (
-          <ToothShape
-            key={pos.fdi}
-            pos={{ ...pos, y: pos.y + 12 }}
+          <ToothShape key={pos.fdi} pos={{ ...pos, y: pos.y + 14 }}
             status={teeth[pos.fdi] ?? 'healthy'}
             selected={selected === pos.fdi}
             isPredicted={predictedTeeth.has(pos.fdi)}
-            onPress={() => onSelect(pos.fdi)}
-          />
+            onPress={() => onSelect(pos.fdi)} />
         ))}
 
-        {/* Divider */}
-        <Rect x={0} y={ARCH_H + 14} width={CHART_W} height={1} fill={divColor} />
-        <SvgText x={CHART_W / 2} y={ARCH_H + 21} textAnchor="middle" fontSize={7}
-          fill={dark ? '#A08060' : '#6B4F3A'} fontFamily="DMSans_500Medium">
+        <Ellipse cx={CHART_W / 2} cy={ARCH_H + 16} rx={CHART_W / 2 - 8} ry={1}
+          fill={divClr} opacity={0.6} />
+        <SvgText x={CHART_W / 2} y={ARCH_H + 24} textAnchor="middle" fontSize={8}
+          fill={dark ? '#A08060' : '#7B6040'} fontFamily="DMSans_500Medium">
           DOLNÁ ČEĽUSŤ
         </SvgText>
 
         {LOWER_ARCH.map(pos => (
-          <ToothShape
-            key={pos.fdi}
-            pos={{ ...pos, y: pos.y + ARCH_H + 24 }}
+          <ToothShape key={pos.fdi} pos={{ ...pos, y: pos.y + ARCH_H + 28 }}
             status={teeth[pos.fdi] ?? 'healthy'}
             selected={selected === pos.fdi}
             isPredicted={predictedTeeth.has(pos.fdi)}
-            onPress={() => onSelect(pos.fdi)}
-          />
+            onPress={() => onSelect(pos.fdi)} />
         ))}
       </Svg>
     </View>
   );
 }
 
-// ─── Timeline Slider ──────────────────────────────────────────────────────────
-const HORIZON = 5;
-const TRACK_W = W - 64;
-const DOT_STEP = TRACK_W / (HORIZON + 1);
+// ─── Year selector (náhrada za PanResponder slider) ───────────────────────────
+const YEAR_LABELS = ['Dnes', '+1r', '+2r', '+3r', '+4r', '+5r'];
 
-function TimelineSlider({
-  year, onYearChange,
-}: { year: number; onYearChange: (y: number) => void }) {
+function YearSelector({ year, onChange }: { year: number; onChange: (y: number) => void }) {
   const { colors, dark } = useAppTheme();
-  const xAnim = useRef(new Animated.Value(year * DOT_STEP)).current;
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder:  () => true,
-      onPanResponderMove: (_, g) => {
-        const raw  = Math.max(0, Math.min(g.moveX - 32, TRACK_W));
-        xAnim.setValue(raw);
-        const newY = Math.round(raw / DOT_STEP);
-        onYearChange(Math.min(newY, HORIZON));
-      },
-      onPanResponderRelease: (_, g) => {
-        const raw  = Math.max(0, Math.min(g.moveX - 32, TRACK_W));
-        const snap = Math.round(raw / DOT_STEP);
-        const clamped = Math.min(snap, HORIZON);
-        Animated.spring(xAnim, { toValue: clamped * DOT_STEP, useNativeDriver: false }).start();
-        onYearChange(clamped);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      },
-    })
-  ).current;
-
-  useEffect(() => {
-    Animated.spring(xAnim, { toValue: year * DOT_STEP, useNativeDriver: false }).start();
-  }, [year]);
-
   return (
-    <View style={s.sliderWrap}>
-      <Text style={[s.sliderLabel, { color: colors.textSecondary }]}>Minulosť</Text>
-      <View style={s.sliderTrack}>
-        {/* Background track */}
-        <View style={[s.track, { backgroundColor: dark ? '#3D2E22' : '#E8DDD0' }]} />
-        {/* Filled portion */}
-        <Animated.View style={[s.trackFill, {
-          width: xAnim,
-          backgroundColor: year === 0 ? COLORS_TW.gold : '#E74C3C',
-        }]} />
-        {/* Year dots */}
-        {Array.from({ length: HORIZON + 1 }, (_, i) => (
+    <View style={s.yearRow}>
+      {YEAR_LABELS.map((lbl, i) => {
+        const active = i === year;
+        const past   = i < year && i > 0;
+        return (
           <TouchableOpacity
             key={i}
-            style={[s.dot, {
-              left: i * DOT_STEP - 8,
-              backgroundColor: i === 0 ? COLORS_TW.gold : i <= year ? '#E74C3C' : (dark ? '#3D2E22' : '#D5C9C0'),
-              borderColor:     i === year ? '#fff' : 'transparent',
-            }]}
-            onPress={() => { onYearChange(i); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-            activeOpacity={0.8}
+            style={[
+              s.yearBtn,
+              { backgroundColor: active
+                  ? (i === 0 ? '#C9A84C' : '#E74C3C')
+                  : past
+                  ? (dark ? '#3A1010' : '#FCE4E4')
+                  : (dark ? '#2A1F14' : '#F0E8DE'),
+                borderColor: active
+                  ? (i === 0 ? '#C9A84C' : '#E74C3C')
+                  : (dark ? '#4A3020' : '#D8CCBE'),
+              },
+            ]}
+            onPress={() => {
+              onChange(i);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+            activeOpacity={0.75}
           >
-            <Text style={[s.dotLabel, { color: i === year ? '#fff' : (dark ? '#888' : '#999') }]}>
-              {i === 0 ? 'Dnes' : `+${i}r`}
-            </Text>
+            <Text style={[s.yearBtnTxt, {
+              color: active ? '#fff' : past ? (dark ? '#E07070' : '#C0392B') : colors.textSecondary,
+              fontWeight: active ? '700' : '500',
+            }]}>{lbl}</Text>
           </TouchableOpacity>
-        ))}
-        {/* Thumb */}
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={[s.thumb, { left: Animated.subtract(xAnim, 14), backgroundColor: year === 0 ? COLORS_TW.gold : '#E74C3C' }]}
-        />
-      </View>
-      <Text style={[s.sliderLabel, { color: colors.textSecondary }]}>+5 rokov</Text>
+        );
+      })}
     </View>
   );
 }
@@ -277,79 +203,66 @@ function ToothModal({
 }) {
   const { colors, dark } = useAppTheme();
   if (!fdi) return null;
-  const present  = snapshots[0]?.teeth[fdi] ?? 'healthy';
-  const cfg      = STATUS_CFG[present];
-  const name     = toothName(fdi);
-
-  const future = snapshots.slice(1).filter(s => s.newIssues.some(i => i.tooth === fdi));
+  const present = snapshots[0]?.teeth[fdi] ?? 'healthy';
+  const cfg     = STATUS_CFG[present];
+  const name    = toothName(fdi);
+  const future  = snapshots.slice(1).filter(s => s.newIssues.some(i => i.tooth === fdi));
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={s.modalOverlay}>
-        <View style={[s.modalSheet, { backgroundColor: colors.cardBg }]}>
-          <View style={[s.modalHandle, { backgroundColor: colors.bg3 }]} />
+      <View style={s.overlay}>
+        <View style={[s.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[s.handle, { backgroundColor: colors.bg3 }]} />
 
-          {/* Header */}
-          <View style={s.modalHeader}>
-            <View style={[s.modalStatusDot, { backgroundColor: cfg.glowColor ?? cfg.darkColor }]} />
+          <View style={s.sheetHeader}>
+            <View style={[s.statusDot, { backgroundColor: cfg.glowColor ?? cfg.darkColor }]} />
             <View style={{ flex: 1 }}>
-              <Text style={[s.modalTitle, { color: colors.textPrimary }]}>Zub {fdi}</Text>
-              <Text style={[s.modalSub, { color: colors.textSecondary }]}>{name}</Text>
+              <Text style={[s.sheetTitle, { color: colors.textPrimary }]}>Zub {fdi}</Text>
+              <Text style={[s.sheetSub, { color: colors.textSecondary }]}>{name}</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={s.modalCloseBtn} activeOpacity={0.7}>
+            <TouchableOpacity onPress={onClose} style={s.closeBtn} activeOpacity={0.7}>
               <Ionicons name="close" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
-          {/* Current status */}
-          <View style={[s.modalStatusCard, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
-            <Text style={[s.modalStatusEmoji]}>{cfg.emoji}</Text>
+          <View style={[s.statusCard, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
+            <Text style={{ fontSize: 28 }}>{cfg.emoji}</Text>
             <View>
-              <Text style={[s.modalStatusLabel, { color: colors.textSecondary }]}>SÚČASNÝ STAV</Text>
-              <Text style={[s.modalStatusVal, { color: colors.textPrimary }]}>{cfg.label}</Text>
+              <Text style={[{ fontSize: 10, fontFamily: 'DMSans_500Medium', letterSpacing: 1, marginBottom: 2 }, { color: colors.textSecondary }]}>SÚČASNÝ STAV</Text>
+              <Text style={[{ fontSize: 15, fontFamily: 'DMSans_500Medium' }, { color: colors.textPrimary }]}>{cfg.label}</Text>
             </View>
           </View>
 
-          {/* Future prediction */}
           {future.length > 0 ? (
-            <View style={s.modalSection}>
-              <Text style={[s.modalSectionTitle, { color: colors.textSecondary }]}>🔮 PREDIKCIA</Text>
+            <View style={{ marginBottom: 14 }}>
+              <Text style={[{ fontSize: 9, letterSpacing: 1.5, fontFamily: 'DMSans_500Medium', marginBottom: 8 }, { color: colors.textSecondary }]}>🔮 PREDIKCIA</Text>
               {future.map(snap => {
-                const issue = snap.newIssues.find(i => i.tooth === fdi)!;
+                const issue   = snap.newIssues.find(i => i.tooth === fdi)!;
                 const nextCfg = STATUS_CFG[issue.toStatus];
                 return (
-                  <View key={snap.year} style={[s.modalIssueRow, { borderColor: colors.bg3 }]}>
-                    <Text style={[s.modalIssueYear, { color: COLORS_TW.red }]}>+{snap.year} rok</Text>
-                    <Text style={[s.modalIssueText, { color: colors.textPrimary }]}>
-                      {nextCfg?.label ?? issue.toStatus}
-                    </Text>
-                    <Text style={[s.modalIssuePct, { color: COLORS_TW.red }]}>
-                      {Math.round(issue.probability * 100)}%
-                    </Text>
-                    <Text style={[s.modalIssueCost, { color: colors.textSecondary }]}>
-                      ~{issue.cost} €
-                    </Text>
+                  <View key={snap.year} style={[s.issueRow, { borderColor: colors.bg3 }]}>
+                    <Text style={[s.issueYear, { color: '#E74C3C' }]}>+{snap.year}r</Text>
+                    <Text style={[s.issueTxt, { color: colors.textPrimary }]}>{nextCfg?.label ?? issue.toStatus}</Text>
+                    <Text style={[s.issuePct, { color: '#E74C3C' }]}>{Math.round(issue.probability * 100)}%</Text>
+                    <Text style={[s.issueCost, { color: colors.textSecondary }]}>~{issue.cost} €</Text>
                   </View>
                 );
               })}
             </View>
           ) : (
-            <View style={[s.modalOKBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-              <Ionicons name="checkmark-circle" size={18} color={dark ? '#58D68D' : '#1E8449'} />
-              <Text style={[s.modalOKText, { color: dark ? '#58D68D' : '#1E8449' }]}>
+            <View style={[s.okBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+              <Ionicons name="checkmark-circle" size={17} color={dark ? '#58D68D' : '#1E8449'} />
+              <Text style={[s.okTxt, { color: dark ? '#58D68D' : '#1E8449' }]}>
                 V horizonte 5 rokov bez predpokladanej zmeny ✓
               </Text>
             </View>
           )}
 
-          {/* Book button */}
-          <TouchableOpacity style={s.modalBookBtn} onPress={onBook} activeOpacity={0.88}>
-            <Ionicons name="calendar-outline" size={16} color="#fff" />
-            <Text style={s.modalBookText}>Rezervovať prehliadku</Text>
+          <TouchableOpacity style={s.bookBtn} onPress={onBook} activeOpacity={0.88}>
+            <Ionicons name="calendar-outline" size={15} color="#fff" />
+            <Text style={s.bookBtnTxt}>Rezervovať prehliadku</Text>
           </TouchableOpacity>
-
-          {/* Disclaimer */}
-          <Text style={[s.modalDisclaimer, { color: colors.textSecondary }]}>{DISCLAIMER}</Text>
+          <Text style={[s.disclaimer, { color: colors.textSecondary }]}>{DISCLAIMER}</Text>
         </View>
       </View>
     </Modal>
@@ -361,53 +274,53 @@ function YearPanel({ snap, year, colors, dark }: {
   snap: YearSnapshot; year: number; colors: any; dark: boolean;
 }) {
   if (year === 0) {
-    const healthy  = Object.values(snap.teeth).filter(s => s === 'healthy').length;
-    const issues   = Object.values(snap.teeth).filter(s => s !== 'healthy' && s !== 'missing').length;
+    const healthy = Object.values(snap.teeth).filter(s => s === 'healthy').length;
+    const issues  = Object.values(snap.teeth).filter(s => s !== 'healthy' && s !== 'missing' && s !== 'extracted').length;
     return (
-      <View style={[s.panel, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
-        <Text style={[s.panelTitle, { color: colors.textPrimary }]}>📊 Dnešný stav</Text>
+      <View style={[s.panel, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: dark ? '#3D2E22' : '#E0D4C4' }]}>
+        <Text style={[s.panelTitle, { color: dark ? '#FAF6F0' : '#2C1F14' }]}>📊 Dnešný stav</Text>
         <View style={s.panelRow}>
           <View style={[s.panelBadge, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-            <Text style={[s.panelBadgeNum, { color: '#1E8449' }]}>{healthy}</Text>
-            <Text style={[s.panelBadgeLabel, { color: '#1E8449' }]}>Zdravých zubov</Text>
+            <Text style={[s.panelNum, { color: '#1E8449' }]}>{healthy}</Text>
+            <Text style={[s.panelLbl, { color: '#1E8449' }]}>Zdravých</Text>
           </View>
           <View style={[s.panelBadge, { backgroundColor: issues > 0 ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D3B1F' : '#EAFAF1') }]}>
-            <Text style={[s.panelBadgeNum, { color: issues > 0 ? '#E74C3C' : '#1E8449' }]}>{issues}</Text>
-            <Text style={[s.panelBadgeLabel, { color: issues > 0 ? '#E74C3C' : '#1E8449' }]}>Problémov</Text>
+            <Text style={[s.panelNum, { color: issues > 0 ? '#E74C3C' : '#1E8449' }]}>{issues}</Text>
+            <Text style={[s.panelLbl, { color: issues > 0 ? '#E74C3C' : '#1E8449' }]}>Problémov</Text>
           </View>
         </View>
-        <Text style={[s.panelHint, { color: colors.textSecondary }]}>Klepni na zub pre detail</Text>
+        <Text style={[s.panelHint, { color: dark ? '#888' : '#999' }]}>Klepni na zub pre detail</Text>
       </View>
     );
   }
 
   return (
-    <View style={[s.panel, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
-      <Text style={[s.panelTitle, { color: colors.textPrimary }]}>🔮 Rok +{year} (predikcia)</Text>
+    <View style={[s.panel, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: dark ? '#3D2E22' : '#E0D4C4' }]}>
+      <Text style={[s.panelTitle, { color: dark ? '#FAF6F0' : '#2C1F14' }]}>🔮 Predikcia rok +{year}</Text>
       {snap.newIssues.length === 0 ? (
         <View style={[s.panelOK, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-          <Ionicons name="checkmark-circle" size={16} color="#1E8449" />
-          <Text style={[s.panelOKText, { color: '#1E8449' }]}>Žiadne nové komplikácie v tomto roku</Text>
+          <Ionicons name="checkmark-circle" size={15} color="#1E8449" />
+          <Text style={[s.panelOKTxt, { color: '#1E8449' }]}>Žiadne nové komplikácie</Text>
         </View>
       ) : (
         <>
-          {snap.newIssues.slice(0, 4).map((iss, i) => (
-            <View key={i} style={[s.panelIssueRow, { borderColor: colors.bg3 }]}>
-              <Text style={s.panelIssueEmoji}>{STATUS_CFG[iss.toStatus]?.emoji ?? '🔴'}</Text>
-              <Text style={[s.panelIssueName, { color: colors.textPrimary }]}>
+          {snap.newIssues.slice(0, 5).map((iss, i) => (
+            <View key={i} style={[s.issueRow, { borderColor: dark ? '#3A2A1A' : '#E8DDD0' }]}>
+              <Text style={{ fontSize: 15, width: 22 }}>{STATUS_CFG[iss.toStatus]?.emoji ?? '🔴'}</Text>
+              <Text style={[s.issueTxt, { color: dark ? '#FAF6F0' : '#2C1F14', flex: 1 }]}>
                 Zub {iss.tooth} — {STATUS_CFG[iss.toStatus]?.label}
               </Text>
-              <Text style={[s.panelIssueCost, { color: COLORS_TW.red }]}>~{iss.cost} €</Text>
+              <Text style={[s.issueCost, { color: '#E74C3C' }]}>~{iss.cost} €</Text>
             </View>
           ))}
-          <View style={[s.panelCostBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
-            <Text style={[s.panelCostLabel, { color: COLORS_TW.red }]}>Kumulatívne náklady</Text>
-            <Text style={[s.panelCostVal, { color: COLORS_TW.red }]}>{snap.cumulativeCost} €</Text>
+          <View style={[s.costBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
+            <Text style={[s.costLbl, { color: '#E74C3C' }]}>Kumulatívne náklady</Text>
+            <Text style={[s.costVal, { color: '#E74C3C' }]}>{snap.cumulativeCost} €</Text>
           </View>
-          <View style={[s.panelSavings, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-            <Ionicons name="shield-checkmark" size={14} color="#1E8449" />
-            <Text style={[s.panelSavingsText, { color: '#1E8449' }]}>
-              Prevencia dnes: {PREVENTION_COST * year} € · Úspora: {Math.max(0, snap.cumulativeCost - PREVENTION_COST * year)} €
+          <View style={[s.savingsRow, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+            <Ionicons name="shield-checkmark" size={13} color="#1E8449" />
+            <Text style={[s.savingsTxt, { color: '#1E8449' }]}>
+              Prevencia {PREVENTION_COST * year} € · Úspora {Math.max(0, snap.cumulativeCost - PREVENTION_COST * year)} €
             </Text>
           </View>
         </>
@@ -416,18 +329,26 @@ function YearPanel({ snap, year, colors, dark }: {
   );
 }
 
-// ─── Konštanty ────────────────────────────────────────────────────────────────
-const COLORS_TW = {
-  bg:    '#0D0D0D',
-  card:  '#141414',
-  gold:  '#C9A84C',
-  red:   '#E74C3C',
-  green: '#27AE60',
-};
+// ─── Legenda ─────────────────────────────────────────────────────────────────
+const LEGEND_ITEMS = Object.entries(STATUS_CFG).slice(0, 8) as [ToothStatus, typeof STATUS_CFG[ToothStatus]][];
+
+function Legend() {
+  const { dark } = useAppTheme();
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.legend} contentContainerStyle={{ paddingRight: 8 }}>
+      {LEGEND_ITEMS.map(([k, v]) => (
+        <View key={k} style={s.legendItem}>
+          <View style={[s.legendDot, { backgroundColor: v.glowColor ?? (dark ? v.darkColor : v.color) }]} />
+          <Text style={[s.legendTxt, { color: dark ? '#888' : '#777' }]}>{v.label}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function DentalTwinScreen() {
-  const router  = useRouter();
+  const router = useRouter();
   const { colors, dark } = useAppTheme();
 
   const [rawTeeth,   setRawTeeth]   = useState<Record<number, ToothStatus>>({});
@@ -437,19 +358,16 @@ export default function DentalTwinScreen() {
   const [selected,   setSelected]   = useState<number | null>(null);
   const [showModal,  setShowModal]  = useState(false);
 
-  // Rizikové faktory (z health passport, defaulty)
   const [risk] = useState<RiskFactors>({ smoking: false, diabetes: false, bruxism: false, hygiene: 7 });
 
-  // Predikcia (memoized)
   const snapshots = useMemo(
-    () => generatePredictions(rawTeeth, risk, HORIZON),
+    () => generatePredictions(rawTeeth, risk, 5),
     [rawTeeth, risk],
   );
 
-  const currentSnap  = snapshots[year] ?? snapshots[0];
-  const displayTeeth = currentSnap?.teeth ?? rawTeeth;
+  const currentSnap   = snapshots[year] ?? snapshots[0];
+  const displayTeeth  = currentSnap?.teeth ?? rawTeeth;
 
-  // Zuby ktoré sa zmenili v aktuálnom roku voči dnešku
   const predictedTeeth = useMemo(() => {
     const changed = new Set<number>();
     snapshots.slice(1, year + 1).forEach(s => s.newIssues.forEach(i => changed.add(i.tooth)));
@@ -462,12 +380,10 @@ export default function DentalTwinScreen() {
     if (!silent) setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); setRefreshing(false); return; }
-
     const { data: charts } = await supabase
       .from('dental_charts')
       .select('tooth_number, status')
       .eq('patient_id', user.id);
-
     const map: Record<number, ToothStatus> = {};
     (charts ?? []).forEach((c: any) => { map[c.tooth_number] = c.status as ToothStatus; });
     setRawTeeth(map);
@@ -478,58 +394,55 @@ export default function DentalTwinScreen() {
   useEffect(() => { load(); }, []);
 
   function handleToothPress(fdi: number) {
-    setSelected(fdi === selected ? null : fdi);
-    if (fdi !== selected) {
-      setShowModal(true);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    }
+    setSelected(fdi);
+    setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
   if (loading) {
     return (
-      <View style={[s.safe, { backgroundColor: COLORS_TW.bg, alignItems: 'center', justifyContent: 'center' }]}>
-        <ActivityIndicator color={COLORS_TW.gold} size="large" />
-        <Text style={[s.loadingText, { color: COLORS_TW.gold }]}>Načítavam tvoj digitálny dvojník...</Text>
+      <View style={[s.safe, { backgroundColor: '#0D0D0D', alignItems: 'center', justifyContent: 'center' }]}>
+        <ActivityIndicator color="#C9A84C" size="large" />
+        <Text style={[s.loadingTxt, { color: '#C9A84C' }]}>Načítavam digitálny dvojník...</Text>
       </View>
     );
   }
 
   return (
-    <View style={[s.safe, { backgroundColor: COLORS_TW.bg }]}>
+    <View style={[s.safe, { backgroundColor: '#0D0D0D' }]}>
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
 
         {/* Header */}
-        <LinearGradient colors={['#1A1209', COLORS_TW.bg]} style={s.header}>
+        <LinearGradient colors={['#1A1209', '#0D0D0D']} style={s.header}>
           <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.8}>
-            <Ionicons name="chevron-back" size={22} color={COLORS_TW.gold} />
+            <Ionicons name="chevron-back" size={22} color="#C9A84C" />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={s.headerLabel}>DIGITAL TWIN</Text>
             <Text style={s.headerTitle}>Tvoj chrup</Text>
           </View>
-          {/* Summary pill */}
           {summary.totalCost > 0 && (
-            <View style={s.costPill}>
-              <Text style={s.costPillText}>Risk: {summary.totalCost} €</Text>
+            <View style={s.riskPill}>
+              <Text style={s.riskTxt}>⚠ {summary.totalCost} €</Text>
             </View>
           )}
         </LinearGradient>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={s.scroll}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(true); }} tintColor={COLORS_TW.gold} />}
+          contentContainerStyle={{ paddingBottom: 120 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(true); }} tintColor="#C9A84C" />}
         >
           {/* Prediction banner */}
           {year > 0 && (
             <View style={s.predBanner}>
-              <Ionicons name="warning-outline" size={14} color={COLORS_TW.red} />
-              <Text style={s.predBannerText}>Predikcia roku +{year} — orientačná</Text>
+              <Ionicons name="warning-outline" size={13} color="#E74C3C" />
+              <Text style={s.predBannerTxt}>Zobrazujem predikciu roku +{year} — orientačná</Text>
             </View>
           )}
 
-          {/* Arch Map */}
-          <View style={s.archContainer}>
+          {/* Arch map */}
+          <View style={{ marginHorizontal: 16, marginBottom: 10 }}>
             <Text style={s.archTitle}>
               {year === 0 ? '📍 Aktuálny stav' : `🔮 Predikcia: rok +${year}`}
             </Text>
@@ -539,42 +452,38 @@ export default function DentalTwinScreen() {
               predictedTeeth={year > 0 ? predictedTeeth : new Set()}
               onSelect={handleToothPress}
             />
-            {/* Legend */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.legend}>
-              {Object.entries(STATUS_CFG).slice(0, 7).map(([k, v]) => (
-                <View key={k} style={s.legendItem}>
-                  <View style={[s.legendDot, { backgroundColor: v.glowColor ?? v.darkColor }]} />
-                  <Text style={s.legendText}>{v.label}</Text>
-                </View>
-              ))}
-            </ScrollView>
+            <Legend />
           </View>
 
-          {/* Timeline Slider */}
-          <View style={[s.sliderCard, { borderColor: dark ? '#3D2E22' : '#2A1F0A' }]}>
-            <Text style={s.sliderTitle}>ČASOVÁ OS</Text>
-            <TimelineSlider year={year} onYearChange={setYear} />
+          {/* Year selector */}
+          <View style={[s.yearCard, { borderColor: dark ? '#3D2E22' : '#2A1F0A' }]}>
+            <Text style={s.yearCardLabel}>ČASOVÁ OS</Text>
+            <YearSelector year={year} onChange={setYear} />
           </View>
 
-          {/* Year Panel */}
-          <YearPanel snap={currentSnap} year={year} colors={colors} dark={dark} />
+          {/* Year panel */}
+          <View style={{ marginHorizontal: 16, marginBottom: 12 }}>
+            <YearPanel snap={currentSnap} year={year} colors={colors} dark={dark} />
+          </View>
 
-          {/* Cost comparison (len pri predikcii) */}
+          {/* Cost comparison */}
           {summary.totalCost > 0 && (
             <View style={[s.compCard, { borderColor: dark ? '#3D2E22' : '#2A1F0A' }]}>
               <Text style={s.compTitle}>💰 5-ROČNÉ POROVNANIE</Text>
               <View style={s.compRow}>
                 <View style={[s.compBox, { backgroundColor: '#0D3B1F' }]}>
-                  <Text style={s.compBoxLabel}>Prevencia dnes</Text>
-                  <Text style={[s.compBoxVal, { color: '#58D68D' }]}>{PREVENTION_COST * HORIZON} €</Text>
-                  <Text style={s.compBoxSub}>{HORIZON}× ročná prehliadka</Text>
+                  <Text style={s.compBoxLbl}>Prevencia dnes</Text>
+                  <Text style={[s.compBoxVal, { color: '#58D68D' }]}>{PREVENTION_COST * 5} €</Text>
+                  <Text style={s.compBoxSub}>5× ročná prehliadka</Text>
                 </View>
-                <View style={s.compArrow}>
-                  <Text style={s.compArrowText}>vs</Text>
-                  <Text style={s.compSavings}>úspora{'\n'}{Math.max(0, summary.totalCost - PREVENTION_COST * HORIZON)} €</Text>
+                <View style={s.vsCol}>
+                  <Text style={s.vsTxt}>vs</Text>
+                  <Text style={[s.savingsBig, { color: '#58D68D' }]}>
+                    úspora{'\n'}{Math.max(0, summary.totalCost - PREVENTION_COST * 5)} €
+                  </Text>
                 </View>
                 <View style={[s.compBox, { backgroundColor: '#4A1010' }]}>
-                  <Text style={s.compBoxLabel}>Bez prevencie</Text>
+                  <Text style={s.compBoxLbl}>Bez prevencie</Text>
                   <Text style={[s.compBoxVal, { color: '#F1948A' }]}>{summary.totalCost} €</Text>
                   <Text style={s.compBoxSub}>{summary.issueCount} nových problémov</Text>
                 </View>
@@ -584,26 +493,25 @@ export default function DentalTwinScreen() {
 
           {/* CTA */}
           <TouchableOpacity
-            style={s.ctaBtn}
+            style={{ marginHorizontal: 16, marginBottom: 12, borderRadius: 14, overflow: 'hidden' }}
             onPress={() => router.push('/(patient)/book-appointment')}
             activeOpacity={0.88}
           >
             <LinearGradient colors={['#B8973A', '#C9A84C']} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-              <Ionicons name="calendar" size={18} color="#1A1209" />
-              <Text style={s.ctaText}>Rezervovať preventívnu prehliadku</Text>
+              <Ionicons name="calendar" size={17} color="#1A1209" />
+              <Text style={s.ctaTxt}>Rezervovať preventívnu prehliadku</Text>
             </LinearGradient>
           </TouchableOpacity>
 
           {/* Disclaimer */}
-          <View style={s.disclaimerBox}>
-            <Ionicons name="information-circle-outline" size={14} color="#555" />
-            <Text style={s.disclaimerText}>⚠️ {DISCLAIMER}</Text>
+          <View style={s.disclaimerRow}>
+            <Ionicons name="information-circle-outline" size={13} color="#444" />
+            <Text style={s.disclaimerTxt}>{DISCLAIMER}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
 
-      {/* Tooth Detail Modal */}
-      {selected && (
+      {selected !== null && (
         <ToothModal
           fdi={selected}
           snapshots={snapshots}
@@ -619,108 +527,95 @@ export default function DentalTwinScreen() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   safe:        { flex: 1 },
-  loadingText: { marginTop: 16, fontSize: 14, fontFamily: 'DMSans_500Medium' },
-  scroll:      { paddingBottom: 120 },
+  loadingTxt:  { marginTop: 14, fontSize: 13, fontFamily: 'DMSans_500Medium' },
 
   // Header
-  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12 },
+  header:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 14, gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.12)', alignItems: 'center', justifyContent: 'center' },
-  headerLabel: { fontSize: 9, letterSpacing: 2.5, color: COLORS_TW.gold, fontFamily: 'DMSans_500Medium' },
+  headerLabel: { fontSize: 9, letterSpacing: 2.5, color: '#C9A84C', fontFamily: 'DMSans_500Medium' },
   headerTitle: { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0' },
-  costPill:    { backgroundColor: 'rgba(231,76,60,0.18)', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(231,76,60,0.4)' },
-  costPillText:{ fontSize: 11, fontFamily: 'DMSans_500Medium', color: COLORS_TW.red },
+  riskPill:    { backgroundColor: 'rgba(231,76,60,0.16)', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(231,76,60,0.4)' },
+  riskTxt:     { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
 
   // Prediction banner
-  predBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginBottom: 8, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 8, padding: 8, borderWidth: 1, borderColor: 'rgba(231,76,60,0.3)' },
-  predBannerText: { fontSize: 12, color: COLORS_TW.red, fontFamily: 'DMSans_500Medium' },
+  predBanner:    { flexDirection: 'row', alignItems: 'center', gap: 6, marginHorizontal: 16, marginBottom: 8, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 8, padding: 8, borderWidth: 1, borderColor: 'rgba(231,76,60,0.3)' },
+  predBannerTxt: { fontSize: 11, color: '#E74C3C', fontFamily: 'DMSans_500Medium', flex: 1 },
 
-  // Arch map
-  archContainer: { marginHorizontal: 16, marginBottom: 12 },
-  archTitle:     { fontSize: 11, fontFamily: 'DMSans_500Medium', color: COLORS_TW.gold, letterSpacing: 1.5, marginBottom: 8 },
-  archWrap:      { borderRadius: 16, overflow: 'hidden', padding: 8 },
+  // Arch
+  archTitle: { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#C9A84C', letterSpacing: 1.5, marginBottom: 8 },
+  archWrap:  { borderRadius: 14, overflow: 'hidden', padding: 6 },
 
   // Legend
-  legend:     { marginTop: 10 },
+  legend:     { marginTop: 10, marginBottom: 2 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4, marginRight: 12 },
   legendDot:  { width: 8, height: 8, borderRadius: 4 },
-  legendText: { fontSize: 9, color: '#888', fontFamily: 'DMSans_400Regular' },
+  legendTxt:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
 
-  // Timeline slider
-  sliderCard:   { marginHorizontal: 16, marginBottom: 12, backgroundColor: '#141414', borderRadius: 14, borderWidth: 1, padding: 16 },
-  sliderTitle:  { fontSize: 9, letterSpacing: 2, color: '#666', fontFamily: 'DMSans_500Medium', marginBottom: 14 },
-  sliderWrap:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sliderLabel:  { fontSize: 9, color: '#666', width: 46, textAlign: 'center' },
-  sliderTrack:  { flex: 1, height: 40, justifyContent: 'center', position: 'relative' },
-  track:        { position: 'absolute', left: 0, right: 0, height: 3, borderRadius: 2 },
-  trackFill:    { position: 'absolute', left: 0, height: 3, borderRadius: 2 },
-  dot:          { position: 'absolute', width: 16, height: 16, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center', top: 12 },
-  dotLabel:     { position: 'absolute', top: 16, fontSize: 8, fontFamily: 'DMSans_500Medium', width: 32, textAlign: 'center', left: -8 },
-  thumb:        { position: 'absolute', width: 28, height: 28, borderRadius: 14, top: 6, borderWidth: 2, borderColor: '#fff', elevation: 4 },
+  // Year selector
+  yearCard:      { marginHorizontal: 16, marginBottom: 12, backgroundColor: '#141414', borderRadius: 14, borderWidth: 1, padding: 14 },
+  yearCardLabel: { fontSize: 9, letterSpacing: 2, color: '#555', fontFamily: 'DMSans_500Medium', marginBottom: 12 },
+  yearRow:       { flexDirection: 'row', gap: 6 },
+  yearBtn:       { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1.5 },
+  yearBtnTxt:    { fontSize: 11, fontFamily: 'DMSans_500Medium' },
 
-  // Year Panel
-  panel:          { marginHorizontal: 16, marginBottom: 12, borderRadius: 14, borderWidth: 1, padding: 14 },
-  panelTitle:     { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 12 },
-  panelRow:       { flexDirection: 'row', gap: 10 },
-  panelBadge:     { flex: 1, borderRadius: 10, padding: 12, alignItems: 'center' },
-  panelBadgeNum:  { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 32 },
-  panelBadgeLabel:{ fontSize: 11, fontFamily: 'DMSans_500Medium', marginTop: 2 },
-  panelHint:      { fontSize: 11, textAlign: 'center', marginTop: 10 },
-  panelOK:        { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 10 },
-  panelOKText:    { fontSize: 13, fontFamily: 'DMSans_500Medium' },
-  panelIssueRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1 },
-  panelIssueEmoji:{ fontSize: 16, width: 24 },
-  panelIssueName: { flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium' },
-  panelIssueCost: { fontSize: 12, fontFamily: 'DMSans_500Medium' },
-  panelCostBox:   { borderRadius: 10, borderWidth: 1, padding: 10, marginTop: 10, alignItems: 'center' },
-  panelCostLabel: { fontSize: 10, fontFamily: 'DMSans_500Medium' },
-  panelCostVal:   { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold' },
-  panelSavings:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, borderWidth: 1, padding: 10, marginTop: 8 },
-  panelSavingsText:{ flex: 1, fontSize: 11, fontFamily: 'DMSans_500Medium' },
+  // Panel
+  panel:      { borderRadius: 14, borderWidth: 1, padding: 14 },
+  panelTitle: { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 12 },
+  panelRow:   { flexDirection: 'row', gap: 10 },
+  panelBadge: { flex: 1, borderRadius: 10, padding: 12, alignItems: 'center' },
+  panelNum:   { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 32 },
+  panelLbl:   { fontSize: 11, fontFamily: 'DMSans_500Medium', marginTop: 2 },
+  panelHint:  { fontSize: 11, textAlign: 'center', marginTop: 10 },
+  panelOK:    { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 10 },
+  panelOKTxt: { fontSize: 13, fontFamily: 'DMSans_500Medium' },
 
-  // Cost comparison
+  // Issue rows
+  issueRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1 },
+  issueYear: { fontSize: 12, fontFamily: 'DMSans_500Medium', width: 36 },
+  issueTxt:  { flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium' },
+  issuePct:  { fontSize: 11, width: 36, textAlign: 'right' },
+  issueCost: { fontSize: 11, width: 52, textAlign: 'right' },
+
+  // Cost / savings in panel
+  costBox:    { borderRadius: 10, borderWidth: 1, padding: 10, marginTop: 10, alignItems: 'center' },
+  costLbl:    { fontSize: 10, fontFamily: 'DMSans_500Medium', marginBottom: 2 },
+  costVal:    { fontSize: 24, fontFamily: 'PlayfairDisplay_700Bold' },
+  savingsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, borderWidth: 1, padding: 10, marginTop: 8 },
+  savingsTxt: { flex: 1, fontSize: 11, fontFamily: 'DMSans_500Medium' },
+
+  // Comparison card
   compCard:    { marginHorizontal: 16, marginBottom: 12, backgroundColor: '#141414', borderRadius: 14, borderWidth: 1, padding: 14 },
-  compTitle:   { fontSize: 9, letterSpacing: 2, color: '#666', fontFamily: 'DMSans_500Medium', marginBottom: 12 },
+  compTitle:   { fontSize: 9, letterSpacing: 2, color: '#555', fontFamily: 'DMSans_500Medium', marginBottom: 12 },
   compRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   compBox:     { flex: 1, borderRadius: 12, padding: 12, alignItems: 'center', gap: 4 },
-  compBoxLabel:{ fontSize: 10, color: '#aaa', fontFamily: 'DMSans_500Medium', textAlign: 'center' },
+  compBoxLbl:  { fontSize: 10, color: '#aaa', fontFamily: 'DMSans_500Medium', textAlign: 'center' },
   compBoxVal:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
   compBoxSub:  { fontSize: 9, color: '#666', textAlign: 'center' },
-  compArrow:   { alignItems: 'center', gap: 4 },
-  compArrowText:{ fontSize: 12, color: '#666', fontFamily: 'DMSans_500Medium' },
-  compSavings: { fontSize: 10, color: COLORS_TW.green, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
+  vsCol:       { alignItems: 'center', gap: 4 },
+  vsTxt:       { fontSize: 11, color: '#555', fontFamily: 'DMSans_500Medium' },
+  savingsBig:  { fontSize: 11, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
 
   // CTA
-  ctaBtn:   { marginHorizontal: 16, marginBottom: 12, borderRadius: 14, overflow: 'hidden' },
-  ctaGrad:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16 },
-  ctaText:  { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
+  ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 15 },
+  ctaTxt:  { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
 
   // Disclaimer
-  disclaimerBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginHorizontal: 16, marginBottom: 8 },
-  disclaimerText: { flex: 1, fontSize: 10, color: '#444', lineHeight: 15 },
+  disclaimerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginHorizontal: 16, marginBottom: 8 },
+  disclaimerTxt: { flex: 1, fontSize: 10, color: '#444', lineHeight: 15 },
 
   // Modal
-  modalOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'flex-end' },
-  modalSheet:       { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40 },
-  modalHandle:      { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
-  modalHeader:      { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
-  modalStatusDot:   { width: 14, height: 14, borderRadius: 7 },
-  modalTitle:       { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
-  modalSub:         { fontSize: 12 },
-  modalCloseBtn:    { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  modalStatusCard:  { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
-  modalStatusEmoji: { fontSize: 28 },
-  modalStatusLabel: { fontSize: 10, fontFamily: 'DMSans_500Medium', letterSpacing: 1, marginBottom: 3 },
-  modalStatusVal:   { fontSize: 16, fontFamily: 'DMSans_500Medium' },
-  modalSection:     { marginBottom: 14 },
-  modalSectionTitle:{ fontSize: 9, letterSpacing: 1.5, fontFamily: 'DMSans_500Medium', marginBottom: 8 },
-  modalIssueRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1 },
-  modalIssueYear:   { fontSize: 12, fontFamily: 'DMSans_500Medium', width: 48 },
-  modalIssueText:   { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium' },
-  modalIssuePct:    { fontSize: 11, width: 36, textAlign: 'right' },
-  modalIssueCost:   { fontSize: 11, width: 52, textAlign: 'right' },
-  modalOKBanner:    { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
-  modalOKText:      { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium' },
-  modalBookBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
-  modalBookText:    { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
-  modalDisclaimer:  { fontSize: 10, textAlign: 'center', lineHeight: 15 },
+  overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'flex-end' },
+  sheet:      { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40 },
+  handle:     { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
+  sheetHeader:{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
+  statusDot:  { width: 14, height: 14, borderRadius: 7 },
+  sheetTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
+  sheetSub:   { fontSize: 12 },
+  closeBtn:   { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  statusCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
+  okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
+  okTxt:      { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium' },
+  bookBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
+  bookBtnTxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  disclaimer: { fontSize: 10, textAlign: 'center', lineHeight: 14 },
 });

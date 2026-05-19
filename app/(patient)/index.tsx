@@ -404,8 +404,8 @@ export default function PatientHome() {
                   <Text style={[styles.apptBtnSecondaryText, { color: colors.textSecondary }]}>Detail</Text>
                 </TouchableOpacity>
                 <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={styles.apptBtnPrimary}>
-                  <TouchableOpacity onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={styles.apptBtnPrimaryText}>Presunúť</Text>
+                  <TouchableOpacity onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.85} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={styles.apptBtnPrimaryText}>+ Rezervovať</Text>
                   </TouchableOpacity>
                 </LinearGradient>
               </View>

@@ -295,7 +295,7 @@ export default function BookAppointmentScreen() {
         ? `[Pre: ${familyName}]${notes.trim() ? ' ' + notes.trim() : ''}`
         : notes.trim() || null;
 
-      // Atomická rezervácia cez RPC — server-side conflict check (chráni aj pred race condition)
+      // Atomická rezervácia cez RPC — server-side conflict check
       const { data: result, error: rpcError } = await supabase.rpc('book_appointment', {
         p_doctor_id:        doctorId,
         p_patient_id:       user.id,
@@ -306,8 +306,25 @@ export default function BookAppointmentScreen() {
         p_status:           'pending',
         p_is_urgent:        isUrgent,
       });
-      if (rpcError) throw rpcError;
-      if (!result?.ok) {
+
+      if (rpcError) {
+        // PGRST202 = RPC funkcia neexistuje (migrácia v32 ešte nebola spustená) → priamy INSERT
+        if (rpcError.code === 'PGRST202' || rpcError.message?.includes('Could not find the function')) {
+          const { error: insError } = await supabase.from('appointments').insert({
+            doctor_id:               doctorId,
+            patient_id:              user.id,
+            service_id:              selectedService.id,
+            appointment_date:        dt.toISOString(),
+            custom_duration_minutes: selectedService.duration_minutes,
+            notes:                   finalNotes,
+            status:                  'pending',
+            is_urgent:               isUrgent,
+          });
+          if (insError) throw insError;
+        } else {
+          throw rpcError;
+        }
+      } else if (!result?.ok) {
         throw new Error(
           result?.reason === 'conflict'
             ? 'Tento čas je už obsadený. Vyberte iný termín.'
