@@ -11,9 +11,10 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useServices, Service, formatPrice, formatDuration } from '../../hooks/useServices';
+import { MonthCalendar } from '../../components/MonthCalendar';
 import {
-  generateTimeSlotsForDay, getNextOpenDays,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  generateTimeSlotsForDay,
+  jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
 import { fetchBlockedMinutes } from '../../hooks/useTimeBlocks';
 
@@ -53,11 +54,6 @@ export default function DoctorAddAppointment() {
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
 
-  const days = useMemo(
-    () => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [],
-    [openDbDays],
-  );
-
   const selectedDayHours = useMemo((): OpeningHour | null => {
     if (!selectedDate) return null;
     return openingHoursMap.get(jsDayToDb(selectedDate.getDay())) ?? null;
@@ -91,7 +87,8 @@ export default function DoctorAddAppointment() {
         const { data: hours } = await supabase
           .from('opening_hours')
           .select('day_of_week, open_time, close_time, is_closed')
-          .eq('doctor_id', user.id);
+          .eq('doctor_id', user.id)
+          .limit(14);
         const map = new Map<number, OpeningHour>();
         (hours ?? []).forEach(h => {
           if (!h.is_closed && h.open_time && h.close_time) {
@@ -104,7 +101,7 @@ export default function DoctorAddAppointment() {
       // Pacienti
       const { data: pats } = await supabase
         .from('profiles').select('id, full_name, phone_number')
-        .eq('role', 'patient').order('full_name', { ascending: true });
+        .eq('role', 'patient').order('full_name', { ascending: true }).limit(500);
       const list = (pats ?? []) as Patient[];
       setPatients(list);
       if (params.patientId) {
@@ -226,6 +223,17 @@ export default function DoctorAddAppointment() {
 
       const { error } = await supabase.from('appointments').insert(rows);
       if (error) throw error;
+
+      // Notifikácia pacientovi o novom termíne
+      const firstDate = allDates[0];
+      const dateStr = firstDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
+      const timeStr = firstDate.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+      supabase.from('notifications').insert({
+        user_id: selectedPatient.id,
+        title:   `📅 Nový termín naplánovaný`,
+        body:    `${selectedService?.name ?? 'Termín'} · ${dateStr} o ${timeStr}${allDates.length > 1 ? ` (+${allDates.length - 1} opakovania)` : ''}`,
+        type:    'success',
+      }).then(null, () => {});
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       const msgBody = repeatType === 'none'
@@ -420,33 +428,14 @@ export default function DoctorAddAppointment() {
 
           {/* ── Výber dátumu ── */}
           <Text style={[styles.sectionLabel, { marginTop: 24, color: colors.textSecondary }]}>DÁTUM</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={styles.datesScroll} contentContainerStyle={styles.datesContent}>
-            {days.map((d) => {
-              const isSel   = selectedDate?.toDateString() === d.toDateString();
-              const isToday = d.toDateString() === new Date().toDateString();
-              const dbDay   = jsDayToDb(d.getDay());
-              const hrs     = openingHoursMap.get(dbDay);
-              return (
-                <TouchableOpacity key={d.toISOString()}
-                  style={[styles.dateCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.dateCellSel]}
-                  onPress={() => { setDate(d); setTime(''); }} activeOpacity={0.75}>
-                  <Text style={[styles.dateDayName, { color: colors.textSecondary }, isSel && styles.dateSel]}>
-                    {isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}
-                  </Text>
-                  <Text style={[styles.dateDayNum, { color: colors.textPrimary }, isSel && styles.dateSel]}>{d.getDate()}</Text>
-                  <Text style={[styles.dateMonth, { color: colors.textSecondary }, isSel && styles.dateSel]}>
-                    {SK_MONTHS_SHORT[d.getMonth()]}
-                  </Text>
-                  {hrs && (
-                    <Text style={[styles.dateHours, { color: colors.textSecondary }, isSel && styles.dateSel]}>
-                      {hrs.open_time}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          <MonthCalendar
+            selectedDate={selectedDate}
+            onSelectDate={(d) => { setDate(d); setTime(''); }}
+            openDbDays={openDbDays}
+            loading={loadingP}
+            maxMonthsAhead={12}
+            warnMonthsAhead={0}
+          />
 
           {/* ── Výber času ── */}
           <Text style={[styles.sectionLabel, { marginTop: 8, color: colors.textSecondary }]}>ČAS</Text>
@@ -635,19 +624,10 @@ const styles = StyleSheet.create({
   chipPhone: { fontSize: 11, color: '#27AE60', marginTop: 1 },
 
   // Dates
-  datesScroll:  { marginBottom: 12, marginHorizontal: -SIZES.padding },
-  datesContent: { paddingHorizontal: SIZES.padding, gap: 8 },
-  dateCell:     { width: 58, alignItems: 'center', paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  dateCellSel:  { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  dateDayName:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
-  dateDayNum:   { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginVertical: 2 },
-  dateMonth:    { fontSize: 9, color: COLORS.wal, textTransform: 'uppercase' },
-  dateHours:    { fontSize: 7, color: COLORS.wal, marginTop: 2, letterSpacing: 0.2 },
-  dateSel:      { color: COLORS.sand },
 
   // Times
   timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 3, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 0, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
   timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },

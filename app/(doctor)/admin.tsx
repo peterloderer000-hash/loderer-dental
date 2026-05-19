@@ -168,6 +168,7 @@ export default function AdminScreen() {
   const [team, setTeam]         = useState<TeamMember[]>([]);
   const [clinic, setClinic]     = useState<ClinicInfo | null>(null);
   const [stats, setStats]       = useState<Stats | null>(null);
+  const [teamStats, setTeamStats] = useState<Map<string, { thisMonth: number; avgRating: number | null; completed: number; cancelled: number }>>(new Map());
   const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -186,6 +187,31 @@ export default function AdminScreen() {
       .order('role')
       .order('full_name');
     setTeam((teamData ?? []) as TeamMember[]);
+
+    // Team stats — per-member appointment stats
+    const staffIds = ((teamData ?? []) as TeamMember[])
+      .filter(m => m.role === 'doctor' || m.role === 'hygienist')
+      .map(m => m.id);
+    if (staffIds.length > 0) {
+      const mStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+      const { data: apptData } = await supabase
+        .from('appointments')
+        .select('doctor_id, status, patient_rating, appointment_date')
+        .in('doctor_id', staffIds);
+      const tMap = new Map<string, { thisMonth: number; avgRating: number | null; completed: number; cancelled: number }>();
+      staffIds.forEach(id => {
+        const all       = (apptData ?? []).filter((a: any) => a.doctor_id === id);
+        const thisMonth = all.filter((a: any) => a.appointment_date >= mStart).length;
+        const completed = all.filter((a: any) => a.status === 'completed').length;
+        const cancelled = all.filter((a: any) => a.status === 'cancelled').length;
+        const rated     = all.filter((a: any) => a.patient_rating != null && a.patient_rating > 0);
+        const avgRating = rated.length > 0
+          ? Math.round((rated.reduce((s: number, a: any) => s + (a.patient_rating ?? 0), 0) / rated.length) * 10) / 10
+          : null;
+        tMap.set(id, { thisMonth, avgRating, completed, cancelled });
+      });
+      setTeamStats(tMap);
+    }
 
     // Clinic (take first clinic or owner's default)
     const { data: clinicData } = await supabase
@@ -476,6 +502,52 @@ export default function AdminScreen() {
                   <Text style={[s.payCardValue, { color: dark ? '#27AE60' : '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
                 </View>
               </View>
+
+              {/* ── Štatistiky tímu ── */}
+              {teamStats.size > 0 && (
+                <>
+                  <Text style={[s.statsSection, { marginTop: 24, color: colors.textSecondary }]}>ŠTATISTIKY TÍMU</Text>
+                  {team.filter(m => teamStats.has(m.id)).map(m => {
+                    const ts = teamStats.get(m.id)!;
+                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, text: COLORS.wal };
+                    return (
+                      <View key={m.id} style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3, marginBottom: 12 }]}>
+                        <View style={s.memberAvatar}>
+                          <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={s.memberTop}>
+                            <Text style={[s.memberName, { color: colors.textPrimary }]} numberOfLines={1}>{m.full_name}</Text>
+                            <View style={[s.roleBadge, { backgroundColor: rc.bg }]}>
+                              <Text style={[s.roleBadgeText, { color: rc.text }]}>{ROLE_LABELS[m.role] ?? m.role}</Text>
+                            </View>
+                          </View>
+                          <View style={s.teamStatsRow}>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#5DADE2' : '#1A5276' }]}>{ts.thisMonth}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#5DADE2' : '#1A5276' }]}>tento mes.</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#27AE60' : '#1E8449' }]}>{ts.completed}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>dokončené</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#E74C3C' : '#922B21' }]}>{ts.cancelled}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#E74C3C' : '#922B21' }]}>zrušené</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#F39C12' : '#7D6608' }]}>
+                                {ts.avgRating != null ? `${ts.avgRating}⭐` : '—'}
+                              </Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#F39C12' : '#7D6608' }]}>hodnotenie</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </>
+              )}
             </ScrollView>
           )}
         </>
@@ -595,6 +667,11 @@ const s = StyleSheet.create({
   },
   payCardLabel: { fontSize: 12, fontWeight: '600', color: '#1A5276', marginBottom: 6 },
   payCardValue: { fontSize: 28, fontWeight: '800', color: '#1A5276' },
+
+  teamStatsRow: { flexDirection: 'row', gap: 6, marginTop: 10, flexWrap: 'wrap' },
+  tsStat:       { flex: 1, minWidth: 64, borderRadius: 10, padding: 8, alignItems: 'center' },
+  tsNum:        { fontSize: 18, fontWeight: '800', lineHeight: 22 },
+  tsLabel:      { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, marginTop: 2, textAlign: 'center' },
 
   empty: { alignItems: 'center', paddingTop: 60, gap: 10 },
   emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp },

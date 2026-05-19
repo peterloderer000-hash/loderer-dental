@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -132,6 +134,7 @@ export default function HealthPassportScreen() {
   const [exporting,   setExporting]   = useState(false);
   const [saveError,   setSaveError]   = useState<string | null>(null);
   const [patientName, setPatientName] = useState('Pacient');
+  const [showQR,      setShowQR]      = useState(false);
 
   // ── Pomocné funkcie pre „Iné" ──────────────────────────────────────────────
   // Extrahuje vlastný text z "Iné: text" položky v poli
@@ -316,6 +319,9 @@ export default function HealthPassportScreen() {
             <Text style={styles.headerLabel}>ZDRAVOTNÝ PAS</Text>
             <Text style={styles.headerTitle}>Anamnestický dotazník</Text>
           </View>
+          <TouchableOpacity style={styles.exportBtn} onPress={() => setShowQR(true)} activeOpacity={0.8}>
+            <Ionicons name="qr-code-outline" size={20} color={COLORS.cream} />
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.exportBtn, exporting && { opacity: 0.5 }]}
             onPress={handleExport}
@@ -327,6 +333,53 @@ export default function HealthPassportScreen() {
               : <Ionicons name="download-outline" size={20} color={COLORS.cream} />}
           </TouchableOpacity>
         </View>
+
+        {/* ── QR Modal ── */}
+        <Modal visible={showQR} transparent animationType="fade" onRequestClose={() => setShowQR(false)}>
+          <TouchableOpacity style={qrS.overlay} onPress={() => setShowQR(false)} activeOpacity={1}>
+            <TouchableOpacity style={[qrS.sheet, { backgroundColor: colors.cardBg }]} onPress={() => {}} activeOpacity={1}>
+              <View style={qrS.handleWrap}>
+                <View style={[qrS.handle, { backgroundColor: colors.bg3 }]} />
+              </View>
+              <Text style={[qrS.title, { color: colors.textPrimary }]}>Zdravotný pas — QR kód</Text>
+              <Text style={[qrS.sub, { color: colors.textSecondary }]}>Ukážte doktorovi pre rýchle načítanie</Text>
+
+              {/* QR kód */}
+              <View style={qrS.qrWrap}>
+                <Image
+                  source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                    [
+                      `LODERER DENTAL — ${patientName}`,
+                      bloodType        ? `Krvná sk.: ${bloodType}` : null,
+                      allergies        ? `Alergie: ${allergies}` : null,
+                      medications      ? `Lieky: ${medications}` : null,
+                      emergencyName    ? `Núdz. kontakt: ${emergencyName} ${emergencyPhone}` : null,
+                      insuranceProvider && insuranceNumber ? `Poistenie: ${insuranceProvider} ${insuranceNumber}` : null,
+                    ].filter(Boolean).join('\n')
+                  )}` }}
+                  style={qrS.qr}
+                  resizeMode="contain"
+                />
+              </View>
+
+              {/* Emergency card */}
+              <View style={[qrS.card, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+                <Text style={[qrS.cardTitle, { color: dark ? '#58D68D' : '#1E8449' }]}>🚨 Núdzové info</Text>
+                {bloodType     ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>🩸 Krvná skupina: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{bloodType}</Text></Text> : null}
+                {allergies     ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>⚠️ Alergie: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{allergies}</Text></Text> : null}
+                {medications   ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>💊 Lieky: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{medications}</Text></Text> : null}
+                {emergencyName ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>📞 Kontakt: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{emergencyName} {emergencyPhone}</Text></Text> : null}
+                {!bloodType && !allergies && !emergencyName && (
+                  <Text style={[qrS.cardRow, { color: colors.textSecondary }]}>Vyplňte základné údaje pre núdzovú kartu.</Text>
+                )}
+              </View>
+
+              <TouchableOpacity style={[qrS.closeBtn, { backgroundColor: COLORS.esp }]} onPress={() => setShowQR(false)} activeOpacity={0.85}>
+                <Text style={qrS.closeBtnText}>Zavrieť</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
 
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
@@ -588,4 +641,20 @@ const styles = StyleSheet.create({
   saveBtn: { backgroundColor: COLORS.wal, borderRadius: SIZES.radius, paddingVertical: 15, marginHorizontal: SIZES.padding, marginTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, elevation: 4 },
   saveBtnDisabled: { opacity: 0.55 },
   saveBtnText: { fontSize: 15, fontWeight: '600', color: '#fff', letterSpacing: 0.3 },
+});
+
+const qrS = StyleSheet.create({
+  overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  sheet:      { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40, alignItems: 'center' },
+  handleWrap: { width: '100%', alignItems: 'center', marginBottom: 16 },
+  handle:     { width: 38, height: 4, borderRadius: 2 },
+  title:      { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4, textAlign: 'center' },
+  sub:        { fontSize: 13, textAlign: 'center', marginBottom: 20 },
+  qrWrap:     { backgroundColor: '#fff', borderRadius: 16, padding: 12, marginBottom: 20, elevation: 4 },
+  qr:         { width: 220, height: 220 },
+  card:       { width: '100%', borderRadius: 14, borderWidth: 1.5, padding: 14, gap: 4, marginBottom: 20 },
+  cardTitle:  { fontSize: 14, fontFamily: 'DMSans_500Medium', marginBottom: 6 },
+  cardRow:    { fontSize: 13, lineHeight: 20 },
+  closeBtn:   { width: '100%', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
+  closeBtnText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
 });

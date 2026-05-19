@@ -68,36 +68,40 @@ export default function SearchScreen() {
   // Načítaj všetky dáta raz (cache)
   useFocusEffect(useCallback(() => {
     let cancelled = false;
+    let focusTimeout: ReturnType<typeof setTimeout> | null = null;
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || cancelled) return;
 
-      const [patsRes, apptsRes, svcsRes] = await Promise.all([
-        supabase.from('profiles')
-          .select('id, full_name, phone_number, date_of_birth')
-          .eq('role', 'patient')
-          .order('full_name'),
-        supabase.from('appointments')
-          .select('id, appointment_date, status, notes, doctor_notes, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, emoji)')
-          .eq('doctor_id', user.id)
-          .order('appointment_date', { ascending: false })
-          .limit(200),
-        supabase.from('services')
-          .select('id, name, emoji, category, price_min')
-          .order('name'),
-      ]);
+        const [patsRes, apptsRes, svcsRes] = await Promise.all([
+          supabase.from('profiles')
+            .select('id, full_name, phone_number, date_of_birth')
+            .eq('role', 'patient')
+            .order('full_name'),
+          supabase.from('appointments')
+            .select('id, appointment_date, status, notes, doctor_notes, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, emoji)')
+            .eq('doctor_id', user.id)
+            .order('appointment_date', { ascending: false })
+            .limit(200),
+          supabase.from('services')
+            .select('id, name, emoji, category, price_min')
+            .order('name'),
+        ]);
 
-      if (!cancelled) {
-        setPatients((patsRes.data ?? []) as Patient[]);
-        setAppts((apptsRes.data ?? []) as unknown as Appt[]);
-        setServices((svcsRes.data ?? []) as Service[]);
-        setLoading(false);
+        if (!cancelled) {
+          setPatients((patsRes.data ?? []) as Patient[]);
+          setAppts((apptsRes.data ?? []) as unknown as Appt[]);
+          setServices((svcsRes.data ?? []) as Service[]);
+          setLoading(false);
+        }
+      } catch (e: any) {
+        if (!cancelled) { console.error('[Search] load failed:', e?.message); setLoading(false); }
       }
     }
     load();
-    // Auto-focus input
-    setTimeout(() => inputRef.current?.focus(), 300);
-    return () => { cancelled = true; };
+    focusTimeout = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => { cancelled = true; if (focusTimeout) clearTimeout(focusTimeout); };
   }, []));
 
   const sections: Section[] = useMemo(() => {

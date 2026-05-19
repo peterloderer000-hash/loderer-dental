@@ -284,7 +284,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
     <View style={[styles.card, adyn.card, item.is_urgent && styles.cardUrgent]}>
       <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
       {item.is_urgent && (
-        <View style={styles.urgentBanner}>
+        <View style={[styles.urgentBanner, dark && { backgroundColor: '#4A1010' }]}>
           <Text style={styles.urgentBannerText}>🚨 URGENTNÉ</Text>
         </View>
       )}
@@ -317,7 +317,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       ) : null}
       {/* Hodnotenie pacienta */}
       {item.status === 'completed' && item.patient_rating ? (
-        <View style={styles.ratingRow}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n}
               name={n <= item.patient_rating! ? 'star' : 'star-outline'}
@@ -328,7 +328,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
           </Text>
         </View>
       ) : item.status === 'completed' ? (
-        <View style={styles.ratingRow}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n} name="star-outline" size={13} color="#ccc" />
           ))}
@@ -528,7 +528,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
   visible: boolean; patientName: string; onClose: () => void;
   onConfirm: (notes: string, careInstructions: string) => void; saving: boolean;
 }) {
-  const { colors: cm } = useAppTheme();
+  const { colors: cm, dark: cmDark } = useAppTheme();
   const [notes, setNotes]         = useState('');
   const [careInstr, setCareInstr] = useState('');
   const [showCare, setShowCare]   = useState(false);
@@ -579,7 +579,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}
                     contentContainerStyle={cmStyles.templatesRow}>
                     {CARE_TEMPLATES.map((t) => (
-                      <TouchableOpacity key={t.label} style={cmStyles.templateChip}
+                      <TouchableOpacity key={t.label} style={[cmStyles.templateChip, { backgroundColor: cm.cardBg, borderColor: cmDark ? cm.bg3 : '#AED6F1' }]}
                         onPress={() => setCareInstr(t.text)} activeOpacity={0.8}>
                         <Text>{t.icon}</Text>
                         <Text style={cmStyles.templateLabel}>{t.label}</Text>
@@ -633,7 +633,7 @@ const cmStyles = StyleSheet.create({
 
 export default function DoctorHome() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const navigation = useNavigation();
   const { appointments, loading, refetch, updateStatus, approvePending } = useAppointments('doctor');
   const { unreadCount: notifCount } = useNotifications();
@@ -717,12 +717,13 @@ export default function DoctorHome() {
   }, []);
 
   const loadBirthdays = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, phone_number, date_of_birth')
       .eq('role', 'patient')
-      .not('date_of_birth', 'is', null);
-    if (!data) return;
+      .not('date_of_birth', 'is', null)
+      .limit(500);
+    if (error || !data) return;
     const now = new Date();
     const upcoming = (data as { id: string; full_name: string | null; phone_number: string | null; date_of_birth: string }[])
       .map((p) => {
@@ -771,6 +772,37 @@ export default function DoctorHome() {
     setCompleteSaving(false);
     setCompletingItem(null);
     if (err) { Alert.alert('Chyba', err.message); return; }
+
+    // Notifikácia pacientovi — pokyny po ošetrení
+    const svcName = saved.service?.name ?? 'ošetrenie';
+    if (careInstructions.trim()) {
+      supabase.from('notifications').insert({
+        user_id:        saved.patient_id,
+        title:          '📋 Pokyny po ošetrení',
+        body:           `Po dnešnom ${svcName}: ${careInstructions.trim().slice(0, 120)}${careInstructions.length > 120 ? '…' : ''}`,
+        type:           'info',
+        appointment_id: saved.id,
+      }).then(null, () => {});
+    } else {
+      supabase.from('notifications').insert({
+        user_id:        saved.patient_id,
+        title:          `✅ Ošetrenie dokončené`,
+        body:           `Dnešné ${svcName} bolo úspešne dokončené. Ďakujeme za vašu návštevu!`,
+        type:           'success',
+        appointment_id: saved.id,
+      }).then(null, () => {});
+    }
+
+    // Deň-po check-in notifikácia (o 24h)
+    supabase.from('notifications').insert({
+      user_id:        saved.patient_id,
+      title:          '😊 Ako sa cítite?',
+      body:           `Včera ste boli u nás na ${svcName}. Ak máte otázky alebo ťažkosti, neváhajte nás kontaktovať.`,
+      type:           'info',
+      appointment_id: saved.id,
+      created_at:     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    }).then(null, () => {});
+
     // Ponúkni naplánovanie nasledujúceho termínu
     Alert.alert(
       'Naplánovať ďalší termín?',
@@ -1111,7 +1143,7 @@ export default function DoctorHome() {
       >
         {/* ── Čakajúce žiadosti ── */}
         {pendingAppts.length > 0 && (
-          <View style={styles.pendingSection}>
+          <View style={[styles.pendingSection, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionDot, { backgroundColor: '#D4AC0D' }]} />
               <Text style={[styles.sectionTitle, { color: '#7D6608' }]}>
@@ -1189,7 +1221,7 @@ export default function DoctorHome() {
 
         {/* ── Čakáreň ── */}
         {arrivedAppts.length > 0 && (
-          <View style={styles.arrivedSection}>
+          <View style={[styles.arrivedSection, dark && { backgroundColor: '#0D3B1F', borderBottomColor: '#A2D9CE33' }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionDot, { backgroundColor: '#17A589' }]} />
               <Text style={[styles.sectionTitle, { color: '#0E6655' }]}>V ČAKÁRNI ({arrivedAppts.length})</Text>
@@ -1243,7 +1275,7 @@ export default function DoctorHome() {
         {/* ── Ďalší pacient banner ── */}
         {!loading && nextApptLabel && (
           <TouchableOpacity
-            style={styles.nextApptBanner}
+            style={[styles.nextApptBanner, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}
             onPress={() => setFilter('upcoming')}
             activeOpacity={0.8}
           >
@@ -1255,7 +1287,7 @@ export default function DoctorHome() {
 
         {/* ── Narodeniny ── */}
         {birthdays.length > 0 && (
-          <View style={styles.bdSection}>
+          <View style={[styles.bdSection, dark && { backgroundColor: '#1E0D33', borderBottomColor: '#D7BDE233' }]}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: '#7D3C98' }]}>🎂 NARODENINY (najbližších 14 dní)</Text>
             </View>
@@ -1269,7 +1301,7 @@ export default function DoctorHome() {
                     {b.daysUntil === 0 ? 'Dnes!' : b.daysUntil === 1 ? 'Zajtra' : `Za ${b.daysUntil} dní`}
                   </Text>
                   <TouchableOpacity
-                    style={styles.bdBtn}
+                    style={[styles.bdBtn, dark && { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' }]}
                     onPress={() => router.push({ pathname: '/(doctor)/messages', params: { patientId: b.id, patientName: b.name } })}
                     activeOpacity={0.8}
                   >

@@ -107,6 +107,8 @@ export default function ProfileScreen() {
   const [hasPassport, setHasPassport] = useState(false);
   const [apptStats,   setApptStats]   = useState<ApptStats>({ total: 0, completed: 0, upcoming: 0, lastVisit: null });
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [rxList,   setRxList]   = useState<{ id: string; medication: string; created_at: string }[]>([]);
+  const [planList, setPlanList] = useState<{ id: string; title: string; created_at: string }[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -126,6 +128,13 @@ export default function ProfileScreen() {
       }
       const { data: pp } = await supabase.from('health_passports').select('patient_id').eq('patient_id', user.id).maybeSingle();
       setHasPassport(!!pp);
+
+      const [{ data: rxData }, { data: planData }] = await Promise.all([
+        supabase.from('prescriptions').select('id, medication, created_at').eq('patient_id', user.id).eq('is_active', true).order('created_at', { ascending: false }).limit(5),
+        supabase.from('treatment_plans').select('id, title, created_at').eq('patient_id', user.id).eq('visible_to_patient', true).order('created_at', { ascending: false }),
+      ]);
+      setRxList((rxData ?? []) as { id: string; medication: string; created_at: string }[]);
+      setPlanList((planData ?? []) as { id: string; title: string; created_at: string }[]);
 
       const { data: appts } = await supabase.from('appointments').select('status, appointment_date').eq('patient_id', user.id);
       if (appts) {
@@ -270,6 +279,49 @@ export default function ProfileScreen() {
 
             {/* Loyalty */}
             <LoyaltyCard completed={apptStats.completed} />
+
+            {/* Moje dokumenty */}
+            {(rxList.length > 0 || planList.length > 0) && (
+              <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                <Text style={[s.cardTitle, { color: colors.textSecondary }]}>MOJE DOKUMENTY</Text>
+                {planList.map((plan, idx) => (
+                  <TouchableOpacity key={plan.id}
+                    style={[docS.row, idx > 0 && { borderTopWidth: 1 }, { borderTopColor: colors.bg3 }]}
+                    onPress={() => router.push('/(patient)/treatment-plan')}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[docS.icon, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+                      <Ionicons name="list-outline" size={16} color={dark ? '#27AE60' : '#1E8449'} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[docS.name, { color: colors.textPrimary }]} numberOfLines={1}>{plan.title}</Text>
+                      <Text style={[docS.date, { color: colors.textSecondary }]}>
+                        Liečebný plán · {new Date(plan.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={COLORS.sand} />
+                  </TouchableOpacity>
+                ))}
+                {rxList.map((rx, idx) => (
+                  <TouchableOpacity key={rx.id}
+                    style={[docS.row, (idx > 0 || planList.length > 0) && { borderTopWidth: 1 }, { borderTopColor: colors.bg3 }]}
+                    onPress={() => router.push('/(patient)/prescriptions')}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[docS.icon, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                      <Ionicons name="medical-outline" size={16} color={dark ? '#5DADE2' : '#1A5276'} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={[docS.name, { color: colors.textPrimary }]} numberOfLines={1}>💊 {rx.medication}</Text>
+                      <Text style={[docS.date, { color: colors.textSecondary }]}>
+                        Recept · {new Date(rx.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={14} color={COLORS.sand} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
             {/* Settings card — dark mode + language */}
             <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -544,4 +596,11 @@ const ls = StyleSheet.create({
   langBtnTextActive: {
     color: '#fff',
   },
+});
+
+const docS = StyleSheet.create({
+  row:  { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11 },
+  icon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  name: { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 1 },
+  date: { fontSize: 11, fontFamily: 'DMSans_400Regular' },
 });

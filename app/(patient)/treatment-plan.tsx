@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ScrollView, StyleSheet,
+  Alert, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -58,13 +58,39 @@ function fmtEur(n: number | null) {
 // ─── Komponent: jeden plán ────────────────────────────────────────────────────
 type PlanCardProps = { plan: Plan; colors: ReturnType<typeof useAppTheme>['colors']; dark: boolean };
 function PlanCard({ plan, colors, dark }: PlanCardProps) {
-  const [expanded, setExpanded] = useState(plan.status === 'active');
+  const [expanded,  setExpanded]  = useState(plan.status === 'active');
+  const [approving, setApproving] = useState(false);
+  const isApproved = plan.notes?.includes('[SCHVÁLENÉ PACIENTOM]') ?? false;
   const pCfg      = PLAN_CFG[plan.status];
   const total     = plan.items.reduce((s, i) => s + (i.estimated_cost ?? 0), 0);
   const completed = plan.items.filter(i => i.status === 'completed').reduce((s, i) => s + (i.estimated_cost ?? 0), 0);
   const doneCount = plan.items.filter(i => i.status === 'completed').length;
   const progress  = plan.items.length > 0 ? doneCount / plan.items.length : 0;
   const pct       = Math.round(progress * 100);
+
+  async function handleApprove() {
+    Alert.alert(
+      'Schváliť liečebný plán',
+      `Potvrdzujete súhlas s plánom "${plan.title}"?\n\nToto nahradí fyzický podpis pre interné záznamy.`,
+      [
+        { text: 'Nie', style: 'cancel' },
+        {
+          text: '✓ Schváliť', onPress: async () => {
+            setApproving(true);
+            const datestamp = new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
+            const marker    = `[SCHVÁLENÉ PACIENTOM: ${datestamp}]`;
+            const newNotes  = plan.notes ? `${plan.notes}\n${marker}` : marker;
+            const { error } = await supabase.from('treatment_plans').update({ notes: newNotes }).eq('id', plan.id);
+            setApproving(false);
+            if (error) { Alert.alert('Chyba', error.message); return; }
+            Alert.alert('Schválené ✓', `Plán "${plan.title}" bol digitálne schválený ${datestamp}.`);
+            // Refresh – jednoducho reloadujeme cez zmenu notes lokálne
+            plan.notes = newNotes;
+          },
+        },
+      ]
+    );
+  }
 
   return (
     <View style={[styles.planCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -181,6 +207,24 @@ function PlanCard({ plan, colors, dark }: PlanCardProps) {
                 <Text style={[styles.summaryVal, { color: '#922B21' }]}>{fmtEur(total - completed) ?? '0,00 €'}</Text>
               </View>
             </View>
+          )}
+
+          {/* E-podpis */}
+          {plan.status === 'active' && (
+            isApproved ? (
+              <View style={[styles.approvedBadge, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+                <Ionicons name="checkmark-circle" size={16} color={dark ? '#58D68D' : '#1E8449'} />
+                <Text style={[styles.approvedText, { color: dark ? '#58D68D' : '#1E8449' }]}>Schválené pacientom digitálne</Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={[styles.approveBtn, approving && { opacity: 0.6 }]}
+                onPress={handleApprove} disabled={approving} activeOpacity={0.85}
+              >
+                <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                <Text style={styles.approveBtnText}>Schváliť liečebný plán digitálne</Text>
+              </TouchableOpacity>
+            )
           )}
         </>
       )}
@@ -352,7 +396,11 @@ const styles = StyleSheet.create({
   notesBox:   { flexDirection: 'row', gap: 8, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: '#FDFBF8', borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   notesText:  { flex: 1, fontSize: 13, color: COLORS.wal, lineHeight: 18 },
 
-  noItems:    { textAlign: 'center', fontSize: 13, color: '#888', fontStyle: 'italic', paddingVertical: 16 },
+  noItems:      { textAlign: 'center', fontSize: 13, color: '#888', fontStyle: 'italic', paddingVertical: 16 },
+  approveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, margin: 14, marginTop: 4, paddingVertical: 13, borderRadius: 12, backgroundColor: COLORS.esp },
+  approveBtnText:{ fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  approvedBadge:{ flexDirection: 'row', alignItems: 'center', gap: 8, margin: 14, marginTop: 4, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 12, borderWidth: 1.5 },
+  approvedText: { fontSize: 13, fontFamily: 'DMSans_500Medium' },
 
   itemsList:      { borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   itemRow:        { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingHorizontal: 14, paddingVertical: 12 },

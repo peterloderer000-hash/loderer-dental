@@ -223,9 +223,54 @@ function WeekChart({ data }: { data: { label: string; count: number; isToday: bo
   );
 }
 
+// ─── Heatmap: deň × hodina ───────────────────────────────────────────────────
+function AppointmentHeatmap({ heatmap, maxVal }: { heatmap: number[][]; maxVal: number }) {
+  const { colors, dark } = useAppTheme();
+  const DAYS  = ['Po','Ut','St','Št','Pi','So','Ne'];
+  const HOURS = ['8–10','10–12','12–14','14–16','16–18'];
+  return (
+    <View>
+      {/* Hour headers */}
+      <View style={{ flexDirection: 'row', marginLeft: 28, marginBottom: 4 }}>
+        {HOURS.map(h => (
+          <Text key={h} style={[hm.hourLabel, { color: colors.textSecondary }]}>{h}</Text>
+        ))}
+      </View>
+      {/* Grid */}
+      {DAYS.map((day, di) => (
+        <View key={day} style={hm.row}>
+          <Text style={[hm.dayLabel, { color: colors.textSecondary }]}>{day}</Text>
+          {heatmap[di].map((count, hi) => {
+            const intensity = maxVal > 0 ? count / maxVal : 0;
+            const bg = intensity === 0
+              ? colors.bg3
+              : dark
+                ? `rgba(196,168,130,${0.15 + intensity * 0.7})`
+                : `rgba(107,79,58,${0.1 + intensity * 0.8})`;
+            return (
+              <View key={hi} style={[hm.cell, { backgroundColor: bg }]}>
+                {count > 0 && <Text style={[hm.cellNum, { color: intensity > 0.5 ? '#fff' : colors.textSecondary }]}>{count}</Text>}
+              </View>
+            );
+          })}
+        </View>
+      ))}
+      <Text style={[hm.legend, { color: colors.textSecondary }]}>Počet termínov · svetlá = menej, tmavá = viac</Text>
+    </View>
+  );
+}
+const hm = StyleSheet.create({
+  row:      { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  dayLabel: { width: 24, fontSize: 10, fontFamily: 'DMSans_500Medium' },
+  hourLabel:{ flex: 1, textAlign: 'center', fontSize: 9 },
+  cell:     { flex: 1, height: 28, borderRadius: 5, marginHorizontal: 2, alignItems: 'center', justifyContent: 'center' },
+  cellNum:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
+  legend:   { fontSize: 9, textAlign: 'center', marginTop: 6, fontStyle: 'italic' },
+});
+
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function StatsScreen() {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const [appts,        setAppts]        = useState<ApptRow[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [refreshing,   setRefreshing]   = useState(false);
@@ -275,23 +320,17 @@ export default function StatsScreen() {
       setAppts((data ?? []) as unknown as ApptRow[]);
 
       // KPI — čakacie časy + využitie kresiel (posledných 30 dní)
-      const { data: kpiData } = await supabase
-        .from('appointment_kpi')
-        .select('avg_wait_minutes, avg_treatment_minutes, room_id, total, day');
-
-      const { data: chairsData } = await supabase
-        .from('chairs')
-        .select('id, name, color')
-        .eq('is_active', true);
+      const [{ data: kpiData }, { data: chairsData }, { data: todayKpi }] = await Promise.all([
+        supabase.from('appointment_kpi').select('avg_wait_minutes, avg_treatment_minutes, room_id, total'),
+        supabase.from('chairs').select('id, name, color').eq('is_active', true),
+        supabase.rpc('get_today_kpi'),
+      ]);
 
       if (kpiData && kpiData.length > 0) {
         const waits = kpiData.map((r: any) => r.avg_wait_minutes).filter((v: any) => v != null);
         const treatments = kpiData.map((r: any) => r.avg_treatment_minutes).filter((v: any) => v != null);
         const avgWait = waits.length > 0 ? Math.round(waits.reduce((a: number, b: number) => a + b, 0) / waits.length) : null;
         const avgTreatment = treatments.length > 0 ? Math.round(treatments.reduce((a: number, b: number) => a + b, 0) / treatments.length) : null;
-
-        const today = new Date().toISOString().split('T')[0];
-        const todayRow = kpiData.find((r: any) => r.day === today);
 
         const chairCounts: Record<string, number> = {};
         kpiData.forEach((r: any) => {
@@ -303,6 +342,7 @@ export default function StatsScreen() {
           count: chairCounts[c.id] ?? 0,
         }));
 
+        const todayRow = Array.isArray(todayKpi) ? todayKpi[0] : todayKpi;
         setKpi({
           avgWait,
           avgTreatment,
@@ -435,6 +475,24 @@ export default function StatsScreen() {
       ? Math.round((returningPatients / patientApptMap.size) * 100)
       : 0;
 
+    // No-show rate (zrušené vs. dokončené+zrušené)
+    const noShowRate = (completed.length + cancelled.length) > 0
+      ? Math.round((cancelled.length / (completed.length + cancelled.length)) * 100)
+      : 0;
+
+    // Heatmap: deň (Po–Ne = 1–0) × hodina (8–17 po 2h bucketch)
+    const HOUR_BUCKETS = [8, 10, 12, 14, 16]; // štart každého bucketu
+    const heatmap: number[][] = Array.from({ length: 7 }, () => Array(HOUR_BUCKETS.length).fill(0));
+    appts.filter(a => a.status !== 'cancelled').forEach(a => {
+      const d   = new Date(a.appointment_date);
+      const dow = d.getDay(); // 0=Ne,1=Po,...,6=So → Po=0..Ne=6
+      const idx = dow === 0 ? 6 : dow - 1;
+      const h   = d.getHours();
+      const bkt = HOUR_BUCKETS.findIndex((start, i) => h >= start && (i === HOUR_BUCKETS.length - 1 || h < HOUR_BUCKETS[i + 1]));
+      if (bkt >= 0) heatmap[idx][bkt]++;
+    });
+    const heatmapMax = Math.max(...heatmap.flat(), 1);
+
     return {
       todayCount: today.length,
       thisWeekCount: thisWeek.filter((a) => a.status !== 'cancelled').length,
@@ -461,6 +519,9 @@ export default function StatsScreen() {
       oneTimePatients,
       avgApptPerPatient,
       retentionRate,
+      noShowRate,
+      heatmap,
+      heatmapMax,
     };
   }, [appts]);
 
@@ -591,16 +652,16 @@ export default function StatsScreen() {
           <Text style={styles.cardTitle}>ČAKACIE & OŠETROVACIE ČASY (30 DNÍ)</Text>
           {/* 30-dňový priemer */}
           <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-            <View style={[styles.kpiBox, { backgroundColor: '#EBF5FB' }]}>
+            <View style={[styles.kpiBox, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
               <Ionicons name="time-outline" size={20} color="#1A5276" />
-              <Text style={[styles.kpiNum, { color: '#1A5276' }]}>
+              <Text style={[styles.kpiNum, { color: dark ? '#5DADE2' : '#1A5276' }]}>
                 {kpi.avgWait != null ? `${kpi.avgWait} min` : '—'}
               </Text>
               <Text style={styles.kpiLabel}>Priem. čakanie</Text>
             </View>
-            <View style={[styles.kpiBox, { backgroundColor: '#EAFAF1' }]}>
-              <Ionicons name="medical-outline" size={20} color="#1E8449" />
-              <Text style={[styles.kpiNum, { color: '#1E8449' }]}>
+            <View style={[styles.kpiBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+              <Ionicons name="medical-outline" size={20} color={dark ? '#27AE60' : '#1E8449'} />
+              <Text style={[styles.kpiNum, { color: dark ? '#27AE60' : '#1E8449' }]}>
                 {kpi.avgTreatment != null ? `${kpi.avgTreatment} min` : '—'}
               </Text>
               <Text style={styles.kpiLabel}>Priem. ošetrenie</Text>
@@ -656,7 +717,7 @@ export default function StatsScreen() {
           <StatCard emoji="👥" label="Pacienti" value={stats.uniquePats}
             sub="celkovo" bg={colors.cardBg} color={colors.textPrimary} />
           <StatCard emoji="✅" label="Úspešnosť" value={`${stats.completionRate}%`}
-            sub="dokončených" color="#1E8449" bg="#EAFAF1" />
+            sub="dokončených" color={dark ? '#27AE60' : '#1E8449'} bg={dark ? '#0D3B1F' : '#EAFAF1'} />
         </View>
 
         {/* ── Trend týždeň / mesiac ── */}
@@ -772,7 +833,7 @@ export default function StatsScreen() {
                   Počet hodnotení: {stats.ratedCount}
                 </Text>
               </View>
-              <View style={styles.ratingCircle}>
+              <View style={[styles.ratingCircle, dark && { backgroundColor: '#2D2200', borderColor: '#B7950B' }]}>
                 <Text style={[styles.ratingCircleNum, dyn.text]}>{stats.avgRating!.toFixed(1)}</Text>
                 <Text style={styles.ratingCircleSub}>/ 5</Text>
               </View>
@@ -785,21 +846,21 @@ export default function StatsScreen() {
           <View style={[styles.card, dyn.card]}>
             <Text style={styles.cardTitle}>RETENCIA PACIENTOV</Text>
             <View style={styles.retentionGrid}>
-              <View style={[styles.retentionItem, { backgroundColor: '#EBF5FB' }]}>
-                <Text style={[styles.retentionNum, { color: '#1A5276' }]}>{stats.retentionRate}%</Text>
-                <Text style={[styles.retentionLabel, { color: '#1A5276' }]}>Miera retencie</Text>
+              <View style={[styles.retentionItem, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                <Text style={[styles.retentionNum, { color: dark ? '#5DADE2' : '#1A5276' }]}>{stats.retentionRate}%</Text>
+                <Text style={[styles.retentionLabel, { color: dark ? '#5DADE2' : '#1A5276' }]}>Miera retencie</Text>
               </View>
-              <View style={[styles.retentionItem, { backgroundColor: '#EAFAF1' }]}>
-                <Text style={[styles.retentionNum, { color: '#1E8449' }]}>{stats.returningPatients}</Text>
-                <Text style={[styles.retentionLabel, { color: '#1E8449' }]}>Opakovaní pacienti</Text>
+              <View style={[styles.retentionItem, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+                <Text style={[styles.retentionNum, { color: dark ? '#27AE60' : '#1E8449' }]}>{stats.returningPatients}</Text>
+                <Text style={[styles.retentionLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Opakovaní pacienti</Text>
               </View>
-              <View style={[styles.retentionItem, { backgroundColor: '#FEF9E7' }]}>
-                <Text style={[styles.retentionNum, { color: '#9A7D0A' }]}>{stats.oneTimePatients}</Text>
-                <Text style={[styles.retentionLabel, { color: '#9A7D0A' }]}>Jednorazoví</Text>
+              <View style={[styles.retentionItem, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]}>
+                <Text style={[styles.retentionNum, { color: dark ? '#D4AC0D' : '#9A7D0A' }]}>{stats.oneTimePatients}</Text>
+                <Text style={[styles.retentionLabel, { color: dark ? '#D4AC0D' : '#9A7D0A' }]}>Jednorazoví</Text>
               </View>
-              <View style={[styles.retentionItem, { backgroundColor: '#F5EEF8' }]}>
-                <Text style={[styles.retentionNum, { color: '#6C3483' }]}>{stats.avgApptPerPatient}</Text>
-                <Text style={[styles.retentionLabel, { color: '#6C3483' }]}>Priemer/pacient</Text>
+              <View style={[styles.retentionItem, { backgroundColor: dark ? '#1E0D33' : '#F5EEF8' }]}>
+                <Text style={[styles.retentionNum, { color: dark ? '#A569BD' : '#6C3483' }]}>{stats.avgApptPerPatient}</Text>
+                <Text style={[styles.retentionLabel, { color: dark ? '#A569BD' : '#6C3483' }]}>Priemer/pacient</Text>
               </View>
             </View>
             {/* Retention bar */}
@@ -812,6 +873,37 @@ export default function StatsScreen() {
             </View>
           </View>
         )}
+
+        {/* ── Heatmap vyťaženosti ── */}
+        {stats.heatmapMax > 0 && (
+          <View style={[styles.card, dyn.card]}>
+            <Text style={styles.cardTitle}>VYŤAŽENOSŤ — DEŇ × HODINA</Text>
+            <AppointmentHeatmap heatmap={stats.heatmap} maxVal={stats.heatmapMax} />
+          </View>
+        )}
+
+        {/* ── No-show rate ── */}
+        <View style={[styles.card, dyn.card]}>
+          <Text style={styles.cardTitle}>ZRUŠENIA A NO-SHOW</Text>
+          <View style={styles.retentionGrid}>
+            <View style={[styles.retentionItem, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
+              <Text style={[styles.retentionNum, { color: dark ? '#F1948A' : '#922B21' }]}>{stats.noShowRate}%</Text>
+              <Text style={[styles.retentionLabel, { color: dark ? '#F1948A' : '#922B21' }]}>Miera zrušení</Text>
+            </View>
+            <View style={[styles.retentionItem, { backgroundColor: dark ? '#1A3D2B' : '#EAFAF1' }]}>
+              <Text style={[styles.retentionNum, { color: dark ? '#58D68D' : '#1E8449' }]}>{100 - stats.noShowRate}%</Text>
+              <Text style={[styles.retentionLabel, { color: dark ? '#58D68D' : '#1E8449' }]}>Úspešnosť termínov</Text>
+            </View>
+            <View style={[styles.retentionItem, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]}>
+              <Text style={[styles.retentionNum, { color: dark ? '#F0A030' : '#7D6608' }]}>{stats.cancelledCount}</Text>
+              <Text style={[styles.retentionLabel, { color: dark ? '#F0A030' : '#7D6608' }]}>Zrušených</Text>
+            </View>
+            <View style={[styles.retentionItem, { backgroundColor: dark ? '#0D3B1F' : '#F0FAF4' }]}>
+              <Text style={[styles.retentionNum, { color: dark ? '#58D68D' : '#1E8449' }]}>{stats.completedCount}</Text>
+              <Text style={[styles.retentionLabel, { color: dark ? '#58D68D' : '#1E8449' }]}>Dokončených</Text>
+            </View>
+          </View>
+        </View>
 
         {/* ── Príjem (odhad) ── */}
         <View style={[styles.card, styles.revenueCard]}>
@@ -856,14 +948,14 @@ export default function StatsScreen() {
           </View>
 
           {/* Summary */}
-          <View style={styles.invoiceSummary}>
+          <View style={[styles.invoiceSummary, dark && { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' }]}>
             <View style={styles.invoiceSummaryItem}>
               <Text style={[styles.invoiceSummaryNum, dyn.text]}>{invoiceAppts.length}</Text>
               <Text style={styles.invoiceSummaryLabel}>termínov</Text>
             </View>
-            <View style={styles.invoiceSummaryDivider} />
+            <View style={[styles.invoiceSummaryDivider, dark && { backgroundColor: '#2ECC7144' }]} />
             <View style={styles.invoiceSummaryItem}>
-              <Text style={[styles.invoiceSummaryNum, { color: '#1E8449' }]}>
+              <Text style={[styles.invoiceSummaryNum, { color: dark ? '#27AE60' : '#1E8449' }]}>
                 {invoiceRevenue > 0 ? `${invoiceRevenue.toLocaleString('sk-SK')} €` : '—'}
               </Text>
               <Text style={styles.invoiceSummaryLabel}>odh. príjem</Text>

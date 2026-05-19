@@ -1,8 +1,9 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -10,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import { exportPrescription } from '../../utils/exportPDF';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 type Severity = 'mild' | 'moderate' | 'severe';
@@ -309,6 +311,11 @@ export default function PrescriptionsScreen() {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading,     setLoading]     = useState(true);
   const [doctorId,    setDoctorId]    = useState('');
+  const [doctorProfile, setDoctorProfile] = useState<{
+    name: string; clinicName: string | null; clinicAddress: string | null;
+  }>({ name: 'MDDr. Loderer', clinicName: null, clinicAddress: null });
+  const [exportingRxId, setExportingRxId] = useState<string | null>(null);
+  const [refreshing,  setRefreshing]  = useState(false);
   const [showAddDiag, setShowAddDiag] = useState(false);
   const [showAddRx,   setShowAddRx]   = useState(false);
 
@@ -332,9 +339,28 @@ export default function PrescriptionsScreen() {
     setLoading(false);
   }, [patientId]);
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  }, [load]);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setDoctorId(user.id);
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      setDoctorId(user.id);
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('full_name, clinic_name, clinic_address')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (prof) {
+        setDoctorProfile({
+          name:        prof.full_name     ?? 'MDDr. Loderer',
+          clinicName:  prof.clinic_name   ?? null,
+          clinicAddress: prof.clinic_address ?? null,
+        });
+      }
     });
     load();
   }, [load]);
@@ -357,6 +383,7 @@ export default function PrescriptionsScreen() {
     if (error) { Alert.alert('Chyba', error.message); return; }
     setDiagnoses((prev) => [data as Diagnosis, ...prev]);
     setShowAddDiag(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
   // ── Diagnóza: zmazať ──────────────────────────────────────────────────────
@@ -397,6 +424,7 @@ export default function PrescriptionsScreen() {
     if (error) { Alert.alert('Chyba', error.message); return; }
     setPrescriptions((prev) => [data as Prescription, ...prev]);
     setShowAddRx(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }
 
   // ── Recept: zmazať ────────────────────────────────────────────────────────
@@ -428,6 +456,19 @@ export default function PrescriptionsScreen() {
     setPrescriptions((prev) =>
       prev.map((r) => (r.id === rx.id ? { ...r, is_active: next } : r)),
     );
+  }
+
+  // ── Recept: export PDF ────────────────────────────────────────────────────
+  async function handleExportRx(rx: Prescription) {
+    setExportingRxId(rx.id);
+    await exportPrescription(
+      doctorProfile.name,
+      doctorProfile.clinicName,
+      doctorProfile.clinicAddress,
+      patientName ?? 'Pacient',
+      rx,
+    );
+    setExportingRxId(null);
   }
 
   // ── Render karty diagnózy ─────────────────────────────────────────────────
@@ -471,6 +512,16 @@ export default function PrescriptionsScreen() {
             <Text style={[styles.activeText, { color: activeCfg.color }]}>{activeCfg.label}</Text>
           </TouchableOpacity>
           <Text style={styles.dateText}>{fmtDate(item.created_at)}</Text>
+          <TouchableOpacity
+            style={styles.deleteBtn}
+            onPress={() => handleExportRx(item)}
+            disabled={exportingRxId === item.id}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            {exportingRxId === item.id
+              ? <ActivityIndicator size="small" color={COLORS.wal} style={{ width: 16 }} />
+              : <Ionicons name="share-outline" size={16} color={COLORS.wal} />}
+          </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDeleteRx(item)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Ionicons name="trash-outline" size={16} color="#C0392B" />
           </TouchableOpacity>
@@ -567,6 +618,7 @@ export default function PrescriptionsScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.wal} colors={[COLORS.wal]} />}
         >
           {activeTab === 'diagnoses' ? (
             diagnoses.length === 0

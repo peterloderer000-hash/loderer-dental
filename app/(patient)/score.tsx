@@ -334,6 +334,25 @@ export default function ScoreScreen() {
     [appointments]
   );
 
+  // ── Achievementy ──────────────────────────────────────────────────────────
+  const achievements = useMemo(() => {
+    const completed = appointments.filter(a => a.status === 'completed').length;
+    const lastVisit = appointments.find(a => a.status === 'completed');
+    const monthsSince = lastVisit
+      ? Math.round((Date.now() - new Date(lastVisit.appointment_date).getTime()) / (1000*60*60*24*30))
+      : 999;
+    return [
+      { key: 'first',    emoji: '🦷', title: 'Prvá návšteva',         desc: 'Ste v systéme!',                       unlocked: completed >= 1 },
+      { key: 'regular',  emoji: '📅', title: 'Pravidelný pacient',     desc: '5+ dokončených termínov',              unlocked: completed >= 5 },
+      { key: 'loyal',    emoji: '🏆', title: 'Verný pacient',          desc: '10+ dokončených termínov',             unlocked: completed >= 10 },
+      { key: 'score75',  emoji: '🌟', title: 'Zdravé zuby',            desc: 'Dentálne skóre ≥ 75',                  unlocked: sc.overall >= 75 },
+      { key: 'score90',  emoji: '💎', title: 'Výborná starostlivosť',  desc: 'Dentálne skóre ≥ 90',                  unlocked: sc.overall >= 90 },
+      { key: 'passport', emoji: '📋', title: 'Zdravotný pas vyplnený', desc: 'Kompletné zdravotné informácie',       unlocked: hasPassport },
+      { key: 'fresh',    emoji: '✨', title: 'Čerstvá prehliadka',     desc: 'Návšteva v posledných 6 mesiacoch',    unlocked: monthsSince <= 6 && completed > 0 },
+      { key: 'allround', emoji: '🎯', title: 'All-round zdravie',      desc: 'Všetky 4 dimenzie > 60 bodov',         unlocked: sc.health > 60 && sc.hygiene > 60 && sc.aesthetics > 60 && sc.prevention > 60 },
+    ];
+  }, [appointments, sc, hasPassport]);
+
   const hasData = teeth.length > 0;
   const col     = scoreColor(sc.overall);
 
@@ -401,7 +420,7 @@ export default function ScoreScreen() {
 
           {/* No data CTA */}
           {!hasData && (
-            <View style={s.noDataCard}>
+            <View style={[s.noDataCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <Text style={[s.noDataCardTitle, { color: colors.textPrimary }]}>Rezervujte si termín</Text>
               <Text style={[s.noDataCardSub, { color: colors.textSecondary }]}>
                 Po prvej návšteve vám doktor vyplní zubnú kartu a tu uvidíte detailné skóre.
@@ -470,6 +489,34 @@ export default function ScoreScreen() {
             </View>
           )}
 
+          {/* ── Achievementy ── */}
+          <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[s.cardTitle, { color: colors.textSecondary }]}>ACHIEVEMENTY</Text>
+            <View style={ach.grid}>
+              {achievements.map(a => (
+                <View
+                  key={a.key}
+                  style={[ach.item,
+                    { backgroundColor: a.unlocked ? (dark ? '#1A2A1A' : '#F0FAF4') : colors.bg2,
+                      borderColor: a.unlocked ? (dark ? '#27AE6044' : '#A9DFBF') : colors.bg3,
+                      opacity: a.unlocked ? 1 : 0.45 }]}
+                >
+                  <Text style={ach.emoji}>{a.emoji}</Text>
+                  <Text style={[ach.title, { color: a.unlocked ? colors.textPrimary : colors.textSecondary }]} numberOfLines={2}>{a.title}</Text>
+                  <Text style={[ach.desc, { color: colors.textSecondary }]} numberOfLines={2}>{a.desc}</Text>
+                  {a.unlocked && (
+                    <View style={ach.badge}>
+                      <Text style={ach.badgeText}>✓</Text>
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+            <Text style={[ach.progress, { color: colors.textSecondary }]}>
+              {achievements.filter(a => a.unlocked).length} / {achievements.length} odomknutých
+            </Text>
+          </View>
+
           {/* Recent visits */}
           {recentAppts.length > 0 && (
             <View style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -509,6 +556,18 @@ export default function ScoreScreen() {
     </SafeAreaView>
   );
 }
+
+// ─── Achievement styles ───────────────────────────────────────────────────────
+const ach = StyleSheet.create({
+  grid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
+  item:     { width: '47%', borderRadius: 12, borderWidth: 1.5, padding: 10, gap: 4, position: 'relative' },
+  emoji:    { fontSize: 24 },
+  title:    { fontSize: 12, fontFamily: 'DMSans_500Medium', lineHeight: 16 },
+  desc:     { fontSize: 10, lineHeight: 14 },
+  badge:    { position: 'absolute', top: 8, right: 8, width: 18, height: 18, borderRadius: 9, backgroundColor: '#27AE60', alignItems: 'center', justifyContent: 'center' },
+  badgeText:{ fontSize: 10, color: '#fff', fontWeight: '700' },
+  progress: { fontSize: 11, textAlign: 'center', marginTop: 2 },
+});
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({

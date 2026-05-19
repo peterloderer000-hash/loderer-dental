@@ -1,26 +1,23 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  ActivityIndicator, Alert, BackHandler, ScrollView, StyleSheet,
+  ActivityIndicator, Alert, Animated, BackHandler, Easing, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import Reanimated, {
-  useSharedValue, useAnimatedStyle,
-  withRepeat, withSequence, withTiming,
-  FadeInDown,
-} from 'react-native-reanimated';
+import Reanimated, { FadeInDown } from 'react-native-reanimated';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
+import { MonthCalendar } from '../../components/MonthCalendar';
 import { useServices, Service, formatPrice, formatPriceRange, formatDuration } from '../../hooks/useServices';
 import { scheduleAppointmentReminder } from '../../hooks/usePushNotifications';
 import {
-  generateTimeSlotsForDay, getNextOpenDays,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  generateTimeSlotsForDay,
+  jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
 import { fetchBlockedMinutes } from '../../hooks/useTimeBlocks';
 
@@ -61,27 +58,24 @@ function StepBar({ step }: { step: Step }) {
 function PulseButton({ onPress, loading, children }: {
   onPress: () => void; loading: boolean; children: React.ReactNode;
 }) {
-  const scale = useSharedValue(1);
+  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (!loading) {
-      scale.value = withRepeat(
-        withSequence(
-          withTiming(1.03, { duration: 700 }),
-          withTiming(1,    { duration: 700 }),
-        ),
-        -1,
-        false,
-      );
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, { toValue: 1.03, duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+          Animated.timing(scale, { toValue: 1,    duration: 700, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
+        ]),
+      ).start();
     } else {
-      scale.value = withTiming(1, { duration: 150 });
+      scale.stopAnimation();
+      Animated.timing(scale, { toValue: 1, duration: 150, useNativeDriver: true }).start();
     }
   }, [loading]);
 
-  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
   return (
-    <Reanimated.View style={animStyle}>
+    <Animated.View style={{ transform: [{ scale }] }}>
       <TouchableOpacity
         style={[styles.bookBtn, loading && { opacity: 0.6 }]}
         onPress={onPress}
@@ -90,27 +84,29 @@ function PulseButton({ onPress, loading, children }: {
       >
         {children}
       </TouchableOpacity>
-    </Reanimated.View>
+    </Animated.View>
   );
 }
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function BookAppointmentScreen() {
   const router = useRouter();
-  const { forFamily, familyName, familyId } =
-    useLocalSearchParams<{ forFamily?: string; familyName?: string; familyId?: string }>();
+  const { forFamily, familyName, familyId, urgent } =
+    useLocalSearchParams<{ forFamily?: string; familyName?: string; familyId?: string; urgent?: string }>();
   const isForFamily = forFamily === '1' && !!familyName;
+  const isUrgentEntry = urgent === '1';
   const { colors, dark } = useAppTheme();
 
   const { grouped, flat, loading: loadingServices } = useServices();
 
   const [step, setStep]                     = useState<Step>(0);
+  const [booked, setBooked]                 = useState(false);
   const [searchQuery, setSearchQuery]       = useState('');
   const [selectedService, setService]       = useState<Service | null>(null);
   const [selectedDate, setDate]             = useState<Date | null>(null);
   const [selectedTime, setTime]             = useState('');
   const [notes, setNotes]                   = useState('');
-  const [isUrgent, setIsUrgent]             = useState(false);
+  const [isUrgent, setIsUrgent]             = useState(isUrgentEntry);
   const [doctorId, setDoctorId]             = useState('');
   const [doctorName, setDoctorName]         = useState('');
   const [loading, setLoading]               = useState(false);
@@ -127,12 +123,6 @@ export default function BookAppointmentScreen() {
 
   // Set otvorených DB dní odvodený z máp
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
-
-  // Zoznam dostupných dní — iba dni kedy má doktor otvorené
-  const days = useMemo(
-    () => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [],
-    [openDbDays],
-  );
 
   // Hodiny pre aktuálne vybraný deň
   const selectedDayHours = useMemo((): OpeningHour | null => {
@@ -341,28 +331,7 @@ export default function BookAppointmentScreen() {
       // Naplánuj lokálnu pripomienku 1 hodinu pred termínom
       scheduleAppointmentReminder(dt, doctorName || 'doktor', selectedService.name).catch(() => {});
 
-      const endTime = slots.find(s => s.start === selectedTime)?.end ?? '';
-      const durStr  = formatDuration(selectedService.duration_minutes);
-      const priceStr = formatPriceRange(selectedService.price_min, selectedService.price_max);
-      const dateStr  = selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-      router.replace({
-        pathname: '/(patient)/booking-success',
-        params: {
-          serviceName:  selectedService.name,
-          serviceEmoji: selectedService.emoji ?? '🦷',
-          date:         dateStr,
-          time:         `${selectedTime}${endTime ? ` – ${endTime}` : ''}`,
-          doctorName:   doctorName,
-          price:        priceStr,
-          duration:     durStr,
-          notes:        notes.trim(),
-          isUrgent:     isUrgent ? '1' : '0',
-          familyName:   isForFamily ? (familyName ?? '') : '',
-          appointmentIso: dt.toISOString(),
-          durationMin:  selectedService.duration_minutes.toString(),
-        },
-      });
+      setBooked(true);
     } catch (e: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Chyba', e?.message ?? 'Nastala chyba pri rezervácii.');
@@ -622,46 +591,26 @@ export default function BookAppointmentScreen() {
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.chipName, { color: colors.textPrimary }]}>{selectedService.name}</Text>
                   <Text style={[styles.chipDur, { color: colors.textSecondary }]}>⏱ ~{formatDuration(selectedService.duration_minutes)} · orientačný čas</Text>
+                  {selectedService.price_min != null && (
+                    <View style={[styles.chipPricePill, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                      <Ionicons name="pricetag-outline" size={10} color={dark ? '#5DADE2' : '#1A5276'} />
+                      <Text style={[styles.chipPriceText, { color: dark ? '#5DADE2' : '#1A5276' }]}>od {selectedService.price_min} €</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             )}
 
             <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>VYBERTE DÁTUM</Text>
-            {days.length === 0 ? (
-              <View style={styles.emptyDays}>
-                <Ionicons name="calendar-outline" size={36} color={COLORS.bg3} />
-                <Text style={[styles.emptyDaysText, { color: colors.textPrimary }]}>Momentálne nie sú dostupné žiadne termíny.</Text>
-                <Text style={[styles.emptyDaysSub, { color: colors.textSecondary }]}>Skúste nás kontaktovať telefonicky.</Text>
-              </View>
-            ) : (
-              <View style={styles.datesGrid}>
-                {days.map((d) => {
-                  const isSel   = selectedDate?.toDateString() === d.toDateString();
-                  const isToday = d.toDateString() === new Date().toDateString();
-                  const dbDay   = jsDayToDb(d.getDay());
-                  const hours   = openingHoursMap.get(dbDay);
-                  return (
-                    <TouchableOpacity key={d.toISOString()}
-                      style={[styles.dateCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.dateCellSel]}
-                      onPress={() => { setDate(d); setTime(''); }}
-                      activeOpacity={0.75}>
-                      <Text style={[styles.dateDayName, { color: colors.textSecondary }, isSel && styles.dateSelText]}>
-                        {isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}
-                      </Text>
-                      <Text style={[styles.dateDayNum, { color: colors.textPrimary }, isSel && styles.dateSelText]}>{d.getDate()}</Text>
-                      <Text style={[styles.dateMonth, { color: colors.textSecondary }, isSel && styles.dateSelText]}>
-                        {SK_MONTHS_SHORT[d.getMonth()]}
-                      </Text>
-                      {hours && (
-                        <Text style={[styles.dateHours, { color: colors.textSecondary }, isSel && styles.dateHoursSel]}>
-                          {hours.open_time}–{hours.close_time}
-                        </Text>
-                      )}
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            )}
+
+            <MonthCalendar
+              selectedDate={selectedDate}
+              onSelectDate={(d) => { setDate(d); setTime(''); }}
+              openDbDays={openDbDays}
+              loading={loadingHours}
+              maxMonthsAhead={12}
+              warnMonthsAhead={6}
+            />
 
             <TouchableOpacity
               style={[styles.nextBtn, !selectedDate && styles.nextBtnDisabled]}
@@ -687,6 +636,12 @@ export default function BookAppointmentScreen() {
                 <Text style={[styles.chipDur, { color: colors.textSecondary }]}>
                   {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </Text>
+                {selectedService.price_min != null && (
+                  <View style={[styles.chipPricePill, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                    <Ionicons name="pricetag-outline" size={10} color={dark ? '#5DADE2' : '#1A5276'} />
+                    <Text style={[styles.chipPriceText, { color: dark ? '#5DADE2' : '#1A5276' }]}>od {selectedService.price_min} €</Text>
+                  </View>
+                )}
               </View>
             </View>
           )}
@@ -764,70 +719,128 @@ export default function BookAppointmentScreen() {
 
       {/* ════════════════════════════════════════ KROK 4 — POTVRDENIE */}
       {step === 4 && (
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        booked ? (
+          /* ── Success state ── */
+          <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]}
+            contentContainerStyle={[styles.content, { alignItems: 'center', paddingTop: 36 }]}
+            showsVerticalScrollIndicator={false}>
+            <Reanimated.View entering={FadeInDown.springify().damping(14)} style={{ alignItems: 'center', width: '100%' }}>
+              <View style={[styles.successIconWrap, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+                <Ionicons name="checkmark-circle" size={72} color="#1E8449" />
+              </View>
+              <Text style={[styles.successTitle, { color: colors.textPrimary }]}>Termín odoslaný na schválenie</Text>
+              <Text style={[styles.successSub, { color: colors.textSecondary }]}>
+                Doktor <Text style={{ fontWeight: '700', color: colors.textPrimary }}>{doctorName}</Text> vašu žiadosť čoskoro potvrdí. Dostanete upozornenie.
+              </Text>
 
-          {/* Zhrnutie */}
-          {selectedService && selectedDate && (
-            <View style={[styles.summaryCard, { backgroundColor: colors.cardBg }]}>
-              <View style={styles.summaryHeader}>
-                <Text style={styles.summaryEmoji}>{selectedService.emoji ?? '🦷'}</Text>
+              {selectedService && selectedDate && (
+                <View style={[styles.successCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
+                  <Text style={styles.successCardEmoji}>{selectedService.emoji ?? '🦷'}</Text>
+                  <Text style={[styles.successCardService, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                  <Text style={[styles.successCardDate, { color: colors.textSecondary }]}>
+                    {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  </Text>
+                  <Text style={[styles.successCardTime, { color: COLORS.wal }]}>
+                    🕐 {selectedTime}{slots.find(s => s.start === selectedTime)?.end ? ` – ${slots.find(s => s.start === selectedTime)!.end}` : ''}
+                  </Text>
+                  {selectedService.price_min != null && (
+                    <Text style={[styles.successCardPrice, { color: dark ? '#5DADE2' : '#1A5276' }]}>
+                      💶 od {selectedService.price_min} €
+                    </Text>
+                  )}
+                </View>
+              )}
+
+              <TouchableOpacity style={styles.successBtn}
+                onPress={() => router.replace('/(patient)/appointments')} activeOpacity={0.85}>
+                <Ionicons name="calendar-outline" size={18} color="#fff" />
+                <Text style={styles.successBtnText}>Zobraziť moje termíny</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.successBtnSecondary, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                onPress={() => router.replace('/(patient)/')} activeOpacity={0.85}>
+                <Text style={[styles.successBtnSecondaryText, { color: colors.textSecondary }]}>Späť na úvod</Text>
+              </TouchableOpacity>
+            </Reanimated.View>
+            <View style={{ height: 80 }} />
+          </ScrollView>
+        ) : (
+          /* ── Summary + confirm ── */
+          <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+
+            {/* Zhrnutie */}
+            {selectedService && selectedDate && (
+              <View style={[styles.summaryCard, { backgroundColor: colors.cardBg }]}>
+                <View style={styles.summaryHeader}>
+                  <Text style={styles.summaryEmoji}>{selectedService.emoji ?? '🦷'}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.summaryService, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                    <Text style={[styles.summaryDoctor, { color: colors.textSecondary }]}>👨‍⚕️  {doctorName}</Text>
+                  </View>
+                </View>
+                <View style={[styles.summaryDivider, { backgroundColor: colors.bg3 }]} />
+                {[
+                  { icon: 'calendar-outline' as const, text: selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) },
+                  { icon: 'time-outline' as const,     text: `${selectedTime} – ${slots.find(s => s.start === selectedTime)?.end ?? ''}  (~${formatDuration(selectedService.duration_minutes)}, orientačný čas)` },
+                  { icon: 'pricetag-outline' as const, text: formatPriceRange(selectedService.price_min, selectedService.price_max) },
+                ].map((row) => (
+                  <View key={row.icon} style={styles.summaryRow}>
+                    <Ionicons name={row.icon} size={15} color={COLORS.wal} />
+                    <Text style={[styles.summaryRowText, { color: colors.textPrimary }]}>{row.text}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {/* Urgentná rezervácia */}
+            <TouchableOpacity
+              style={[styles.urgentCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isUrgent && styles.urgentCardActive]}
+              onPress={() => setIsUrgent(v => !v)}
+              activeOpacity={0.8}>
+              <View style={styles.urgentLeft}>
+                <Text style={styles.urgentEmoji}>🚨</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.summaryService, { color: colors.textPrimary }]}>{selectedService.name}</Text>
-                  <Text style={[styles.summaryDoctor, { color: colors.textSecondary }]}>👨‍⚕️  {doctorName}</Text>
+                  <Text style={[styles.urgentTitle, { color: colors.textPrimary }, isUrgent && styles.urgentTitleActive]}>Urgentná rezervácia</Text>
+                  <Text style={[styles.urgentSub, { color: colors.textSecondary }]}>Upozorní doktora, aby termín vybavil prednostne</Text>
                 </View>
               </View>
-              <View style={[styles.summaryDivider, { backgroundColor: colors.bg3 }]} />
-              {[
-                { icon: 'calendar-outline' as const, text: selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) },
-                { icon: 'time-outline' as const,     text: `${selectedTime} – ${slots.find(s => s.start === selectedTime)?.end ?? ''}  (~${formatDuration(selectedService.duration_minutes)}, orientačný čas)` },
-                { icon: 'pricetag-outline' as const, text: formatPriceRange(selectedService.price_min, selectedService.price_max) },
-              ].map((row) => (
-                <View key={row.icon} style={styles.summaryRow}>
-                  <Ionicons name={row.icon} size={15} color={COLORS.wal} />
-                  <Text style={[styles.summaryRowText, { color: colors.textPrimary }]}>{row.text}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Urgentná rezervácia */}
-          <TouchableOpacity
-            style={[styles.urgentCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isUrgent && styles.urgentCardActive]}
-            onPress={() => setIsUrgent(v => !v)}
-            activeOpacity={0.8}>
-            <View style={styles.urgentLeft}>
-              <Text style={styles.urgentEmoji}>🚨</Text>
-              <View>
-                <Text style={[styles.urgentTitle, { color: colors.textPrimary }, isUrgent && styles.urgentTitleActive]}>Urgentná rezervácia</Text>
-                <Text style={[styles.urgentSub, { color: colors.textSecondary }]}>Upozorní doktora, aby termín vybavil prednostne</Text>
+              <View style={[styles.urgentToggle, { backgroundColor: colors.bg3 }, isUrgent && styles.urgentToggleActive]}>
+                <View style={[styles.urgentThumb, isUrgent && styles.urgentThumbActive]} />
               </View>
-            </View>
-            <View style={[styles.urgentToggle, { backgroundColor: colors.bg3 }, isUrgent && styles.urgentToggleActive]}>
-              <View style={[styles.urgentThumb, isUrgent && styles.urgentThumbActive]} />
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
 
-          {/* Poznámky */}
-          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
-          <View style={[styles.notesCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-            <TextInput style={[styles.notesInput, { color: colors.textPrimary }]}
-              placeholder="Ďalšie informácie pre doktora..."
-              placeholderTextColor={dark ? '#666' : '#999'}
-              value={notes} onChangeText={setNotes}
-              multiline numberOfLines={3} textAlignVertical="top" />
-          </View>
+            {/* Poznámky */}
+            <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
+            <View style={[styles.notesCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <TextInput style={[styles.notesInput, { color: colors.textPrimary }]}
+                placeholder="Ďalšie informácie pre doktora..."
+                placeholderTextColor={dark ? '#666' : '#999'}
+                value={notes} onChangeText={setNotes}
+                multiline numberOfLines={3} textAlignVertical="top" />
+            </View>
 
-          <PulseButton onPress={handleBook} loading={loading}>
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <>
-                  <Ionicons name="calendar" size={18} color="#fff" />
-                  <Text style={styles.bookBtnText}>Potvrdiť rezerváciu</Text>
-                </>}
-          </PulseButton>
-          <View style={{ height: 100 }} />
-        </ScrollView>
+            {/* Dvojica tlačidiel: Upraviť + Potvrdiť */}
+            <View style={styles.confirmBtnRow}>
+              <TouchableOpacity
+                style={[styles.editBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                onPress={() => setStep(3)}
+                activeOpacity={0.8}>
+                <Ionicons name="pencil-outline" size={16} color={COLORS.wal} />
+                <Text style={[styles.editBtnText, { color: COLORS.wal }]}>Upraviť</Text>
+              </TouchableOpacity>
+              <PulseButton onPress={handleBook} loading={loading}>
+                {loading
+                  ? <ActivityIndicator color="#fff" />
+                  : <>
+                      <Ionicons name="calendar" size={18} color="#fff" />
+                      <Text style={styles.bookBtnText}>Potvrdiť rezerváciu</Text>
+                    </>}
+              </PulseButton>
+            </View>
+            <View style={{ height: 100 }} />
+          </ScrollView>
+        )
       )}
     </SafeAreaView>
   );
@@ -901,15 +914,7 @@ const styles = StyleSheet.create({
   chipDur:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
 
   // Dates
-  datesGrid:    { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  dateCell:     { width: '13%', flexGrow: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  dateCellSel:  { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  dateDayName:  { fontSize: 10, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.3 },
-  dateDayNum:   { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginVertical: 1 },
-  dateMonth:    { fontSize: 10, color: COLORS.wal, textTransform: 'uppercase' },
-  dateHours:    { fontSize: 6, color: COLORS.wal, marginTop: 3, textAlign: 'center', letterSpacing: 0.2 },
-  dateHoursSel: { color: COLORS.sand },
-  dateSelText:  { color: COLORS.sand },
+  // ─── Mesačný kalendár ───────────────────────────────────────────────────────
   emptyDays:     { alignItems: 'center', paddingVertical: 40, gap: 10 },
   emptyDaysText: { fontSize: 15, fontWeight: '600', color: COLORS.esp, textAlign: 'center' },
   emptyDaysSub:  { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
@@ -943,7 +948,7 @@ const styles = StyleSheet.create({
   urgentEmoji:        { fontSize: 26 },
   urgentTitle:        { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   urgentTitleActive:  { color: '#C0392B' },
-  urgentSub:          { fontSize: 12, color: COLORS.wal, maxWidth: 220 },
+  urgentSub:          { fontSize: 12, color: COLORS.wal },
   urgentToggle:       { width: 44, height: 26, borderRadius: 13, backgroundColor: COLORS.bg3, justifyContent: 'center', paddingHorizontal: 3 },
   urgentToggleActive: { backgroundColor: '#E74C3C' },
   urgentThumb:        { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', elevation: 2 },
@@ -968,4 +973,28 @@ const styles = StyleSheet.create({
   nextBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
   bookBtn:         { backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, elevation: 4 },
   bookBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
+
+  // Price chip in selectedServiceChip
+  chipPricePill: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, marginTop: 4 },
+  chipPriceText: { fontSize: 11, fontWeight: '700' },
+
+  // Confirm step — two-button row
+  confirmBtnRow: { flexDirection: 'row', gap: 10 },
+  editBtn:       { flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 14, borderWidth: 1.5, paddingHorizontal: 18, paddingVertical: 15, justifyContent: 'center' },
+  editBtnText:   { fontSize: 14, fontWeight: '700' },
+
+  // Success state
+  successIconWrap:        { width: 120, height: 120, borderRadius: 60, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
+  successTitle:           { fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 10, lineHeight: 28 },
+  successSub:             { fontSize: 14, textAlign: 'center', lineHeight: 21, marginBottom: 24, paddingHorizontal: 8 },
+  successCard:            { width: '100%', borderRadius: 16, borderWidth: 1.5, padding: 20, alignItems: 'center', marginBottom: 24, gap: 6 },
+  successCardEmoji:       { fontSize: 40, marginBottom: 4 },
+  successCardService:     { fontSize: 18, fontWeight: '800', textAlign: 'center' },
+  successCardDate:        { fontSize: 13, textAlign: 'center' },
+  successCardTime:        { fontSize: 15, fontWeight: '700', textAlign: 'center' },
+  successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
+  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 15, marginBottom: 10, elevation: 3 },
+  successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+  successBtnSecondary:    { width: '100%', borderRadius: 14, borderWidth: 1.5, paddingVertical: 13, alignItems: 'center' },
+  successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
 });

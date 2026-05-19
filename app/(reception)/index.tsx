@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  RefreshControl, ScrollView, StyleSheet,
+  Image, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +18,12 @@ export default function ReceptionHome() {
   const { colors, dark } = useAppTheme();
   const clinic  = useClinic();
   const metrics = computeDayMetrics(clinic.appointments);
+  const [showKiosk, setShowKiosk] = useState(false);
+
+  // QR kód pre self check-in (dnešný dátum + ambulancia ID)
+  const today     = new Date().toISOString().slice(0, 10);
+  const kioskData = `LODERER-CHECKIN:${today}`;
+  const qrUrl     = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(kioskData)}`;
 
   const urgent = clinic.appointments.filter(a =>
     a.clinic_status === 'late' ||
@@ -72,6 +78,23 @@ export default function ReceptionHome() {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={false} onRefresh={clinic.refetch} tintColor={COLORS.gold} />}
         >
+          {/* ── Kiosk QR Modal ── */}
+          <Modal visible={showKiosk} transparent animationType="fade" onRequestClose={() => setShowKiosk(false)}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+              <View style={[s.kioskSheet, { backgroundColor: colors.cardBg }]}>
+                <Text style={[s.kioskTitle, { color: colors.textPrimary }]}>📱 Self Check-in</Text>
+                <Text style={[s.kioskSub, { color: colors.textSecondary }]}>Ukážte tento QR kód pacientovi. Naskenuje ho mobilom a automaticky sa odhlási v čakárni.</Text>
+                <View style={s.kioskQrWrap}>
+                  <Image source={{ uri: qrUrl }} style={s.kioskQr} resizeMode="contain" />
+                </View>
+                <Text style={[s.kioskDate, { color: colors.textSecondary }]}>Platný: {today}</Text>
+                <TouchableOpacity style={[s.kioskClose, { backgroundColor: COLORS.esp }]} onPress={() => setShowKiosk(false)} activeOpacity={0.85}>
+                  <Text style={s.kioskCloseText}>Zavrieť</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
           {/* Urgent banner */}
           {urgent.length > 0 && (
             <View style={s.urgentBanner}>
@@ -116,6 +139,13 @@ export default function ReceptionHome() {
                 sub="Live stav kresiel"
                 color={COLORS.info}
                 onPress={() => router.push('/(reception)/clinic-room' as any)}
+              />
+              <QuickAction
+                icon="qr-code-outline"
+                label="Kiosk QR"
+                sub="Self check-in pacienta"
+                color="#7D3C98"
+                onPress={() => setShowKiosk(true)}
               />
             </View>
           </View>
@@ -246,6 +276,14 @@ const s = StyleSheet.create({
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
+  kioskSheet:    { borderRadius: 20, padding: 24, alignItems: 'center', width: '100%' },
+  kioskTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 8 },
+  kioskSub:      { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
+  kioskQrWrap:   { backgroundColor: '#fff', borderRadius: 16, padding: 12, marginBottom: 12 },
+  kioskQr:       { width: 240, height: 240 },
+  kioskDate:     { fontSize: 12, marginBottom: 20 },
+  kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 14 },
+  kioskCloseText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
   urgentBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: COLORS.errorBg,

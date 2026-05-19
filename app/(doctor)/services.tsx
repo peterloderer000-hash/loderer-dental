@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, Alert, Modal, ActivityIndicator,
+  ActivityIndicator, Alert, Modal, RefreshControl, ScrollView,
+  StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS } from '../../styles/theme';
+import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
-const EMOJIS = ['🦷', '🪥', '😁', '💉', '🏥', '👨‍⚕️', '📋', '✨'];
+const EMOJIS = ['🦷','🪥','😁','💉','🏥','👨‍⚕️','📋','✨','🔬','💊','🩺','🫀'];
 
 type Service = {
   id: string;
@@ -20,15 +21,18 @@ type Service = {
   duration_minutes: number;
   price_min: number | null;
   price_max: number | null;
+  sort_order: number;
+  is_active: boolean;
 };
 
 export default function ServicesScreen() {
   const router = useRouter();
   const { colors, dark } = useAppTheme();
-  const [services,  setServices]  = useState<Service[]>([]);
-  const [loading,   setLoading]   = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [saving,    setSaving]    = useState(false);
+  const [services,   setServices]   = useState<Service[]>([]);
+  const [loading,    setLoading]    = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [modalOpen,  setModalOpen]  = useState(false);
+  const [saving,     setSaving]     = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name,      setName]      = useState('');
@@ -37,29 +41,38 @@ export default function ServicesScreen() {
   const [priceMin,  setPriceMin]  = useState('');
   const [priceMax,  setPriceMax]  = useState('');
 
-  useEffect(() => { load(); }, []);
-
-  async function load() {
-    setLoading(true);
-    const { data } = await supabase.from('services').select('*').order('name');
+  const load = useCallback(async () => {
+    const { data } = await supabase
+      .from('services')
+      .select('id, name, emoji, duration_minutes, price_min, price_max, sort_order, is_active')
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
     setServices((data ?? []) as Service[]);
     setLoading(false);
-  }
+    setRefreshing(false);
+  }, []);
 
+  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+
+  const active   = services.filter(s => s.is_active !== false);
+  const archived = services.filter(s => s.is_active === false);
+
+  // ── Otvoriť modál ─────────────────────────────────────────────────────────
   function openAdd() {
     setEditingId(null); setName(''); setEmoji(EMOJIS[0]);
     setDuration(''); setPriceMin(''); setPriceMax('');
     setModalOpen(true);
   }
-
   function openEdit(svc: Service) {
     setEditingId(svc.id); setName(svc.name); setEmoji(svc.emoji ?? EMOJIS[0]);
     setDuration(String(svc.duration_minutes));
-    setPriceMin(String(svc.price_min ?? ''));
-    setPriceMax(String(svc.price_max ?? ''));
+    setPriceMin(svc.price_min != null ? String(svc.price_min) : '');
+    setPriceMax(svc.price_max != null ? String(svc.price_max) : '');
     setModalOpen(true);
   }
 
+  // ── Uložiť ────────────────────────────────────────────────────────────────
   async function save() {
     if (!name.trim() || !duration) { Alert.alert('Chyba', 'Vyplňte aspoň názov a trvanie.'); return; }
     setSaving(true);
@@ -72,21 +85,61 @@ export default function ServicesScreen() {
     };
     const { error } = editingId
       ? await supabase.from('services').update(payload).eq('id', editingId)
-      : await supabase.from('services').insert([payload]);
+      : await supabase.from('services').insert([{ ...payload, sort_order: active.length, is_active: true }]);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
     setModalOpen(false);
     load();
   }
 
-  async function remove() {
+  // ── Archivácia / Obnova ───────────────────────────────────────────────────
+  async function archiveService() {
     if (!editingId) return;
     setSaving(true);
-    await supabase.from('services').delete().eq('id', editingId);
+    await supabase.from('services').update({ is_active: false }).eq('id', editingId);
     setSaving(false);
     setModalOpen(false);
     load();
   }
+  async function restoreService(svc: Service) {
+    await supabase.from('services').update({ is_active: true, sort_order: active.length }).eq('id', svc.id);
+    load();
+  }
+
+  // ── Presun hore / dole ────────────────────────────────────────────────────
+  async function moveService(idx: number, direction: 'up' | 'down') {
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= active.length) return;
+
+    const reordered = [...active];
+    const temp = reordered[idx];
+    reordered[idx] = reordered[targetIdx];
+    reordered[targetIdx] = temp;
+
+    // Okamžitá UI aktualizácia
+    setServices([...reordered.map((s, i) => ({ ...s, sort_order: i })), ...archived]);
+
+    // Uloženie do DB
+    await Promise.all(
+      reordered.map((svc, i) =>
+        supabase.from('services').update({ sort_order: i }).eq('id', svc.id),
+      ),
+    );
+  }
+
+  if (loading) return (
+    <SafeAreaView style={s.safe} edges={['top']}>
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
+          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
+        </TouchableOpacity>
+        <Text style={s.headerTitle}>Cenník služieb</Text>
+      </View>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+        <SkeletonList count={5} />
+      </View>
+    </SafeAreaView>
+  );
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -99,22 +152,50 @@ export default function ServicesScreen() {
           <Text style={s.headerTitle}>Cenník služieb</Text>
         </View>
         <View style={s.countBadge}>
-          <Text style={s.countText}>{services.length}</Text>
+          <Text style={s.countText}>{active.length}</Text>
         </View>
       </View>
 
-      {loading ? (
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}><SkeletonList count={5} /></View>
-      ) : (
-        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
-          {services.length === 0 && (
-            <View style={s.empty}>
-              <Text style={s.emptyIcon}>🦷</Text>
-              <Text style={[s.emptyText, { color: colors.textSecondary }]}>Žiadne služby. Pridajte prvú.</Text>
+      <ScrollView
+        style={[s.scroll, { backgroundColor: colors.bg2 }]}
+        contentContainerStyle={s.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }}
+            tintColor={COLORS.wal} colors={[COLORS.wal]} />
+        }
+      >
+        {/* ── Aktívne služby ── */}
+        {active.length === 0 && archived.length === 0 && (
+          <View style={s.empty}>
+            <Text style={s.emptyIcon}>🦷</Text>
+            <Text style={[s.emptyText, { color: colors.textSecondary }]}>Žiadne služby. Pridajte prvú.</Text>
+          </View>
+        )}
+
+        {active.map((svc, idx) => (
+          <View key={svc.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            {/* Šípky pre presun */}
+            <View style={s.arrows}>
+              <TouchableOpacity
+                onPress={() => moveService(idx, 'up')}
+                disabled={idx === 0}
+                style={[s.arrowBtn, idx === 0 && { opacity: 0.2 }]}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+              >
+                <Ionicons name="chevron-up" size={16} color={COLORS.wal} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => moveService(idx, 'down')}
+                disabled={idx === active.length - 1}
+                style={[s.arrowBtn, idx === active.length - 1 && { opacity: 0.2 }]}
+                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+              >
+                <Ionicons name="chevron-down" size={16} color={COLORS.wal} />
+              </TouchableOpacity>
             </View>
-          )}
-          {services.map((svc) => (
-            <TouchableOpacity key={svc.id} style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={() => openEdit(svc)} activeOpacity={0.85}>
+
+            <TouchableOpacity style={s.cardBody} onPress={() => openEdit(svc)} activeOpacity={0.85}>
               <View style={[s.cardLeft, { backgroundColor: colors.bg2 }]}>
                 <Text style={s.cardEmoji}>{svc.emoji ?? '🦷'}</Text>
               </View>
@@ -127,58 +208,125 @@ export default function ServicesScreen() {
                   {svc.price_min != null ? `${svc.price_min}€` : '—'}
                   {svc.price_max != null ? ` – ${svc.price_max}€` : ''}
                 </Text>
-                <Ionicons name="pencil-outline" size={16} color={COLORS.sand} style={{ marginTop: 4 }} />
+                <Ionicons name="pencil-outline" size={14} color={COLORS.sand} style={{ marginTop: 4 }} />
               </View>
             </TouchableOpacity>
-          ))}
-          <View style={{ height: 100 }} />
-        </ScrollView>
-      )}
+          </View>
+        ))}
 
+        {/* ── Archivované ── */}
+        {archived.length > 0 && (
+          <>
+            <Text style={[s.sectionLabel, { color: colors.textSecondary, marginTop: 16 }]}>ARCHIVOVANÉ SLUŽBY</Text>
+            {archived.map((svc) => (
+              <View key={svc.id} style={[s.card, s.cardArchived, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                <View style={[s.cardLeft, { backgroundColor: colors.bg3, opacity: 0.5 }]}>
+                  <Text style={[s.cardEmoji, { opacity: 0.5 }]}>{svc.emoji ?? '🦷'}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[s.cardName, { color: colors.textSecondary, opacity: 0.7 }]}>{svc.name}</Text>
+                  <Text style={[s.cardDuration, { color: colors.textSecondary, opacity: 0.5 }]}>{svc.duration_minutes} min</Text>
+                </View>
+                <TouchableOpacity
+                  style={s.restoreBtn}
+                  onPress={() => restoreService(svc)}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="refresh-outline" size={14} color={COLORS.wal} />
+                  <Text style={s.restoreBtnText}>Obnoviť</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </>
+        )}
+
+        <View style={{ height: 100 }} />
+      </ScrollView>
+
+      {/* FAB */}
       <TouchableOpacity style={s.fab} onPress={openAdd} activeOpacity={0.85}>
         <Ionicons name="add" size={28} color={COLORS.esp} />
       </TouchableOpacity>
 
+      {/* ── Modál ── */}
       <Modal visible={modalOpen} transparent animationType="slide" onRequestClose={() => setModalOpen(false)}>
         <View style={s.overlay}>
+          <TouchableOpacity style={{ flex: 0.3 }} activeOpacity={1} onPress={() => setModalOpen(false)} />
           <View style={[s.modal, { backgroundColor: colors.cardBg }]}>
-            <Text style={[s.modalTitle, { color: colors.textPrimary }]}>{editingId ? 'Upraviť službu' : 'Nová služba'}</Text>
+            <View style={[s.modalHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[s.modalTitle, { color: colors.textPrimary }]}>
+              {editingId ? 'Upraviť službu' : 'Nová služba'}
+            </Text>
 
-            <View style={s.emojiRow}>
-              {EMOJIS.map((e) => (
-                <TouchableOpacity
-                  key={e}
-                  style={[s.emojiBtn, { backgroundColor: dark ? colors.bg3 : '#fff', borderColor: colors.bg3 }, emoji === e && s.emojiBtnActive]}
-                  onPress={() => setEmoji(e)}
-                >
-                  <Text style={s.emojiText}>{e}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* Emoji výber */}
+              <View style={s.emojiRow}>
+                {EMOJIS.map((e) => (
+                  <TouchableOpacity
+                    key={e}
+                    style={[s.emojiBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 },
+                      emoji === e && { borderColor: COLORS.gold, backgroundColor: dark ? COLORS.wal + '22' : '#FEF9E7' }]}
+                    onPress={() => setEmoji(e)}
+                  >
+                    <Text style={s.emojiText}>{e}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-            <TextInput style={[s.input, { backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Názov služby" placeholderTextColor={COLORS.sand}
-              value={name} onChangeText={setName} />
-            <TextInput style={[s.input, { backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Trvanie (min)" placeholderTextColor={COLORS.sand}
-              value={duration} onChangeText={setDuration} keyboardType="numeric" />
-            <View style={s.priceRow}>
-              <TextInput style={[s.input, { flex: 1, backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Cena od (€)" placeholderTextColor={COLORS.sand}
-                value={priceMin} onChangeText={setPriceMin} keyboardType="numeric" />
-              <View style={{ width: 10 }} />
-              <TextInput style={[s.input, { flex: 1, backgroundColor: dark ? colors.bg3 : '#fff', color: colors.textPrimary }]} placeholder="Cena do (€)" placeholderTextColor={COLORS.sand}
-                value={priceMax} onChangeText={setPriceMax} keyboardType="numeric" />
-            </View>
+              <Text style={[s.inputLabel, { color: colors.textSecondary }]}>NÁZOV SLUŽBY *</Text>
+              <TextInput
+                style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                placeholder="Napr. Plomba, Extrakcia..."
+                placeholderTextColor={dark ? '#555' : '#bbb'}
+                value={name} onChangeText={setName}
+              />
 
-            <TouchableOpacity style={[s.saveBtn, saving && { opacity: 0.5 }]} onPress={save} disabled={saving} activeOpacity={0.85}>
-              {saving ? <ActivityIndicator color={COLORS.esp} /> : <Text style={s.saveBtnText}>Uložiť</Text>}
-            </TouchableOpacity>
-            {editingId && (
-              <TouchableOpacity style={s.deleteBtn} onPress={remove} disabled={saving} activeOpacity={0.85}>
-                <Text style={s.deleteBtnText}>Vymazať</Text>
+              <Text style={[s.inputLabel, { color: colors.textSecondary }]}>TRVANIE (min) *</Text>
+              <TextInput
+                style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                placeholder="30"
+                placeholderTextColor={dark ? '#555' : '#bbb'}
+                value={duration} onChangeText={setDuration} keyboardType="numeric"
+              />
+
+              <Text style={[s.inputLabel, { color: colors.textSecondary }]}>CENOVÉ ROZMEDZIE (€)</Text>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <TextInput
+                  style={[s.input, { flex: 1, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                  placeholder="od"
+                  placeholderTextColor={dark ? '#555' : '#bbb'}
+                  value={priceMin} onChangeText={setPriceMin} keyboardType="decimal-pad"
+                />
+                <TextInput
+                  style={[s.input, { flex: 1, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                  placeholder="do"
+                  placeholderTextColor={dark ? '#555' : '#bbb'}
+                  value={priceMax} onChangeText={setPriceMax} keyboardType="decimal-pad"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={[s.saveBtn, saving && { opacity: 0.5 }]}
+                onPress={save} disabled={saving} activeOpacity={0.85}
+              >
+                {saving ? <ActivityIndicator color={COLORS.esp} /> : <Text style={s.saveBtnText}>Uložiť</Text>}
               </TouchableOpacity>
-            )}
-            <TouchableOpacity style={s.cancelBtn} onPress={() => setModalOpen(false)}>
-              <Text style={s.cancelBtnText}>Zrušiť</Text>
-            </TouchableOpacity>
+
+              {editingId && (
+                <TouchableOpacity
+                  style={[s.archiveBtn, saving && { opacity: 0.5 }]}
+                  onPress={archiveService} disabled={saving} activeOpacity={0.85}
+                >
+                  <Ionicons name="archive-outline" size={16} color={COLORS.wal} />
+                  <Text style={s.archiveBtnText}>Archivovať</Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity style={s.cancelBtn} onPress={() => setModalOpen(false)}>
+                <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
+              </TouchableOpacity>
+              <View style={{ height: 20 }} />
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -188,11 +336,11 @@ export default function ServicesScreen() {
 
 const s = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
-  scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: 16 },
-  center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-  header:  {
-    backgroundColor: COLORS.esp, paddingHorizontal: 16,
+  scroll:  { flex: 1 },
+  content: { padding: SIZES.padding },
+
+  header: {
+    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
     paddingTop: 14, paddingBottom: 18,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },
@@ -202,20 +350,24 @@ const s = StyleSheet.create({
   countBadge: { backgroundColor: COLORS.gold, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
   countText:  { fontSize: 13, fontWeight: '800', color: COLORS.esp },
 
+  sectionLabel: { fontSize: 9, letterSpacing: 2, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
+
   empty:     { alignItems: 'center', paddingVertical: 60, gap: 12 },
   emptyIcon: { fontSize: 48 },
-  emptyText: { fontSize: 14, color: COLORS.wal, textAlign: 'center' },
+  emptyText: { fontSize: 14, textAlign: 'center' },
 
-  card: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10,
-    borderWidth: 1, borderColor: COLORS.bg3,
-  },
-  cardLeft:     { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-  cardEmoji:    { fontSize: 22 },
-  cardName:     { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
-  cardDuration: { fontSize: 11, color: COLORS.wal },
-  cardPrice:    { fontSize: 13, fontWeight: '700', color: COLORS.gold },
+  card:        { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, marginBottom: 8, overflow: 'hidden' },
+  cardArchived:{ opacity: 0.7 },
+  arrows:      { paddingVertical: 6, paddingHorizontal: 6, gap: 0, alignItems: 'center', justifyContent: 'center' },
+  arrowBtn:    { padding: 4 },
+  cardBody:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12 },
+  cardLeft:    { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  cardEmoji:   { fontSize: 20 },
+  cardName:    { fontSize: 14, fontWeight: '700', marginBottom: 2 },
+  cardDuration:{ fontSize: 11 },
+  cardPrice:   { fontSize: 13, fontWeight: '700', color: COLORS.gold },
+  restoreBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: COLORS.bg3, margin: 10 },
+  restoreBtnText: { fontSize: 11, fontWeight: '600', color: COLORS.wal },
 
   fab: {
     position: 'absolute', bottom: 24, right: 24,
@@ -224,21 +376,22 @@ const s = StyleSheet.create({
     elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6,
   },
 
-  overlay: { flex: 1, backgroundColor: 'rgba(44,31,20,0.6)', justifyContent: 'flex-end' },
-  modal:   { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 10 },
-  modalTitle: { fontSize: 18, fontWeight: '800', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
+  overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modal:       { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, maxHeight: '85%' },
+  modalHandle: { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 16 },
+  modalTitle:  { fontSize: 18, fontWeight: '800', textAlign: 'center', marginBottom: 14 },
 
-  emojiRow:      { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginBottom: 4 },
-  emojiBtn:      { width: 44, height: 44, borderRadius: 22, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  emojiBtnActive:{ borderColor: COLORS.gold, backgroundColor: COLORS.goldLight ?? COLORS.sand },
-  emojiText:     { fontSize: 22 },
+  emojiRow:   { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginBottom: 14 },
+  emojiBtn:   { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
+  emojiText:  { fontSize: 20 },
 
-  input:      { backgroundColor: '#fff', borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, color: COLORS.esp, fontSize: 15 },
-  priceRow:   { flexDirection: 'row' },
-  saveBtn:    { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
-  saveBtnText:{ color: COLORS.esp, fontSize: 15, fontWeight: '800' },
-  deleteBtn:  { borderWidth: 1.5, borderColor: COLORS.error, paddingVertical: 13, borderRadius: 12, alignItems: 'center' },
-  deleteBtnText: { color: COLORS.error, fontSize: 15, fontWeight: '700' },
-  cancelBtn:  { paddingVertical: 12, alignItems: 'center' },
-  cancelBtnText: { color: COLORS.wal, fontSize: 14 },
+  inputLabel: { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 12 },
+  input:      { borderWidth: 1.5, borderRadius: 10, padding: 12, fontSize: 14, marginBottom: 2 },
+
+  saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', marginTop: 16 },
+  saveBtnText: { color: COLORS.esp, fontSize: 15, fontWeight: '800' },
+  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  archiveBtnText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
+  cancelBtn:   { paddingVertical: 14, alignItems: 'center' },
+  cancelBtnText: { fontSize: 14 },
 });

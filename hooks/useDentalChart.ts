@@ -67,7 +67,16 @@ export function useDentalChart(patientId: string) {
       { onConflict: 'patient_id,tooth_number' },
     );
 
-    if (!error) refetch();
+    if (!error) {
+      await supabase.from('dental_records').insert({
+        patient_id:   patientId,
+        doctor_id:    user.id,
+        tooth_number: toothNumber,
+        status,
+        notes: notes.trim() || null,
+      });
+      refetch();
+    }
     return error;
   }
 

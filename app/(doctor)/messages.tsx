@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,6 +57,7 @@ export default function DoctorMessagesScreen() {
   const [messages,    setMessages]    = useState<Message[]>([]);
   const [text,        setText]        = useState('');
   const [loading,     setLoading]     = useState(true);
+  const [refreshing,  setRefreshing]  = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [sending,     setSending]     = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -216,15 +217,29 @@ export default function DoctorMessagesScreen() {
           <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 14 }}>
             <SkeletonList count={5} />
           </View>
-        ) : conversations.length === 0 ? (
-          <View style={[styles.center, { backgroundColor: colors.bg2 }]}>
-            <Text style={{ fontSize: 48, marginBottom: 14 }}>💬</Text>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne správy</Text>
-            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Pacienti vám ešte nepísali.</Text>
-          </View>
         ) : (
-          <ScrollView style={{ flex: 1, backgroundColor: colors.bg2 }} showsVerticalScrollIndicator={false}>
-            {conversations.map((c) => (
+          <ScrollView
+            style={{ flex: 1, backgroundColor: colors.bg2 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => {
+                  setRefreshing(true);
+                  loadConversations(myId).then(() => setRefreshing(false));
+                }}
+                tintColor={COLORS.wal}
+                colors={[COLORS.wal]}
+              />
+            }
+          >
+            {conversations.length === 0 ? (
+              <View style={[styles.center, { backgroundColor: colors.bg2, paddingTop: 80 }]}>
+                <Text style={{ fontSize: 52, marginBottom: 14 }}>💬</Text>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne správy</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Pacienti vám ešte nepísali.</Text>
+              </View>
+            ) : conversations.map((c) => (
               <TouchableOpacity key={c.patientId}
                 style={[styles.convRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
                 onPress={() => openChat(c.patientId, c.patientName)}

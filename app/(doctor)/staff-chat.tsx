@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Modal,
-  Platform, ScrollView, StyleSheet, Text, TextInput,
+  Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -137,6 +138,7 @@ function ChatView({
     setText('');
     await onSend(body);
     setSending(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 100);
   }
 
@@ -270,6 +272,7 @@ export default function StaffChatScreen() {
   const [dmPartner, setDmPartner]     = useState<StaffMember | null>(null);
   const [loadingB, setLoadingB]       = useState(true);
   const [loadingDM, setLoadingDM]     = useState(false);
+  const [refreshingDM, setRefreshingDM] = useState(false);
   const [newConvoOpen, setNewConvoOpen] = useState(false);
 
   const staffRef     = useRef<StaffMember[]>([]);
@@ -485,6 +488,14 @@ export default function StaffChatScreen() {
               keyExtractor={t => t.partner.id}
               contentContainerStyle={{ paddingTop: 8, paddingBottom: 20 }}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshingDM}
+                  onRefresh={() => { setRefreshingDM(true); loadThreads().then(() => setRefreshingDM(false)); }}
+                  tintColor={COLORS.wal}
+                  colors={[COLORS.wal]}
+                />
+              }
               renderItem={({ item: thread }) => (
                 <TouchableOpacity style={[s.threadRow, dyn.card]} onPress={() => openDm(thread.partner)} activeOpacity={0.75}>
                   <View style={s.threadAvatar}>

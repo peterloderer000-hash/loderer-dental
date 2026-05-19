@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, Linking, RefreshControl, ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -30,6 +31,10 @@ function timeAgo(dateStr: string): string {
   if (diff < 86400) return `pred ${Math.floor(diff / 3600)} hod`;
   const days = Math.floor(diff / 86400);
   return days === 1 ? 'včera' : `pred ${days} dňami`;
+}
+
+function waitingDays(dateStr: string): number {
+  return Math.max(0, Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000));
 }
 
 export default function WaitlistScreen() {
@@ -79,7 +84,10 @@ export default function WaitlistScreen() {
               .eq('id', item.id);
             setActing(null);
             if (error) Alert.alert('Chyba', error.message);
-            else setItems(prev => prev.filter(i => i.id !== item.id));
+            else {
+              setItems(prev => prev.filter(i => i.id !== item.id));
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
           },
         },
       ],
@@ -96,6 +104,7 @@ export default function WaitlistScreen() {
     setActing(null);
     if (error) { Alert.alert('Chyba', error.message); return; }
     setItems(prev => prev.filter(i => i.id !== item.id));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Naviguj na add-appointment s pacientom a službou prefill
     router.push({
       pathname: '/(doctor)/add-appointment',
@@ -165,7 +174,20 @@ export default function WaitlistScreen() {
                       )}
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <Text style={styles.timeAgo}>{timeAgo(item.created_at)}</Text>
+                      {(() => {
+                        const days = waitingDays(item.created_at);
+                        const isLong = days >= 14;
+                        return (
+                          <View style={[styles.waitBadge, {
+                            backgroundColor: isLong ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D2233' : '#EBF5FB'),
+                            borderColor: isLong ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#1A527633' : '#AED6F1'),
+                          }]}>
+                            <Text style={[styles.waitBadgeText, { color: isLong ? '#E74C3C' : (dark ? '#5DADE2' : '#1A5276') }]}>
+                              {days === 0 ? 'dnes' : days === 1 ? 'čaká 1 deň' : `čaká ${days} dní`}
+                            </Text>
+                          </View>
+                        );
+                      })()}
                       {item.patient?.phone_number && (
                         <TouchableOpacity
                           style={styles.callBtn}
@@ -266,6 +288,8 @@ const styles = StyleSheet.create({
   patientName:{ fontSize: 15, fontWeight: '700', color: COLORS.esp },
   patientPhone:{ fontSize: 11, color: COLORS.wal, marginTop: 1 },
   timeAgo:    { fontSize: 10, color: '#bbb', fontStyle: 'italic' },
+  waitBadge:     { borderRadius: 8, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
+  waitBadgeText: { fontSize: 10, fontWeight: '700' },
   callBtn:    { width: 28, height: 28, borderRadius: 14, backgroundColor: '#1A8A44', alignItems: 'center', justifyContent: 'center' },
 
   detailsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 8 },

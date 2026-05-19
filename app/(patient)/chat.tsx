@@ -109,42 +109,71 @@ const BOT_RESPONSES: Record<string, string> = {
     '⚡ Citlivosť zubov = bolesť pri kontakte s teplom, chladom, kyselinami.\n\nPríčiny:\n• Obnažená dentína (ustupujúce ďasná)\n• Poškodená sklovina\n• Bruxizmus\n• Príliš tvrdé čistenie\n\nLiečba:\n1. Desenzitizačná pasta (Sensodyne, Elmex Sensitive) — používaj pravidelne\n2. Mäkká kefka, jemné čistenie\n3. Vyhýbaj sa kyslým jedlám a nápojom\n4. Fluoridové gély (predpísané zubárom)\n5. Okluzná dlaha (ak je príčina bruxizmus)\n\n⏰ Ak citlivosť trvá dlhšie ako 2 týždne — navštív zubára!',
 };
 
+// ─── Urgency triage ───────────────────────────────────────────────────────────
+function getUrgencyLevel(text: string): 'emergency' | 'urgent' | 'normal' | null {
+  const t = text.toLowerCase();
+  if (t.includes('silná bolesť') || t.includes('neznesiteľ') || t.includes('opuch') ||
+      t.includes('krvácanie') || t.includes('úraz') || t.includes('zlomil') || t.includes('vyrazil'))
+    return 'emergency';
+  if (t.includes('bol') || t.includes('citliv') || t.includes('ďasn') || t.includes('dlho bol'))
+    return 'urgent';
+  return null;
+}
+
 function getBotResponse(userText: string): string {
   const text = userText.trim().toLowerCase();
+
+  // Urgency triage — priorita č.1
+  const urgency = getUrgencyLevel(text);
+  if (urgency === 'emergency') {
+    return '🚨 URGENTNÉ — OKAMŽITE KONAJTE!\n\nOpísal/a ste príznaky, ktoré vyžadujú okamžitú pozornosť.\n\n1️⃣ Zavolajte ihneď na ambulanciu\n2️⃣ Alebo choďte na pohotovostnú stomatológiu\n3️⃣ Ak máte silné krvácanie: hryzite na gázu 20 min\n\n⚠️ Nečakajte — stav sa môže rýchlo zhoršiť!\n\n👆 Použite tlačidlo "Volať" v sekcii Môj zubár.';
+  }
+  if (urgency === 'urgent') {
+    return '⚡ Odporúčam rezervovať termín čo najskôr.\n\nMedzitým:\n• Ibuprofén/paracetamol na tlmenie bolesti\n• Studený obklad na líce\n• Vyhýbaj sa veľmi horúcim/studeným jedlám\n• Nefajči\n\nRezerváciu urobíš priamo cez záložku "Termíny" → "Bolí ma zub". Dostaneš prednostný termín.';
+  }
+
+  // Presná zhoda
   for (const [key, response] of Object.entries(BOT_RESPONSES)) {
     if (text === key.toLowerCase()) return response;
   }
-  if (text.includes('bolesť') || text.includes('bolí') || text.includes('boli'))
-    return BOT_RESPONSES['Čo robiť pri bolesti zuba?'];
-  if (text.includes('čisti') || text.includes('kefk') || text.includes('čistenie'))
-    return BOT_RESPONSES['Ako správne čistiť zuby?'];
-  if (text.includes('kameň') || text.includes('kamen') || text.includes('tartarus'))
-    return BOT_RESPONSES['Čo je zubný kameň?'];
-  if (text.includes('biel') || text.includes('whitening'))
-    return BOT_RESPONSES['Ako bieleť zuby?'];
-  if (text.includes('implantát') || text.includes('implant'))
-    return BOT_RESPONSES['Čo sú zubné implantáty?'];
-  if (text.includes('paradentóz') || text.includes('ďasn') || text.includes('dasna') || text.includes('dasn'))
-    return BOT_RESPONSES['Čo je paradentóza?'];
-  if (text.includes('sklovina'))
-    return BOT_RESPONSES['Čo je zubná sklovina?'];
-  if (text.includes('fluor'))
-    return BOT_RESPONSES['Čo je fluorid?'];
-  if (text.includes('niť') || text.includes('nite') || text.includes('floss'))
-    return BOT_RESPONSES['Ako používať zubnú niť?'];
-  if (text.includes('kedy') || text.includes('návštev') || text.includes('zubár'))
-    return BOT_RESPONSES['Kedy ísť k zubárovi?'];
-  if (text.includes('bruxizm') || text.includes('škríp') || text.includes('skripanie') || text.includes('zvieranie'))
-    return BOT_RESPONSES['Čo je bruxizmus?'];
-  if (text.includes('ústna voda') || text.includes('vyplach') || text.includes('mouthwash'))
-    return BOT_RESPONSES['Ako funguje ústna voda?'];
-  if (text.includes('korunka') || text.includes('crown'))
-    return BOT_RESPONSES['Čo je zubná korunka?'];
-  if (text.includes('plomba') || text.includes('výplň') || text.includes('kaz'))
-    return BOT_RESPONSES['Čo je zubná plomba?'];
-  if (text.includes('citliv') || text.includes('citlivosť') || text.includes('sensodyne'))
-    return BOT_RESPONSES['Ako znížiť citlivosť zubov?'];
-  return '😊 Ďakujem za otázku! Pre detailnú odpoveď ti odporúčam konzultáciu priamo s MDDr. Lodererom.\n\nSkús niektorú z pripravených otázok — stačí kliknúť na kategóriu nižšie.';
+
+  // Symptómové párovanie — rozšírené
+  const MATCHES: [string[], string][] = [
+    [['bolesť','bolí','bolest','bol','buľi','boli '], 'Čo robiť pri bolesti zuba?'],
+    [['čisti','kefk','čistenie','umývanie zubov','zubná pasta'], 'Ako správne čistiť zuby?'],
+    [['kameň','kamen','tartarus','usadeniny','zubný kameň'], 'Čo je zubný kameň?'],
+    [['biel','whitening','bielenie','žlté zuby'], 'Ako bieleť zuby?'],
+    [['implantát','implant','skrutka do kosti'], 'Čo sú zubné implantáty?'],
+    [['paradentóz','ďasn','dasna','dasn','parodont','krvácajúce ďasná'], 'Čo je paradentóza?'],
+    [['sklovina','skloven','email'], 'Čo je zubná sklovina?'],
+    [['fluor','fluorid','zubná pasta s fluorom'], 'Čo je fluorid?'],
+    [['niť','nite','floss','medzizubn'], 'Ako používať zubnú niť?'],
+    [['kedy','návštev','zubár','prehliadka','kontrola','každých 6'], 'Kedy ísť k zubárovi?'],
+    [['bruxizm','škríp','skripanie','zvieranie','chrúpanie'], 'Čo je bruxizmus?'],
+    [['ústna voda','vyplach','mouthwash','kloktanie'], 'Ako funguje ústna voda?'],
+    [['korunka','crown','čiapočka na zub'], 'Čo je zubná korunka?'],
+    [['plomba','výplň','kaz','otvor v zube','čierna škvrna'], 'Čo je zubná plomba?'],
+    [['citliv','citlivosť','sensodyne','studená voda bolí','horúce bolí'], 'Ako znížiť citlivosť zubov?'],
+    [['mosty','zubný most','bridge'], 'Čo sú zubné implantáty?'],
+    [['extrakcia','vytiahnutie','trhanie zuba','extraction'], 'Kedy ísť k zubárovi?'],
+    [['suchý ústny zápal','dry socket','alveolitis'], 'Čo robiť pri bolesti zuba?'],
+    [['tehotná','tehotenstvo','gravida'], 'Kedy ísť k zubárovi?'],
+    [['deti','detský zubár','mliečne zuby','dieťa'], 'Kedy ísť k zubárovi?'],
+  ];
+
+  for (const [keywords, key] of MATCHES) {
+    if (keywords.some(kw => text.includes(kw))) return BOT_RESPONSES[key] ?? '';
+  }
+
+  // Pozdravy
+  if (['ahoj','čau','nazdar','dobrý deň','dobrý ráno','dobré ráno'].some(g => text.includes(g)))
+    return '😊 Ahoj! Som váš dentálny asistent.\n\nMôžem vám pomôcť s otázkami o ústnej hygiene, liečbách, bolestiach alebo návšte­ve. Čo vás trápi?';
+
+  // Vďaka
+  if (text.includes('ďakuj') || text.includes('dakuj') || text.includes('super') || text.includes('skvelé'))
+    return '😊 Rád/a pomôžem! Ak máte ďalšie otázky, som tu. Prajeme vám zdravý úsmev! 🦷';
+
+  return '🤔 Nerozumel/a som otázke úplne.\n\nSkúste ju preformulovať, alebo vyberte tému z kategórií nižšie. Pre presné odporúčania je najlepšia priama konzultácia s MDDr. Lodererom.\n\n📞 Môžete nás aj priamo kontaktovať cez záložku Môj zubár.';
 }
 
 function getTime() {

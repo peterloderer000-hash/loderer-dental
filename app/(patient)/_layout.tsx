@@ -75,7 +75,9 @@ export default function PatientLayout() {
       <Tabs.Screen name="consents"         options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="treatment-plan"   options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="prescriptions"    options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="moj-zubar"        options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="moj-zubar"          options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="pre-questionnaire" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="dental-twin"       options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="shop"             options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
       <Tabs.Screen name="components/QuickActionsGrid"        options={{ href: null }} />

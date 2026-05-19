@@ -72,12 +72,21 @@ export function usePushNotifications(): void {
   const responseSub = useRef<Subscription | null>(null);
 
   useEffect(() => {
+    // Pokus pri štarte (ak už je user prihlásený)
     registerAndSaveToken();
+
+    // Znovu zaregistruje token hneď po prihlásení
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        registerAndSaveToken();
+      }
+    });
 
     notifSub.current    = Notifications.addNotificationReceivedListener(() => {});
     responseSub.current = Notifications.addNotificationResponseReceivedListener(() => {});
 
     return () => {
+      authSub.unsubscribe();
       notifSub.current?.remove();
       responseSub.current?.remove();
     };

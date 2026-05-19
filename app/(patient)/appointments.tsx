@@ -11,9 +11,10 @@ import { supabase } from '../../supabase';
 import { exportPatientHistory } from '../../utils/exportPDF';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyState } from '../../components/EmptyState';
+import { MonthCalendar } from '../../components/MonthCalendar';
 import {
-  getNextOpenDays, generateTimeSlotsForDay,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  generateTimeSlotsForDay,
+  jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
 
 type OpeningHour = { open_time: string; close_time: string };
@@ -58,9 +59,9 @@ function isToday(dateStr: string) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn }: {
+function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
   item: Appointment; onCancel: () => void; onReschedule: () => void;
-  onDetail: () => void; onRate: () => void; onCheckIn: () => void;
+  onDetail: () => void; onRate: () => void; onCheckIn: () => void; onQuestionnaire: () => void;
 }) {
   const { colors, dark } = useAppTheme();
   const cfg = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.scheduled;
@@ -69,8 +70,10 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
   const isPast = apptDate < now;
   const canCancel     = (item.status === 'scheduled' || item.status === 'pending') && !isPast;
   const canReschedule = item.status === 'scheduled' && !isPast;
-  // Prišiel som: len ak je dnes naplánovaný a ešte nezačal (do 15 min pred termínom = vhodný čas)
-  const canCheckIn    = item.status === 'scheduled' && isToday(item.appointment_date) && (apptDate.getTime() - now.getTime()) < 2 * 60 * 60 * 1000; // 2h pred
+  const canCheckIn    = item.status === 'scheduled' && isToday(item.appointment_date) && (apptDate.getTime() - now.getTime()) < 2 * 60 * 60 * 1000;
+  // Dotazník: 48h pred termínom, ešte neplánovaný/scheduled
+  const hoursUntil = (apptDate.getTime() - now.getTime()) / (60 * 60 * 1000);
+  const canFillQuestionnaire = item.status === 'scheduled' && !isPast && hoursUntil <= 48 && hoursUntil > 0;
 
   return (
     <TouchableOpacity style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isPast && item.status === 'scheduled' && styles.cardMissed]} onPress={onDetail} activeOpacity={0.9}>
@@ -161,6 +164,18 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
         </View>
       ) : null}
 
+      {/* Predtermínový dotazník */}
+      {canFillQuestionnaire && (
+        <TouchableOpacity
+          style={[styles.questionnaireBtn, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A5276' : '#AED6F1' }]}
+          onPress={onQuestionnaire} activeOpacity={0.85}
+        >
+          <Ionicons name="clipboard-outline" size={16} color={dark ? '#5DADE2' : COLORS.info} />
+          <Text style={[styles.questionnaireBtnText, { color: dark ? '#5DADE2' : COLORS.info }]}>Vyplniť predtermínový dotazník</Text>
+          <Ionicons name="chevron-forward" size={14} color={dark ? '#5DADE2' : COLORS.info} />
+        </TouchableOpacity>
+      )}
+
       {/* Check-in — "Prišiel som" tlačidlo */}
       {canCheckIn && (
         <TouchableOpacity style={styles.checkInBtn} onPress={onCheckIn} activeOpacity={0.85}>
@@ -239,7 +254,6 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
-  const days       = useMemo(() => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [], [openDbDays]);
 
   const selectedDayHours = useMemo((): OpeningHour | null => {
     if (!selDate) return null;
@@ -350,22 +364,13 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
 
           {/* Výber dátumu */}
           <Text style={rs.label}>VYBERTE NOVÝ DÁTUM</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={rs.datesScroll} contentContainerStyle={rs.datesContent}>
-            {days.map(d => {
-              const isSel   = selDate?.toDateString() === d.toDateString();
-              const isToday = d.toDateString() === new Date().toDateString();
-              return (
-                <TouchableOpacity key={d.toISOString()}
-                  style={[rs.dateCell, isSel && rs.dateCellSel]}
-                  onPress={() => { setSelDate(d); setSelTime(''); }} activeOpacity={0.75}>
-                  <Text style={[rs.dateName, isSel && rs.dateSel]}>{isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}</Text>
-                  <Text style={[rs.dateNum,  isSel && rs.dateSel]}>{d.getDate()}</Text>
-                  <Text style={[rs.dateMon,  isSel && rs.dateSel]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          <MonthCalendar
+            selectedDate={selDate}
+            onSelectDate={(d) => { setSelDate(d); setSelTime(''); }}
+            openDbDays={openDbDays}
+            maxMonthsAhead={12}
+            warnMonthsAhead={6}
+          />
 
           {/* Výber času */}
           {selDate && (
@@ -419,14 +424,6 @@ const rs = StyleSheet.create({
   sheetSub:    { fontSize: 12, color: COLORS.wal },
   label:       { fontSize: 9, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 },
 
-  datesScroll:  { marginHorizontal: -20, marginBottom: 18 },
-  datesContent: { paddingHorizontal: 20, gap: 8 },
-  dateCell:   { width: 56, alignItems: 'center', paddingVertical: 10, borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
-  dateCellSel:{ backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  dateName:   { fontSize: 8, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase' },
-  dateNum:    { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginVertical: 2 },
-  dateMon:    { fontSize: 8, color: COLORS.wal, textTransform: 'uppercase' },
-  dateSel:    { color: COLORS.sand },
 
   slotsGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   slot:           { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
@@ -971,10 +968,18 @@ export default function AppointmentsScreen() {
                   onReschedule={() => setRescheduleAppt(item)}
                   onDetail={() => setDetailAppt(item)}
                   onRate={() => setRatingAppt(item)}
+                  onQuestionnaire={() => router.push({
+                    pathname: '/(patient)/pre-questionnaire',
+                    params: {
+                      appointmentId:   item.id,
+                      appointmentDate: item.appointment_date,
+                      doctorId:        item.doctor_id,
+                      serviceName:     item.service?.name ?? '',
+                    },
+                  })}
                   onCheckIn={async () => {
                     const err = await selfCheckIn(item.id);
                     if (err) { Alert.alert('Chyba', err.message); return; }
-                    // Notifikuj doktora
                     await supabase.from('notifications').insert({
                       user_id:        item.doctor_id,
                       title:          '🟢 Pacient je v čakárni',
@@ -1080,6 +1085,8 @@ const styles = StyleSheet.create({
   cancelBtnText:    { fontSize: 13, fontWeight: '600', color: '#922B21' },
 
   // Check-in
+  questionnaireBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1.5 },
+  questionnaireBtnText: { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium' },
   checkInBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 10, paddingVertical: 12, borderRadius: 12, backgroundColor: '#0E6655', borderWidth: 1.5, borderColor: '#0B5345' },
   checkInBtnEmoji:{ fontSize: 16 },
   checkInBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },

@@ -792,6 +792,97 @@ ${htmlFoot()}`;
   }
 }
 
+// ─── Funkcia: export receptu ──────────────────────────────────────────────────
+export type PrescriptionExport = {
+  id: string;
+  medication: string;
+  dosage: string | null;
+  instructions: string | null;
+  valid_until: string | null;
+  created_at: string;
+};
+
+export async function exportPrescription(
+  doctorName: string,
+  clinicName: string | null,
+  clinicAddress: string | null,
+  patientName: string,
+  rx: PrescriptionExport,
+): Promise<void> {
+  try {
+    const issued   = new Date(rx.created_at);
+    const rxDate   = issued.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
+    const rxNum    = `RX-${issued.getFullYear()}${String(issued.getMonth() + 1).padStart(2, '0')}-${rx.id.slice(0, 6).toUpperCase()}`;
+
+    const validUntilLine = rx.valid_until
+      ? `<div style="margin-top:8px;">
+           <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${C.wal};">PLATNOSŤ</span>
+           <div style="font-size:14px;color:${C.esp};margin-top:4px;">📅 ${new Date(rx.valid_until).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+         </div>`
+      : '';
+
+    const html = `
+${htmlHead('Recept — ' + rxNum, doctorName)}
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;gap:16px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${C.wal};margin-bottom:6px;">LEKÁRSKY RECEPT</div>
+      <div style="font-size:26px;font-weight:800;color:${C.esp};margin-bottom:4px;">💊 ${rxNum}</div>
+      <div style="font-size:12px;color:${C.wal};">Dátum vystavenia: <strong>${rxDate}</strong></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:200px;background:#fff;border-radius:12px;padding:16px 20px;border:1.5px solid ${C.cream};">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${C.wal};margin-bottom:8px;">VYSTAVIL LEKÁR</div>
+      <div style="font-size:16px;font-weight:800;color:${C.esp};margin-bottom:4px;">👨‍⚕️ ${doctorName}</div>
+      ${clinicName ? `<div style="font-size:13px;color:${C.wal};">${clinicName}</div>` : ''}
+      ${clinicAddress ? `<div style="font-size:12px;color:${C.wal};">${clinicAddress}</div>` : ''}
+    </div>
+    <div style="flex:1;min-width:200px;background:#fff;border-radius:12px;padding:16px 20px;border:1.5px solid ${C.cream};">
+      <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${C.wal};margin-bottom:8px;">PACIENT</div>
+      <div style="font-size:16px;font-weight:800;color:${C.esp};">👤 ${patientName}</div>
+    </div>
+  </div>
+
+  <div class="section-title">Predpísaný liek</div>
+  <div style="background:#fff;border-radius:12px;padding:22px 24px;border:1.5px solid ${C.cream};margin-bottom:28px;">
+    <div style="font-size:22px;font-weight:800;color:${C.esp};margin-bottom:14px;">💊 ${rx.medication}</div>
+    ${rx.dosage ? `
+    <div style="margin-bottom:12px;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${C.wal};">DÁVKOVANIE</span>
+      <div style="font-size:14px;color:${C.esp};margin-top:4px;">${rx.dosage}</div>
+    </div>` : ''}
+    ${rx.instructions ? `
+    <div style="margin-bottom:12px;">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${C.wal};">POKYNY</span>
+      <div style="font-size:14px;color:${C.esp};margin-top:4px;">${rx.instructions}</div>
+    </div>` : ''}
+    ${validUntilLine}
+  </div>
+
+  <div class="section-title" style="margin-bottom:20px;">Pečiatka a podpis</div>
+  <div style="display:flex;gap:32px;margin-bottom:40px;">
+    <div style="flex:1;min-height:88px;border:1.5px dashed ${C.cream};border-radius:10px;padding:12px 16px;">
+      <div style="font-size:10px;color:${C.wal};">Podpis lekára</div>
+    </div>
+    <div style="flex:1;min-height:88px;border:1.5px dashed ${C.cream};border-radius:10px;padding:12px 16px;">
+      <div style="font-size:10px;color:${C.wal};">Pečiatka ambulancie</div>
+    </div>
+  </div>
+
+  <div style="background:#EBF5FB;border-radius:10px;padding:12px 16px;border:1px solid #AED6F1;margin-bottom:20px;">
+    <div style="font-size:11px;color:#1A5276;">ℹ️ Vystavené elektronicky cez Loderer Dental App · ${fmtNow()}</div>
+  </div>
+
+${htmlFoot()}`;
+
+    await _printOrShare(html, `recept_${rxNum}.pdf`);
+  } catch (e: any) {
+    Alert.alert('Chyba exportu', e?.message ?? 'Nepodarilo sa vygenerovať PDF receptu.');
+  }
+}
+
 // ─── Interný helper: print / share ───────────────────────────────────────────
 async function _printOrShare(html: string, filename: string): Promise<void> {
   const { uri } = await Print.printToFileAsync({ html, base64: false });

@@ -33,6 +33,7 @@ type ApptRow = {
   family_member_name: string | null;
   patient_rating: number | null; patient_review: string | null;
   is_urgent: boolean;
+  arrived_at: string | null;
   service: { name: string; emoji: string | null; duration_minutes: number; price_min: number | null; price_max: number | null } | null;
   patient: { full_name: string | null; phone_number: string | null } | null;
   doctor: { full_name: string | null } | null;
@@ -225,7 +226,7 @@ export default function PatientDetailScreen() {
             .select('tooth_number,status,notes')
             .eq('patient_id', patientId),
           supabase.from('appointments')
-            .select('id,appointment_date,status,payment_status,doctor_notes,notes,family_member_name,patient_rating,patient_review,is_urgent,custom_duration_minutes,patient_id,doctor_id,service_id,doctor:profiles!appointments_doctor_id_fkey(full_name),patient:profiles!appointments_patient_id_fkey(full_name,phone_number),service:services(name,emoji,duration_minutes,price_min,price_max)')
+            .select('id,appointment_date,status,payment_status,doctor_notes,notes,family_member_name,patient_rating,patient_review,is_urgent,arrived_at,custom_duration_minutes,patient_id,doctor_id,service_id,doctor:profiles!appointments_doctor_id_fkey(full_name),patient:profiles!appointments_patient_id_fkey(full_name,phone_number),service:services(name,emoji,duration_minutes,price_min,price_max)')
             .eq('patient_id', patientId)
             .order('appointment_date', { ascending: false })
             .limit(50),
@@ -490,31 +491,35 @@ export default function PatientDetailScreen() {
 
       {/* ── Tab bar ── */}
       {(() => {
-        const TABS: { id: typeof activeTab; label: string; icon: any; badge?: number }[] = [
-          { id: 'overview',      label: 'Prehľad',      icon: 'person-outline' },
-          { id: 'appointments',  label: 'Termíny',      icon: 'calendar-outline', badge: appointments.filter(a => a.status === 'scheduled').length || undefined },
-          { id: 'plan',          label: 'Liečba',       icon: 'list-outline' },
-          { id: 'payments',      label: 'Platby',       icon: 'card-outline', badge: unpaidCount || undefined },
-          { id: 'messages',      label: 'Správy',       icon: 'chatbubble-outline' },
-          { id: 'records',       label: 'Záznamy',      icon: 'folder-outline' },
+        const TABS: { id: typeof activeTab; label: string; badge?: number }[] = [
+          { id: 'overview',     label: 'Prehľad' },
+          { id: 'appointments', label: 'Termíny', badge: appointments.filter(a => a.status === 'scheduled').length || undefined },
+          { id: 'plan',         label: 'Liečba' },
+          { id: 'payments',     label: 'Platby',  badge: unpaidCount || undefined },
+          { id: 'messages',     label: 'Správy' },
+          { id: 'records',      label: 'Záznamy' },
         ];
         return (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={{ backgroundColor: COLORS.esp, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' }}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 6, gap: 6 }}>
+            style={tabStyles.bar}
+            contentContainerStyle={tabStyles.barContent}>
             {TABS.map(tab => {
               const active = activeTab === tab.id;
               return (
                 <TouchableOpacity key={tab.id}
                   style={[tabStyles.tab, active && tabStyles.tabActive]}
-                  onPress={() => setActiveTab(tab.id)} activeOpacity={0.75}>
-                  <Ionicons name={tab.icon} size={13} color={active ? COLORS.gold : 'rgba(255,255,255,0.5)'} />
-                  <Text style={[tabStyles.tabText, active && tabStyles.tabTextActive]}>{tab.label}</Text>
-                  {tab.badge ? (
-                    <View style={tabStyles.tabBadge}>
-                      <Text style={tabStyles.tabBadgeText}>{tab.badge}</Text>
-                    </View>
-                  ) : null}
+                  onPress={() => setActiveTab(tab.id)}
+                  activeOpacity={0.7}>
+                  <View style={tabStyles.tabInner}>
+                    <Text style={[tabStyles.tabText, active && tabStyles.tabTextActive]}>
+                      {tab.label}
+                    </Text>
+                    {tab.badge ? (
+                      <View style={tabStyles.tabBadge}>
+                        <Text style={tabStyles.tabBadgeText}>{tab.badge}</Text>
+                      </View>
+                    ) : null}
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -565,17 +570,19 @@ export default function PatientDetailScreen() {
               </View>
             )}
             <View style={styles.infoChips}>
-              <View style={[styles.chip, hasPassport ? styles.chipGreen : styles.chipOrange]}>
-                <Text style={styles.chipText}>{hasPassport ? '✓ Anamnéza' : '⚠ Bez anamnézy'}</Text>
+              <View style={[styles.chip, hasPassport ? styles.chipGreen : styles.chipOrange,
+                hasPassport ? (dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }) : (dark && { backgroundColor: '#2D2200', borderColor: '#F9E79F44' })]}>
+                <Text style={[styles.chipText, { color: colors.textPrimary }]}>{hasPassport ? '✓ Anamnéza' : '⚠ Bez anamnézy'}</Text>
               </View>
-              <View style={[styles.chip, teeth.length > 0 ? styles.chipGreen : styles.chipGray]}>
-                <Text style={styles.chipText}>{teeth.length > 0 ? `🦷 ${teeth.length} zubov` : 'Karta prázdna'}</Text>
+              <View style={[styles.chip, teeth.length > 0 ? styles.chipGreen : styles.chipGray,
+                teeth.length > 0 && dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }]}>
+                <Text style={[styles.chipText, { color: colors.textPrimary }]}>{teeth.length > 0 ? `🦷 ${teeth.length} zubov` : 'Karta prázdna'}</Text>
               </View>
             </View>
             <View style={styles.statsRow}>
               <Text style={[styles.loyaltyPts, { color: colors.textSecondary }]}>{loyaltyPts} bodov · {appointments.filter(a => a.status === 'completed').length} návštev</Text>
               {avgRating !== null && (
-                <View style={styles.ratingPill}>
+                <View style={[styles.ratingPill, dark && { backgroundColor: '#2D2200', borderColor: '#B7950B55' }]}>
                   <Ionicons name="star" size={10} color="#F39C12" />
                   <Text style={styles.ratingPillText}>{avgRating.toFixed(1)}</Text>
                 </View>
@@ -645,16 +652,16 @@ export default function PatientDetailScreen() {
         {/* ── Plán liečby + Súhlasy ── */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           <TouchableOpacity
-            style={[styles.planBtn, { flex: 1, marginBottom: 0 }]}
+            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF44' }]}
             activeOpacity={0.8}
             onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId, patientName } })}
           >
-            <Ionicons name="list-outline" size={17} color="#1E8449" />
-            <Text style={styles.planBtnText}>Plán liečby</Text>
-            <Ionicons name="chevron-forward-outline" size={14} color="#1E8449" style={{ marginLeft: 'auto' }} />
+            <Ionicons name="list-outline" size={17} color={dark ? '#27AE60' : '#1E8449'} />
+            <Text style={[styles.planBtnText, dark && { color: '#27AE60' }]}>Plán liečby</Text>
+            <Ionicons name="chevron-forward-outline" size={14} color={dark ? '#27AE60' : '#1E8449'} style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.planBtn, { flex: 1, marginBottom: 0, backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
+            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark ? { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' } : { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
             activeOpacity={0.8}
             onPress={() => router.push('/(doctor)/consent-forms')}
           >
@@ -834,7 +841,7 @@ export default function PatientDetailScreen() {
         <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.cardTitleRow}>
             <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>INTERNÉ POZNÁMKY</Text>
-            <View style={styles.notesPrivateBadge}>
+            <View style={[styles.notesPrivateBadge, dark && { backgroundColor: '#0D2233', borderColor: '#AED6F133' }]}>
               <Ionicons name="lock-closed" size={9} color="#1A5276" />
               <Text style={styles.notesPrivateText}>Len pre teba</Text>
             </View>
@@ -910,6 +917,11 @@ export default function PatientDetailScreen() {
                     </View>
                     {a.service && (
                       <Text style={[styles.apptService, { color: colors.textSecondary }]}>{a.service.emoji ?? '🦷'} {a.service.name}</Text>
+                    )}
+                    {a.arrived_at && (
+                      <Text style={[styles.apptService, { color: colors.textSecondary }]}>
+                        🚪 Príchod: {new Date(a.arrived_at).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
                     )}
                     {a.family_member_name ? (
                       <Text style={styles.familyTag}>👶 Pre: {a.family_member_name}</Text>
@@ -1106,7 +1118,7 @@ export default function PatientDetailScreen() {
         {activeTab === 'messages' && (
           <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>SPRÁVY</Text>
-            <TouchableOpacity style={[styles.planBtn, { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' }]}
+            <TouchableOpacity style={[styles.planBtn, dark ? { backgroundColor: '#0D2233', borderColor: '#AED6F133' } : { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' }]}
               onPress={() => router.push({ pathname: '/(doctor)/messages', params: { patientId, patientName } })}
               activeOpacity={0.8}>
               <Ionicons name="chatbubble-outline" size={22} color="#1A5276" />
@@ -1146,7 +1158,7 @@ export default function PatientDetailScreen() {
               </TouchableOpacity>
             ))}
             <TouchableOpacity
-              style={[styles.planBtn, { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
+              style={[styles.planBtn, dark ? { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' } : { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
               onPress={() => exportPatientHistory(patientName ?? 'Pacient', appointments as unknown as Appointment[])}
               activeOpacity={0.8}>
               <Ionicons name="download-outline" size={20} color="#7D3C98" />
@@ -1405,10 +1417,13 @@ const styles = StyleSheet.create({
 });
 
 const tabStyles = StyleSheet.create({
-  tab:           { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
-  tabActive:     { backgroundColor: 'rgba(201,168,76,0.18)', borderColor: COLORS.gold },
-  tabText:       { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  tabTextActive: { color: COLORS.gold },
-  tabBadge:      { width: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center' },
-  tabBadgeText:  { fontSize: 8, fontWeight: '800', color: '#fff' },
+  bar:           { backgroundColor: COLORS.esp, maxHeight: 44, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.10)' },
+  barContent:    { paddingHorizontal: 4, alignItems: 'stretch' },
+  tab:           { paddingHorizontal: 14, height: 44, justifyContent: 'center', borderBottomWidth: 2.5, borderBottomColor: 'transparent' },
+  tabActive:     { borderBottomColor: COLORS.gold },
+  tabInner:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  tabText:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
+  tabTextActive: { color: COLORS.gold, fontWeight: '700' },
+  tabBadge:      { minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' },
 });

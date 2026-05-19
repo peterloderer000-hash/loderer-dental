@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ActivityIndicator, Modal, RefreshControl, ScrollView, StyleSheet,
+  ActivityIndicator, Alert, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -68,14 +68,14 @@ export default function ReceptionCheckin() {
 
   async function load(silent = false) {
     if (!silent) setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('appointments')
       .select('id, appointment_date, duration_minutes, clinic_status, arrived_at, started_at, ended_at, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name)')
       .gte('appointment_date', `${today}T00:00:00`)
       .lte('appointment_date', `${today}T23:59:59`)
       .not('clinic_status', 'eq', 'cancelled')
       .order('appointment_date');
-    setAppointments((data as unknown as Appointment[]) ?? []);
+    if (!error) setAppointments((data as unknown as Appointment[]) ?? []);
     setLoading(false);
     setRefreshing(false);
   }
@@ -116,7 +116,7 @@ export default function ReceptionCheckin() {
   async function doAdvance(apt: Appointment, next: string, chairId?: string) {
     setUpdating(apt.id);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const updates: Record<string, any> = { clinic_status: next };
+    const updates: Record<string, unknown> = { clinic_status: next };
     if (next === 'arrived') {
       updates.arrived_at = new Date().toISOString();
       updates.status     = 'arrived';
@@ -129,8 +129,9 @@ export default function ReceptionCheckin() {
       updates.ended_at = new Date().toISOString();
       updates.status   = 'completed';
     }
-    await supabase.from('appointments').update(updates).eq('id', apt.id);
+    const { error } = await supabase.from('appointments').update(updates).eq('id', apt.id);
     setUpdating(null);
+    if (error) { Alert.alert('Chyba', error.message); return; }
     load(true);
   }
 
