@@ -128,37 +128,60 @@ function ScoreRing({ score }: { score: number }) {
 
 // ─── Quadrant blok ────────────────────────────────────────────────────────────
 function QuadrantBlock({
-  label, fdis, teeth, side, onPressTooth,
+  label, fdis, teeth, baseTeeth, side, onPressTooth,
 }: {
   label: string; fdis: number[];
   teeth: Record<number, ToothStatus>;
+  baseTeeth: Record<number, ToothStatus>;
   side: 'left' | 'right';
   onPressTooth: (fdi: number) => void;
 }) {
-  const { colors, dark } = useAppTheme();
-  const issues = fdis.filter(f => teeth[f] && teeth[f] !== 'healthy').length;
-  const dot = (fdi: number) => {
-    const st = teeth[fdi] ?? 'healthy';
-    return dotColor(st);
-  };
+  const { dark } = useAppTheme();
+  const issues  = fdis.filter(f => (teeth[f] ?? 'healthy') !== 'healthy').length;
+  const changed = new Set(fdis.filter(f => (baseTeeth[f] ?? 'healthy') !== (teeth[f] ?? 'healthy')));
+  const align   = side === 'right' ? 'flex-end' : 'flex-start';
+
+  // Farba rámu kvadrantu podľa závažnosti
+  const borderColor = issues === 0
+    ? (dark ? '#1A3D1F' : '#1A3D1F')
+    : issues <= 2
+    ? '#7D4800'
+    : '#6B1010';
 
   return (
-    <View style={[s.quadrant, { backgroundColor: dark ? '#1A1209' : '#1A1A1A', borderColor: dark ? '#3D2E22' : '#2A2A2A' }]}>
-      <Text style={[s.quadLabel, { color: dark ? '#888' : '#666', textAlign: side === 'right' ? 'right' : 'left' }]}>
-        {label}
-      </Text>
-      <View style={[s.dotRow, { flexDirection: side === 'right' ? 'row-reverse' : 'row' }]}>
-        {fdis.map(fdi => (
-          <TouchableOpacity key={fdi} onPress={() => onPressTooth(fdi)} activeOpacity={0.7}>
-            <View style={[s.toothDot, { backgroundColor: dot(fdi) }]} />
-          </TouchableOpacity>
-        ))}
+    <View style={[s.quadrant, { backgroundColor: dark ? '#141209' : '#141414', borderColor }]}>
+      {/* Hlavička — label + počet problémov */}
+      <View style={[s.quadHeader, { alignItems: align }]}>
+        <Text style={[s.quadLabel, { color: dark ? '#666' : '#555' }]}>{label}</Text>
+        <View style={[s.quadBadge, {
+          backgroundColor: issues === 0 ? '#0D3B1F' : issues <= 2 ? '#2D1800' : '#4A0E0E',
+        }]}>
+          <Text style={[s.quadBadgeTxt, {
+            color: issues === 0 ? '#58D68D' : issues <= 2 ? '#F39C12' : '#E74C3C',
+          }]}>
+            {issues === 0 ? '✓ OK' : `${issues} ${issues === 1 ? 'problém' : issues < 5 ? 'problémy' : 'problémov'}`}
+          </Text>
+        </View>
       </View>
-      {issues > 0 && (
-        <Text style={[s.quadIssues, { color: '#E74C3C', textAlign: side === 'right' ? 'right' : 'left' }]}>
-          {issues} {issues === 1 ? 'problém' : issues < 5 ? 'problémy' : 'problémov'}
-        </Text>
-      )}
+
+      {/* Dots — väčšie, zmenené zuby majú biely ring */}
+      <View style={[s.dotRow, { flexDirection: side === 'right' ? 'row-reverse' : 'row' }]}>
+        {fdis.map(fdi => {
+          const st        = teeth[fdi] ?? 'healthy';
+          const isChanged = changed.has(fdi);
+          return (
+            <TouchableOpacity key={fdi} onPress={() => onPressTooth(fdi)} activeOpacity={0.65}>
+              <View style={[
+                s.toothDot,
+                { backgroundColor: dotColor(st) },
+                isChanged && s.toothDotChanged,
+              ]}>
+                {isChanged && <View style={s.toothDotPulse} />}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -394,12 +417,22 @@ export default function DentalTwinScreen() {
 
           {/* ── Quadrant Grid ── */}
           <View style={s.section}>
-            <Text style={s.sectionLabel}>VÁŠ CHRUP</Text>
+            {/* Year-change banner — viditeľný keď nie sme v roku 0 */}
+            {year === 0 ? (
+              <Text style={s.sectionLabel}>VÁŠ CHRUP — AKTUÁLNY STAV</Text>
+            ) : (
+              <View style={s.yearBanner}>
+                <Ionicons name="time-outline" size={13} color="#E74C3C" />
+                <Text style={s.yearBannerTxt}>
+                  PREDIKCIA: ROK +{year} — zmenené zuby svietia bielym krúžkom
+                </Text>
+              </View>
+            )}
             <View style={s.quadGrid}>
-              <QuadrantBlock label="Q2 • Ľavý horný"  fdis={Q2} teeth={currentTeeth} side="left"  onPressTooth={handleToothPress} />
-              <QuadrantBlock label="Q1 • Pravý horný" fdis={Q1} teeth={currentTeeth} side="right" onPressTooth={handleToothPress} />
-              <QuadrantBlock label="Q3 • Ľavý dolný"  fdis={Q3} teeth={currentTeeth} side="left"  onPressTooth={handleToothPress} />
-              <QuadrantBlock label="Q4 • Pravý dolný" fdis={Q4} teeth={currentTeeth} side="right" onPressTooth={handleToothPress} />
+              <QuadrantBlock label="Q2 • Ľavý horný"  fdis={Q2} teeth={currentTeeth} baseTeeth={rawTeeth} side="left"  onPressTooth={handleToothPress} />
+              <QuadrantBlock label="Q1 • Pravý horný" fdis={Q1} teeth={currentTeeth} baseTeeth={rawTeeth} side="right" onPressTooth={handleToothPress} />
+              <QuadrantBlock label="Q3 • Ľavý dolný"  fdis={Q3} teeth={currentTeeth} baseTeeth={rawTeeth} side="left"  onPressTooth={handleToothPress} />
+              <QuadrantBlock label="Q4 • Pravý dolný" fdis={Q4} teeth={currentTeeth} baseTeeth={rawTeeth} side="right" onPressTooth={handleToothPress} />
             </View>
             <Text style={s.tapHint}>Klepni na bodku pre detail zuba</Text>
           </View>
@@ -551,13 +584,21 @@ const s = StyleSheet.create({
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: '#555', fontFamily: 'DMSans_500Medium', marginBottom: 12, paddingHorizontal: 16 },
   tapHint:      { fontSize: 10, color: '#444', textAlign: 'center', marginTop: 8 },
 
+  // Year-change banner
+  yearBanner:    { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingHorizontal: 16, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 8, paddingVertical: 7, marginHorizontal: 16, borderWidth: 1, borderColor: 'rgba(231,76,60,0.25)' },
+  yearBannerTxt: { flex: 1, fontSize: 10, color: '#E74C3C', fontFamily: 'DMSans_500Medium', letterSpacing: 0.3 },
+
   // Quadrant grid
-  quadGrid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 2, paddingHorizontal: 16 },
-  quadrant:     { width: (W - 32 - 2) / 2, borderRadius: 12, borderWidth: 1, padding: 12 },
-  quadLabel:    { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, marginBottom: 8, color: '#666' },
-  dotRow:       { flexDirection: 'row', gap: 3, flexWrap: 'nowrap' },
-  toothDot:     { width: 10, height: 10, borderRadius: 5 },
-  quadIssues:   { fontSize: 9, fontFamily: 'DMSans_500Medium', marginTop: 6 },
+  quadGrid:        { flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingHorizontal: 16 },
+  quadrant:        { width: (W - 32 - 4) / 2, borderRadius: 12, borderWidth: 1.5, padding: 12 },
+  quadHeader:      { marginBottom: 10, gap: 4 },
+  quadLabel:       { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, color: '#666' },
+  quadBadge:       { borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start' },
+  quadBadgeTxt:    { fontSize: 10, fontFamily: 'DMSans_500Medium' },
+  dotRow:          { flexDirection: 'row', gap: 4, flexWrap: 'nowrap' },
+  toothDot:        { width: 15, height: 15, borderRadius: 8 },
+  toothDotChanged: { borderWidth: 2.5, borderColor: '#fff', transform: [{ scale: 1.15 }] },
+  toothDotPulse:   { position: 'absolute', width: 21, height: 21, borderRadius: 11, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)', top: -3, left: -3 },
 
   // Year cards
   yearCard:      { width: 72, borderRadius: 12, borderWidth: 1.5, padding: 10, alignItems: 'center', gap: 4 },
