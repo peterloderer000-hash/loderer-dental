@@ -325,6 +325,8 @@ function YearCard({
 }
 
 // ─── Tooth Detail Modal ───────────────────────────────────────────────────────
+type HistoryRecord = { status: string; notes: string | null; created_at: string };
+
 function ToothModal({
   fdi, snapshots, visible, onClose, onBook,
 }: {
@@ -332,17 +334,47 @@ function ToothModal({
   visible: boolean; onClose: () => void; onBook: () => void;
 }) {
   const { colors, dark } = useAppTheme();
+  const [history,     setHistory]     = useState<HistoryRecord[]>([]);
+  const [histLoading, setHistLoading] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !fdi) return;
+    setHistLoading(true);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { setHistLoading(false); return; }
+      supabase
+        .from('dental_records')
+        .select('status, notes, created_at')
+        .eq('patient_id', user.id)
+        .eq('tooth_number', fdi)
+        .order('created_at', { ascending: false })
+        .limit(8)
+        .then(({ data }) => {
+          setHistory(data ?? []);
+          setHistLoading(false);
+        });
+    });
+  }, [visible, fdi]);
+
   if (!fdi) return null;
   const present = snapshots[0]?.teeth[fdi] ?? 'healthy';
   const cfg     = STATUS_CFG[present];
   const name    = toothName(fdi);
   const future  = snapshots.slice(1).filter(s => s.newIssues.some(i => i.tooth === fdi));
 
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('sk-SK', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    });
+  }
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.overlay}>
         <View style={[s.sheet, { backgroundColor: colors.cardBg }]}>
           <View style={[s.handle, { backgroundColor: colors.bg3 }]} />
+
+          {/* Hlavička */}
           <View style={s.sheetHeader}>
             <View style={[s.statusDot, { backgroundColor: cfg.glowColor ?? cfg.darkColor }]} />
             <View style={{ flex: 1 }}>
@@ -354,44 +386,86 @@ function ToothModal({
             </TouchableOpacity>
           </View>
 
-          <View style={[s.statusCard, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
-            <Text style={{ fontSize: 26 }}>{cfg.emoji}</Text>
-            <View>
-              <Text style={{ fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: colors.textSecondary, marginBottom: 2 }}>SÚČASNÝ STAV</Text>
-              <Text style={{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: colors.textPrimary }}>{cfg.label}</Text>
+          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420 }}>
+            {/* Súčasný stav */}
+            <View style={[s.statusCard, { backgroundColor: dark ? '#1A1209' : '#F8F5F0', borderColor: colors.bg3 }]}>
+              <Text style={{ fontSize: 26 }}>{cfg.emoji}</Text>
+              <View>
+                <Text style={{ fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: colors.textSecondary, marginBottom: 2 }}>SÚČASNÝ STAV</Text>
+                <Text style={{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: colors.textPrimary }}>{cfg.label}</Text>
+              </View>
             </View>
-          </View>
 
-          {future.length > 0 ? (
+            {/* História z dental_records */}
             <View style={{ marginBottom: 14 }}>
-              <Text style={{ fontSize: 9, letterSpacing: 1.5, fontFamily: 'DMSans_500Medium', color: colors.textSecondary, marginBottom: 8 }}>🔮 PREDIKCIA</Text>
-              {future.map(snap => {
-                const issue   = snap.newIssues.find(i => i.tooth === fdi)!;
-                const nextCfg = STATUS_CFG[issue.toStatus];
-                return (
-                  <View key={snap.year} style={[s.issueRow, { borderColor: colors.bg3 }]}>
-                    <Text style={{ fontSize: 12, fontFamily: 'DMSans_500Medium', width: 36, color: '#E74C3C' }}>+{snap.year}r</Text>
-                    <Text style={{ flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: colors.textPrimary }}>{nextCfg?.label ?? issue.toStatus}</Text>
-                    <Text style={{ fontSize: 11, width: 36, textAlign: 'right', color: '#E74C3C' }}>{Math.round(issue.probability * 100)}%</Text>
-                    <Text style={{ fontSize: 11, width: 52, textAlign: 'right', color: colors.textSecondary }}>~{issue.cost} €</Text>
-                  </View>
-                );
-              })}
+              <Text style={[s.modalSectionLabel, { color: colors.textSecondary }]}>📅 HISTÓRIA OŠETRENÍ</Text>
+              {histLoading ? (
+                <ActivityIndicator size="small" color={colors.textSecondary} style={{ marginVertical: 8 }} />
+              ) : history.length === 0 ? (
+                <View style={[s.histEmpty, { backgroundColor: dark ? '#1A1209' : '#F5F0EA', borderColor: colors.bg3 }]}>
+                  <Ionicons name="document-outline" size={15} color={colors.textSecondary} />
+                  <Text style={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}>
+                    Zatiaľ žiadny doktorský záznam pre tento zub
+                  </Text>
+                </View>
+              ) : (
+                history.map((rec, i) => {
+                  const recCfg = Object.values(STATUS_CFG).find(c => c.label.toLowerCase() === rec.status.toLowerCase());
+                  return (
+                    <View key={i} style={[s.histRow, { borderColor: colors.bg3 }]}>
+                      <View style={[s.histDot, { backgroundColor: recCfg?.glowColor ?? colors.bg3 }]} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 12, fontFamily: 'DMSans_500Medium', color: colors.textPrimary }}>
+                          {rec.status}
+                        </Text>
+                        {rec.notes ? (
+                          <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 1 }} numberOfLines={2}>
+                            {rec.notes}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <Text style={{ fontSize: 10, color: colors.textSecondary, marginLeft: 8 }}>
+                        {formatDate(rec.created_at)}
+                      </Text>
+                    </View>
+                  );
+                })
+              )}
             </View>
-          ) : (
-            <View style={[s.okBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-              <Ionicons name="checkmark-circle" size={17} color={dark ? '#58D68D' : '#1E8449'} />
-              <Text style={{ flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: dark ? '#58D68D' : '#1E8449' }}>
-                V horizonte 5 rokov bez predpokladanej zmeny ✓
-              </Text>
-            </View>
-          )}
 
-          <TouchableOpacity style={s.bookBtn} onPress={onBook} activeOpacity={0.88}>
+            {/* Predikcia */}
+            {future.length > 0 ? (
+              <View style={{ marginBottom: 14 }}>
+                <Text style={[s.modalSectionLabel, { color: colors.textSecondary }]}>🔮 PREDIKCIA</Text>
+                {future.map(snap => {
+                  const issue   = snap.newIssues.find(i => i.tooth === fdi)!;
+                  const nextCfg = STATUS_CFG[issue.toStatus];
+                  return (
+                    <View key={snap.year} style={[s.issueRow, { borderColor: colors.bg3 }]}>
+                      <Text style={{ fontSize: 12, fontFamily: 'DMSans_500Medium', width: 36, color: '#E74C3C' }}>+{snap.year}r</Text>
+                      <Text style={{ flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: colors.textPrimary }}>{nextCfg?.label ?? issue.toStatus}</Text>
+                      <Text style={{ fontSize: 11, width: 36, textAlign: 'right', color: '#E74C3C' }}>{Math.round(issue.probability * 100)}%</Text>
+                      <Text style={{ fontSize: 11, width: 52, textAlign: 'right', color: colors.textSecondary }}>~{issue.cost} €</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : (
+              <View style={[s.okBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+                <Ionicons name="checkmark-circle" size={17} color={dark ? '#58D68D' : '#1E8449'} />
+                <Text style={{ flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: dark ? '#58D68D' : '#1E8449' }}>
+                  V horizonte 5 rokov bez predpokladanej zmeny ✓
+                </Text>
+              </View>
+            )}
+
+          </ScrollView>
+
+          <TouchableOpacity style={[s.bookBtn, { marginTop: 12 }]} onPress={onBook} activeOpacity={0.88}>
             <Ionicons name="calendar-outline" size={15} color="#fff" />
             <Text style={s.bookBtnTxt}>Rezervovať prehliadku</Text>
           </TouchableOpacity>
-          <Text style={{ fontSize: 10, textAlign: 'center', color: colors.textSecondary, lineHeight: 14 }}>
+          <Text style={{ fontSize: 10, textAlign: 'center', color: colors.textSecondary, lineHeight: 14, marginTop: 8 }}>
             Predikcia je orientačná. Nenahrádza odbornú diagnostiku.
           </Text>
         </View>
@@ -762,6 +836,12 @@ const s = StyleSheet.create({
   okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
   bookBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
   bookBtnTxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+
+  // Modal — história
+  modalSectionLabel: { fontSize: 9, letterSpacing: 1.5, fontFamily: 'DMSans_500Medium', marginBottom: 8 },
+  histEmpty: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, borderWidth: 1, padding: 12 },
+  histRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
+  histDot:   { width: 10, height: 10, borderRadius: 5, marginTop: 3 },
 
   // Risk panel
   riskCard:       { backgroundColor: '#111', borderRadius: 14, borderWidth: 1 },
