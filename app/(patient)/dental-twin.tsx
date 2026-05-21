@@ -66,6 +66,80 @@ function dotColor(status: ToothStatus): string {
   return '#C9A84C'; // filling, crown, implant, inlay
 }
 
+// ─── Consent Modal ───────────────────────────────────────────────────────────
+function ConsentModal({ visible, onAccept }: { visible: boolean; onAccept: () => void }) {
+  const { colors, dark } = useAppTheme();
+  return (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={cs.overlay}>
+        <View style={[cs.card, { backgroundColor: colors.cardBg }]}>
+
+          {/* Ikona */}
+          <View style={cs.iconWrap}>
+            <Text style={{ fontSize: 40 }}>🦷</Text>
+          </View>
+
+          {/* Nadpis */}
+          <Text style={[cs.title, { color: colors.textPrimary }]}>
+            Dental Score™
+          </Text>
+          <Text style={[cs.subtitle, { color: '#C9A84C' }]}>
+            Digitálny dvojník tvojho chrupu
+          </Text>
+
+          {/* Čo to je */}
+          <View style={[cs.infoBox, { backgroundColor: dark ? '#1A1209' : '#F5F0EA', borderColor: colors.bg3 }]}>
+            <Text style={[cs.infoText, { color: colors.textPrimary }]}>
+              Dental Score™ ti ukáže aktuálny stav chrupu, 5-ročnú predikciu vývoja a cenové porovnanie prevencie vs. neskoršieho ošetrenia.
+            </Text>
+          </View>
+
+          {/* Disclaimer — povinný podľa spec */}
+          <View style={[cs.warningBox, { backgroundColor: dark ? '#2D1500' : '#FEF9E7', borderColor: dark ? '#7D4800' : '#F9E79F' }]}>
+            <Ionicons name="warning-outline" size={16} color={dark ? '#F0A030' : '#B87333'} />
+            <Text style={[cs.warningText, { color: dark ? '#F0A030' : '#7D4800' }]}>
+              Predikcia je orientačná, založená na klinických štatistikách a tvojich rizikových faktoroch. Nenahrádza odbornú diagnostiku zubného lekára.
+            </Text>
+          </View>
+
+          {/* Aktivácia po návšteve */}
+          <View style={[cs.noteBox, { borderColor: colors.bg3 }]}>
+            <Ionicons name="information-circle-outline" size={14} color={colors.textSecondary} />
+            <Text style={[cs.noteText, { color: colors.textSecondary }]}>
+              Presné predikcie sa aktivujú po prvej návšteve v klinike, keď doktor zadá stav tvojich zubov.
+            </Text>
+          </View>
+
+          {/* Tlačidlo */}
+          <TouchableOpacity style={cs.btn} onPress={onAccept} activeOpacity={0.88}>
+            <LinearGradient colors={['#B8973A', '#C9A84C']} style={cs.btnGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Text style={cs.btnTxt}>Rozumiem, zobraziť skóre</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const cs = StyleSheet.create({
+  overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.85)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  card:        { borderRadius: 24, padding: 24, width: '100%', maxWidth: 400 },
+  iconWrap:    { alignItems: 'center', marginBottom: 12 },
+  title:       { fontSize: 26, fontFamily: 'PlayfairDisplay_700Bold', textAlign: 'center', marginBottom: 4 },
+  subtitle:    { fontSize: 13, fontFamily: 'DMSans_500Medium', textAlign: 'center', letterSpacing: 1, marginBottom: 18 },
+  infoBox:     { borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 12 },
+  infoText:    { fontSize: 13, lineHeight: 20, fontFamily: 'DMSans_500Medium' },
+  warningBox:  { flexDirection: 'row', gap: 10, alignItems: 'flex-start', borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 12 },
+  warningText: { flex: 1, fontSize: 12, lineHeight: 18 },
+  noteBox:     { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginBottom: 20 },
+  noteText:    { flex: 1, fontSize: 11, lineHeight: 17 },
+  btn:         { borderRadius: 14, overflow: 'hidden' },
+  btnGrad:     { paddingVertical: 15, alignItems: 'center' },
+  btnTxt:      { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
+});
+
 // ─── Risk Panel ───────────────────────────────────────────────────────────────
 const HYGIENE_OPTS: { label: string; emoji: string; value: number }[] = [
   { label: 'Nízka',    emoji: '😬', value: 3 },
@@ -479,23 +553,33 @@ export default function DentalTwinScreen() {
   const router = useRouter();
   const { colors, dark } = useAppTheme();
 
-  const [rawTeeth,   setRawTeeth]   = useState<Record<number, ToothStatus>>({});
-  const [loading,    setLoading]    = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [year,       setYear]       = useState(0);
-  const [selected,   setSelected]   = useState<number | null>(null);
-  const [showModal,  setShowModal]  = useState(false);
+  const [rawTeeth,      setRawTeeth]      = useState<Record<number, ToothStatus>>({});
+  const [loading,       setLoading]       = useState(true);
+  const [refreshing,    setRefreshing]    = useState(false);
+  const [year,          setYear]          = useState(0);
+  const [selected,      setSelected]      = useState<number | null>(null);
+  const [showModal,     setShowModal]     = useState(false);
+  const [showConsent,   setShowConsent]   = useState(false);
 
   const [risk, setRisk] = useState<RiskFactors>({
     smoking: false, diabetes: false, bruxism: false, hygiene: 7,
   });
 
-  // Načítaj uložené rizikové faktory
+  // Načítaj uložené rizikové faktory + consent flag
   useEffect(() => {
-    AsyncStorage.getItem('dentalRisk').then(v => {
-      if (v) { try { setRisk(JSON.parse(v)); } catch {} }
+    Promise.all([
+      AsyncStorage.getItem('dentalRisk'),
+      AsyncStorage.getItem('dentalTwinConsent'),
+    ]).then(([riskVal, consentVal]) => {
+      if (riskVal) { try { setRisk(JSON.parse(riskVal)); } catch {} }
+      if (!consentVal) setShowConsent(true);
     });
   }, []);
+
+  function handleAcceptConsent() {
+    AsyncStorage.setItem('dentalTwinConsent', '1');
+    setShowConsent(false);
+  }
 
   const updateRisk = useCallback((patch: Partial<RiskFactors>) => {
     setRisk(prev => {
@@ -748,6 +832,8 @@ export default function DentalTwinScreen() {
           onBook={() => { setShowModal(false); setSelected(null); router.push('/(patient)/book-appointment'); }}
         />
       )}
+
+      <ConsentModal visible={showConsent} onAccept={handleAcceptConsent} />
     </View>
   );
 }
