@@ -2,12 +2,13 @@
  * Dental Score™ — skóre chrupu ako kreditná karta
  * Animated ring + quadrant grid + swipeable year timeline
  */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, Animated, Dimensions, Modal,
   RefreshControl, ScrollView, StyleSheet, Text,
   TouchableOpacity, View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -63,6 +64,109 @@ function dotColor(status: ToothStatus): string {
   if (['caries_initial'].includes(status)) return '#E67E22';
   if (['caries_deep', 'endo', 'extracted', 'missing'].includes(status)) return '#E74C3C';
   return '#C9A84C'; // filling, crown, implant, inlay
+}
+
+// ─── Risk Panel ───────────────────────────────────────────────────────────────
+const HYGIENE_OPTS: { label: string; emoji: string; value: number }[] = [
+  { label: 'Nízka',    emoji: '😬', value: 3 },
+  { label: 'Stredná',  emoji: '😊', value: 7 },
+  { label: 'Výborná',  emoji: '🌟', value: 9 },
+];
+
+function RiskPanel({
+  risk, onChange,
+}: { risk: RiskFactors; onChange: (patch: Partial<RiskFactors>) => void }) {
+  const { dark } = useAppTheme();
+  const [open, setOpen] = useState(false);
+
+  const toggleRow = (
+    key: 'smoking' | 'diabetes' | 'bruxism',
+    label: string,
+    emoji: string,
+    hint: string,
+  ) => (
+    <TouchableOpacity
+      style={[s.riskRow, { borderColor: dark ? '#2A1F14' : '#222' }]}
+      onPress={() => onChange({ [key]: !risk[key] })}
+      activeOpacity={0.75}
+    >
+      <Text style={s.riskEmoji}>{emoji}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={[s.riskLabel, { color: dark ? '#FAF6F0' : '#FAF6F0' }]}>{label}</Text>
+        <Text style={s.riskHint}>{hint}</Text>
+      </View>
+      <View style={[s.toggle, { backgroundColor: risk[key] ? '#E74C3C' : '#333' }]}>
+        <View style={[s.thumb, risk[key] && s.thumbOn]} />
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={[s.riskCard, { borderColor: dark ? '#2A1F14' : '#222' }]}>
+      {/* Header — vždy viditeľný */}
+      <TouchableOpacity
+        style={s.riskHeader}
+        onPress={() => setOpen(v => !v)}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="options-outline" size={15} color="#C9A84C" />
+        <Text style={s.riskHeaderTxt}>Moje rizikové faktory</Text>
+        <View style={s.riskSummary}>
+          {risk.smoking  && <Text style={s.riskChip}>🚬</Text>}
+          {risk.diabetes && <Text style={s.riskChip}>💉</Text>}
+          {risk.bruxism  && <Text style={s.riskChip}>😬</Text>}
+          <Text style={s.riskChip}>
+            {HYGIENE_OPTS.find(o => o.value === risk.hygiene)?.emoji ?? '😊'}
+          </Text>
+        </View>
+        <Ionicons
+          name={open ? 'chevron-up' : 'chevron-down'}
+          size={15} color="#555"
+        />
+      </TouchableOpacity>
+
+      {/* Rozbalený panel */}
+      {open && (
+        <View style={s.riskBody}>
+          {toggleRow('smoking',  'Fajčenie',   '🚬', 'Urýchľuje degradáciu ďasien a zubov')}
+          {toggleRow('diabetes', 'Diabetes',   '💉', 'Zvyšuje riziko parodontozy')}
+          {toggleRow('bruxism',  'Bruxizmus',  '😬', 'Škrípanie zubami opotrebúva korunky')}
+
+          {/* Hygiena — 3 tlačidlá */}
+          <View style={[s.riskRow, { borderColor: dark ? '#2A1F14' : '#222' }]}>
+            <Text style={s.riskEmoji}>🪥</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={[s.riskLabel, { color: '#FAF6F0' }]}>Ústna hygiena</Text>
+              <Text style={s.riskHint}>Frekvencia a kvalita čistenia</Text>
+            </View>
+          </View>
+          <View style={s.hygieneRow}>
+            {HYGIENE_OPTS.map(opt => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[
+                  s.hygieneBtn,
+                  { borderColor: risk.hygiene === opt.value ? '#C9A84C' : '#333',
+                    backgroundColor: risk.hygiene === opt.value ? '#2D2000' : '#1A1A1A' },
+                ]}
+                onPress={() => onChange({ hygiene: opt.value })}
+                activeOpacity={0.75}
+              >
+                <Text style={{ fontSize: 18 }}>{opt.emoji}</Text>
+                <Text style={[s.hygieneLbl, {
+                  color: risk.hygiene === opt.value ? '#C9A84C' : '#555',
+                }]}>{opt.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={s.riskDisclaimer}>
+            Faktory ovplyvňujú rýchlosť predikovaného zhoršenia, nie istý výsledok.
+          </Text>
+        </View>
+      )}
+    </View>
+  );
 }
 
 // ─── Score Ring (SVG animated) ────────────────────────────────────────────────
@@ -308,9 +412,24 @@ export default function DentalTwinScreen() {
   const [selected,   setSelected]   = useState<number | null>(null);
   const [showModal,  setShowModal]  = useState(false);
 
-  const [risk] = useState<RiskFactors>({
+  const [risk, setRisk] = useState<RiskFactors>({
     smoking: false, diabetes: false, bruxism: false, hygiene: 7,
   });
+
+  // Načítaj uložené rizikové faktory
+  useEffect(() => {
+    AsyncStorage.getItem('dentalRisk').then(v => {
+      if (v) { try { setRisk(JSON.parse(v)); } catch {} }
+    });
+  }, []);
+
+  const updateRisk = useCallback((patch: Partial<RiskFactors>) => {
+    setRisk(prev => {
+      const next = { ...prev, ...patch };
+      AsyncStorage.setItem('dentalRisk', JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   const snapshots = useMemo(
     () => generatePredictions(rawTeeth, risk, 5),
@@ -413,6 +532,11 @@ export default function DentalTwinScreen() {
                 </View>
               ))}
             </View>
+          </View>
+
+          {/* ── Risk Panel ── */}
+          <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+            <RiskPanel risk={risk} onChange={updateRisk} />
           </View>
 
           {/* ── Quadrant Grid ── */}
@@ -638,4 +762,23 @@ const s = StyleSheet.create({
   okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
   bookBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
   bookBtnTxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+
+  // Risk panel
+  riskCard:       { backgroundColor: '#111', borderRadius: 14, borderWidth: 1 },
+  riskHeader:     { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 14 },
+  riskHeaderTxt:  { flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#C9A84C' },
+  riskSummary:    { flexDirection: 'row', gap: 4 },
+  riskChip:       { fontSize: 14 },
+  riskBody:       { paddingHorizontal: 14, paddingBottom: 14 },
+  riskRow:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1 },
+  riskEmoji:      { fontSize: 20, width: 28, textAlign: 'center' },
+  riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium' },
+  riskHint:       { fontSize: 10, color: '#555', marginTop: 1 },
+  riskDisclaimer: { fontSize: 9, color: '#444', marginTop: 12, lineHeight: 14 },
+  toggle:         { width: 42, height: 24, borderRadius: 12, justifyContent: 'center', paddingHorizontal: 2 },
+  thumb:          { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', alignSelf: 'flex-start' },
+  thumbOn:        { alignSelf: 'flex-end' },
+  hygieneRow:     { flexDirection: 'row', gap: 8, marginTop: 4, marginBottom: 8 },
+  hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, gap: 4 },
+  hygieneLbl:     { fontSize: 10, fontFamily: 'DMSans_500Medium' },
 });
