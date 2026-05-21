@@ -742,34 +742,88 @@ export default function DentalTwinScreen() {
               ))}
             </ScrollView>
 
-            {/* Aktívny rok — zoznam zmien */}
-            {year > 0 && snapshots[year].newIssues.length > 0 && (
-              <View style={[s.yearDetail, { backgroundColor: dark ? '#1A1209' : '#111', borderColor: dark ? '#3D2E22' : '#222' }]}>
-                <Text style={s.yearDetailTitle}>Predikované zmeny v roku +{year}</Text>
-                {snapshots[year].newIssues.map((iss, i) => (
-                  <TouchableOpacity
-                    key={i}
-                    style={[s.issueRow, { borderColor: dark ? '#3A2A1A' : '#2A2A2A' }]}
-                    onPress={() => handleToothPress(iss.tooth)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={{ fontSize: 15, width: 24 }}>{STATUS_CFG[iss.toStatus]?.emoji ?? '🔴'}</Text>
-                    <Text style={[s.issueTxt, { color: dark ? '#FAF6F0' : '#FAF6F0' }]}>
-                      Zub {iss.tooth} — {STATUS_CFG[iss.toStatus]?.label}
-                    </Text>
-                    <Text style={{ fontSize: 11, color: '#E74C3C', fontFamily: 'DMSans_500Medium' }}>
-                      ~{iss.cost} €
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-                <View style={[s.cumCostRow, { backgroundColor: '#4A1010' }]}>
-                  <Text style={{ fontSize: 11, color: '#F1948A', fontFamily: 'DMSans_500Medium' }}>Kumulatívne náklady bez prevencie</Text>
-                  <Text style={{ fontSize: 20, color: '#E74C3C', fontFamily: 'PlayfairDisplay_700Bold' }}>
-                    {snapshots[year].cumulativeCost} €
+            {/* Aktívny rok — side panel s counterom (podľa spec) */}
+            {year > 0 && snapshots[year].newIssues.length > 0 && (() => {
+              const snap        = snapshots[year];
+              const prevCost    = PREVENTION_COST * year;
+              const savings     = Math.max(0, snap.cumulativeCost - prevCost);
+
+              // Grupuj problémy podľa toStatus
+              const grouped = snap.newIssues.reduce((acc, iss) => {
+                if (!acc[iss.toStatus]) acc[iss.toStatus] = { teeth: [], cost: 0 };
+                acc[iss.toStatus].teeth.push(iss.tooth);
+                acc[iss.toStatus].cost += iss.cost;
+                return acc;
+              }, {} as Record<string, { teeth: number[]; cost: number }>);
+
+              return (
+                <View style={[s.counterPanel, { borderColor: dark ? '#3D2E22' : '#222' }]}>
+                  {/* Hlavička */}
+                  <Text style={s.counterTitle}>
+                    📋 Rok +{year} — predikované zmeny
                   </Text>
+
+                  {/* Grupované problémy */}
+                  {Object.entries(grouped).map(([status, { teeth, cost }]) => {
+                    const cfg   = STATUS_CFG[status as ToothStatus];
+                    const label = cfg?.label ?? status;
+                    const emoji = cfg?.emoji ?? '🔴';
+                    const teethStr = teeth.length === 1
+                      ? `zub: ${teeth[0]}`
+                      : `zuby: ${teeth.join(', ')}`;
+                    return (
+                      <TouchableOpacity
+                        key={status}
+                        style={[s.counterRow, { borderColor: dark ? '#2A1F14' : '#1E1E1E' }]}
+                        onPress={() => handleToothPress(teeth[0])}
+                        activeOpacity={0.75}
+                      >
+                        <Text style={s.counterEmoji}>{emoji}</Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.counterLabel}>
+                            {teeth.length}× {label}
+                          </Text>
+                          <Text style={s.counterTeeth}>({teethStr})</Text>
+                        </View>
+                        <Text style={s.counterCost}>~{cost} €</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+
+                  {/* Divider */}
+                  <View style={[s.counterDivider, { backgroundColor: dark ? '#2A1F14' : '#222' }]} />
+
+                  {/* Súhrnné riadky — spec formát */}
+                  <View style={s.counterSummary}>
+                    <View style={s.counterSummaryRow}>
+                      <Text style={s.counterSummaryEmoji}>💰</Text>
+                      <Text style={s.counterSummaryLabel}>Odhad ošetrenia:</Text>
+                      <Text style={[s.counterSummaryVal, { color: '#E74C3C' }]}>
+                        {snap.cumulativeCost} €
+                      </Text>
+                    </View>
+                    <View style={s.counterSummaryRow}>
+                      <Text style={s.counterSummaryEmoji}>💚</Text>
+                      <Text style={s.counterSummaryLabel}>Cena prevencie dnes:</Text>
+                      <Text style={[s.counterSummaryVal, { color: '#58D68D' }]}>
+                        {prevCost} €
+                      </Text>
+                    </View>
+                    {savings > 0 && (
+                      <View style={[s.counterSavingsRow, { backgroundColor: '#0D3B1F' }]}>
+                        <Text style={s.counterSummaryEmoji}>📊</Text>
+                        <Text style={[s.counterSummaryLabel, { color: '#58D68D' }]}>
+                          Úspora pri prevencii:
+                        </Text>
+                        <Text style={[s.counterSummaryVal, { color: '#58D68D', fontSize: 16 }]}>
+                          {savings} €
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
-              </View>
-            )}
+              );
+            })()}
             {year > 0 && snapshots[year].newIssues.length === 0 && (
               <View style={[s.yearOK, { backgroundColor: dark ? '#0D3B1F' : '#0D3B1F' }]}>
                 <Ionicons name="checkmark-circle" size={17} color="#58D68D" />
@@ -890,10 +944,22 @@ const s = StyleSheet.create({
   yearCardIssues:{ fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 26 },
   yearCardCost:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
 
-  // Year detail
-  yearDetail:      { marginHorizontal: 16, marginTop: 12, borderRadius: 12, borderWidth: 1, padding: 14 },
-  yearDetailTitle: { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#888', marginBottom: 10, letterSpacing: 0.5 },
-  yearOK:          { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 12, padding: 12 },
+  // Year detail / Counter panel
+  yearOK:            { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 12, padding: 12 },
+  counterPanel:      { marginHorizontal: 16, marginTop: 12, borderRadius: 14, borderWidth: 1, backgroundColor: '#111', overflow: 'hidden' },
+  counterTitle:      { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#666', letterSpacing: 0.5, padding: 14, paddingBottom: 10 },
+  counterRow:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1 },
+  counterEmoji:      { fontSize: 18, width: 26, textAlign: 'center' },
+  counterLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  counterTeeth:      { fontSize: 10, color: '#666', marginTop: 1 },
+  counterCost:       { fontSize: 12, color: '#E74C3C', fontFamily: 'DMSans_500Medium' },
+  counterDivider:    { height: 1, marginHorizontal: 14, marginVertical: 4 },
+  counterSummary:    { paddingHorizontal: 14, paddingBottom: 14, gap: 6 },
+  counterSummaryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  counterSavingsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, padding: 10, marginTop: 4 },
+  counterSummaryEmoji:{ fontSize: 14, width: 22 },
+  counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#888', fontFamily: 'DMSans_500Medium' },
+  counterSummaryVal:  { fontSize: 14, fontFamily: 'PlayfairDisplay_700Bold' },
 
   issueRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, borderBottomWidth: 1 },
   issueTxt:  { flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium' },
