@@ -24,6 +24,42 @@ import {
 
 const { width: W } = Dimensions.get('window');
 
+// ─── Uloženie snapshotov do dental_snapshots (background, fire-and-forget) ────
+async function saveSnapshotsToDb(
+  userId: string,
+  snaps: ReturnType<typeof generatePredictions>,
+  riskFactors: RiskFactors,
+) {
+  const today = new Date().toISOString().slice(0, 10);
+  // Vymaž dnešné predikované snapshoty (re-generujeme aktuálne)
+  await supabase.from('dental_snapshots')
+    .delete()
+    .eq('patient_id', userId)
+    .eq('snapshot_date', today)
+    .eq('snapshot_type', 'predicted');
+
+  const rows = snaps.map((snap, i) => ({
+    patient_id:              userId,
+    snapshot_date:           today,
+    snapshot_type:           i === 0 ? 'real' : 'predicted',
+    prediction_year_offset:  i === 0 ? null : i,
+    tooth_states:            snap.teeth,
+    new_issues:              snap.newIssues,
+    estimated_cost:          snap.cumulativeCost,
+    prevention_cost:         PREVENTION_COST * i,
+    risk_factors:            riskFactors,
+  }));
+
+  // Upsert real snapshot (rok 0), insert predicted (roky 1-5)
+  await supabase.from('dental_snapshots').upsert(
+    rows.filter(r => r.snapshot_type === 'real'),
+    { onConflict: 'patient_id,snapshot_date,snapshot_type' },
+  );
+  await supabase.from('dental_snapshots').insert(
+    rows.filter(r => r.snapshot_type === 'predicted'),
+  );
+}
+
 // ─── Všetky FDI zuby dospelého ───────────────────────────────────────────────
 const ALL_FDI = [
   11,12,13,14,15,16,17,18,
@@ -548,6 +584,28 @@ function ToothModal({
   );
 }
 
+// ─── Past Visit Card ─────────────────────────────────────────────────────────
+function PastVisitCard({
+  date, active, onPress,
+}: { date: string; active: boolean; onPress: () => void }) {
+  const { dark } = useAppTheme();
+  const label = new Date(date).toLocaleDateString('sk-SK', { month: 'short', year: '2-digit' });
+  return (
+    <TouchableOpacity
+      style={[s.pastCard, {
+        backgroundColor: active ? '#2D1800' : (dark ? '#1A1209' : '#1A1A1A'),
+        borderColor: active ? '#C9A84C' : (dark ? '#3D2E22' : '#333'),
+      }]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Ionicons name="time-outline" size={11} color={active ? '#C9A84C' : '#555'} />
+      <Text style={[s.pastCardLabel, { color: active ? '#C9A84C' : '#555' }]}>{label}</Text>
+      <Ionicons name="checkmark-circle" size={10} color={active ? '#C9A84C' : '#333'} />
+    </TouchableOpacity>
+  );
+}
+
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function DentalTwinScreen() {
   const router = useRouter();
@@ -560,6 +618,8 @@ export default function DentalTwinScreen() {
   const [selected,      setSelected]      = useState<number | null>(null);
   const [showModal,     setShowModal]     = useState(false);
   const [showConsent,   setShowConsent]   = useState(false);
+  const [pastVisits,    setPastVisits]    = useState<{ date: string; teeth: Record<number, ToothStatus> }[]>([]);
+  const [selectedVisit, setSelectedVisit] = useState<number>(-1); // -1 = current/predicted
 
   const [risk, setRisk] = useState<RiskFactors>({
     smoking: false, diabetes: false, bruxism: false, hygiene: 7,
@@ -594,7 +654,43 @@ export default function DentalTwinScreen() {
     [rawTeeth, risk],
   );
 
-  const currentTeeth = snapshots[year]?.teeth ?? rawTeeth;
+  // Krok 4 — uložiť predikcie do dental_snapshots (background)
+  useEffect(() => {
+    if (loading || Object.keys(rawTeeth).length === 0) return;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) saveSnapshotsToDb(user.id, snapshots, risk).catch(() => {});
+    });
+  }, [snapshots]);
+
+  // Krok 5 — načítať reálne historické snapshoty (minulé návštevy)
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user || cancelled) return;
+      supabase
+        .from('dental_snapshots')
+        .select('snapshot_date, tooth_states')
+        .eq('patient_id', user.id)
+        .eq('snapshot_type', 'real')
+        .order('snapshot_date', { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          if (cancelled || !data) return;
+          // De-duplikuj podľa dátumu — berieme len najnovší snapshot za deň
+          const seen = new Set<string>();
+          const visits = data
+            .filter(r => { if (seen.has(r.snapshot_date)) return false; seen.add(r.snapshot_date); return true; })
+            .map(r => ({ date: r.snapshot_date, teeth: r.tooth_states as Record<number, ToothStatus> }));
+          setPastVisits(visits);
+        });
+    });
+    return () => { cancelled = true; };
+  }, [rawTeeth]);
+
+  // displayTeeth: historická návšteva > predikovaný rok > aktuálny stav
+  const currentTeeth = selectedVisit >= 0
+    ? (pastVisits[selectedVisit]?.teeth ?? rawTeeth)
+    : (snapshots[year]?.teeth ?? rawTeeth);
   const score        = useMemo(() => calcScore(rawTeeth), [rawTeeth]);
   const info         = scoreInfo(score);
 
@@ -699,8 +795,15 @@ export default function DentalTwinScreen() {
 
           {/* ── Quadrant Grid ── */}
           <View style={s.section}>
-            {/* Year-change banner — viditeľný keď nie sme v roku 0 */}
-            {year === 0 ? (
+            {/* Banner: história / aktuálny stav / predikcia */}
+            {selectedVisit >= 0 ? (
+              <View style={[s.yearBanner, { borderColor: 'rgba(201,168,76,0.3)', backgroundColor: 'rgba(201,168,76,0.08)' }]}>
+                <Ionicons name="time-outline" size={13} color="#C9A84C" />
+                <Text style={[s.yearBannerTxt, { color: '#C9A84C' }]}>
+                  HISTÓRIA: {new Date(pastVisits[selectedVisit]?.date ?? '').toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </Text>
+              </View>
+            ) : year === 0 ? (
               <Text style={s.sectionLabel}>VÁŠ CHRUP — AKTUÁLNY STAV</Text>
             ) : (
               <View style={s.yearBanner}>
@@ -719,22 +822,49 @@ export default function DentalTwinScreen() {
             <Text style={s.tapHint}>Klepni na bodku pre detail zuba</Text>
           </View>
 
-          {/* ── 5-ročný výhľad (horizontal cards) ── */}
+          {/* ── Timeline: minulosť ← DNES → predikcia ── */}
           <View style={s.section}>
-            <Text style={s.sectionLabel}>5-ROČNÝ VÝHĽAD</Text>
+            <Text style={s.sectionLabel}>ČASOVÁ OS</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
             >
+              {/* Minulosť — reálne snapshoty z návštev */}
+              {pastVisits.length > 0 && (
+                <>
+                  {[...pastVisits].reverse().map((visit, i) => (
+                    <PastVisitCard
+                      key={visit.date}
+                      date={visit.date}
+                      active={selectedVisit === (pastVisits.length - 1 - i)}
+                      onPress={() => {
+                        const idx = pastVisits.length - 1 - i;
+                        setSelectedVisit(idx === selectedVisit ? -1 : idx);
+                        setYear(0);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                    />
+                  ))}
+                  {/* Oddeľovač minulosť / prítomnosť */}
+                  <View style={s.timelineSep}>
+                    <View style={s.timelineLine} />
+                    <Ionicons name="radio-button-on" size={10} color="#C9A84C" />
+                    <View style={s.timelineLine} />
+                  </View>
+                </>
+              )}
+
+              {/* Prítomnosť + predikcia */}
               {snapshots.map((snap, i) => (
                 <YearCard
                   key={i}
                   year={i}
                   newIssues={snap.newIssues.length}
                   cumCost={snap.cumulativeCost}
-                  active={year === i}
+                  active={selectedVisit === -1 && year === i}
                   onPress={() => {
+                    setSelectedVisit(-1);
                     setYear(i);
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }}
@@ -943,6 +1073,12 @@ const s = StyleSheet.create({
   yearCardLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1 },
   yearCardIssues:{ fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 26 },
   yearCardCost:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
+
+  // Past visit cards + timeline
+  pastCard:      { alignItems: 'center', justifyContent: 'center', gap: 3, borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
+  pastCardLabel: { fontSize: 10, fontFamily: 'DMSans_500Medium' },
+  timelineSep:   { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 2 },
+  timelineLine:  { width: 12, height: 1, backgroundColor: '#333' },
 
   // Year detail / Counter panel
   yearOK:            { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 12, padding: 12 },
