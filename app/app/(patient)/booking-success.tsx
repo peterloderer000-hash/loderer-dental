@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../../styles/theme';
 import { addToCalendar } from '../../utils/calendarSync';
+import { useAppTheme } from '../../context/ThemeContext';
 
 export default function BookingSuccessScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const {
     serviceName, serviceEmoji, date, time, doctorName,
     price, duration, notes, isUrgent, familyName,
@@ -74,7 +76,7 @@ export default function BookingSuccessScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
       <Animated.View style={{ flex: 1, opacity }}>
         <ScrollView
           contentContainerStyle={styles.container}
@@ -90,22 +92,22 @@ export default function BookingSuccessScreen() {
           </Animated.View>
 
           {/* Titulok */}
-          <Text style={styles.title}>Žiadosť odoslaná!</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Žiadosť odoslaná!</Text>
           <View style={styles.serviceRow}>
             <Text style={styles.serviceEmoji}>{serviceEmoji ?? '🦷'}</Text>
-            <Text style={styles.serviceName}>{serviceName}</Text>
+            <Text style={[styles.serviceName, { color: colors.textSecondary }]}>{serviceName}</Text>
           </View>
 
           {/* Detail karta */}
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             {rows.map((r, idx) => (
-              <View key={r.label} style={[styles.row, idx === rows.length - 1 && { borderBottomWidth: 0 }]}>
-                <View style={styles.rowIcon}>
+              <View key={r.label} style={[styles.row, { borderBottomColor: colors.bg3 }, idx === rows.length - 1 && { borderBottomWidth: 0 }]}>
+                <View style={[styles.rowIcon, { backgroundColor: colors.bg2 }]}>
                   <Ionicons name={r.icon} size={16} color={COLORS.wal} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.rowLabel}>{r.label}</Text>
-                  <Text style={styles.rowValue} numberOfLines={2}>{r.value}</Text>
+                  <Text style={[styles.rowLabel, { color: colors.textSecondary }]}>{r.label}</Text>
+                  <Text style={[styles.rowValue, { color: colors.textPrimary }]} numberOfLines={2}>{r.value}</Text>
                 </View>
               </View>
             ))}
@@ -130,7 +132,7 @@ export default function BookingSuccessScreen() {
           {/* Pridať do Kalendára */}
           {!!appointmentIso && (
             <TouchableOpacity
-              style={[styles.btnShare, calAdded && { borderColor: '#27AE60', backgroundColor: '#EAFAF1' }]}
+              style={[styles.btnShare, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, calAdded && { borderColor: '#27AE60', backgroundColor: '#EAFAF1' }]}
               onPress={handleAddToCalendar}
               activeOpacity={0.85}
               disabled={calAdded || calLoading}
@@ -142,24 +144,24 @@ export default function BookingSuccessScreen() {
                     size={16}
                     color={calAdded ? '#27AE60' : COLORS.wal}
                   />}
-              <Text style={[styles.btnShareText, calAdded && { color: '#27AE60' }]}>
+              <Text style={[styles.btnShareText, { color: colors.textSecondary }, calAdded && { color: '#27AE60' }]}>
                 {calAdded ? 'Pridané do kalendára' : 'Pridať do Google Kalendára'}
               </Text>
             </TouchableOpacity>
           )}
 
           {/* Zdieľať */}
-          <TouchableOpacity style={styles.btnShare} onPress={handleShare} activeOpacity={0.85}>
+          <TouchableOpacity style={[styles.btnShare, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={handleShare} activeOpacity={0.85}>
             <Ionicons name="share-social-outline" size={16} color={COLORS.wal} />
-            <Text style={styles.btnShareText}>Zdieľať termín</Text>
+            <Text style={[styles.btnShareText, { color: colors.textSecondary }]}>Zdieľať termín</Text>
           </TouchableOpacity>
 
           {/* Akcie */}
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.btnSecondary}
+            <TouchableOpacity style={[styles.btnSecondary, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
               onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.85}>
               <Ionicons name="list-outline" size={16} color={COLORS.wal} />
-              <Text style={styles.btnSecondaryText}>Moje termíny</Text>
+              <Text style={[styles.btnSecondaryText, { color: colors.textSecondary }]}>Moje termíny</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnPrimary}
               onPress={() => router.push('/')} activeOpacity={0.85}>

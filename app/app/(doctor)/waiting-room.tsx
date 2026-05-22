@@ -1,6 +1,6 @@
 /**
  * Čakáreň — recepcia/doktor
- * waiting → Zavolať (room picker → chair_start_at) → Ukončiť (treatment_end_at)
+ * waiting → Zavolať (room picker → started_at) → Ukončiť (ended_at)
  */
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -14,13 +14,14 @@ import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Patient = {
   id: string;
   appointment_date: string;
-  arrived_at: string | null;
-  chair_start_at: string | null;
-  room_id: string | null;
+  arrived_at:  string | null;
+  started_at:  string | null;
+  room_id:     string | null;
   room_name: string | null;
   clinic_status: string;
   patient: { full_name: string } | null;
@@ -39,6 +40,7 @@ function fmtTime(iso: string) {
 
 export default function WaitingRoomScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [waiting,    setWaiting]    = useState<Patient[]>([]);
   const [inChair,    setInChair]    = useState<Patient[]>([]);
   const [rooms,      setRooms]      = useState<Room[]>([]);
@@ -54,7 +56,7 @@ export default function WaitingRoomScreen() {
     const [{ data: appts }, { data: roomData }] = await Promise.all([
       supabase
         .from('appointments')
-        .select('id, appointment_date, arrived_at, chair_start_at, room_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
+        .select('id, appointment_date, arrived_at, started_at, room_id, clinic_status, patient:profiles!appointments_patient_id_fkey(full_name), service:services(name, emoji)')
         .in('clinic_status', ['waiting', 'in_chair'])
         .order('arrived_at', { ascending: true }),
       supabase.from('clinic_rooms').select('id, name, color').eq('is_active', true).order('sort_order'),
@@ -65,8 +67,8 @@ export default function WaitingRoomScreen() {
     const mapped = (appts ?? []).map((r: any) => ({
       id:               r.id,
       appointment_date: r.appointment_date,
-      arrived_at:       r.arrived_at,
-      chair_start_at:   r.chair_start_at,
+      arrived_at:  r.arrived_at,
+      started_at:  r.started_at,
       room_id:          r.room_id,
       room_name:        rData.find((rm) => rm.id === r.room_id)?.name ?? null,
       clinic_status:    r.clinic_status,
@@ -101,9 +103,9 @@ export default function WaitingRoomScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSaving(true);
     await supabase.from('appointments').update({
-      clinic_status:  'in_chair',
-      chair_start_at: new Date().toISOString(),
-      room_id:        roomId,
+      clinic_status: 'in_chair',
+      started_at:    new Date().toISOString(),
+      room_id:       roomId,
     }).eq('id', pickerApptId);
     setSaving(false);
     setPickerOpen(false);
@@ -115,9 +117,9 @@ export default function WaitingRoomScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSaving(true);
     await supabase.from('appointments').update({
-      clinic_status:    'treatment_done',
-      treatment_end_at: new Date().toISOString(),
-      status:           'completed',
+      clinic_status: 'treatment_done',
+      ended_at:      new Date().toISOString(),
+      status:        'completed',
     }).eq('id', apptId);
     setSaving(false);
     load();
@@ -145,37 +147,37 @@ export default function WaitingRoomScreen() {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={4} />
         </View>
       ) : total === 0 ? (
-        <View style={s.center}>
+        <View style={[s.center, { backgroundColor: colors.bg2 }]}>
           <Text style={s.emptyIcon}>🏥</Text>
-          <Text style={s.emptyTitle}>Čakáreň je prázdna</Text>
-          <Text style={s.emptySub}>Žiadni pacienti momentálne nečakajú</Text>
+          <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Čakáreň je prázdna</Text>
+          <Text style={[s.emptySub, { color: colors.textSecondary }]}>Žiadni pacienti momentálne nečakajú</Text>
         </View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 
           {/* ── V ordinácii ── */}
           {inChair.length > 0 && (
             <>
               <View style={s.sectionHeader}>
                 <View style={[s.sectionDot, { backgroundColor: '#2ECC71' }]} />
-                <Text style={s.sectionLabel}>V ORDINÁCII ({inChair.length})</Text>
+                <Text style={[s.sectionLabel, { color: colors.textSecondary }]}>V ORDINÁCII ({inChair.length})</Text>
               </View>
               {inChair.map((p) => {
-                const treatMin = waitMins(p.chair_start_at);
+                const treatMin = waitMins(p.started_at);
                 return (
-                  <View key={p.id} style={[s.card, s.cardInProgress]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#0D3B1F' : '#F0FAF4', borderColor: dark ? '#2ECC7155' : '#A9DFBF' }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, { backgroundColor: '#1E8449' }]}>
                         <Ionicons name="medical" size={18} color="#fff" />
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={s.name}>{p.patient?.full_name ?? 'Pacient'}</Text>
+                        <Text style={[s.name, { color: colors.textPrimary }]}>{p.patient?.full_name ?? 'Pacient'}</Text>
                         {p.service && (
-                          <Text style={s.service}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
+                          <Text style={[s.service, { color: colors.textSecondary }]}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
                         )}
                         {p.room_name && (
                           <View style={s.roomBadge}>
@@ -209,21 +211,21 @@ export default function WaitingRoomScreen() {
             <>
               <View style={s.sectionHeader}>
                 <View style={[s.sectionDot, { backgroundColor: COLORS.gold }]} />
-                <Text style={s.sectionLabel}>ČAKÁ ({waiting.length})</Text>
+                <Text style={[s.sectionLabel, { color: colors.textSecondary }]}>ČAKÁ ({waiting.length})</Text>
               </View>
               {waiting.map((p, idx) => {
                 const mins = waitMins(p.arrived_at);
                 const isLong = mins >= 20;
                 return (
-                  <View key={p.id} style={[s.card, isLong && s.cardUrgent]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: isLong ? (dark ? '#3B0D0D' : '#FFF8F8') : colors.cardBg, borderColor: isLong ? '#F1948A' : colors.bg3 }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, isLong && { backgroundColor: '#C0392B' }]}>
                         <Text style={s.numText}>{idx + 1}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
-                        <Text style={s.name}>{p.patient?.full_name ?? 'Pacient'}</Text>
+                        <Text style={[s.name, { color: colors.textPrimary }]}>{p.patient?.full_name ?? 'Pacient'}</Text>
                         {p.service && (
-                          <Text style={s.service}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
+                          <Text style={[s.service, { color: colors.textSecondary }]}>{p.service.emoji ?? '🦷'} {p.service.name}</Text>
                         )}
                         <Text style={s.apptTime}>Termín: {fmtTime(p.appointment_date)}</Text>
                       </View>
@@ -251,17 +253,17 @@ export default function WaitingRoomScreen() {
         </ScrollView>
       )}
 
-      <View style={s.footer}>
-        <Ionicons name="sync-outline" size={11} color={COLORS.wal} />
-        <Text style={s.footerText}>Živá aktualizácia cez Supabase Realtime</Text>
+      <View style={[s.footer, { backgroundColor: colors.bg3, borderTopColor: colors.bg3 }]}>
+        <Ionicons name="sync-outline" size={11} color={colors.textSecondary} />
+        <Text style={[s.footerText, { color: colors.textSecondary }]}>Živá aktualizácia cez Supabase Realtime</Text>
       </View>
 
       {/* ── Room picker modal ── */}
       <Modal visible={pickerOpen} transparent animationType="slide" onRequestClose={() => setPickerOpen(false)}>
         <View style={s.modalOverlay}>
-          <View style={s.modalCard}>
-            <Text style={s.modalTitle}>Vyber kreslo</Text>
-            <Text style={s.modalSub}>Pacient bude presunutý do ordinácie</Text>
+          <View style={[s.modalCard, { backgroundColor: colors.cardBg }]}>
+            <Text style={[s.modalTitle, { color: colors.textPrimary }]}>Vyber kreslo</Text>
+            <Text style={[s.modalSub, { color: colors.textSecondary }]}>Pacient bude presunutý do ordinácie</Text>
             {rooms.length === 0 && (
               <Text style={{ color: COLORS.wal, textAlign: 'center', marginVertical: 12 }}>
                 Žiadne kreslá nie sú definované.
@@ -281,7 +283,7 @@ export default function WaitingRoomScreen() {
               </TouchableOpacity>
             ))}
             <TouchableOpacity style={s.cancelBtn} onPress={() => setPickerOpen(false)}>
-              <Text style={s.cancelBtnText}>Zrušiť</Text>
+              <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
           </View>
         </View>

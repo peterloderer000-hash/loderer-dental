@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+
+  <!-- ── Pozadie: espresso rounded square ── -->
+  <rect width="1024" height="1024" rx="220" fill="#2C1F14"/>
+
+  <!-- ── Jemná zlatá textúra / vignette ── -->
+  <radialGradient id="vignette" cx="50%" cy="40%" r="55%">
+    <stop offset="0%" stop-color="#3D2C1E"/>
+    <stop offset="100%" stop-color="#1A110A"/>
+  </radialGradient>
+  <rect width="1024" height="1024" rx="220" fill="url(#vignette)" opacity="0.6"/>
+
+  <!-- ── Zlaté dekoratívne linky ── -->
+  <rect x="332" y="158" width="360" height="3" rx="1.5" fill="#C9A84C" opacity="0.7"/>
+  <rect x="332" y="863" width="360" height="3" rx="1.5" fill="#C9A84C" opacity="0.7"/>
+
+  <!-- ── Zub — koruna + korene (zlatá) ── -->
+  <path fill="#C9A84C" d="
+    M 512 218
+    C 452 218 400 238 368 272
+    C 336 306 322 352 325 396
+    C 328 435 345 470 365 500
+    C 382 526 390 554 384 582
+    C 376 614 362 656 367 696
+    C 371 730 392 756 418 754
+    C 442 752 455 730 461 700
+    C 468 666 472 632 488 610
+    C 499 595 505 588 512 588
+    C 519 588 525 595 536 610
+    C 552 632 556 666 563 700
+    C 569 730 582 752 606 754
+    C 632 756 653 730 657 696
+    C 662 656 648 614 640 582
+    C 634 554 642 526 659 500
+    C 679 470 696 435 699 396
+    C 702 352 688 306 656 272
+    C 624 238 572 218 512 218 Z
+  "/>
+
+  <!-- ── Lesk / shine na zube ── -->
+  <path fill="#E8D5B0" opacity="0.18" d="
+    M 415 262
+    C 388 282 370 310 362 342
+    C 375 316 394 294 418 280
+    C 438 268 460 262 478 260
+    C 458 256 435 256 415 262 Z
+  "/>
+
+  <!-- ── "LODERER" text ── -->
+  <text
+    x="512" y="930"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="62"
+    font-weight="400"
+    letter-spacing="14"
+    text-anchor="middle"
+    fill="#C9A84C"
+    opacity="0.92"
+  >LODERER</text>
+
+  <!-- ── "DENTAL" podnadpis ── -->
+  <text
+    x="512" y="88"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="36"
+    font-weight="400"
+    letter-spacing="18"
+    text-anchor="middle"
+    fill="#C4A882"
+    opacity="0.75"
+  >DENTAL</text>
+
+</svg>

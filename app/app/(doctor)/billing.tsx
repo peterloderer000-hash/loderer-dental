@@ -4,12 +4,13 @@
  */
 import React, { useState, useCallback, useMemo } from 'react';
 import {
-  Alert, RefreshControl, ScrollView,
+  Alert, Modal, RefreshControl, ScrollView, TextInput,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
@@ -63,14 +64,18 @@ function getPeriodRange(period: Period): { from: Date | null; to: Date | null } 
 }
 
 export default function BillingScreen() {
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const router = useRouter();
-  const [appts,      setAppts]      = useState<BillingAppt[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [doctorName, setDoctorName] = useState('MDDr. Loderer');
-  const [period,     setPeriod]     = useState<Period>('month');
-  const [payFilter,  setPayFilter]  = useState<PayFilter>('all');
+  const [appts,        setAppts]        = useState<BillingAppt[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [refreshing,   setRefreshing]   = useState(false);
+  const [doctorName,   setDoctorName]   = useState('MDDr. Loderer');
+  const [period,       setPeriod]       = useState<Period>('month');
+  const [payFilter,    setPayFilter]    = useState<PayFilter>('all');
+  // Splátkový plán kalkulátor
+  const [showPlanCalc, setShowPlanCalc] = useState(false);
+  const [planTotal,    setPlanTotal]    = useState('');
+  const [planMonths,   setPlanMonths]   = useState(6);
 
   async function load() {
     try {
@@ -135,6 +140,7 @@ export default function BillingScreen() {
     const next = PAY_CFG[appt.payment_status]?.next ?? 'paid';
     const { error } = await supabase.from('appointments').update({ payment_status: next }).eq('id', appt.id);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setAppts(prev => prev.map(a => a.id === appt.id ? { ...a, payment_status: next } : a));
     // Notifikuj pacienta pri potvrdení platby
     if (next === 'paid') {
@@ -187,14 +193,14 @@ export default function BillingScreen() {
         <View style={[styles.summaryCard, dyn.card]}>
           <View style={styles.summaryRow}>
             {/* Príjem */}
-            <View style={[styles.summaryBox, { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
+            <View style={[styles.summaryBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
               <Text style={styles.summaryIcon}>💰</Text>
-              <Text style={[styles.summaryAmt, { color: '#1E8449' }]}>{summary.paidTotal} €</Text>
-              <Text style={[styles.summaryLabel, { color: '#1E8449' }]}>Príjem</Text>
-              <Text style={[styles.summaryCount, { color: '#1E8449' }]}>{summary.paidCount} {pluralizeAppointments(summary.paidCount)}</Text>
+              <Text style={[styles.summaryAmt, { color: dark ? '#27AE60' : '#1E8449' }]}>{summary.paidTotal} €</Text>
+              <Text style={[styles.summaryLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Príjem</Text>
+              <Text style={[styles.summaryCount, { color: dark ? '#27AE60' : '#1E8449' }]}>{summary.paidCount} {pluralizeAppointments(summary.paidCount)}</Text>
             </View>
             {/* Pohľadávky */}
-            <View style={[styles.summaryBox, { backgroundColor: '#FDEDEC', borderColor: '#F5B7B1' }]}>
+            <View style={[styles.summaryBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
               <Text style={styles.summaryIcon}>💸</Text>
               <Text style={[styles.summaryAmt, { color: '#922B21' }]}>{summary.unpaidTotal} €</Text>
               <Text style={[styles.summaryLabel, { color: '#922B21' }]}>Pohľadávky</Text>
@@ -205,7 +211,7 @@ export default function BillingScreen() {
           {/* Celková miera úhrady */}
           {summary.total > 0 && (
             <View style={styles.rateRow}>
-              <Text style={styles.rateLabel}>Miera úhrady</Text>
+              <Text style={[styles.rateLabel, dyn.sub]}>Miera úhrady</Text>
               <View style={styles.rateTrack}>
                 <View style={[styles.rateFill, {
                   width: `${Math.round((summary.paidCount / summary.total) * 100)}%` as any
@@ -225,7 +231,7 @@ export default function BillingScreen() {
             <TouchableOpacity key={p}
               style={[styles.periodTab, dyn.card, period === p && styles.periodTabActive]}
               onPress={() => setPeriod(p)} activeOpacity={0.8}>
-              <Text style={[styles.periodTabText, period === p && styles.periodTabTextActive]}>
+              <Text style={[styles.periodTabText, dyn.sub, period === p && styles.periodTabTextActive]}>
                 {PERIOD_LABELS[p]}
               </Text>
             </TouchableOpacity>
@@ -241,7 +247,7 @@ export default function BillingScreen() {
               <TouchableOpacity key={f.key}
                 style={[styles.payFilterTab, dyn.card, active && { backgroundColor: cfg?.color ?? COLORS.wal, borderColor: cfg?.color ?? COLORS.wal }]}
                 onPress={() => setPayFilter(f.key)} activeOpacity={0.8}>
-                <Text style={[styles.payFilterText, active && { color: '#fff' }]}>{f.label}</Text>
+                <Text style={[styles.payFilterText, dyn.sub, active && { color: '#fff' }]}>{f.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -265,7 +271,7 @@ export default function BillingScreen() {
                 {/* Dátum */}
                 <View style={styles.dateBox}>
                   <Text style={[styles.dateDay, dyn.text]}>{d.getDate()}</Text>
-                  <Text style={styles.dateMon}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
+                  <Text style={[styles.dateMon, dyn.sub]}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
                 </View>
 
                 {/* Info */}
@@ -287,7 +293,7 @@ export default function BillingScreen() {
 
                 {/* Platba badge — kliknuteľné */}
                 <TouchableOpacity
-                  style={[styles.payBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}
+                  style={[styles.payBadge, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.border }]}
                   onPress={() => handleTogglePayment(a)}
                   activeOpacity={0.75}>
                   <Text style={styles.payBadgeIcon}>{cfg.icon}</Text>
@@ -307,6 +313,61 @@ export default function BillingScreen() {
 
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* FAB — splátkový plán */}
+      <TouchableOpacity style={styles.fab} onPress={() => setShowPlanCalc(true)} activeOpacity={0.85}>
+        <Ionicons name="calculator-outline" size={22} color="#fff" />
+        <Text style={styles.fabText}>Splátkový plán</Text>
+      </TouchableOpacity>
+
+      {/* Splátkový kalkulátor modal */}
+      <Modal visible={showPlanCalc} transparent animationType="slide" onRequestClose={() => setShowPlanCalc(false)}>
+        <TouchableOpacity style={styles.planOverlay} onPress={() => setShowPlanCalc(false)} activeOpacity={1}>
+          <TouchableOpacity style={[styles.planSheet, { backgroundColor: colors.cardBg }]} onPress={() => {}} activeOpacity={1}>
+            <View style={[styles.planHandle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[styles.planTitle, { color: colors.textPrimary }]}>💳 Splátkový plán</Text>
+
+            <Text style={[styles.planLabel, { color: colors.textSecondary }]}>Celková suma (€)</Text>
+            <TextInput
+              style={[styles.planInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+              value={planTotal}
+              onChangeText={setPlanTotal}
+              keyboardType="numeric"
+              placeholder="napr. 500"
+              placeholderTextColor={dark ? '#666' : '#aaa'}
+            />
+
+            <Text style={[styles.planLabel, { color: colors.textSecondary }]}>Počet splátok</Text>
+            <View style={styles.planMonthsRow}>
+              {[3, 6, 12, 24].map(n => (
+                <TouchableOpacity
+                  key={n}
+                  style={[styles.planMonthBtn, { borderColor: colors.bg3, backgroundColor: planMonths === n ? COLORS.esp : colors.bg2 }]}
+                  onPress={() => setPlanMonths(n)} activeOpacity={0.8}
+                >
+                  <Text style={[styles.planMonthText, { color: planMonths === n ? '#FAF6F0' : colors.textSecondary }]}>{n}x</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {planTotal && !isNaN(parseFloat(planTotal)) && (
+              <View style={[styles.planResult, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A5276' : '#AED6F1' }]}>
+                <Text style={[styles.planResultLabel, { color: dark ? '#5DADE2' : COLORS.info }]}>Mesačná splátka</Text>
+                <Text style={[styles.planResultAmt, { color: dark ? '#5DADE2' : COLORS.info }]}>
+                  {(parseFloat(planTotal) / planMonths).toFixed(2).replace('.', ',')} € / mesiac
+                </Text>
+                <Text style={[styles.planResultSub, { color: colors.textSecondary }]}>
+                  {planMonths}× splátka · celkovo {parseFloat(planTotal).toFixed(2).replace('.', ',')} €
+                </Text>
+              </View>
+            )}
+
+            <TouchableOpacity style={[styles.planClose, { backgroundColor: COLORS.esp }]} onPress={() => setShowPlanCalc(false)} activeOpacity={0.85}>
+              <Text style={styles.planCloseText}>Zavrieť</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -347,6 +408,23 @@ const styles = StyleSheet.create({
   payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff', alignItems: 'center' },
   payFilterText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
 
+  fab:       { position: 'absolute', bottom: 90, right: 20, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 24, paddingVertical: 12, paddingHorizontal: 18, elevation: 6 },
+  fabText:   { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#fff' },
+  planOverlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  planSheet:      { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40 },
+  planHandle:     { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
+  planTitle:      { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 20 },
+  planLabel:      { fontSize: 11, fontFamily: 'DMSans_500Medium', letterSpacing: 1, marginBottom: 8 },
+  planInput:      { borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, marginBottom: 18 },
+  planMonthsRow:  { flexDirection: 'row', gap: 10, marginBottom: 20 },
+  planMonthBtn:   { flex: 1, paddingVertical: 12, borderRadius: 12, borderWidth: 1.5, alignItems: 'center' },
+  planMonthText:  { fontSize: 14, fontFamily: 'DMSans_500Medium' },
+  planResult:     { borderWidth: 1.5, borderRadius: 14, padding: 16, marginBottom: 20, alignItems: 'center' },
+  planResultLabel:{ fontSize: 12, fontFamily: 'DMSans_500Medium', marginBottom: 4 },
+  planResultAmt:  { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
+  planResultSub:  { fontSize: 12 },
+  planClose:      { paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
+  planCloseText:  { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
   empty:      { alignItems: 'center', paddingVertical: 50 },
   emptyIcon:  { fontSize: 44, marginBottom: 12 },
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = {
   id: string;
@@ -43,6 +44,7 @@ function fmtFull(d: string) {
 
 export default function DoctorMessagesScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
   const { patientId: initPatientId, patientName: initPatientName } =
     useLocalSearchParams<{ patientId?: string; patientName?: string }>();
 
@@ -55,6 +57,7 @@ export default function DoctorMessagesScreen() {
   const [messages,    setMessages]    = useState<Message[]>([]);
   const [text,        setText]        = useState('');
   const [loading,     setLoading]     = useState(true);
+  const [refreshing,  setRefreshing]  = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
   const [sending,     setSending]     = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -211,20 +214,34 @@ export default function DoctorMessagesScreen() {
         </View>
 
         {loading ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16, paddingTop: 14 }}>
+          <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 14 }}>
             <SkeletonList count={5} />
           </View>
-        ) : conversations.length === 0 ? (
-          <View style={styles.center}>
-            <Text style={{ fontSize: 48, marginBottom: 14 }}>💬</Text>
-            <Text style={styles.emptyTitle}>Žiadne správy</Text>
-            <Text style={styles.emptySub}>Pacienti vám ešte nepísali.</Text>
-          </View>
         ) : (
-          <ScrollView style={{ flex: 1, backgroundColor: COLORS.bg2 }} showsVerticalScrollIndicator={false}>
-            {conversations.map((c) => (
+          <ScrollView
+            style={{ flex: 1, backgroundColor: colors.bg2 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => {
+                  setRefreshing(true);
+                  loadConversations(myId).then(() => setRefreshing(false));
+                }}
+                tintColor={COLORS.wal}
+                colors={[COLORS.wal]}
+              />
+            }
+          >
+            {conversations.length === 0 ? (
+              <View style={[styles.center, { backgroundColor: colors.bg2, paddingTop: 80 }]}>
+                <Text style={{ fontSize: 52, marginBottom: 14 }}>💬</Text>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne správy</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Pacienti vám ešte nepísali.</Text>
+              </View>
+            ) : conversations.map((c) => (
               <TouchableOpacity key={c.patientId}
-                style={styles.convRow}
+                style={[styles.convRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
                 onPress={() => openChat(c.patientId, c.patientName)}
                 activeOpacity={0.8}>
                 <View style={styles.convAvatar}>
@@ -232,11 +249,11 @@ export default function DoctorMessagesScreen() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <View style={styles.convTopRow}>
-                    <Text style={[styles.convName, c.unreadCount > 0 && { fontWeight: '800' }]}>{c.patientName}</Text>
-                    <Text style={styles.convTime}>{fmtTime(c.lastTime)}</Text>
+                    <Text style={[styles.convName, { color: colors.textPrimary }, c.unreadCount > 0 && { fontWeight: '800' }]}>{c.patientName}</Text>
+                    <Text style={[styles.convTime, { color: colors.textSecondary }]}>{fmtTime(c.lastTime)}</Text>
                   </View>
                   <View style={styles.convBottomRow}>
-                    <Text style={[styles.convLast, c.unreadCount > 0 && { color: COLORS.esp, fontWeight: '600' }]}
+                    <Text style={[styles.convLast, { color: colors.textSecondary }, c.unreadCount > 0 && { color: COLORS.esp, fontWeight: '600' }]}
                       numberOfLines={1}>{c.lastMessage}</Text>
                     {c.unreadCount > 0 && (
                       <View style={styles.unreadBadge}>
@@ -280,7 +297,7 @@ export default function DoctorMessagesScreen() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         {chatLoading ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+          <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -288,19 +305,20 @@ export default function DoctorMessagesScreen() {
             ref={listRef}
             data={messages}
             keyExtractor={(m) => m.id}
+            style={{ backgroundColor: colors.bg2 }}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View style={styles.emptyInChat}>
-                <Text style={styles.emptySub}>Napíšte pacientovi prvú správu.</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Napíšte pacientovi prvú správu.</Text>
               </View>
             }
             renderItem={({ item }) => {
               const isMine = item.sender_id === myId;
               return (
-                <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
-                  <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>{item.body}</Text>
-                  <Text style={[styles.bubbleTime, isMine && styles.bubbleTimeMine]}>{fmtFull(item.created_at)}</Text>
+                <View style={[styles.bubble, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
+                  <Text style={[styles.bubbleText, { color: colors.textPrimary }, isMine && styles.bubbleTextMine]}>{item.body}</Text>
+                  <Text style={[styles.bubbleTime, { color: colors.textSecondary }, isMine && styles.bubbleTimeMine]}>{fmtFull(item.created_at)}</Text>
                 </View>
               );
             }}
@@ -308,36 +326,36 @@ export default function DoctorMessagesScreen() {
         )}
         {/* ── Šablóny správ ── */}
         {showTemplates && (
-          <View style={styles.templatesWrap}>
+          <View style={[styles.templatesWrap, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.templatesScroll}>
               {MESSAGE_TEMPLATES.map((t, i) => (
                 <TouchableOpacity
                   key={i}
-                  style={styles.templateChip}
+                  style={[styles.templateChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}
                   onPress={() => { setText(t.text); setShowTemplates(false); }}
                   activeOpacity={0.8}
                 >
                   <Text style={styles.templateIcon}>{t.icon}</Text>
-                  <Text style={styles.templateLabel}>{t.label}</Text>
+                  <Text style={[styles.templateLabel, { color: colors.textPrimary }]}>{t.label}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
         )}
 
-        <View style={styles.inputRow}>
+        <View style={[styles.inputRow, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
           <TouchableOpacity
-            style={[styles.templateBtn, showTemplates && styles.templateBtnActive]}
+            style={[styles.templateBtn, { backgroundColor: colors.bg3, borderColor: colors.bg3 }, showTemplates && styles.templateBtnActive]}
             onPress={() => setShowTemplates(p => !p)}
             activeOpacity={0.8}
           >
             <Ionicons name="flash-outline" size={18} color={showTemplates ? '#fff' : COLORS.wal} />
           </TouchableOpacity>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Napíšte správu..."
-            placeholderTextColor="#bbb"
+            placeholderTextColor={dark ? '#666' : '#bbb'}
             value={text}
             onChangeText={setText}
             multiline maxLength={500}

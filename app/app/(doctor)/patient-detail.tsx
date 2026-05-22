@@ -6,12 +6,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportPatientHistory, exportInvoice } from '../../utils/exportPDF';
 import type { Appointment } from '../../hooks/useAppointments';
 import { ScreenWrapper } from '../../components/ScreenWrapper';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 type ToothStatus =
@@ -32,6 +34,7 @@ type ApptRow = {
   family_member_name: string | null;
   patient_rating: number | null; patient_review: string | null;
   is_urgent: boolean;
+  arrived_at: string | null;
   service: { name: string; emoji: string | null; duration_minutes: number; price_min: number | null; price_max: number | null } | null;
   patient: { full_name: string | null; phone_number: string | null } | null;
   doctor: { full_name: string | null } | null;
@@ -147,13 +150,14 @@ const RATING_LABELS = ['', 'Veľmi zlý', 'Zlý', 'Dobrý', 'Veľmi dobrý', 'V�
 
 // ─── Dim bar (bez animácie — statická) ────────────────────────────────────────
 function DimBar({ label, score, color, emoji }: { label: string; score: number; color: string; emoji: string }) {
+  const { colors } = useAppTheme();
   const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
   const gc    = score >= 85 ? '#1E8449' : score >= 70 ? '#9A7D0A' : score >= 50 ? '#E67E22' : '#922B21';
   return (
     <View style={styles.dimRow}>
       <Text style={styles.dimEmoji}>{emoji}</Text>
-      <Text style={styles.dimLabel}>{label}</Text>
-      <View style={styles.dimTrack}>
+      <Text style={[styles.dimLabel, { color: colors.textPrimary }]}>{label}</Text>
+      <View style={[styles.dimTrack, { backgroundColor: colors.bg3 }]}>
         <View style={[styles.dimFill, { width: `${score}%`, backgroundColor: color }]} />
       </View>
       <Text style={[styles.dimScore, { color: gc }]}>{score}</Text>
@@ -167,6 +171,7 @@ function DimBar({ label, score, color, emoji }: { label: string; score: number; 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function PatientDetailScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const { patientId, patientName } = useLocalSearchParams<{ patientId: string; patientName: string }>();
 
   const [teeth,        setTeeth]        = useState<ToothRecord[]>([]);
@@ -222,7 +227,7 @@ export default function PatientDetailScreen() {
             .select('tooth_number,status,notes')
             .eq('patient_id', patientId),
           supabase.from('appointments')
-            .select('id,appointment_date,status,payment_status,doctor_notes,notes,family_member_name,patient_rating,patient_review,is_urgent,custom_duration_minutes,patient_id,doctor_id,service_id,doctor:profiles!appointments_doctor_id_fkey(full_name),patient:profiles!appointments_patient_id_fkey(full_name,phone_number),service:services(name,emoji,duration_minutes,price_min,price_max)')
+            .select('id,appointment_date,status,payment_status,doctor_notes,notes,family_member_name,patient_rating,patient_review,is_urgent,arrived_at,custom_duration_minutes,patient_id,doctor_id,service_id,doctor:profiles!appointments_doctor_id_fkey(full_name),patient:profiles!appointments_patient_id_fkey(full_name,phone_number),service:services(name,emoji,duration_minutes,price_min,price_max)')
             .eq('patient_id', patientId)
             .order('appointment_date', { ascending: false })
             .limit(50),
@@ -317,6 +322,7 @@ export default function PatientDetailScreen() {
     }
     setNotesSaving(false);
     if (error) Alert.alert('Chyba', error.message);
+    else Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }
 
   async function handleSaveApptNote(apptId: string) {
@@ -327,6 +333,7 @@ export default function PatientDetailScreen() {
       .eq('id', apptId);
     setSavingApptNote(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setAppointments((prev) =>
       prev.map((a) => a.id === apptId ? { ...a, doctor_notes: editNoteText.trim() || null } : a)
     );
@@ -395,6 +402,7 @@ export default function PatientDetailScreen() {
     });
     setNotifSending(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowNotifModal(false);
     setNotifTitle('');
     setNotifBody('');
@@ -461,7 +469,7 @@ export default function PatientDetailScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -487,31 +495,35 @@ export default function PatientDetailScreen() {
 
       {/* ── Tab bar ── */}
       {(() => {
-        const TABS: { id: typeof activeTab; label: string; icon: any; badge?: number }[] = [
-          { id: 'overview',      label: 'Prehľad',      icon: 'person-outline' },
-          { id: 'appointments',  label: 'Termíny',      icon: 'calendar-outline', badge: appointments.filter(a => a.status === 'scheduled').length || undefined },
-          { id: 'plan',          label: 'Liečba',       icon: 'list-outline' },
-          { id: 'payments',      label: 'Platby',       icon: 'card-outline', badge: unpaidCount || undefined },
-          { id: 'messages',      label: 'Správy',       icon: 'chatbubble-outline' },
-          { id: 'records',       label: 'Záznamy',      icon: 'folder-outline' },
+        const TABS: { id: typeof activeTab; label: string; badge?: number }[] = [
+          { id: 'overview',     label: 'Prehľad' },
+          { id: 'appointments', label: 'Termíny', badge: appointments.filter(a => a.status === 'scheduled').length || undefined },
+          { id: 'plan',         label: 'Liečba' },
+          { id: 'payments',     label: 'Platby',  badge: unpaidCount || undefined },
+          { id: 'messages',     label: 'Správy' },
+          { id: 'records',      label: 'Záznamy' },
         ];
         return (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={{ backgroundColor: COLORS.esp, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)' }}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 8, gap: 6 }}>
+            style={tabStyles.bar}
+            contentContainerStyle={tabStyles.barContent}>
             {TABS.map(tab => {
               const active = activeTab === tab.id;
               return (
                 <TouchableOpacity key={tab.id}
                   style={[tabStyles.tab, active && tabStyles.tabActive]}
-                  onPress={() => setActiveTab(tab.id)} activeOpacity={0.75}>
-                  <Ionicons name={tab.icon} size={13} color={active ? COLORS.gold : 'rgba(255,255,255,0.5)'} />
-                  <Text style={[tabStyles.tabText, active && tabStyles.tabTextActive]}>{tab.label}</Text>
-                  {tab.badge ? (
-                    <View style={tabStyles.tabBadge}>
-                      <Text style={tabStyles.tabBadgeText}>{tab.badge}</Text>
-                    </View>
-                  ) : null}
+                  onPress={() => setActiveTab(tab.id)}
+                  activeOpacity={0.7}>
+                  <View style={tabStyles.tabInner}>
+                    <Text style={[tabStyles.tabText, active && tabStyles.tabTextActive]}>
+                      {tab.label}
+                    </Text>
+                    {tab.badge ? (
+                      <View style={tabStyles.tabBadge}>
+                        <Text style={tabStyles.tabBadgeText}>{tab.badge}</Text>
+                      </View>
+                    ) : null}
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -519,14 +531,14 @@ export default function PatientDetailScreen() {
         );
       })()}
 
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
+      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
 
         {/* ══ TAB: PREHĽAD ══ */}
         {activeTab === 'overview' && <>
 
         {/* ── Info karta ── */}
-        <View style={styles.infoCard}>
+        <View style={[styles.infoCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.avatarWrap}>
             {avatarUrl
               ? <Image source={{ uri: avatarUrl }} style={styles.avatar} resizeMode="cover" />
@@ -540,39 +552,41 @@ export default function PatientDetailScreen() {
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.patientName}>{patientName ?? 'Pacient'}</Text>
+            <Text style={[styles.patientName, { color: colors.textPrimary }]}>{patientName ?? 'Pacient'}</Text>
             {phone && (
               <View style={styles.phoneRow}>
                 <Ionicons name="call-outline" size={12} color={COLORS.wal} />
-                <Text style={styles.phoneText}>{phone}</Text>
+                <Text style={[styles.phoneText, { color: colors.textSecondary }]}>{phone}</Text>
               </View>
             )}
             {patientAge !== null && (
               <View style={styles.phoneRow}>
                 <Ionicons name="person-outline" size={12} color={COLORS.wal} />
-                <Text style={styles.phoneText}>{patientAge} rokov</Text>
+                <Text style={[styles.phoneText, { color: colors.textSecondary }]}>{patientAge} rokov</Text>
               </View>
             )}
             {(insuranceCompany || insuranceNumber) && (
               <View style={styles.phoneRow}>
                 <Ionicons name="card-outline" size={12} color={COLORS.wal} />
-                <Text style={styles.phoneText} numberOfLines={1}>
+                <Text style={[styles.phoneText, { color: colors.textSecondary }]} numberOfLines={1}>
                   {[insuranceCompany, insuranceNumber].filter(Boolean).join(' · ')}
                 </Text>
               </View>
             )}
             <View style={styles.infoChips}>
-              <View style={[styles.chip, hasPassport ? styles.chipGreen : styles.chipOrange]}>
-                <Text style={styles.chipText}>{hasPassport ? '✓ Anamnéza' : '⚠ Bez anamnézy'}</Text>
+              <View style={[styles.chip, hasPassport ? styles.chipGreen : styles.chipOrange,
+                hasPassport ? (dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }) : (dark && { backgroundColor: '#2D2200', borderColor: '#F9E79F44' })]}>
+                <Text style={[styles.chipText, { color: colors.textPrimary }]}>{hasPassport ? '✓ Anamnéza' : '⚠ Bez anamnézy'}</Text>
               </View>
-              <View style={[styles.chip, teeth.length > 0 ? styles.chipGreen : styles.chipGray]}>
-                <Text style={styles.chipText}>{teeth.length > 0 ? `🦷 ${teeth.length} zubov` : 'Karta prázdna'}</Text>
+              <View style={[styles.chip, teeth.length > 0 ? styles.chipGreen : styles.chipGray,
+                teeth.length > 0 && dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }]}>
+                <Text style={[styles.chipText, { color: colors.textPrimary }]}>{teeth.length > 0 ? `🦷 ${teeth.length} zubov` : 'Karta prázdna'}</Text>
               </View>
             </View>
             <View style={styles.statsRow}>
-              <Text style={styles.loyaltyPts}>{loyaltyPts} bodov · {appointments.filter(a => a.status === 'completed').length} návštev</Text>
+              <Text style={[styles.loyaltyPts, { color: colors.textSecondary }]}>{loyaltyPts} bodov · {appointments.filter(a => a.status === 'completed').length} návštev</Text>
               {avgRating !== null && (
-                <View style={styles.ratingPill}>
+                <View style={[styles.ratingPill, dark && { backgroundColor: '#2D2200', borderColor: '#B7950B55' }]}>
                   <Ionicons name="star" size={10} color="#F39C12" />
                   <Text style={styles.ratingPillText}>{avgRating.toFixed(1)}</Text>
                 </View>
@@ -593,12 +607,12 @@ export default function PatientDetailScreen() {
         <View style={{ gap: 8, marginBottom: 14 }}>
           {/* Primárne akcie */}
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={[styles.actionBtn, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/dental-chart', params: { patientId, patientName } })}>
               <Ionicons name="clipboard-outline" size={22} color={COLORS.wal} />
               <Text style={styles.actionBtnText}>Zubná karta</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtn, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtn, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/patient-passport', params: { patientId, patientName } })}>
               <Ionicons name="document-text-outline" size={22} color="#1A5276" />
               <Text style={[styles.actionBtnText, { color: '#1A5276' }]}>Anamnéza</Text>
@@ -611,27 +625,27 @@ export default function PatientDetailScreen() {
           </View>
           {/* Sekundárne akcie */}
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/prescriptions', params: { patientId, patientName } })}>
               <Ionicons name="medical-outline" size={18} color="#1E8449" />
               <Text style={[styles.actionBtnSmText, { color: '#1E8449' }]}>Recepty</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => exportPatientHistory(patientName ?? 'Pacient', appointments as unknown as Appointment[])}>
               <Ionicons name="download-outline" size={18} color="#7D3C98" />
               <Text style={[styles.actionBtnSmText, { color: '#7D3C98' }]}>PDF</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/messages', params: { patientId, patientName } })}>
               <Ionicons name="chatbubble-outline" size={18} color="#1A5276" />
               <Text style={[styles.actionBtnSmText, { color: '#1A5276' }]}>Správa</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/patient-attachments', params: { patientId, patientName } })}>
               <Ionicons name="attach-outline" size={18} color="#784212" />
               <Text style={[styles.actionBtnSmText, { color: '#784212' }]}>Prílohy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1 }]} activeOpacity={0.8}
+            <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => { setNotifTitle(''); setNotifBody(''); setShowNotifModal(true); }}>
               <Ionicons name="notifications-outline" size={18} color="#0E6655" />
               <Text style={[styles.actionBtnSmText, { color: '#0E6655' }]}>Notif.</Text>
@@ -642,16 +656,16 @@ export default function PatientDetailScreen() {
         {/* ── Plán liečby + Súhlasy ── */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           <TouchableOpacity
-            style={[styles.planBtn, { flex: 1, marginBottom: 0 }]}
+            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF44' }]}
             activeOpacity={0.8}
             onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId, patientName } })}
           >
-            <Ionicons name="list-outline" size={17} color="#1E8449" />
-            <Text style={styles.planBtnText}>Plán liečby</Text>
-            <Ionicons name="chevron-forward-outline" size={14} color="#1E8449" style={{ marginLeft: 'auto' }} />
+            <Ionicons name="list-outline" size={17} color={dark ? '#27AE60' : '#1E8449'} />
+            <Text style={[styles.planBtnText, dark && { color: '#27AE60' }]}>Plán liečby</Text>
+            <Ionicons name="chevron-forward-outline" size={14} color={dark ? '#27AE60' : '#1E8449'} style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.planBtn, { flex: 1, marginBottom: 0, backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
+            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark ? { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' } : { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
             activeOpacity={0.8}
             onPress={() => router.push('/(doctor)/consent-forms')}
           >
@@ -663,12 +677,12 @@ export default function PatientDetailScreen() {
 
         {/* ── KRITICKÉ UPOZORNENIA ── */}
         {crit && (crit.allergies || crit.isPregnant || (crit.medicalHistory && crit.medicalHistory.length > 0) || crit.bloodType) && (
-          <View style={styles.critBox}>
+          <View style={[styles.critBox, dark && { backgroundColor: '#4A1010', borderColor: '#C0392B55' }]}>
             <View style={styles.critHeader}>
               <Ionicons name="warning" size={15} color="#C0392B" />
               <Text style={styles.critTitle}>KRITICKÉ ÚDAJE</Text>
               {crit.bloodType && (
-                <View style={styles.critBlood}>
+                <View style={[styles.critBlood, dark && { backgroundColor: '#3B0D0D' }]}>
                   <Text style={styles.critBloodText}>🩸 {crit.bloodType}</Text>
                 </View>
               )}
@@ -702,9 +716,9 @@ export default function PatientDetailScreen() {
         )}
 
         {/* ── Dentálne skóre ── */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.cardTitleRow}>
-            <Text style={styles.cardTitle}>DENTÁLNE SKÓRE</Text>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>DENTÁLNE SKÓRE</Text>
             <View style={[styles.scoreCircleMini, { borderColor: scoreCol }]}>
               <Text style={[styles.scoreCircleNum, { color: scoreCol }]}>{overall}</Text>
             </View>
@@ -725,8 +739,8 @@ export default function PatientDetailScreen() {
 
         {/* ── Rozklad chrupu ── */}
         {teeth.length > 0 && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>STAV CHRUPU ({teeth.length} zubov)</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>STAV CHRUPU ({teeth.length} zubov)</Text>
             <View style={styles.teethGrid}>
               {(Object.entries(statusCounts) as [ToothStatus, number][])
                 .sort(([, a], [, b]) => b - a)
@@ -754,9 +768,9 @@ export default function PatientDetailScreen() {
         )}
 
         {/* ── Poisťovňa ── */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.cardTitleRow}>
-            <Text style={styles.cardTitle}>POISŤOVŇA</Text>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>POISŤOVŇA</Text>
             <TouchableOpacity onPress={() => setShowInsEdit(v => !v)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Ionicons name={showInsEdit ? 'close-circle-outline' : 'create-outline'} size={16} color={COLORS.wal} />
             </TouchableOpacity>
@@ -764,18 +778,18 @@ export default function PatientDetailScreen() {
           {showInsEdit ? (
             <>
               <TextInput
-                style={styles.notesInput}
+                style={[styles.notesInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={insuranceCompany}
                 onChangeText={setInsuranceCompany}
                 placeholder="Názov poisťovne (napr. VšZP, Dôvera...)"
-                placeholderTextColor="#999"
+                placeholderTextColor={dark ? '#666' : '#999'}
               />
               <TextInput
-                style={[styles.notesInput, { marginTop: 8 }]}
+                style={[styles.notesInput, { marginTop: 8, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={insuranceNumber}
                 onChangeText={setInsuranceNumber}
                 placeholder="Číslo poistenca"
-                placeholderTextColor="#999"
+                placeholderTextColor={dark ? '#666' : '#999'}
                 keyboardType="numeric"
               />
               <TouchableOpacity
@@ -790,27 +804,27 @@ export default function PatientDetailScreen() {
               </TouchableOpacity>
             </>
           ) : (insuranceCompany || insuranceNumber) ? (
-            <View style={styles.insRow}>
+            <View style={[styles.insRow, { backgroundColor: colors.bg2 }]}>
               <Ionicons name="card-outline" size={14} color={COLORS.wal} />
-              <Text style={styles.insText}>
+              <Text style={[styles.insText, { color: colors.textPrimary }]}>
                 {insuranceCompany || '—'}
                 {insuranceNumber ? `  ·  č. ${insuranceNumber}` : ''}
               </Text>
             </View>
           ) : (
-            <Text style={styles.emptyText}>Poisťovňa nezadaná — klepni na ceruzku</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Poisťovňa nezadaná — klepni na ceruzku</Text>
           )}
         </View>
 
         {/* ── Trvalá poznámka k pacientovi ── */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>POZNÁMKA K PACIENTOVI</Text>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>POZNÁMKA K PACIENTOVI</Text>
           <TextInput
-            style={styles.notesInput}
+            style={[styles.notesInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={patientNote}
             onChangeText={setPatientNote}
             placeholder="Trvalé info o pacientovi (viditeľné pre všetkých doktorov)..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -828,20 +842,20 @@ export default function PatientDetailScreen() {
         </View>
 
         {/* ── Interné poznámky doktora ── */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.cardTitleRow}>
-            <Text style={styles.cardTitle}>INTERNÉ POZNÁMKY</Text>
-            <View style={styles.notesPrivateBadge}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>INTERNÉ POZNÁMKY</Text>
+            <View style={[styles.notesPrivateBadge, dark && { backgroundColor: '#0D2233', borderColor: '#AED6F133' }]}>
               <Ionicons name="lock-closed" size={9} color="#1A5276" />
               <Text style={styles.notesPrivateText}>Len pre teba</Text>
             </View>
           </View>
           <TextInput
-            style={styles.notesInput}
+            style={[styles.notesInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={doctorNotes}
             onChangeText={setDoctorNotes}
             placeholder="Alergie, poznámky k liečbe, interné upozornenia..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -866,10 +880,10 @@ export default function PatientDetailScreen() {
 
         {/* ══ TAB: TERMÍNY ══ */}
         {activeTab === 'appointments' && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>HISTÓRIA TERMÍNOV</Text>
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>HISTÓRIA TERMÍNOV</Text>
           {appointments.length === 0 ? (
-            <Text style={styles.emptyText}>Žiadne termíny</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Žiadne termíny</Text>
           ) : (
             appointments.map((a, i) => {
               const st = APPT_STATUS[a.status] ?? APPT_STATUS.scheduled;
@@ -879,14 +893,14 @@ export default function PatientDetailScreen() {
               const canAct    = (a.status === 'scheduled' || a.status === 'pending') && isFuture;
               return (
                 <View key={a.id} style={[styles.apptRow, i === appointments.length - 1 && { borderBottomWidth: 0 }]}>
-                  <View style={styles.apptDateBox}>
-                    <Text style={styles.apptDay}>{d.getDate()}</Text>
-                    <Text style={styles.apptMonth}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
+                  <View style={[styles.apptDateBox, { backgroundColor: colors.bg2 }]}>
+                    <Text style={[styles.apptDay, { color: colors.textPrimary }]}>{d.getDate()}</Text>
+                    <Text style={[styles.apptMonth, { color: colors.textSecondary }]}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
                     <Text style={styles.apptYear}>{d.getFullYear()}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <View style={styles.apptTop}>
-                      <Text style={styles.apptTime}>
+                      <Text style={[styles.apptTime, { color: colors.textPrimary }]}>
                         {d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
                       </Text>
                       <View style={[styles.apptBadge, { backgroundColor: st.bg }]}>
@@ -906,7 +920,12 @@ export default function PatientDetailScreen() {
                       </TouchableOpacity>
                     </View>
                     {a.service && (
-                      <Text style={styles.apptService}>{a.service.emoji ?? '🦷'} {a.service.name}</Text>
+                      <Text style={[styles.apptService, { color: colors.textSecondary }]}>{a.service.emoji ?? '🦷'} {a.service.name}</Text>
+                    )}
+                    {a.arrived_at && (
+                      <Text style={[styles.apptService, { color: colors.textSecondary }]}>
+                        🚪 Príchod: {new Date(a.arrived_at).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
                     )}
                     {a.family_member_name ? (
                       <Text style={styles.familyTag}>👶 Pre: {a.family_member_name}</Text>
@@ -915,11 +934,11 @@ export default function PatientDetailScreen() {
                     {isEditing ? (
                       <View style={styles.apptNoteEdit}>
                         <TextInput
-                          style={styles.apptNoteInput}
+                          style={[styles.apptNoteInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                           value={editNoteText}
                           onChangeText={setEditNoteText}
                           placeholder="Klinické poznámky, diagnóza..."
-                          placeholderTextColor="#999"
+                          placeholderTextColor={dark ? '#666' : '#999'}
                           multiline
                           numberOfLines={3}
                           textAlignVertical="top"
@@ -1034,15 +1053,15 @@ export default function PatientDetailScreen() {
 
         {/* ══ TAB: LIEČEBNÝ PLÁN ══ */}
         {activeTab === 'plan' && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>LIEČEBNÝ PLÁN</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>LIEČEBNÝ PLÁN</Text>
             <TouchableOpacity style={styles.planBtn}
               onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId, patientName } })}
               activeOpacity={0.8}>
               <Ionicons name="list-outline" size={22} color="#1E8449" />
               <View style={{ flex: 1 }}>
                 <Text style={styles.planBtnText}>Otvoriť liečebný plán</Text>
-                <Text style={[styles.emptyText, { marginTop: 2 }]}>Prehľad výkonov, stav a ceny</Text>
+                <Text style={[styles.emptyText, { marginTop: 2, color: colors.textSecondary }]}>Prehľad výkonov, stav a ceny</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#1E8449" />
             </TouchableOpacity>
@@ -1051,8 +1070,8 @@ export default function PatientDetailScreen() {
 
         {/* ══ TAB: PLATBY ══ */}
         {activeTab === 'payments' && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>PLATBY</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>PLATBY</Text>
             {unpaidCount > 0 && (
               <View style={[styles.unpaidBanner, { alignSelf: 'stretch', marginBottom: 14 }]}>
                 <Ionicons name="card-outline" size={14} color="#922B21" />
@@ -1065,13 +1084,13 @@ export default function PatientDetailScreen() {
               const pay = PAYMENT_CFG[a.payment_status] ?? PAYMENT_CFG.unpaid;
               const d = new Date(a.appointment_date);
               return (
-                <View key={a.id} style={[styles.apptRow, { borderBottomWidth: 1, borderBottomColor: COLORS.bg3 }]}>
-                  <View style={styles.apptDateBox}>
-                    <Text style={styles.apptDay}>{d.getDate()}</Text>
-                    <Text style={styles.apptMonth}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
+                <View key={a.id} style={[styles.apptRow, { borderBottomWidth: 1, borderBottomColor: colors.bg3 }]}>
+                  <View style={[styles.apptDateBox, { backgroundColor: colors.bg2 }]}>
+                    <Text style={[styles.apptDay, { color: colors.textPrimary }]}>{d.getDate()}</Text>
+                    <Text style={[styles.apptMonth, { color: colors.textSecondary }]}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.apptService}>{a.service?.emoji ?? '🦷'} {a.service?.name ?? '—'}</Text>
+                    <Text style={[styles.apptService, { color: colors.textSecondary }]}>{a.service?.emoji ?? '🦷'} {a.service?.name ?? '—'}</Text>
                     <View style={styles.apptActRow}>
                       <TouchableOpacity
                         style={[styles.payBadge, { backgroundColor: pay.bg, borderColor: pay.color + '88' }]}
@@ -1088,32 +1107,32 @@ export default function PatientDetailScreen() {
                     </View>
                   </View>
                   {a.service?.price_min != null && (
-                    <Text style={{ fontSize: 14, fontWeight: '700', color: COLORS.wal }}>{a.service.price_min} €</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textSecondary }}>{a.service.price_min} €</Text>
                   )}
                 </View>
               );
             })}
             {appointments.filter(a => a.status === 'completed').length === 0 && (
-              <Text style={styles.emptyText}>Žiadne dokončené termíny</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Žiadne dokončené termíny</Text>
             )}
           </View>
         )}
 
         {/* ══ TAB: SPRÁVY ══ */}
         {activeTab === 'messages' && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>SPRÁVY</Text>
-            <TouchableOpacity style={[styles.planBtn, { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' }]}
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>SPRÁVY</Text>
+            <TouchableOpacity style={[styles.planBtn, dark ? { backgroundColor: '#0D2233', borderColor: '#AED6F133' } : { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' }]}
               onPress={() => router.push({ pathname: '/(doctor)/messages', params: { patientId, patientName } })}
               activeOpacity={0.8}>
               <Ionicons name="chatbubble-outline" size={22} color="#1A5276" />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.planBtnText, { color: '#1A5276' }]}>Otvoriť konverzáciu</Text>
-                <Text style={[styles.emptyText, { marginTop: 2 }]}>Správy s pacientom</Text>
+                <Text style={[styles.emptyText, { marginTop: 2, color: colors.textSecondary }]}>Správy s pacientom</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color="#1A5276" />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionBtnSm, { flexDirection: 'row', gap: 8, alignSelf: 'stretch', marginTop: 10, paddingVertical: 12, paddingHorizontal: 14 }]}
+            <TouchableOpacity style={[styles.actionBtnSm, { flexDirection: 'row', gap: 8, alignSelf: 'stretch', marginTop: 10, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
               onPress={() => { setNotifTitle(''); setNotifBody(''); setShowNotifModal(true); }}
               activeOpacity={0.8}>
               <Ionicons name="notifications-outline" size={18} color="#0E6655" />
@@ -1124,8 +1143,8 @@ export default function PatientDetailScreen() {
 
         {/* ══ TAB: ZÁZNAMY ══ */}
         {activeTab === 'records' && (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>ZÁZNAMY</Text>
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>ZÁZNAMY</Text>
             {[
               { label: 'Zubná karta', icon: 'clipboard-outline', color: COLORS.wal, path: '/(doctor)/dental-chart' },
               { label: 'Anamnéza',    icon: 'document-text-outline', color: '#1A5276', path: '/(doctor)/patient-passport' },
@@ -1134,7 +1153,7 @@ export default function PatientDetailScreen() {
               { label: 'Súhlasy',     icon: 'checkmark-circle-outline', color: '#7D3C98', path: '/(doctor)/consent-forms' },
             ].map(item => (
               <TouchableOpacity key={item.label}
-                style={[styles.planBtn, { backgroundColor: COLORS.bg2, borderColor: COLORS.bg3, marginBottom: 8 }]}
+                style={[styles.planBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3, marginBottom: 8 }]}
                 onPress={() => router.push({ pathname: item.path as any, params: { patientId, patientName } })}
                 activeOpacity={0.8}>
                 <Ionicons name={item.icon as any} size={20} color={item.color} />
@@ -1143,7 +1162,7 @@ export default function PatientDetailScreen() {
               </TouchableOpacity>
             ))}
             <TouchableOpacity
-              style={[styles.planBtn, { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
+              style={[styles.planBtn, dark ? { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' } : { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
               onPress={() => exportPatientHistory(patientName ?? 'Pacient', appointments as unknown as Appointment[])}
               activeOpacity={0.8}>
               <Ionicons name="download-outline" size={20} color="#7D3C98" />
@@ -1167,29 +1186,29 @@ export default function PatientDetailScreen() {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={styles.notifOverlay}>
             <TouchableOpacity style={{ flex: 0.4 }} activeOpacity={1} onPress={() => setShowNotifModal(false)} />
-            <View style={styles.notifSheet}>
-              <View style={styles.notifHandle} />
-              <Text style={styles.notifTitle}>Poslať notifikáciu</Text>
-              <Text style={styles.notifSub}>Pacient dostane upozornenie v appke</Text>
+            <View style={[styles.notifSheet, { backgroundColor: colors.cardBg }]}>
+              <View style={[styles.notifHandle, { backgroundColor: colors.bg3 }]} />
+              <Text style={[styles.notifTitle, { color: colors.textPrimary }]}>Poslať notifikáciu</Text>
+              <Text style={[styles.notifSub, { color: colors.textSecondary }]}>Pacient dostane upozornenie v appke</Text>
 
-              <Text style={styles.notifLabel}>NADPIS *</Text>
+              <Text style={[styles.notifLabel, { color: colors.textSecondary }]}>NADPIS *</Text>
               <TextInput
-                style={styles.notifInput}
+                style={[styles.notifInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={notifTitle}
                 onChangeText={setNotifTitle}
                 placeholder="napr. Výsledky sú pripravené"
-                placeholderTextColor="#999"
+                placeholderTextColor={dark ? '#666' : '#999'}
                 autoFocus
                 maxLength={80}
               />
 
-              <Text style={styles.notifLabel}>SPRÁVA (voliteľné)</Text>
+              <Text style={[styles.notifLabel, { color: colors.textSecondary }]}>SPRÁVA (voliteľné)</Text>
               <TextInput
-                style={[styles.notifInput, { minHeight: 80 }]}
+                style={[styles.notifInput, { minHeight: 80, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={notifBody}
                 onChangeText={setNotifBody}
                 placeholder="Detailnejšia správa pre pacienta..."
-                placeholderTextColor="#999"
+                placeholderTextColor={dark ? '#666' : '#999'}
                 multiline
                 numberOfLines={3}
                 textAlignVertical="top"
@@ -1197,7 +1216,7 @@ export default function PatientDetailScreen() {
               />
 
               {/* Rýchle šablóny */}
-              <Text style={styles.notifLabel}>RÝCHLE ŠABLÓNY</Text>
+              <Text style={[styles.notifLabel, { color: colors.textSecondary }]}>RÝCHLE ŠABLÓNY</Text>
               <View style={styles.notifTemplates}>
                 {[
                   { t: 'Výsledky sú pripravené', b: 'Navštívte nás pre vyzdvihnutie výsledkov.' },
@@ -1212,8 +1231,8 @@ export default function PatientDetailScreen() {
               </View>
 
               <View style={styles.notifBtnRow}>
-                <TouchableOpacity style={styles.notifBtnCancel} onPress={() => setShowNotifModal(false)} activeOpacity={0.8}>
-                  <Text style={styles.notifBtnCancelText}>Zrušiť</Text>
+                <TouchableOpacity style={[styles.notifBtnCancel, { borderColor: colors.bg3 }]} onPress={() => setShowNotifModal(false)} activeOpacity={0.8}>
+                  <Text style={[styles.notifBtnCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.notifBtnSend, (!notifTitle.trim() || notifSending) && { opacity: 0.4 }]}
@@ -1244,13 +1263,13 @@ const styles = StyleSheet.create({
   content: { padding: SIZES.padding, paddingTop: 12, paddingBottom: 120 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:        { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle:    { fontSize: 18, fontWeight: '700', color: '#fff' },
-  scoreChip:      { width: 52, height: 52, borderRadius: 26, borderWidth: 3, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
-  scoreChipNum:   { fontSize: 18, fontWeight: '800', lineHeight: 20 },
-  scoreChipLabel: { fontSize: 8, fontWeight: '600', textTransform: 'uppercase' },
+  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
+  headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },
+  scoreChip:      { width: 44, height: 44, borderRadius: 22, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
+  scoreChipNum:   { fontSize: 16, fontWeight: '800', lineHeight: 18 },
+  scoreChipLabel: { fontSize: 7, fontWeight: '600', textTransform: 'uppercase' },
 
   // Info karta
   infoCard:    { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
@@ -1402,10 +1421,13 @@ const styles = StyleSheet.create({
 });
 
 const tabStyles = StyleSheet.create({
-  tab:           { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
-  tabActive:     { backgroundColor: 'rgba(201,168,76,0.18)', borderColor: COLORS.gold },
-  tabText:       { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  tabTextActive: { color: COLORS.gold },
-  tabBadge:      { width: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center' },
-  tabBadgeText:  { fontSize: 8, fontWeight: '800', color: '#fff' },
+  bar:           { backgroundColor: COLORS.esp, maxHeight: 44, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.10)' },
+  barContent:    { paddingHorizontal: 4, alignItems: 'stretch' },
+  tab:           { paddingHorizontal: 14, height: 44, justifyContent: 'center', borderBottomWidth: 2.5, borderBottomColor: 'transparent' },
+  tabActive:     { borderBottomColor: COLORS.gold },
+  tabInner:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  tabText:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
+  tabTextActive: { color: COLORS.gold, fontWeight: '700' },
+  tabBadge:      { minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' },
 });

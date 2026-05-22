@@ -14,6 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Patient = {
   id: string;
@@ -56,6 +57,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function SearchScreen() {
   const router     = useRouter();
+  const { colors, dark } = useAppTheme();
   const inputRef   = useRef<TextInput>(null);
   const [query,    setQuery]    = useState('');
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -66,36 +68,40 @@ export default function SearchScreen() {
   // Načítaj všetky dáta raz (cache)
   useFocusEffect(useCallback(() => {
     let cancelled = false;
+    let focusTimeout: ReturnType<typeof setTimeout> | null = null;
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user || cancelled) return;
 
-      const [patsRes, apptsRes, svcsRes] = await Promise.all([
-        supabase.from('profiles')
-          .select('id, full_name, phone_number, date_of_birth')
-          .eq('role', 'patient')
-          .order('full_name'),
-        supabase.from('appointments')
-          .select('id, appointment_date, status, notes, doctor_notes, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, emoji)')
-          .eq('doctor_id', user.id)
-          .order('appointment_date', { ascending: false })
-          .limit(200),
-        supabase.from('services')
-          .select('id, name, emoji, category, price_min')
-          .order('name'),
-      ]);
+        const [patsRes, apptsRes, svcsRes] = await Promise.all([
+          supabase.from('profiles')
+            .select('id, full_name, phone_number, date_of_birth')
+            .eq('role', 'patient')
+            .order('full_name'),
+          supabase.from('appointments')
+            .select('id, appointment_date, status, notes, doctor_notes, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, emoji)')
+            .eq('doctor_id', user.id)
+            .order('appointment_date', { ascending: false })
+            .limit(200),
+          supabase.from('services')
+            .select('id, name, emoji, category, price_min')
+            .order('name'),
+        ]);
 
-      if (!cancelled) {
-        setPatients((patsRes.data ?? []) as Patient[]);
-        setAppts((apptsRes.data ?? []) as unknown as Appt[]);
-        setServices((svcsRes.data ?? []) as Service[]);
-        setLoading(false);
+        if (!cancelled) {
+          setPatients((patsRes.data ?? []) as Patient[]);
+          setAppts((apptsRes.data ?? []) as unknown as Appt[]);
+          setServices((svcsRes.data ?? []) as Service[]);
+          setLoading(false);
+        }
+      } catch (e: any) {
+        if (!cancelled) { console.error('[Search] load failed:', e?.message); setLoading(false); }
       }
     }
     load();
-    // Auto-focus input
-    setTimeout(() => inputRef.current?.focus(), 300);
-    return () => { cancelled = true; };
+    focusTimeout = setTimeout(() => inputRef.current?.focus(), 300);
+    return () => { cancelled = true; if (focusTimeout) clearTimeout(focusTimeout); };
   }, []));
 
   const sections: Section[] = useMemo(() => {
@@ -141,7 +147,7 @@ export default function SearchScreen() {
     if (row.type === 'patient') {
       const p = row.item as Patient;
       return (
-        <TouchableOpacity style={styles.resultRow}
+        <TouchableOpacity style={[styles.resultRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
           onPress={() => router.push({ pathname: '/(doctor)/patient-detail', params: { patientId: p.id, patientName: p.full_name ?? '' } })}
           activeOpacity={0.8}>
           <View style={styles.resultIcon}>
@@ -150,10 +156,10 @@ export default function SearchScreen() {
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.resultTitle}>{p.full_name ?? 'Pacient'}</Text>
-            {p.phone_number && <Text style={styles.resultSub}>{p.phone_number}</Text>}
+            <Text style={[styles.resultTitle, { color: colors.textPrimary }]}>{p.full_name ?? 'Pacient'}</Text>
+            {p.phone_number && <Text style={[styles.resultSub, { color: colors.textSecondary }]}>{p.phone_number}</Text>}
           </View>
-          <Ionicons name="chevron-forward" size={14} color="#ccc" />
+          <Ionicons name="chevron-forward" size={14} color={colors.bg3} />
         </TouchableOpacity>
       );
     }
@@ -163,24 +169,24 @@ export default function SearchScreen() {
       const d = new Date(a.appointment_date);
       const statusColor = STATUS_COLOR[a.status] ?? COLORS.wal;
       return (
-        <TouchableOpacity style={styles.resultRow}
+        <TouchableOpacity style={[styles.resultRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
           onPress={() => router.push({ pathname: '/(doctor)/patient-detail', params: { patientId: (a.patient as any)?.id ?? '', patientName: a.patient?.full_name ?? '' } })}
           activeOpacity={0.8}>
           <View style={[styles.resultIcon, { backgroundColor: statusColor + '22' }]}>
             <Text style={{ fontSize: 16 }}>{a.service?.emoji ?? '🦷'}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.resultTitle}>
+            <Text style={[styles.resultTitle, { color: colors.textPrimary }]}>
               {a.patient?.full_name ?? 'Pacient'} — {a.service?.name ?? 'Termín'}
             </Text>
-            <Text style={styles.resultSub}>
+            <Text style={[styles.resultSub, { color: colors.textSecondary }]}>
               {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
               {' · '}
               <Text style={{ color: statusColor }}>{STATUS_LABEL[a.status] ?? a.status}</Text>
             </Text>
-            {a.notes && <Text style={styles.resultNote} numberOfLines={1}>📝 {a.notes}</Text>}
+            {a.notes && <Text style={[styles.resultNote, { color: colors.textSecondary }]} numberOfLines={1}>📝 {a.notes}</Text>}
           </View>
-          <Ionicons name="chevron-forward" size={14} color="#ccc" />
+          <Ionicons name="chevron-forward" size={14} color={colors.bg3} />
         </TouchableOpacity>
       );
     }
@@ -188,13 +194,13 @@ export default function SearchScreen() {
     // service
     const s = row.item as Service;
     return (
-      <View style={[styles.resultRow, { cursor: 'default' } as any]}>
-        <View style={[styles.resultIcon, { backgroundColor: COLORS.bg2 }]}>
+      <View style={[styles.resultRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }, { cursor: 'default' } as any]}>
+        <View style={[styles.resultIcon, { backgroundColor: colors.bg2 }]}>
           <Text style={{ fontSize: 18 }}>{s.emoji ?? '🦷'}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.resultTitle}>{s.name}</Text>
-          <Text style={styles.resultSub}>{s.category}{s.price_min ? ` · od ${s.price_min} €` : ''}</Text>
+          <Text style={[styles.resultTitle, { color: colors.textPrimary }]}>{s.name}</Text>
+          <Text style={[styles.resultSub, { color: colors.textSecondary }]}>{s.category}{s.price_min ? ` · od ${s.price_min} €` : ''}</Text>
         </View>
       </View>
     );
@@ -230,20 +236,20 @@ export default function SearchScreen() {
       </View>
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
           <SkeletonList count={5} />
         </View>
       ) : query.trim().length < 2 ? (
-        <View style={styles.hint}>
-          <Ionicons name="search" size={40} color={COLORS.bg3} />
-          <Text style={styles.hintTitle}>Zadaj aspoň 2 znaky</Text>
-          <Text style={styles.hintSub}>Hľadaj podľa mena, telefónu, poznámky alebo názvu služby</Text>
+        <View style={[styles.hint, { backgroundColor: colors.bg2 }]}>
+          <Ionicons name="search" size={40} color={colors.bg3} />
+          <Text style={[styles.hintTitle, { color: colors.textPrimary }]}>Zadaj aspoň 2 znaky</Text>
+          <Text style={[styles.hintSub, { color: colors.textSecondary }]}>Hľadaj podľa mena, telefónu, poznámky alebo názvu služby</Text>
         </View>
       ) : totalResults === 0 ? (
-        <View style={styles.hint}>
-          <Ionicons name="search-outline" size={40} color={COLORS.bg3} />
-          <Text style={styles.hintTitle}>Žiadne výsledky pre „{query}"</Text>
-          <Text style={styles.hintSub}>Skús iný výraz</Text>
+        <View style={[styles.hint, { backgroundColor: colors.bg2 }]}>
+          <Ionicons name="search-outline" size={40} color={colors.bg3} />
+          <Text style={[styles.hintTitle, { color: colors.textPrimary }]}>Žiadne výsledky pre „{query}"</Text>
+          <Text style={[styles.hintSub, { color: colors.textSecondary }]}>Skús iný výraz</Text>
         </View>
       ) : (
         <SectionList
@@ -251,13 +257,13 @@ export default function SearchScreen() {
           keyExtractor={(item, i) => `${item.type}-${(item.item as any).id}-${i}`}
           renderItem={renderItem}
           renderSectionHeader={({ section }) => (
-            <View style={styles.sectionHeader}>
+            <View style={[styles.sectionHeader, { backgroundColor: colors.bg3, borderBottomColor: colors.bg3 }]}>
               <Text style={styles.sectionIcon}>{section.icon}</Text>
-              <Text style={styles.sectionTitle}>{section.title}</Text>
-              <Text style={styles.sectionCount}>{section.data.length}</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{section.title}</Text>
+              <Text style={[styles.sectionCount, { color: colors.textSecondary, backgroundColor: colors.bg2 }]}>{section.data.length}</Text>
             </View>
           )}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { backgroundColor: colors.bg2 }]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         />

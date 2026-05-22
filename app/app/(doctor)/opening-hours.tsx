@@ -1,13 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, TextInput, Switch, TouchableOpacity,
   ScrollView, StyleSheet, Alert, ActivityIndicator,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
-import { COLORS } from '../../styles/theme';
+import { COLORS, SIZES } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
+
+type ClinicException = {
+  id: string;
+  date: string;        // YYYY-MM-DD
+  is_closed: boolean;
+  open_time: string;
+  close_time: string;
+  note: string;
+};
 
 const DAYS = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 
@@ -27,6 +38,7 @@ type DayRow = {
 
 export default function OpeningHoursScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [hours, setHours] = useState<DayRow[]>(
     DAYS.map((day, index) => ({
       id: null,
@@ -38,9 +50,26 @@ export default function OpeningHoursScreen() {
       clinic_id: null,
     }))
   );
-  const [saving, setSaving] = useState(false);
+  const [saving,      setSaving]      = useState(false);
+  const [exceptions,  setExceptions]  = useState<ClinicException[]>([]);
+  const [exSaving,    setExSaving]    = useState(false);
+  const [doctorId,    setDoctorId]    = useState('');
 
-  useEffect(() => { load(); }, []);
+  // Nová výnimka — form stav
+  const [exDate,      setExDate]      = useState('');
+  const [exClosed,    setExClosed]    = useState(true);
+  const [exOpen,      setExOpen]      = useState('08:00');
+  const [exClose,     setExClose]     = useState('13:00');
+  const [exNote,      setExNote]      = useState('');
+  const [showExForm,  setShowExForm]  = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setDoctorId(user.id);
+    });
+    load();
+    loadExceptions();
+  }, []);
 
   async function load() {
     const { data } = await supabase.from('opening_hours').select('*');
@@ -86,6 +115,59 @@ export default function OpeningHoursScreen() {
     });
   }
 
+  async function loadExceptions() {
+    if (!doctorId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('clinic_exceptions')
+        .select('id, date, is_closed, open_time, close_time, note')
+        .eq('doctor_id', user.id)
+        .order('date', { ascending: true });
+      setExceptions((data ?? []) as ClinicException[]);
+    } else {
+      const { data } = await supabase
+        .from('clinic_exceptions')
+        .select('id, date, is_closed, open_time, close_time, note')
+        .eq('doctor_id', doctorId)
+        .order('date', { ascending: true });
+      setExceptions((data ?? []) as ClinicException[]);
+    }
+  }
+
+  async function addException() {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(exDate.trim())) {
+      Alert.alert('Chyba', 'Dátum musí byť vo formáte YYYY-MM-DD (napr. 2026-05-01).');
+      return;
+    }
+    setExSaving(true);
+    const uid = doctorId || (await supabase.auth.getUser()).data.user?.id;
+    const { error } = await supabase.from('clinic_exceptions').upsert({
+      doctor_id:  uid,
+      date:       exDate.trim(),
+      is_closed:  exClosed,
+      open_time:  exClosed ? null : exOpen,
+      close_time: exClosed ? null : exClose,
+      note:       exNote.trim() || null,
+    }, { onConflict: 'doctor_id,date' });
+    setExSaving(false);
+    if (error) { Alert.alert('Chyba', error.message); return; }
+    setExDate(''); setExNote(''); setExClosed(true); setShowExForm(false);
+    loadExceptions();
+  }
+
+  async function deleteException(ex: ClinicException) {
+    Alert.alert('Odstrániť výnimku', `Odstrániť výnimku pre ${ex.date}?`, [
+      { text: 'Nie', style: 'cancel' },
+      { text: 'Odstrániť', style: 'destructive', onPress: async () => {
+        const { error } = await supabase.from('clinic_exceptions').delete().eq('id', ex.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        loadExceptions();
+      }},
+    ]);
+  }
+
   async function save() {
     setSaving(true);
     const payload = hours.map(({ day_name, ...rest }) => ({
@@ -98,12 +180,15 @@ export default function OpeningHoursScreen() {
     const { error } = await supabase.from('opening_hours').upsert(payload, { onConflict: 'day_of_week' });
     setSaving(false);
     if (error) Alert.alert('Chyba', error.message);
-    else Alert.alert('Uložené', 'Ordinačné hodiny boli uložené.');
+    else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Uložené', 'Ordinačné hodiny boli uložené.');
+    }
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <View style={s.header}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top']}>
+      <View style={[s.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -113,33 +198,35 @@ export default function OpeningHoursScreen() {
         </View>
       </View>
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {hours.map((item, index) => (
-          <View key={index} style={s.row}>
-            <Text style={s.dayText}>{item.day_name}</Text>
+          <View key={index} style={[s.row, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[s.dayText, { color: colors.textPrimary }]}>{item.day_name}</Text>
             <Switch
               value={item.is_open}
               onValueChange={(val) => toggle(index, val)}
-              trackColor={{ false: COLORS.bg3, true: COLORS.gold }}
+              trackColor={{ false: colors.bg3, true: COLORS.gold }}
               thumbColor={COLORS.cream}
             />
             <View style={s.timeRow}>
               <TextInput
-                style={[s.timeInput, !item.is_open && s.disabled]}
+                style={[s.timeInput, !item.is_open && s.disabled, { color: colors.textPrimary, borderColor: colors.wal, backgroundColor: item.is_open ? (dark ? colors.inputBg : COLORS.cream) : colors.bg3 }]}
                 value={item.time_from}
                 onChangeText={(t) => setTime(index, 'time_from', t)}
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
+                placeholderTextColor={dark ? '#666' : '#999'}
               />
-              <Text style={s.sep}>–</Text>
+              <Text style={[s.sep, { color: colors.textSecondary }]}>–</Text>
               <TextInput
-                style={[s.timeInput, !item.is_open && s.disabled]}
+                style={[s.timeInput, !item.is_open && s.disabled, { color: colors.textPrimary, borderColor: colors.wal, backgroundColor: item.is_open ? (dark ? colors.inputBg : COLORS.cream) : colors.bg3 }]}
                 value={item.time_to}
                 onChangeText={(t) => setTime(index, 'time_to', t)}
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
+                placeholderTextColor={dark ? '#666' : '#999'}
               />
             </View>
           </View>
@@ -148,9 +235,119 @@ export default function OpeningHoursScreen() {
         <TouchableOpacity style={[s.saveBtn, saving && { opacity: 0.5 }]} onPress={save} disabled={saving} activeOpacity={0.85}>
           {saving
             ? <ActivityIndicator color={COLORS.esp} />
-            : <Text style={s.saveBtnText}>Uložiť</Text>}
+            : <Text style={s.saveBtnText}>Uložiť pravidelný rozvrh</Text>}
         </TouchableOpacity>
-        <View style={{ height: 40 }} />
+
+        {/* ── Výnimky ── */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 28, marginBottom: 10 }}>
+          <Text style={[s.sectionTitle, { color: colors.textPrimary }]}>Výnimky</Text>
+          <TouchableOpacity
+            style={[s.addExBtn, { backgroundColor: dark ? COLORS.wal + '22' : '#F4ECE4', borderColor: dark ? COLORS.wal + '55' : COLORS.sand }]}
+            onPress={() => setShowExForm(v => !v)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name={showExForm ? 'close-outline' : 'add-outline'} size={16} color={COLORS.wal} />
+            <Text style={[s.addExBtnText, { color: COLORS.wal }]}>{showExForm ? 'Zrušiť' : 'Pridať'}</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={[s.sectionSub, { color: colors.textSecondary }]}>Sviatky, dovolenka alebo iné hodiny pre konkrétny dátum.</Text>
+
+        {/* Formulár na pridanie výnimky */}
+        {showExForm && (
+          <View style={[s.exForm, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[s.exLabel, { color: colors.textSecondary }]}>DÁTUM (YYYY-MM-DD)</Text>
+            <TextInput
+              style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+              value={exDate} onChangeText={setExDate}
+              placeholder="2026-12-24"
+              placeholderTextColor={dark ? '#555' : '#bbb'}
+              keyboardType="numbers-and-punctuation"
+              maxLength={10}
+            />
+
+            <View style={s.exToggleRow}>
+              <Text style={[s.exLabel, { color: colors.textSecondary, marginTop: 0 }]}>ZATVORENÉ CELÝ DEŇ</Text>
+              <Switch
+                value={exClosed}
+                onValueChange={setExClosed}
+                trackColor={{ false: colors.bg3, true: COLORS.wal }}
+                thumbColor={COLORS.cream}
+              />
+            </View>
+
+            {!exClosed && (
+              <View style={s.exTimeRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={[s.exLabel, { color: colors.textSecondary }]}>OD</Text>
+                  <TextInput
+                    style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                    value={exOpen} onChangeText={setExOpen}
+                    placeholder="08:00" placeholderTextColor={dark ? '#555' : '#bbb'}
+                    keyboardType="numbers-and-punctuation" maxLength={5}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[s.exLabel, { color: colors.textSecondary }]}>DO</Text>
+                  <TextInput
+                    style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+                    value={exClose} onChangeText={setExClose}
+                    placeholder="13:00" placeholderTextColor={dark ? '#555' : '#bbb'}
+                    keyboardType="numbers-and-punctuation" maxLength={5}
+                  />
+                </View>
+              </View>
+            )}
+
+            <Text style={[s.exLabel, { color: colors.textSecondary }]}>POZNÁMKA (voliteľné)</Text>
+            <TextInput
+              style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
+              value={exNote} onChangeText={setExNote}
+              placeholder="Napr. Sviatok práce, dovolenka..."
+              placeholderTextColor={dark ? '#555' : '#bbb'}
+            />
+
+            <TouchableOpacity
+              style={[s.saveBtn, { marginTop: 12, backgroundColor: COLORS.esp }, exSaving && { opacity: 0.5 }]}
+              onPress={addException} disabled={exSaving} activeOpacity={0.85}
+            >
+              {exSaving
+                ? <ActivityIndicator color="#fff" size="small" />
+                : <Text style={[s.saveBtnText, { color: COLORS.cream }]}>Uložiť výnimku</Text>}
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Zoznam výnimiek */}
+        {exceptions.length === 0 ? (
+          <Text style={[s.exEmpty, { color: colors.textSecondary }]}>Žiadne výnimky — ambulancia funguje podľa pravidelného rozvrhu.</Text>
+        ) : (
+          exceptions.map(ex => (
+            <View key={ex.id} style={[s.exRow, { backgroundColor: colors.cardBg, borderColor: ex.is_closed ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#27AE6033' : '#A9DFBF') }]}>
+              <View style={[s.exDateBox, { backgroundColor: ex.is_closed ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D3B1F' : '#EAFAF1') }]}>
+                <Text style={[s.exDateText, { color: ex.is_closed ? '#E74C3C' : '#1E8449' }]}>
+                  {ex.date.slice(5)}
+                </Text>
+                <Text style={[s.exDateYear, { color: ex.is_closed ? '#E74C3C' : '#1E8449', opacity: 0.7 }]}>
+                  {ex.date.slice(0, 4)}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[s.exStatus, { color: ex.is_closed ? '#E74C3C' : '#1E8449' }]}>
+                  {ex.is_closed ? '🔴 Zatvorené' : `🟢 ${ex.open_time ?? ''}–${ex.close_time ?? ''}`}
+                </Text>
+                {ex.note ? <Text style={[s.exNoteText, { color: colors.textSecondary }]}>{ex.note}</Text> : null}
+              </View>
+              <TouchableOpacity
+                onPress={() => deleteException(ex)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="trash-outline" size={16} color="#C0392B" />
+              </TouchableOpacity>
+            </View>
+          ))
+        )}
+
+        <View style={{ height: 60 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -184,4 +381,21 @@ const s = StyleSheet.create({
   sep:         { marginHorizontal: 6, fontSize: 16, color: COLORS.wal },
   saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 15, borderRadius: 12, alignItems: 'center', marginTop: 20 },
   saveBtnText: { color: COLORS.esp, fontSize: 16, fontWeight: '800' },
+
+  sectionTitle:  { fontSize: 14, fontWeight: '800' },
+  sectionSub:    { fontSize: 12, marginBottom: 14, fontStyle: 'italic' },
+  addExBtn:      { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 10, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 6 },
+  addExBtnText:  { fontSize: 12, fontWeight: '700' },
+  exForm:        { borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 14 },
+  exLabel:       { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginTop: 12, marginBottom: 6 },
+  exInput:       { borderWidth: 1.5, borderRadius: 10, padding: 11, fontSize: 14, marginBottom: 2 },
+  exToggleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 },
+  exTimeRow:     { flexDirection: 'row', gap: 12, marginTop: 8 },
+  exEmpty:       { fontSize: 13, fontStyle: 'italic', textAlign: 'center', paddingVertical: 16 },
+  exRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 8 },
+  exDateBox:     { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, alignItems: 'center', minWidth: 54 },
+  exDateText:    { fontSize: 14, fontWeight: '800' },
+  exDateYear:    { fontSize: 9, fontWeight: '600' },
+  exStatus:      { fontSize: 13, fontWeight: '700', marginBottom: 2 },
+  exNoteText:    { fontSize: 11 },
 });

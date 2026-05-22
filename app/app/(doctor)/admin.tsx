@@ -3,12 +3,14 @@ import {
   ActivityIndicator, Alert, FlatList, Modal, RefreshControl,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,11 +48,11 @@ const ROLE_LABELS: Record<string, string> = {
   owner: 'Vlastník', patient: 'Pacient',
 };
 
-const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-  doctor:    { bg: '#EBF5FB', text: '#1A5276' },
-  reception: { bg: '#FEF9E7', text: '#7D6608' },
-  hygienist: { bg: '#EAFAF1', text: '#1E8449' },
-  owner:     { bg: '#F5EEF8', text: '#6C3483' },
+const ROLE_COLORS: Record<string, { bg: string; darkBg: string; text: string; darkText: string }> = {
+  doctor:    { bg: '#EBF5FB', darkBg: '#0D2233', text: '#1A5276', darkText: '#5DADE2' },
+  reception: { bg: '#FEF9E7', darkBg: '#2D2200', text: '#7D6608', darkText: '#F39C12' },
+  hygienist: { bg: '#EAFAF1', darkBg: '#0D3B1F', text: '#1E8449', darkText: '#27AE60' },
+  owner:     { bg: '#F5EEF8', darkBg: '#1E0D33', text: '#6C3483', darkText: '#AF7AC5' },
 };
 
 function initials(name: string) {
@@ -70,6 +72,7 @@ function InviteModal({
   onClose: () => void;
   onSent: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const [email, setEmail]   = useState('');
   const [role, setRole]     = useState<'doctor' | 'reception' | 'hygienist'>('doctor');
   const [loading, setLoading] = useState(false);
@@ -97,6 +100,7 @@ function InviteModal({
     setLoading(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
 
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
       'Pozvánka vytvorená',
       `Kód pre ${email.trim()}:\n\n${token}\n\nPlatí 7 dní.`,
@@ -107,18 +111,18 @@ function InviteModal({
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableOpacity style={im.backdrop} activeOpacity={1} onPress={onClose} />
-      <View style={im.sheet}>
-        <View style={im.handle} />
-        <Text style={im.title}>Pozvať člena tímu</Text>
-        <Text style={im.sub}>Pošlite kód novému zamestnancovi</Text>
+      <View style={[im.sheet, { backgroundColor: colors.cardBg }]}>
+        <View style={[im.handle, { backgroundColor: colors.bg3 }]} />
+        <Text style={[im.title, { color: colors.textPrimary }]}>Pozvať člena tímu</Text>
+        <Text style={[im.sub, { color: colors.textSecondary }]}>Pošlite kód novému zamestnancovi</Text>
 
-        <Text style={im.label}>E-MAIL</Text>
-        <View style={im.inputWrap}>
+        <Text style={[im.label, { color: colors.textSecondary }]}>E-MAIL</Text>
+        <View style={[im.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
           <Ionicons name="mail-outline" size={17} color={COLORS.wal} style={{ marginRight: 8 }} />
           <TextInput
-            style={im.input}
+            style={[im.input, { color: colors.textPrimary }]}
             placeholder="meno@klinika.sk"
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -127,7 +131,7 @@ function InviteModal({
           />
         </View>
 
-        <Text style={[im.label, { marginTop: 16 }]}>ROLA</Text>
+        <Text style={[im.label, { marginTop: 16, color: colors.textSecondary }]}>ROLA</Text>
         <View style={im.roleRow}>
           {ROLES.map(r => (
             <TouchableOpacity
@@ -161,10 +165,12 @@ function InviteModal({
 type AdminTab = 'team' | 'clinic' | 'stats';
 
 export default function AdminScreen() {
+  const { colors, dark } = useAppTheme();
   const [tab, setTab]           = useState<AdminTab>('team');
   const [team, setTeam]         = useState<TeamMember[]>([]);
   const [clinic, setClinic]     = useState<ClinicInfo | null>(null);
   const [stats, setStats]       = useState<Stats | null>(null);
+  const [teamStats, setTeamStats] = useState<Map<string, { thisMonth: number; avgRating: number | null; completed: number; cancelled: number }>>(new Map());
   const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -184,6 +190,31 @@ export default function AdminScreen() {
       .order('full_name');
     setTeam((teamData ?? []) as TeamMember[]);
 
+    // Team stats — per-member appointment stats
+    const staffIds = ((teamData ?? []) as TeamMember[])
+      .filter(m => m.role === 'doctor' || m.role === 'hygienist')
+      .map(m => m.id);
+    if (staffIds.length > 0) {
+      const mStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+      const { data: apptData } = await supabase
+        .from('appointments')
+        .select('doctor_id, status, patient_rating, appointment_date')
+        .in('doctor_id', staffIds);
+      const tMap = new Map<string, { thisMonth: number; avgRating: number | null; completed: number; cancelled: number }>();
+      staffIds.forEach(id => {
+        const all       = (apptData ?? []).filter((a: any) => a.doctor_id === id);
+        const thisMonth = all.filter((a: any) => a.appointment_date >= mStart).length;
+        const completed = all.filter((a: any) => a.status === 'completed').length;
+        const cancelled = all.filter((a: any) => a.status === 'cancelled').length;
+        const rated     = all.filter((a: any) => a.patient_rating != null && a.patient_rating > 0);
+        const avgRating = rated.length > 0
+          ? Math.round((rated.reduce((s: number, a: any) => s + (a.patient_rating ?? 0), 0) / rated.length) * 10) / 10
+          : null;
+        tMap.set(id, { thisMonth, avgRating, completed, cancelled });
+      });
+      setTeamStats(tMap);
+    }
+
     // Clinic (take first clinic or owner's default)
     const { data: clinicData } = await supabase
       .from('clinics')
@@ -200,7 +231,7 @@ export default function AdminScreen() {
     const [patients, appts, monthAppts, pending, payments, paid] = await Promise.all([
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'patient'),
       supabase.from('appointments').select('id', { count: 'exact', head: true }),
-      supabase.from('appointments').select('id', { count: 'exact', head: true }).gte('date', monthStart),
+      supabase.from('appointments').select('id', { count: 'exact', head: true }).gte('appointment_date', monthStart),
       supabase.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('payments').select('amount_cents'),
       supabase.from('payments').select('amount_cents').eq('status', 'paid'),
@@ -238,7 +269,9 @@ export default function AdminScreen() {
         {
           text: 'Odstrániť', style: 'destructive',
           onPress: async () => {
-            await supabase.from('profiles').update({ role: 'patient' }).eq('id', member.id);
+            const { error } = await supabase.from('profiles').update({ role: 'patient' }).eq('id', member.id);
+            if (error) { Alert.alert('Chyba', error.message); return; }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             load();
           },
         },
@@ -258,6 +291,7 @@ export default function AdminScreen() {
     }).eq('id', clinic.id);
     setSavingClinic(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setClinic(prev => prev ? { ...prev, ...editForm } : prev);
     setEditing(false);
   }
@@ -271,7 +305,7 @@ export default function AdminScreen() {
   ];
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
 
       {/* ── Header ── */}
       <View style={s.header}>
@@ -297,11 +331,11 @@ export default function AdminScreen() {
       </View>
 
       {/* ── Tab row ── */}
-      <View style={s.tabRow}>
+      <View style={[s.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
         {TABS.map(t => (
-          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
-            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? COLORS.esp : '#aaa'} />
-            <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive]}>{t.label}</Text>
+          <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive, tab === t.key && dark && { borderBottomColor: COLORS.gold }]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
+            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? colors.textPrimary : '#aaa'} />
+            <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive, tab === t.key && { color: colors.textPrimary }]}>{t.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -315,6 +349,7 @@ export default function AdminScreen() {
             <FlatList
               data={team}
               keyExtractor={m => m.id}
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
@@ -324,30 +359,30 @@ export default function AdminScreen() {
               ListEmptyComponent={
                 <View style={s.empty}>
                   <Text style={{ fontSize: 36 }}>👥</Text>
-                  <Text style={s.emptyTitle}>Tím je prázdny</Text>
-                  <Text style={s.emptySub}>Pozvite prvého člena tímu.</Text>
+                  <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Tím je prázdny</Text>
+                  <Text style={[s.emptySub, { color: colors.textSecondary }]}>Pozvite prvého člena tímu.</Text>
                   <TouchableOpacity style={s.emptyCta} onPress={() => setInviteOpen(true)}>
                     <Text style={s.emptyCtaText}>Pozvať člena</Text>
                   </TouchableOpacity>
                 </View>
               }
               renderItem={({ item: m }) => {
-                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, text: COLORS.wal };
+                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
                 return (
-                  <View style={s.memberCard}>
+                  <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.memberAvatar}>
                       <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
                     </View>
                     <View style={{ flex: 1 }}>
                       <View style={s.memberTop}>
-                        <Text style={s.memberName}>{m.full_name}</Text>
-                        <View style={[s.roleBadge, { backgroundColor: rc.bg }]}>
-                          <Text style={[s.roleBadgeText, { color: rc.text }]}>
+                        <Text style={[s.memberName, { color: colors.textPrimary }]}>{m.full_name}</Text>
+                        <View style={[s.roleBadge, { backgroundColor: dark ? rc.darkBg : rc.bg }]}>
+                          <Text style={[s.roleBadgeText, { color: dark ? rc.darkText : rc.text }]}>
                             {ROLE_LABELS[m.role] ?? m.role}
                           </Text>
                         </View>
                       </View>
-                      {m.specialty && <Text style={s.memberSub}>{m.specialty}</Text>}
+                      {m.specialty && <Text style={[s.memberSub, { color: colors.textSecondary }]}>{m.specialty}</Text>}
                       {m.phone && (
                         <Text style={s.memberPhone}>
                           <Ionicons name="call-outline" size={11} color={COLORS.wal} /> {m.phone}
@@ -355,8 +390,8 @@ export default function AdminScreen() {
                       )}
                     </View>
                     {m.role !== 'owner' && (
-                      <TouchableOpacity onPress={() => removeTeamMember(m)} style={s.removeBtn} activeOpacity={0.8}>
-                        <Ionicons name="person-remove-outline" size={16} color="#c0392b" />
+                      <TouchableOpacity onPress={() => removeTeamMember(m)} style={[s.removeBtn, { backgroundColor: dark ? '#4A1010' : '#FDF2F2' }]} activeOpacity={0.8}>
+                        <Ionicons name="person-remove-outline" size={16} color={dark ? '#E74C3C' : '#c0392b'} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -368,13 +403,14 @@ export default function AdminScreen() {
           {/* ── CLINIC ── */}
           {tab === 'clinic' && (
             <ScrollView
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               {clinic ? (
                 editing ? (
-                  <View style={s.clinicCard}>
-                    <Text style={s.clinicEditTitle}>Upraviť kliniku</Text>
+                  <View style={[s.clinicCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+                    <Text style={[s.clinicEditTitle, { color: colors.textPrimary }]}>Upraviť kliniku</Text>
                     {[
                       { key: 'name',    label: 'NÁZOV KLINIKY',  icon: 'business-outline',  placeholder: 'Loderer Dental' },
                       { key: 'address', label: 'ADRESA',         icon: 'location-outline',  placeholder: 'Hlavná 1, Bratislava' },
@@ -383,23 +419,23 @@ export default function AdminScreen() {
                       { key: 'website', label: 'WEBSTRÁNKA',     icon: 'globe-outline',     placeholder: 'www.klinika.sk' },
                     ].map(f => (
                       <View key={f.key} style={{ marginBottom: 14 }}>
-                        <Text style={s.label}>{f.label}</Text>
-                        <View style={s.inputWrap}>
+                        <Text style={[s.label, { color: colors.textSecondary }]}>{f.label}</Text>
+                        <View style={[s.inputWrap, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                           <Ionicons name={f.icon as any} size={16} color={COLORS.wal} style={{ marginRight: 8 }} />
                           <TextInput
-                            style={s.input}
+                            style={[s.input, { color: colors.textPrimary }]}
                             value={(editForm as any)[f.key] ?? ''}
                             onChangeText={v => setEditForm(prev => ({ ...prev, [f.key]: v }))}
                             placeholder={f.placeholder}
-                            placeholderTextColor="#999"
+                            placeholderTextColor={dark ? '#666' : '#999'}
                             autoCapitalize={f.key === 'email' || f.key === 'website' ? 'none' : 'words'}
                           />
                         </View>
                       </View>
                     ))}
                     <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-                      <TouchableOpacity style={s.cancelBtn} onPress={() => { setEditing(false); setEditForm(clinic); }} activeOpacity={0.8}>
-                        <Text style={s.cancelBtnText}>Zrušiť</Text>
+                      <TouchableOpacity style={[s.cancelBtn, { borderColor: colors.bg3, backgroundColor: colors.cardBg }]} onPress={() => { setEditing(false); setEditForm(clinic); }} activeOpacity={0.8}>
+                        <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={[s.saveBtn, savingClinic && { opacity: 0.5 }]} onPress={saveClinic} disabled={savingClinic} activeOpacity={0.85}>
                         {savingClinic ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.saveBtnText}>Uložiť</Text>}
@@ -407,12 +443,12 @@ export default function AdminScreen() {
                     </View>
                   </View>
                 ) : (
-                  <View style={s.clinicCard}>
+                  <View style={[s.clinicCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.clinicHeader}>
                       <View style={s.clinicIcon}>
                         <Ionicons name="business" size={24} color={COLORS.sand} />
                       </View>
-                      <Text style={s.clinicName}>{clinic.name}</Text>
+                      <Text style={[s.clinicName, { color: colors.textPrimary }]}>{clinic.name}</Text>
                     </View>
                     {[
                       { icon: 'location-outline', value: clinic.address },
@@ -422,7 +458,7 @@ export default function AdminScreen() {
                     ].map((row, i) => row.value ? (
                       <View key={i} style={s.clinicRow}>
                         <Ionicons name={row.icon as any} size={16} color={COLORS.wal} />
-                        <Text style={s.clinicRowText}>{row.value}</Text>
+                        <Text style={[s.clinicRowText, { color: colors.textSecondary }]}>{row.value}</Text>
                       </View>
                     ) : null)}
                   </View>
@@ -430,8 +466,8 @@ export default function AdminScreen() {
               ) : (
                 <View style={s.empty}>
                   <Text style={{ fontSize: 36 }}>🏥</Text>
-                  <Text style={s.emptyTitle}>Klinika nenájdená</Text>
-                  <Text style={s.emptySub}>Pridajte kliniku cez Supabase dashboard.</Text>
+                  <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Klinika nenájdená</Text>
+                  <Text style={[s.emptySub, { color: colors.textSecondary }]}>Pridajte kliniku cez Supabase dashboard.</Text>
                 </View>
               )}
             </ScrollView>
@@ -440,10 +476,11 @@ export default function AdminScreen() {
           {/* ── STATS ── */}
           {tab === 'stats' && stats && (
             <ScrollView
+              style={{ backgroundColor: colors.bg2 }}
               contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
-              <Text style={s.statsSection}>PACIENTI & TERMÍNY</Text>
+              <Text style={[s.statsSection, { color: colors.textSecondary }]}>PACIENTI & TERMÍNY</Text>
               <View style={s.statsGrid}>
                 {[
                   { label: 'Pacienti',         value: stats.totalPatients,         icon: 'people-outline',    color: '#1A5276' },
@@ -451,25 +488,71 @@ export default function AdminScreen() {
                   { label: 'Tento mesiac',      value: stats.thisMonthAppointments, icon: 'today-outline',     color: '#7D6608' },
                   { label: 'Čakajú na potvrd.', value: stats.pendingAppointments,   icon: 'hourglass-outline', color: '#922B21' },
                 ].map((card, i) => (
-                  <View key={i} style={s.statCard}>
+                  <View key={i} style={[s.statCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <Ionicons name={card.icon as any} size={22} color={card.color} />
                     <Text style={[s.statValue, { color: card.color }]}>{card.value}</Text>
-                    <Text style={s.statLabel}>{card.label}</Text>
+                    <Text style={[s.statLabel, { color: colors.textSecondary }]}>{card.label}</Text>
                   </View>
                 ))}
               </View>
 
-              <Text style={[s.statsSection, { marginTop: 20 }]}>PLATBY</Text>
+              <Text style={[s.statsSection, { marginTop: 20, color: colors.textSecondary }]}>PLATBY</Text>
               <View style={s.payCards}>
-                <View style={s.payCard}>
-                  <Text style={s.payCardLabel}>Celkový obrat</Text>
-                  <Text style={s.payCardValue}>{euros(stats.totalPayments)}</Text>
+                <View style={[s.payCard, dark && { backgroundColor: colors.cardBg, borderColor: '#1A527644' }]}>
+                  <Text style={[s.payCardLabel, dark && { color: '#5DADE2' }]}>Celkový obrat</Text>
+                  <Text style={[s.payCardValue, dark && { color: '#5DADE2' }]}>{euros(stats.totalPayments)}</Text>
                 </View>
-                <View style={[s.payCard, { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
-                  <Text style={[s.payCardLabel, { color: '#1E8449' }]}>Zaplatené</Text>
-                  <Text style={[s.payCardValue, { color: '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
+                <View style={[s.payCard, dark ? { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' } : { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
+                  <Text style={[s.payCardLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Zaplatené</Text>
+                  <Text style={[s.payCardValue, { color: dark ? '#27AE60' : '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
                 </View>
               </View>
+
+              {/* ── Štatistiky tímu ── */}
+              {teamStats.size > 0 && (
+                <>
+                  <Text style={[s.statsSection, { marginTop: 24, color: colors.textSecondary }]}>ŠTATISTIKY TÍMU</Text>
+                  {team.filter(m => teamStats.has(m.id)).map(m => {
+                    const ts = teamStats.get(m.id)!;
+                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
+                    return (
+                      <View key={m.id} style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3, marginBottom: 12 }]}>
+                        <View style={s.memberAvatar}>
+                          <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <View style={s.memberTop}>
+                            <Text style={[s.memberName, { color: colors.textPrimary }]} numberOfLines={1}>{m.full_name}</Text>
+                            <View style={[s.roleBadge, { backgroundColor: dark ? rc.darkBg : rc.bg }]}>
+                              <Text style={[s.roleBadgeText, { color: dark ? rc.darkText : rc.text }]}>{ROLE_LABELS[m.role] ?? m.role}</Text>
+                            </View>
+                          </View>
+                          <View style={s.teamStatsRow}>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#5DADE2' : '#1A5276' }]}>{ts.thisMonth}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#5DADE2' : '#1A5276' }]}>tento mes.</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#27AE60' : '#1E8449' }]}>{ts.completed}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>dokončené</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#E74C3C' : '#922B21' }]}>{ts.cancelled}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#E74C3C' : '#922B21' }]}>zrušené</Text>
+                            </View>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#F39C12' : '#7D6608' }]}>
+                                {ts.avgRating != null ? `${ts.avgRating}⭐` : '—'}
+                              </Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#F39C12' : '#7D6608' }]}>hodnotenie</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </>
+              )}
             </ScrollView>
           )}
         </>
@@ -589,6 +672,11 @@ const s = StyleSheet.create({
   },
   payCardLabel: { fontSize: 12, fontWeight: '600', color: '#1A5276', marginBottom: 6 },
   payCardValue: { fontSize: 28, fontWeight: '800', color: '#1A5276' },
+
+  teamStatsRow: { flexDirection: 'row', gap: 6, marginTop: 10, flexWrap: 'wrap' },
+  tsStat:       { flex: 1, minWidth: 64, borderRadius: 10, padding: 8, alignItems: 'center' },
+  tsNum:        { fontSize: 18, fontWeight: '800', lineHeight: 22 },
+  tsLabel:      { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, marginTop: 2, textAlign: 'center' },
 
   empty: { alignItems: 'center', paddingTop: 60, gap: 10 },
   emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp },

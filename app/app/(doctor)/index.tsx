@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
   RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
@@ -29,6 +30,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
   visible: boolean; appointment: Appointment | null; doctorId: string;
   onClose: () => void; onDone: () => void;
 }) {
+  const { colors: rc } = useAppTheme();
   const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [selDate, setSelDate] = useState<Date | null>(null);
@@ -131,15 +133,15 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={rsStyles.overlay}>
         <TouchableOpacity style={{ flex: 0.3 }} activeOpacity={1} onPress={onClose} />
-        <View style={rsStyles.sheet}>
+        <View style={[rsStyles.sheet, { backgroundColor: rc.cardBg }]}>
           <View style={rsStyles.handle} />
-          <Text style={rsStyles.title}>Presunúť termín</Text>
-          <Text style={rsStyles.subtitle}>
+          <Text style={[rsStyles.title, { color: rc.textPrimary }]}>Presunúť termín</Text>
+          <Text style={[rsStyles.subtitle, { color: rc.textSecondary }]}>
             {appointment.patient?.full_name ?? 'Pacient'} · {appointment.service?.name ?? 'Termín'}
           </Text>
 
           {/* Dátumy */}
-          <Text style={rsStyles.sectionLabel}>DÁTUM</Text>
+          <Text style={[rsStyles.sectionLabel, { color: rc.textSecondary }]}>DÁTUM</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
             <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 2 }}>
               {days.map((d, i) => {
@@ -147,12 +149,12 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                 const dbDay = jsDayToDb(d.getDay());
                 const oh    = openingHoursMap.get(dbDay);
                 return (
-                  <TouchableOpacity key={i} style={[rsStyles.dateCell, isSel && rsStyles.dateCellSel]}
+                  <TouchableOpacity key={i} style={[rsStyles.dateCell, { backgroundColor: rc.bg3, borderColor: rc.bg3 }, isSel && rsStyles.dateCellSel]}
                     onPress={() => { setSelDate(d); setSelTime(''); }} activeOpacity={0.8}>
-                    <Text style={[rsStyles.dateName, isSel && rsStyles.dateSelTxt]}>{SK_DAYS_SHORT[d.getDay()]}</Text>
-                    <Text style={[rsStyles.dateNum,  isSel && rsStyles.dateSelTxt]}>{d.getDate()}</Text>
-                    <Text style={[rsStyles.dateMon,  isSel && rsStyles.dateSelTxt]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
-                    {oh && <Text style={[rsStyles.dateHours, isSel && { color: COLORS.sand }]}>{oh.open_time}–{oh.close_time}</Text>}
+                    <Text style={[rsStyles.dateName, { color: rc.textSecondary }, isSel && rsStyles.dateSelTxt]}>{SK_DAYS_SHORT[d.getDay()]}</Text>
+                    <Text style={[rsStyles.dateNum,  { color: rc.textPrimary },   isSel && rsStyles.dateSelTxt]}>{d.getDate()}</Text>
+                    <Text style={[rsStyles.dateMon,  { color: rc.textSecondary }, isSel && rsStyles.dateSelTxt]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
+                    {oh && <Text style={[rsStyles.dateHours, { color: rc.textSecondary }, isSel && { color: COLORS.sand }]}>{oh.open_time}–{oh.close_time}</Text>}
                   </TouchableOpacity>
                 );
               })}
@@ -162,7 +164,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
           {/* Sloty */}
           {selDate && (
             <>
-              <Text style={rsStyles.sectionLabel}>ČAS</Text>
+              <Text style={[rsStyles.sectionLabel, { color: rc.textSecondary }]}>ČAS</Text>
               {loadingSlots
                 ? <ActivityIndicator color={COLORS.wal} style={{ marginVertical: 10 }} />
                 : <View style={rsStyles.slotsGrid}>
@@ -171,9 +173,9 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                       const isSel = selTime === s.start;
                       return (
                         <TouchableOpacity key={s.start}
-                          style={[rsStyles.slot, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
+                          style={[rsStyles.slot, { backgroundColor: rc.cardBg, borderColor: rc.bg3 }, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
                           onPress={() => !taken && setSelTime(s.start)} disabled={taken} activeOpacity={0.8}>
-                          <Text style={[rsStyles.slotText, isSel && { color: '#fff' }, taken && { color: '#ccc' }]}>
+                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#fff' }, taken && { color: '#ccc' }]}>
                             {s.start}
                           </Text>
                           {taken && <Text style={rsStyles.slotTakenLbl}>✗</Text>}
@@ -185,8 +187,8 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
           )}
 
           <View style={rsStyles.actions}>
-            <TouchableOpacity style={rsStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-              <Text style={rsStyles.btnCancelText}>Zrušiť</Text>
+            <TouchableOpacity style={[rsStyles.btnCancel, { borderColor: rc.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+              <Text style={[rsStyles.btnCancelText, { color: rc.textSecondary }]}>Zrušiť</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[rsStyles.btnConfirm, (!selDate || !selTime || saving) && { opacity: 0.4 }]}
@@ -250,9 +252,10 @@ const STATUS_CONFIG = {
 };
 
 function StatusBadge({ status }: { status: Appointment['status'] }) {
+  const { dark } = useAppTheme();
   const c = STATUS_CONFIG[status] ?? STATUS_CONFIG.scheduled;
   return (
-    <View style={[styles.badge, { backgroundColor: c.bg, borderColor: c.border }]}>
+    <View style={[styles.badge, { backgroundColor: dark ? c.color + '22' : c.bg, borderColor: c.border }]}>
       <Text style={[styles.badgeText, { color: c.color }]}>{c.label}</Text>
     </View>
   );
@@ -261,12 +264,14 @@ function StatusBadge({ status }: { status: Appointment['status'] }) {
 function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
   item: Appointment; onComplete: () => void; onCancel: () => void; onDentalChart: () => void; onPassport: () => void; onViewPatient: () => void; onReschedule: () => void; onApproveRequest?: () => void;
 }) {
-  const { colors: ac } = useAppTheme();
+  const { colors: ac, dark } = useAppTheme();
   const adyn = {
     card: { backgroundColor: ac.cardBg, borderColor: ac.bg3 },
     text: { color: ac.textPrimary },
     sub:  { color: ac.textSecondary },
   };
+  // Dark-mode aware button backgrounds
+  const db = (lightBg: string, accent: string) => dark ? { backgroundColor: accent + '22', borderColor: accent + '44' } : { backgroundColor: lightBg };
 
   const accentColor = item.is_urgent ? COLORS.error
     : item.status === 'arrived'   ? COLORS.success
@@ -279,7 +284,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
     <View style={[styles.card, adyn.card, item.is_urgent && styles.cardUrgent]}>
       <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
       {item.is_urgent && (
-        <View style={styles.urgentBanner}>
+        <View style={[styles.urgentBanner, dark && { backgroundColor: '#4A1010' }]}>
           <Text style={styles.urgentBannerText}>🚨 URGENTNÉ</Text>
         </View>
       )}
@@ -312,7 +317,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       ) : null}
       {/* Hodnotenie pacienta */}
       {item.status === 'completed' && item.patient_rating ? (
-        <View style={styles.ratingRow}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n}
               name={n <= item.patient_rating! ? 'star' : 'star-outline'}
@@ -323,7 +328,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
           </Text>
         </View>
       ) : item.status === 'completed' ? (
-        <View style={styles.ratingRow}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n} name="star-outline" size={13} color="#ccc" />
           ))}
@@ -333,7 +338,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       <View style={styles.actionsGrid}>
         {item.status === 'arrived' && (
           <View style={[styles.actionsRow, { marginBottom: 6 }]}>
-            <TouchableOpacity style={[styles.btnComplete, { flex: 1, backgroundColor: '#E8F8F5', borderWidth: 1, borderColor: '#A2D9CE' }]} onPress={onComplete} activeOpacity={0.8}>
+            <TouchableOpacity style={[styles.btnComplete, { flex: 1 }, db('#E8F8F5', '#0E6655')]} onPress={onComplete} activeOpacity={0.8}>
               <Ionicons name="walk-outline" size={15} color="#0E6655" />
               <Text style={[styles.btnCompleteText, { color: '#0E6655' }]}>Zavolať dnu ✓</Text>
             </TouchableOpacity>
@@ -342,17 +347,17 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
         {item.status === 'scheduled' && (
           <>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.btnComplete} onPress={onComplete} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnComplete, db('#EAFAF1', '#1E8449')]} onPress={onComplete} activeOpacity={0.8}>
                 <Ionicons name="checkmark-circle-outline" size={15} color="#1E8449" />
                 <Text style={styles.btnCompleteText}>Dokončiť</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btnCancel} onPress={onCancel} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnCancel, db('#FDEDEC', '#922B21')]} onPress={onCancel} activeOpacity={0.8}>
                 <Ionicons name="close-circle-outline" size={15} color="#922B21" />
                 <Text style={styles.btnCancelText}>Zrušiť</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={styles.btnReschedule} onPress={onReschedule} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.btnReschedule, db('#EBF5FB', '#1A5276')]} onPress={onReschedule} activeOpacity={0.8}>
                 <Ionicons name="calendar-outline" size={15} color="#1A5276" />
                 <Text style={styles.btnRescheduleText}>Presunúť termín</Text>
               </TouchableOpacity>
@@ -360,17 +365,17 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
           </>
         )}
         {item.status === 'pending' && onApproveRequest && (
-          <TouchableOpacity style={[styles.btnReschedule, { flex: 1 }]} onPress={onApproveRequest} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnReschedule, { flex: 1 }, db('#EBF5FB', '#1A5276')]} onPress={onApproveRequest} activeOpacity={0.8}>
             <Ionicons name="shield-checkmark-outline" size={15} color="#1A5276" />
             <Text style={styles.btnRescheduleText}>Vybaviť žiadosť</Text>
           </TouchableOpacity>
         )}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.btnChart} onPress={onDentalChart} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnChart, db('#F4ECE4', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
             <Ionicons name="clipboard-outline" size={15} color={COLORS.wal} />
             <Text style={styles.btnChartText}>Zubná karta</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnPassport} onPress={onPassport} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnPassport, db('#EBF5FB', '#1A5276')]} onPress={onPassport} activeOpacity={0.8}>
             <Ionicons name="document-text-outline" size={15} color="#1A5276" />
             <Text style={styles.btnPassportText}>Anamnéza</Text>
           </TouchableOpacity>
@@ -391,6 +396,7 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
   onReject: () => void;
   saving: boolean;
 }) {
+  const { colors: mc } = useAppTheme();
   const defaultDur = appointment?.service?.duration_minutes ?? 30;
   const [selectedDur, setSelectedDur] = useState(defaultDur);
   const [customText,  setCustomText]  = useState('');
@@ -411,44 +417,44 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
-        <View style={styles.sheet}>
+        <View style={[styles.sheet, { backgroundColor: mc.cardBg }]}>
           <View style={styles.sheetHandle} />
-          <Text style={styles.sheetTitle}>Schváliť termín</Text>
-          <Text style={styles.sheetSub}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
+          <Text style={[styles.sheetTitle, { color: mc.textPrimary }]}>Schváliť termín</Text>
+          <Text style={[styles.sheetSub, { color: mc.textSecondary }]}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
 
           {/* Info o termíne */}
-          <View style={aStyles.infoBox}>
+          <View style={[aStyles.infoBox, { backgroundColor: mc.bg3 }]}>
             {appointment.service && (
-              <Text style={aStyles.infoRow}>
+              <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>
                 {appointment.service.emoji ?? '🦷'} {appointment.service.name}
               </Text>
             )}
-            <Text style={aStyles.infoRow}>📅 {dateLabel} o {timeLabel}</Text>
-            {appointment.notes ? <Text style={aStyles.infoRow}>📝 {appointment.notes}</Text> : null}
+            <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>📅 {dateLabel} o {timeLabel}</Text>
+            {appointment.notes ? <Text style={[aStyles.infoRow, { color: mc.textPrimary }]}>📝 {appointment.notes}</Text> : null}
           </View>
 
           {/* Dĺžka ošetrenia */}
-          <Text style={styles.sheetLabel}>DĹŽKA OŠETRENIA</Text>
+          <Text style={[styles.sheetLabel, { color: mc.textSecondary }]}>DĹŽKA OŠETRENIA</Text>
           <View style={aStyles.chipRow}>
             {[15, 30, 45, 60, 90, 120].map((min) => (
               <TouchableOpacity
                 key={min}
-                style={[aStyles.chip, selectedDur === min && aStyles.chipActive]}
+                style={[aStyles.chip, { backgroundColor: mc.cardBg, borderColor: mc.bg3 }, selectedDur === min && aStyles.chipActive]}
                 onPress={() => { setSelectedDur(min); setCustomText(''); }}
                 activeOpacity={0.75}
               >
-                <Text style={[aStyles.chipText, selectedDur === min && aStyles.chipTextActive]}>
+                <Text style={[aStyles.chipText, { color: mc.textSecondary }, selectedDur === min && aStyles.chipTextActive]}>
                   {min < 60 ? `${min} min` : `${min / 60} hod`}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
-          <View style={aStyles.customRow}>
+          <View style={[aStyles.customRow, { backgroundColor: mc.cardBg, borderColor: mc.bg3 }]}>
             <Ionicons name="time-outline" size={15} color={COLORS.wal} />
             <TextInput
-              style={aStyles.customInput}
+              style={[aStyles.customInput, { color: mc.textPrimary }]}
               placeholder={`Vlastná (min) · teraz: ${selectedDur} min`}
-              placeholderTextColor="#bbb"
+              placeholderTextColor={mc.textSecondary}
               keyboardType="numeric"
               value={customText}
               onChangeText={(t) => {
@@ -522,6 +528,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
   visible: boolean; patientName: string; onClose: () => void;
   onConfirm: (notes: string, careInstructions: string) => void; saving: boolean;
 }) {
+  const { colors: cm, dark: cmDark } = useAppTheme();
   const [notes, setNotes]         = useState('');
   const [careInstr, setCareInstr] = useState('');
   const [showCare, setShowCare]   = useState(false);
@@ -536,17 +543,17 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
         <View style={styles.overlay}>
           <ScrollView style={{ width: '100%' }} contentContainerStyle={{ justifyContent: 'flex-end', flexGrow: 1 }}
             keyboardShouldPersistTaps="handled">
-            <View style={styles.sheet}>
+            <View style={[styles.sheet, { backgroundColor: cm.cardBg }]}>
               <View style={styles.sheetHandle} />
-              <Text style={styles.sheetTitle}>Dokončiť termín</Text>
-              <Text style={styles.sheetSub}>{patientName}</Text>
+              <Text style={[styles.sheetTitle, { color: cm.textPrimary }]}>Dokončiť termín</Text>
+              <Text style={[styles.sheetSub, { color: cm.textSecondary }]}>{patientName}</Text>
 
               {/* Klinické poznámky */}
-              <Text style={styles.sheetLabel}>KLINICKÉ POZNÁMKY (interné)</Text>
+              <Text style={[styles.sheetLabel, { color: cm.textSecondary }]}>KLINICKÉ POZNÁMKY (interné)</Text>
               <TextInput
-                style={styles.sheetInput}
+                style={[styles.sheetInput, { color: cm.textPrimary, backgroundColor: cm.bg3 }]}
                 placeholder="Čo sa robilo, ďalší postup..."
-                placeholderTextColor="#bbb"
+                placeholderTextColor={cm.textSecondary}
                 value={notes}
                 onChangeText={setNotes}
                 multiline numberOfLines={3}
@@ -572,7 +579,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}
                     contentContainerStyle={cmStyles.templatesRow}>
                     {CARE_TEMPLATES.map((t) => (
-                      <TouchableOpacity key={t.label} style={cmStyles.templateChip}
+                      <TouchableOpacity key={t.label} style={[cmStyles.templateChip, { backgroundColor: cm.cardBg, borderColor: cmDark ? cm.bg3 : '#AED6F1' }]}
                         onPress={() => setCareInstr(t.text)} activeOpacity={0.8}>
                         <Text>{t.icon}</Text>
                         <Text style={cmStyles.templateLabel}>{t.label}</Text>
@@ -580,9 +587,9 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
                     ))}
                   </ScrollView>
                   <TextInput
-                    style={[styles.sheetInput, { marginTop: 8, marginBottom: 0 }]}
+                    style={[styles.sheetInput, { marginTop: 8, marginBottom: 0, color: cm.textPrimary, backgroundColor: cm.bg3 }]}
                     placeholder="Pokyny, lieky, obmedzenia po ošetrení..."
-                    placeholderTextColor="#bbb"
+                    placeholderTextColor={cm.textSecondary}
                     value={careInstr}
                     onChangeText={setCareInstr}
                     multiline numberOfLines={3}
@@ -626,7 +633,7 @@ const cmStyles = StyleSheet.create({
 
 export default function DoctorHome() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const navigation = useNavigation();
   const { appointments, loading, refetch, updateStatus, approvePending } = useAppointments('doctor');
   const { unreadCount: notifCount } = useNotifications();
@@ -710,12 +717,13 @@ export default function DoctorHome() {
   }, []);
 
   const loadBirthdays = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('id, full_name, phone_number, date_of_birth')
       .eq('role', 'patient')
-      .not('date_of_birth', 'is', null);
-    if (!data) return;
+      .not('date_of_birth', 'is', null)
+      .limit(500);
+    if (error || !data) return;
     const now = new Date();
     const upcoming = (data as { id: string; full_name: string | null; phone_number: string | null; date_of_birth: string }[])
       .map((p) => {
@@ -757,12 +765,44 @@ export default function DoctorHome() {
 
   async function confirmComplete(notes: string, careInstructions: string) {
     if (!completingItem) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCompleteSaving(true);
     const saved = completingItem;
     const err = await updateStatus(saved.id, 'completed', notes, careInstructions);
     setCompleteSaving(false);
     setCompletingItem(null);
     if (err) { Alert.alert('Chyba', err.message); return; }
+
+    // Notifikácia pacientovi — pokyny po ošetrení
+    const svcName = saved.service?.name ?? 'ošetrenie';
+    if (careInstructions.trim()) {
+      supabase.from('notifications').insert({
+        user_id:        saved.patient_id,
+        title:          '📋 Pokyny po ošetrení',
+        body:           `Po dnešnom ${svcName}: ${careInstructions.trim().slice(0, 120)}${careInstructions.length > 120 ? '…' : ''}`,
+        type:           'info',
+        appointment_id: saved.id,
+      }).then(null, () => {});
+    } else {
+      supabase.from('notifications').insert({
+        user_id:        saved.patient_id,
+        title:          `✅ Ošetrenie dokončené`,
+        body:           `Dnešné ${svcName} bolo úspešne dokončené. Ďakujeme za vašu návštevu!`,
+        type:           'success',
+        appointment_id: saved.id,
+      }).then(null, () => {});
+    }
+
+    // Deň-po check-in notifikácia (o 24h)
+    supabase.from('notifications').insert({
+      user_id:        saved.patient_id,
+      title:          '😊 Ako sa cítite?',
+      body:           `Včera ste boli u nás na ${svcName}. Ak máte otázky alebo ťažkosti, neváhajte nás kontaktovať.`,
+      type:           'info',
+      appointment_id: saved.id,
+      created_at:     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    }).then(null, () => {});
+
     // Ponúkni naplánovanie nasledujúceho termínu
     Alert.alert(
       'Naplánovať ďalší termín?',
@@ -779,6 +819,7 @@ export default function DoctorHome() {
 
   async function handleApprove(durationMinutes: number) {
     if (!approvingAppt) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setApproveSaving(true);
     const saved = approvingAppt;
     const err = await approvePending(saved.id, durationMinutes);
@@ -933,8 +974,9 @@ export default function DoctorHome() {
     appointments.filter((a) => a.status === 'pending')
       .sort((a, b) => (b.is_urgent ? 1 : 0) - (a.is_urgent ? 1 : 0)),
   [appointments]);
-  const todayCount    = appointments.filter((a) => isToday(a.appointment_date) && (a.status === 'scheduled' || a.status === 'arrived')).length;
-  const upcomingCount = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
+  const todayCount      = appointments.filter((a) => isToday(a.appointment_date) && (a.status === 'scheduled' || a.status === 'arrived')).length;
+  const upcomingCount   = appointments.filter((a) => new Date(a.appointment_date) > new Date() && a.status === 'scheduled').length;
+  const completedToday  = appointments.filter((a) => isToday(a.appointment_date) && a.status === 'completed').length;
 
   // Ďalší naplánovaný termín (najbližší v čase)
   const nextAppt = useMemo(() => {
@@ -1024,6 +1066,11 @@ export default function DoctorHome() {
             <Text style={styles.heroStatNum}>{arrivedAppts.length}</Text>
             <Text style={styles.heroStatLbl}>V čakárni</Text>
           </View>
+          <View style={styles.heroStatDivider} />
+          <View style={styles.heroStatItem}>
+            <Text style={[styles.heroStatNum, { color: '#52C896' }]}>{completedToday}</Text>
+            <Text style={[styles.heroStatLbl, { color: 'rgba(196,168,130,0.8)' }]}>Hotovo</Text>
+          </View>
           {pendingAppts.length > 0 && (
             <>
               <View style={styles.heroStatDivider} />
@@ -1096,7 +1143,7 @@ export default function DoctorHome() {
       >
         {/* ── Čakajúce žiadosti ── */}
         {pendingAppts.length > 0 && (
-          <View style={styles.pendingSection}>
+          <View style={[styles.pendingSection, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionDot, { backgroundColor: '#D4AC0D' }]} />
               <Text style={[styles.sectionTitle, { color: '#7D6608' }]}>
@@ -1112,12 +1159,12 @@ export default function DoctorHome() {
                 return (
                   <TouchableOpacity
                     key={appt.id}
-                    style={styles.pendingCard}
+                    style={[styles.pendingCard, { backgroundColor: colors.cardBg }]}
                     onPress={() => setApprovingAppt(appt)}
                     activeOpacity={0.85}
                   >
                     <View style={styles.pendingCardTop}>
-                      <Text style={styles.pendingPatient} numberOfLines={1}>
+                      <Text style={[styles.pendingPatient, { color: colors.textPrimary }]} numberOfLines={1}>
                         {appt.patient?.full_name ?? 'Pacient'}
                       </Text>
                       <View style={[styles.pendingBadge, appt.is_urgent && { backgroundColor: '#C0392B' }]}>
@@ -1128,7 +1175,7 @@ export default function DoctorHome() {
                       <Text style={styles.familyTag}>👶 Pre: {appt.family_member_name}</Text>
                     ) : null}
                     {appt.service && (
-                      <Text style={styles.pendingService} numberOfLines={1}>
+                      <Text style={[styles.pendingService, { color: colors.textSecondary }]} numberOfLines={1}>
                         {appt.service.emoji ?? '🦷'} {appt.service.name}
                       </Text>
                     )}
@@ -1174,7 +1221,7 @@ export default function DoctorHome() {
 
         {/* ── Čakáreň ── */}
         {arrivedAppts.length > 0 && (
-          <View style={styles.arrivedSection}>
+          <View style={[styles.arrivedSection, dark && { backgroundColor: '#0D3B1F', borderBottomColor: '#A2D9CE33' }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionDot, { backgroundColor: '#17A589' }]} />
               <Text style={[styles.sectionTitle, { color: '#0E6655' }]}>V ČAKÁRNI ({arrivedAppts.length})</Text>
@@ -1192,12 +1239,12 @@ export default function DoctorHome() {
                 return (
                   <TouchableOpacity
                     key={appt.id}
-                    style={styles.arrivedCard}
+                    style={[styles.arrivedCard, { backgroundColor: colors.cardBg }]}
                     onPress={() => router.push({ pathname: '/(doctor)/patient-detail', params: { patientId: appt.patient_id } })}
                     activeOpacity={0.85}
                   >
                     <View style={styles.arrivedCardTop}>
-                      <Text style={styles.arrivedPatient} numberOfLines={1}>
+                      <Text style={[styles.arrivedPatient, { color: colors.textPrimary }]} numberOfLines={1}>
                         {appt.patient?.full_name ?? 'Pacient'}
                       </Text>
                       <View style={styles.arrivedWaitBadge}>
@@ -1205,7 +1252,7 @@ export default function DoctorHome() {
                       </View>
                     </View>
                     {appt.service && (
-                      <Text style={styles.arrivedService} numberOfLines={1}>
+                      <Text style={[styles.arrivedService, { color: colors.textSecondary }]} numberOfLines={1}>
                         {appt.service.emoji ?? '🦷'} {appt.service.name}
                       </Text>
                     )}
@@ -1228,7 +1275,7 @@ export default function DoctorHome() {
         {/* ── Ďalší pacient banner ── */}
         {!loading && nextApptLabel && (
           <TouchableOpacity
-            style={styles.nextApptBanner}
+            style={[styles.nextApptBanner, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}
             onPress={() => setFilter('upcoming')}
             activeOpacity={0.8}
           >
@@ -1240,21 +1287,21 @@ export default function DoctorHome() {
 
         {/* ── Narodeniny ── */}
         {birthdays.length > 0 && (
-          <View style={styles.bdSection}>
+          <View style={[styles.bdSection, dark && { backgroundColor: '#1E0D33', borderBottomColor: '#D7BDE233' }]}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: '#7D3C98' }]}>🎂 NARODENINY (najbližších 14 dní)</Text>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: SPACING.lg, gap: 10, paddingBottom: 4 }}>
               {birthdays.map((b) => (
-                <View key={b.id} style={styles.bdCard}>
+                <View key={b.id} style={[styles.bdCard, { backgroundColor: colors.cardBg }]}>
                   <Text style={styles.bdEmoji}>{b.daysUntil === 0 ? '🎉' : '🎂'}</Text>
-                  <Text style={styles.bdName} numberOfLines={1}>{b.name}</Text>
+                  <Text style={[styles.bdName, { color: colors.textPrimary }]} numberOfLines={1}>{b.name}</Text>
                   <Text style={styles.bdDays}>
                     {b.daysUntil === 0 ? 'Dnes!' : b.daysUntil === 1 ? 'Zajtra' : `Za ${b.daysUntil} dní`}
                   </Text>
                   <TouchableOpacity
-                    style={styles.bdBtn}
+                    style={[styles.bdBtn, dark && { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' }]}
                     onPress={() => router.push({ pathname: '/(doctor)/messages', params: { patientId: b.id, patientName: b.name } })}
                     activeOpacity={0.8}
                   >
@@ -1291,7 +1338,7 @@ export default function DoctorHome() {
         <View style={[styles.filterRow, dyn.bg]}>
           {([
             { key: 'today',    label: 'Dnes' },
-            { key: 'upcoming', label: 'Nadchádzajúce' },
+            { key: 'upcoming', label: 'Budúce' },
             { key: 'all',      label: 'Všetky' },
           ] as { key: Filter; label: string }[]).map(({ key, label }) => (
             <TouchableOpacity key={key}

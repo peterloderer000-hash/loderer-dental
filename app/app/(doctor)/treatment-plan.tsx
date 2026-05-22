@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
@@ -6,10 +6,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportTreatmentPlan } from '../../utils/exportPDF';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
 type PlanItem = {
@@ -35,12 +37,15 @@ type Plan = {
   items: PlanItem[];
 };
 
+// ─── Typy ─────────────────────────────────────────────────────────────────────
+type Service = { id: string; name: string; emoji: string | null; price_min: number | null };
+
 // ─── Konfigurácia stavov ───────────────────────────────────────────────────────
 const ITEM_STATUS_CFG = {
-  planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', border: '#AED6F1', icon: 'time-outline'             as const },
-  scheduled: { label: 'Naplánované', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F', icon: 'calendar-outline'         as const },
-  completed: { label: 'Hotové',      color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
-  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', border: '#D5D8DC', icon: 'remove-circle-outline'    as const },
+  planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', border: '#AED6F1', icon: 'time-outline'             as const },
+  scheduled: { label: 'Naplánované', color: '#7D6608', bg: '#FEF9E7', darkBg: '#2D2200', border: '#F9E79F', icon: 'calendar-outline'         as const },
+  completed: { label: 'Hotové',      color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
+  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const },
 };
 const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
 
@@ -66,6 +71,7 @@ function PlanModal({ visible, initial, onClose, onSave }: {
   onClose: () => void;
   onSave: (title: string, notes: string) => Promise<void>;
 }) {
+  const { colors, dark } = useAppTheme();
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
@@ -89,22 +95,22 @@ function PlanModal({ visible, initial, onClose, onSave }: {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={mStyles.overlay}>
           <TouchableOpacity style={{ flex: 0.35 }} activeOpacity={1} onPress={onClose} />
-          <View style={mStyles.sheet}>
-            <View style={mStyles.handle} />
-            <Text style={mStyles.title}>{initial ? 'Upraviť plán' : 'Nový plán'}</Text>
+          <View style={[mStyles.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[mStyles.handle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[mStyles.title, { color: colors.textPrimary }]}>{initial ? 'Upraviť plán' : 'Nový plán'}</Text>
 
-            <Text style={mStyles.label}>NÁZOV PLÁNU</Text>
-            <TextInput style={mStyles.input} value={title} onChangeText={setTitle}
-              placeholder="Liečebný plán" placeholderTextColor="#bbb" autoFocus />
+            <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV PLÁNU</Text>
+            <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={title} onChangeText={setTitle}
+              placeholder="Liečebný plán" placeholderTextColor={dark ? '#666' : '#bbb'} autoFocus />
 
-            <Text style={mStyles.label}>POZNÁMKY (voliteľné)</Text>
-            <TextInput style={[mStyles.input, { minHeight: 80 }]} value={notes} onChangeText={setNotes}
-              placeholder="Celkový postup, odporúčania..." placeholderTextColor="#bbb"
+            <Text style={[mStyles.label, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
+            <TextInput style={[mStyles.input, { minHeight: 80, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={notes} onChangeText={setNotes}
+              placeholder="Celkový postup, odporúčania..." placeholderTextColor={dark ? '#666' : '#bbb'}
               multiline numberOfLines={3} textAlignVertical="top" />
 
             <View style={mStyles.btnRow}>
-              <TouchableOpacity style={mStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-                <Text style={mStyles.btnCancelText}>Zrušiť</Text>
+              <TouchableOpacity style={[mStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+                <Text style={[mStyles.btnCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
                 onPress={handleSave} disabled={saving} activeOpacity={0.85}>
@@ -121,13 +127,16 @@ function PlanModal({ visible, initial, onClose, onSave }: {
 }
 
 // ─── Modál: nový/edit položka ─────────────────────────────────────────────────
-function ItemModal({ visible, planId, initial, onClose, onSave }: {
+function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose, onSave }: {
   visible: boolean;
   planId: string;
   initial: PlanItem | null;
+  services: Service[];
+  prefilledTooth?: number;
   onClose: () => void;
   onSave: (item: Omit<PlanItem, 'id' | 'plan_id' | 'sort_order'> & { id?: string }) => Promise<void>;
 }) {
+  const { colors, dark } = useAppTheme();
   const [itemTitle, setItemTitle] = useState('');
   const [desc,      setDesc]      = useState('');
   const [cost,      setCost]      = useState('');
@@ -140,10 +149,19 @@ function ItemModal({ visible, planId, initial, onClose, onSave }: {
       setItemTitle(initial?.title ?? '');
       setDesc(initial?.description ?? '');
       setCost(initial?.estimated_cost != null ? String(initial.estimated_cost) : '');
-      setTooth(initial?.tooth_number != null ? String(initial.tooth_number) : '');
+      setTooth(
+        initial?.tooth_number != null ? String(initial.tooth_number)
+        : prefilledTooth != null     ? String(prefilledTooth)
+        : '',
+      );
       setStatus(initial?.status ?? 'planned');
     }
-  }, [visible, initial]);
+  }, [visible, initial, prefilledTooth]);
+
+  function applyService(svc: Service) {
+    setItemTitle(svc.name);
+    if (svc.price_min != null) setCost(String(svc.price_min));
+  }
 
   async function handleSave() {
     if (!itemTitle.trim()) { Alert.alert('Chyba', 'Zadaj názov výkonu.'); return; }
@@ -170,41 +188,71 @@ function ItemModal({ visible, planId, initial, onClose, onSave }: {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={mStyles.overlay}>
           <TouchableOpacity style={{ flex: 0.2 }} activeOpacity={1} onPress={onClose} />
-          <View style={[mStyles.sheet, { maxHeight: '80%' }]}>
+          <View style={[mStyles.sheet, { maxHeight: '80%', backgroundColor: colors.cardBg }]}>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={mStyles.handle} />
-              <Text style={mStyles.title}>{initial ? 'Upraviť výkon' : 'Pridať výkon'}</Text>
+              <View style={[mStyles.handle, { backgroundColor: colors.bg3 }]} />
+              <Text style={[mStyles.title, { color: colors.textPrimary }]}>{initial ? 'Upraviť výkon' : 'Pridať výkon'}</Text>
 
-              <Text style={mStyles.label}>NÁZOV VÝKONU *</Text>
-              <TextInput style={mStyles.input} value={itemTitle} onChangeText={setItemTitle}
-                placeholder="Extrakcia, plomba, korunka..." placeholderTextColor="#bbb" autoFocus />
+              {/* ── Rýchly výber zo služieb ── */}
+              {!initial && services.length > 0 && (
+                <>
+                  <Text style={[mStyles.label, { color: colors.textSecondary }]}>RÝCHLY VÝBER ZO SLUŽIEB</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                    style={{ marginBottom: 4 }} contentContainerStyle={{ gap: 8, paddingBottom: 4 }}>
+                    {services.map(svc => (
+                      <TouchableOpacity key={svc.id}
+                        style={[mStyles.svcChip, {
+                          backgroundColor: itemTitle === svc.name
+                            ? (dark ? COLORS.wal + '33' : '#F4ECE4')
+                            : colors.bg2,
+                          borderColor: itemTitle === svc.name ? COLORS.wal : colors.bg3,
+                        }]}
+                        onPress={() => applyService(svc)} activeOpacity={0.75}>
+                        {svc.emoji ? <Text style={mStyles.svcChipEmoji}>{svc.emoji}</Text> : null}
+                        <Text style={[mStyles.svcChipText, { color: itemTitle === svc.name ? COLORS.wal : colors.textSecondary }]}>
+                          {svc.name}
+                        </Text>
+                        {svc.price_min != null && (
+                          <Text style={[mStyles.svcChipPrice, { color: itemTitle === svc.name ? COLORS.wal : colors.textSecondary }]}>
+                            {svc.price_min}€
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </>
+              )}
 
-              <Text style={mStyles.label}>POPIS (voliteľné)</Text>
-              <TextInput style={[mStyles.input, { minHeight: 60 }]} value={desc} onChangeText={setDesc}
-                placeholder="Detaily výkonu..." placeholderTextColor="#bbb"
+              <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV VÝKONU *</Text>
+              <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={itemTitle} onChangeText={setItemTitle}
+                placeholder="Extrakcia, plomba, korunka..." placeholderTextColor={dark ? '#666' : '#bbb'} autoFocus />
+
+              <Text style={[mStyles.label, { color: colors.textSecondary }]}>POPIS (voliteľné)</Text>
+              <TextInput style={[mStyles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={desc} onChangeText={setDesc}
+                placeholder="Detaily výkonu..." placeholderTextColor={dark ? '#666' : '#bbb'}
                 multiline numberOfLines={2} textAlignVertical="top" />
 
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={{ flex: 1 }}>
-                  <Text style={mStyles.label}>CENA (€)</Text>
-                  <TextInput style={mStyles.input} value={cost} onChangeText={setCost}
-                    placeholder="0,00" placeholderTextColor="#bbb" keyboardType="decimal-pad" />
+                  <Text style={[mStyles.label, { color: colors.textSecondary }]}>CENA (€)</Text>
+                  <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={cost} onChangeText={setCost}
+                    placeholder="0,00" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="decimal-pad" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={mStyles.label}>ZUB (1–48)</Text>
-                  <TextInput style={mStyles.input} value={tooth} onChangeText={setTooth}
-                    placeholder="napr. 16" placeholderTextColor="#bbb" keyboardType="numeric" maxLength={2} />
+                  <Text style={[mStyles.label, { color: colors.textSecondary }]}>ZUB (1–48)</Text>
+                  <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={tooth} onChangeText={setTooth}
+                    placeholder="napr. 16" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="numeric" maxLength={2} />
                 </View>
               </View>
 
-              <Text style={mStyles.label}>STAV</Text>
+              <Text style={[mStyles.label, { color: colors.textSecondary }]}>STAV</Text>
               <View style={mStyles.chipRow}>
                 {ITEM_STATUS_CYCLE.map((s) => {
                   const cfg    = ITEM_STATUS_CFG[s];
                   const active = status === s;
                   return (
                     <TouchableOpacity key={s}
-                      style={[mStyles.chip, { borderColor: cfg.border, backgroundColor: active ? cfg.color : '#fff' }]}
+                      style={[mStyles.chip, { borderColor: cfg.border, backgroundColor: active ? cfg.color : colors.cardBg }]}
                       onPress={() => setStatus(s)} activeOpacity={0.8}>
                       <Text style={[mStyles.chipText, { color: active ? '#fff' : cfg.color }]}>
                         {cfg.label}
@@ -216,8 +264,8 @@ function ItemModal({ visible, planId, initial, onClose, onSave }: {
             </ScrollView>
 
             <View style={[mStyles.btnRow, { marginTop: 12 }]}>
-              <TouchableOpacity style={mStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-                <Text style={mStyles.btnCancelText}>Zrušiť</Text>
+              <TouchableOpacity style={[mStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+                <Text style={[mStyles.btnCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
                 onPress={handleSave} disabled={saving} activeOpacity={0.85}>
@@ -248,14 +296,22 @@ const mStyles = StyleSheet.create({
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:      { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
   btnSaveText:  { fontSize: 14, fontWeight: '700', color: '#fff' },
+  svcChip:      { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 20, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
+  svcChipEmoji: { fontSize: 14 },
+  svcChipText:  { fontSize: 12, fontWeight: '600' },
+  svcChipPrice: { fontSize: 11, fontWeight: '500', opacity: 0.75 },
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function TreatmentPlanScreen() {
   const router = useRouter();
-  const { patientId, patientName } = useLocalSearchParams<{ patientId: string; patientName: string }>();
+  const { patientId, patientName, prefilledTooth: prefilledToothParam } =
+    useLocalSearchParams<{ patientId: string; patientName: string; prefilledTooth?: string }>();
+  const { colors, dark } = useAppTheme();
+  const autoOpenedRef = useRef(false);
 
   const [plans,        setPlans]        = useState<Plan[]>([]);
+  const [services,     setServices]     = useState<Service[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [doctorId,     setDoctorId]     = useState('');
 
@@ -268,12 +324,14 @@ export default function TreatmentPlanScreen() {
   const [expandedPlan,     setExpandedPlan]     = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const { data: plansData } = await supabase
-      .from('treatment_plans')
-      .select('*')
-      .eq('patient_id', patientId)
-      .order('created_at', { ascending: false });
+    const [plansRes, svcRes] = await Promise.all([
+      supabase.from('treatment_plans').select('*').eq('patient_id', patientId).order('created_at', { ascending: false }),
+      supabase.from('services').select('id, name, emoji, price_min').order('name'),
+    ]);
 
+    setServices((svcRes.data ?? []) as Service[]);
+
+    const plansData = plansRes.data;
     if (!plansData) { setLoading(false); return; }
 
     const planIds = plansData.map((p: any) => p.id);
@@ -299,6 +357,17 @@ export default function TreatmentPlanScreen() {
     load();
   }, [load]);
 
+  // Auto-open ItemModal pri príchode z dental-chart s prefilledTooth
+  useEffect(() => {
+    if (!prefilledToothParam || autoOpenedRef.current || loading || plans.length === 0) return;
+    autoOpenedRef.current = true;
+    const firstActive = plans.find((p) => p.status === 'active') ?? plans[0];
+    setExpandedPlan(firstActive.id);
+    setActiveItemPlanId(firstActive.id);
+    setEditingItem(null);
+    setShowItemModal(true);
+  }, [plans, loading, prefilledToothParam]);
+
   // ── Plán CRUD ─────────────────────────────────────────────────────────────
   async function handleSavePlan(title: string, notes: string) {
     if (editingPlan) {
@@ -320,6 +389,7 @@ export default function TreatmentPlanScreen() {
         type:    'info',
       });
     }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowPlanModal(false);
     setEditingPlan(null);
     load();
@@ -329,7 +399,9 @@ export default function TreatmentPlanScreen() {
     Alert.alert('Zmazať plán', `Naozaj zmazať "${plan.title}"? Zmažú sa aj všetky výkony.`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Zmazať', style: 'destructive', onPress: async () => {
-        await supabase.from('treatment_plans').delete().eq('id', plan.id);
+        const { error } = await supabase.from('treatment_plans').delete().eq('id', plan.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         if (expandedPlan === plan.id) setExpandedPlan(null);
         load();
       }},
@@ -396,6 +468,7 @@ export default function TreatmentPlanScreen() {
       });
       if (error) { Alert.alert('Chyba', error.message); return; }
     }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowItemModal(false);
     setEditingItem(null);
     load();
@@ -405,7 +478,9 @@ export default function TreatmentPlanScreen() {
     Alert.alert('Zmazať výkon', `Zmazať "${item.title}"?`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Zmazať', style: 'destructive', onPress: async () => {
-        await supabase.from('treatment_plan_items').delete().eq('id', item.id);
+        const { error } = await supabase.from('treatment_plan_items').delete().eq('id', item.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         load();
       }},
     ]);
@@ -454,10 +529,10 @@ export default function TreatmentPlanScreen() {
       {loading ? (
         <View style={{ padding: SIZES.padding }}><SkeletonList count={4} /></View>
       ) : plans.length === 0 ? (
-        <View style={styles.center}>
+        <View style={[styles.center, { backgroundColor: colors.bg2 }]}>
           <Text style={styles.emptyIcon}>📋</Text>
-          <Text style={styles.emptyTitle}>Žiadny plán</Text>
-          <Text style={styles.emptySub}>Vytvorte liečebný plán pre tohto pacienta.</Text>
+          <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadny plán</Text>
+          <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Vytvorte liečebný plán pre tohto pacienta.</Text>
           <TouchableOpacity style={styles.emptyBtn}
             onPress={() => { setEditingPlan(null); setShowPlanModal(true); }} activeOpacity={0.85}>
             <Ionicons name="add" size={16} color="#fff" />
@@ -465,7 +540,7 @@ export default function TreatmentPlanScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <ScrollView style={styles.scroll}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]}
           contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}>
           {plans.map((plan) => {
@@ -477,18 +552,18 @@ export default function TreatmentPlanScreen() {
             const progress  = plan.items.length > 0 ? doneCount / plan.items.length : 0;
 
             return (
-              <View key={plan.id} style={styles.planCard}>
+              <View key={plan.id} style={[styles.planCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 {/* Plan header */}
                 <TouchableOpacity style={styles.planHeader}
                   onPress={() => setExpandedPlan(expanded ? null : plan.id)} activeOpacity={0.8}>
                   <View style={{ flex: 1 }}>
                     <View style={styles.planTitleRow}>
-                      <Text style={styles.planTitle}>{plan.title}</Text>
+                      <Text style={[styles.planTitle, { color: colors.textPrimary }]}>{plan.title}</Text>
                       <View style={[styles.planBadge, { backgroundColor: pCfg.bg }]}>
                         <Text style={[styles.planBadgeText, { color: pCfg.color }]}>{pCfg.label}</Text>
                       </View>
                     </View>
-                    <Text style={styles.planDate}>{fmtDate(plan.created_at)}</Text>
+                    <Text style={[styles.planDate, { color: colors.textSecondary }]}>{fmtDate(plan.created_at)}</Text>
 
                     {/* Progress bar */}
                     {plan.items.length > 0 && (
@@ -496,7 +571,7 @@ export default function TreatmentPlanScreen() {
                         <View style={styles.progressBg}>
                           <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` as any }]} />
                         </View>
-                        <Text style={styles.progressLabel}>
+                        <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>
                           {doneCount}/{plan.items.length} výkonov · {fmtEur(completed)} / {fmtEur(total)}
                         </Text>
                       </View>
@@ -510,25 +585,25 @@ export default function TreatmentPlanScreen() {
                 {expanded && (
                   <>
                     {/* Plan actions */}
-                    <View style={styles.planActions}>
-                      <TouchableOpacity style={styles.planActBtn}
+                    <View style={[styles.planActions, { borderBottomColor: colors.bg3 }]}>
+                      <TouchableOpacity style={[styles.planActBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}
                         onPress={() => { setEditingPlan(plan); setShowPlanModal(true); }} activeOpacity={0.8}>
                         <Ionicons name="pencil-outline" size={13} color={COLORS.wal} />
-                        <Text style={styles.planActText}>Upraviť</Text>
+                        <Text style={[styles.planActText, { color: colors.textSecondary }]}>Upraviť</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={[styles.planActBtn, plan.visible_to_patient && styles.planActBtnActive]}
+                        style={[styles.planActBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }, plan.visible_to_patient && styles.planActBtnActive]}
                         onPress={() => handleToggleVisible(plan)} activeOpacity={0.8}>
                         <Ionicons
                           name={plan.visible_to_patient ? 'eye' : 'eye-off-outline'}
                           size={13}
                           color={plan.visible_to_patient ? COLORS.gold : COLORS.wal}
                         />
-                        <Text style={[styles.planActText, plan.visible_to_patient && { color: COLORS.gold }]}>
+                        <Text style={[styles.planActText, { color: colors.textSecondary }, plan.visible_to_patient && { color: COLORS.gold }]}>
                           {plan.visible_to_patient ? 'Zdieľané' : 'Zdieľať'}
                         </Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.planActBtn}
+                      <TouchableOpacity style={[styles.planActBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}
                         onPress={() => handleChangePlanStatus(
                           plan, plan.status === 'active' ? 'completed' : 'active'
                         )} activeOpacity={0.8}>
@@ -539,12 +614,12 @@ export default function TreatmentPlanScreen() {
                           {plan.status === 'active' ? 'Dokončiť' : 'Znovu aktivovať'}
                         </Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.planActBtn}
+                      <TouchableOpacity style={[styles.planActBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}
                         onPress={() => exportTreatmentPlan(plan, patientName as string)} activeOpacity={0.8}>
                         <Ionicons name="share-outline" size={13} color="#1A5276" />
                         <Text style={[styles.planActText, { color: '#1A5276' }]}>Export PDF</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.planActBtn}
+                      <TouchableOpacity style={[styles.planActBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}
                         onPress={() => handleDeletePlan(plan)} activeOpacity={0.8}>
                         <Ionicons name="trash-outline" size={13} color="#922B21" />
                         <Text style={[styles.planActText, { color: '#922B21' }]}>Zmazať</Text>
@@ -553,9 +628,9 @@ export default function TreatmentPlanScreen() {
 
                     {/* Notes */}
                     {plan.notes ? (
-                      <View style={styles.notesBox}>
+                      <View style={[styles.notesBox, { borderBottomColor: colors.bg3, backgroundColor: colors.bg2 }]}>
                         <Ionicons name="document-text-outline" size={13} color={COLORS.wal} />
-                        <Text style={styles.notesText}>{plan.notes}</Text>
+                        <Text style={[styles.notesText, { color: colors.textSecondary }]}>{plan.notes}</Text>
                       </View>
                     ) : null}
 
@@ -567,7 +642,7 @@ export default function TreatmentPlanScreen() {
                         const iCfg = ITEM_STATUS_CFG[item.status];
                         return (
                           <View key={item.id}
-                            style={[styles.itemCard, { borderLeftColor: iCfg.color, backgroundColor: iCfg.bg }]}>
+                            style={[styles.itemCard, { borderLeftColor: iCfg.color, backgroundColor: dark ? iCfg.darkBg : iCfg.bg }]}>
                             <View style={styles.itemTop}>
                               {/* Tap to cycle status */}
                               <TouchableOpacity
@@ -576,12 +651,12 @@ export default function TreatmentPlanScreen() {
                                 <Ionicons name={iCfg.icon} size={14} color="#fff" />
                               </TouchableOpacity>
                               <View style={{ flex: 1 }}>
-                                <Text style={styles.itemTitle}>{item.title}</Text>
+                                <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>{item.title}</Text>
                                 {item.tooth_number != null && (
-                                  <Text style={styles.itemMeta}>🦷 Zub {item.tooth_number}</Text>
+                                  <Text style={[styles.itemMeta, { color: colors.textSecondary }]}>🦷 Zub {item.tooth_number}</Text>
                                 )}
                                 {item.description ? (
-                                  <Text style={styles.itemDesc}>{item.description}</Text>
+                                  <Text style={[styles.itemDesc, { color: colors.textSecondary }]}>{item.description}</Text>
                                 ) : null}
                               </View>
                               <View style={{ alignItems: 'flex-end', gap: 6 }}>
@@ -618,7 +693,8 @@ export default function TreatmentPlanScreen() {
                     )}
 
                     {/* Add item button */}
-                    <TouchableOpacity style={styles.addItemBtn}
+                    <TouchableOpacity
+                      style={[styles.addItemBtn, { backgroundColor: dark ? colors.cardBg : '#FDFBF8' }]}
                       onPress={() => {
                         setEditingItem(null);
                         setActiveItemPlanId(plan.id);
@@ -631,17 +707,17 @@ export default function TreatmentPlanScreen() {
                     {/* Financial summary */}
                     {plan.items.length > 0 && (
                       <View style={styles.summaryRow}>
-                        <View style={styles.summaryBox}>
-                          <Text style={styles.summaryLabel}>Celková cena</Text>
+                        <View style={[styles.summaryBox, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
+                          <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Celková cena</Text>
                           <Text style={[styles.summaryVal, { color: COLORS.wal }]}>{fmtEur(total)}</Text>
                         </View>
-                        <View style={styles.summaryBox}>
-                          <Text style={styles.summaryLabel}>Dokončené</Text>
-                          <Text style={[styles.summaryVal, { color: '#1E8449' }]}>{fmtEur(completed)}</Text>
+                        <View style={[styles.summaryBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
+                          <Text style={[styles.summaryLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Dokončené</Text>
+                          <Text style={[styles.summaryVal, { color: dark ? '#27AE60' : '#1E8449' }]}>{fmtEur(completed)}</Text>
                         </View>
-                        <View style={styles.summaryBox}>
-                          <Text style={styles.summaryLabel}>Zostatok</Text>
-                          <Text style={[styles.summaryVal, { color: '#922B21' }]}>
+                        <View style={[styles.summaryBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
+                          <Text style={[styles.summaryLabel, { color: dark ? '#E74C3C' : '#922B21' }]}>Zostatok</Text>
+                          <Text style={[styles.summaryVal, { color: dark ? '#E74C3C' : '#922B21' }]}>
                             {fmtEur(total - completed)}
                           </Text>
                         </View>
@@ -666,6 +742,8 @@ export default function TreatmentPlanScreen() {
         visible={showItemModal}
         planId={activeItemPlanId}
         initial={editingItem}
+        services={services}
+        prefilledTooth={prefilledToothParam && !editingItem ? parseInt(prefilledToothParam) : undefined}
         onClose={() => { setShowItemModal(false); setEditingItem(null); }}
         onSave={handleSaveItem}
       />

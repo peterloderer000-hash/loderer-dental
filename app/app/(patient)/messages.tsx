@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  ActivityIndicator, FlatList, KeyboardAvoidingView,
+  ActivityIndicator, FlatList, Image, KeyboardAvoidingView,
   Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = {
   id: string;
@@ -31,6 +33,7 @@ function fmtTime(d: string) {
 
 export default function PatientMessagesScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
 
   const [messages,   setMessages]   = useState<Message[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -68,7 +71,7 @@ export default function PatientMessagesScreen() {
     if (data && data.length > 0) {
       const unread = data.filter((m) => m.receiver_id === user.id && !m.is_read).map((m) => m.id);
       if (unread.length > 0) {
-        await supabase.from('messages').update({ is_read: true }).in('id', unread);
+        await supabase.from('messages').update({ is_read: true }).in('id', unread).throwOnError().catch(() => {});
       }
     }
   }, []);
@@ -92,11 +95,11 @@ export default function PatientMessagesScreen() {
     return () => { supabase.removeChannel(channel); };
   }, [myId, doctorId]);
 
-  async function handleSend() {
-    const trimmed = text.trim();
+  async function handleSend(body?: string) {
+    const trimmed = (body ?? text).trim();
     if (!trimmed || !myId || !doctorId || sending) return;
     setSending(true);
-    setText('');
+    if (!body) setText('');
     try {
       const { data, error } = await supabase.from('messages').insert({
         sender_id:   myId,
@@ -108,7 +111,34 @@ export default function PatientMessagesScreen() {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
     } catch {
-      setText(trimmed);
+      if (!body) setText(trimmed);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function handlePickPhoto() {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) return;
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+      base64: false,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    setSending(true);
+    try {
+      const asset = result.assets[0];
+      const ext   = asset.uri.split('.').pop() ?? 'jpg';
+      const path  = `messages/${myId}/${Date.now()}.${ext}`;
+      const response = await fetch(asset.uri);
+      const blob     = await response.blob();
+      const { error: upErr } = await supabase.storage.from('message-photos').upload(path, blob, { contentType: `image/${ext}` });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from('message-photos').getPublicUrl(path);
+      await handleSend(`[FOTO:${urlData.publicUrl}]`);
+    } catch {
+      // Silent fail — photo upload not critical
     } finally {
       setSending(false);
     }
@@ -139,7 +169,7 @@ export default function PatientMessagesScreen() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
         {loading ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+          <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -147,21 +177,28 @@ export default function PatientMessagesScreen() {
             ref={listRef}
             data={messages}
             keyExtractor={(m) => m.id}
+            style={{ backgroundColor: colors.bg2 }}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyEmoji}>💬</Text>
-                <Text style={styles.emptyTitle}>Zatiaľ žiadne správy</Text>
-                <Text style={styles.emptySub}>Napíšte doktorovi otázku alebo poznámku k termínu.</Text>
+                <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Zatiaľ žiadne správy</Text>
+                <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Napíšte doktorovi otázku alebo poznámku k termínu.</Text>
               </View>
             }
             renderItem={({ item }) => {
-              const isMine = item.sender_id === myId;
+              const isMine  = item.sender_id === myId;
+              const isPhoto = item.body.startsWith('[FOTO:') && item.body.endsWith(']');
+              const photoUrl = isPhoto ? item.body.slice(6, -1) : null;
               return (
-                <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
-                  <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>{item.body}</Text>
-                  <Text style={[styles.bubbleTime, isMine && styles.bubbleTimeMine]}>{fmtTime(item.created_at)}</Text>
+                <View style={[styles.bubble, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isMine ? styles.bubbleMine : styles.bubbleTheirs]}>
+                  {photoUrl ? (
+                    <Image source={{ uri: photoUrl }} style={styles.bubblePhoto} resizeMode="cover" />
+                  ) : (
+                    <Text style={[styles.bubbleText, { color: colors.textPrimary }, isMine && styles.bubbleTextMine]}>{item.body}</Text>
+                  )}
+                  <Text style={[styles.bubbleTime, { color: colors.textSecondary }, isMine && styles.bubbleTimeMine]}>{fmtTime(item.created_at)}</Text>
                 </View>
               );
             }}
@@ -169,11 +206,14 @@ export default function PatientMessagesScreen() {
         )}
 
         {/* Input */}
-        <View style={styles.inputRow}>
+        <View style={[styles.inputRow, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
+          <TouchableOpacity style={styles.photoBtn} onPress={handlePickPhoto} disabled={sending} activeOpacity={0.8}>
+            <Ionicons name="image-outline" size={22} color={sending ? colors.bg3 : COLORS.wal} />
+          </TouchableOpacity>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Napíšte správu..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={text}
             onChangeText={setText}
             multiline
@@ -182,7 +222,7 @@ export default function PatientMessagesScreen() {
           />
           <TouchableOpacity
             style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnDisabled]}
-            onPress={handleSend}
+            onPress={() => handleSend()}
             disabled={!text.trim() || sending}
             activeOpacity={0.8}>
             {sending
@@ -226,6 +266,8 @@ const styles = StyleSheet.create({
   // Input
   inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
+  photoBtn:        { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
+  bubblePhoto:     { width: 200, height: 150, borderRadius: 10, marginBottom: 4 },
   sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
 });

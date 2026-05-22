@@ -198,13 +198,20 @@ export default function ShopScreen() {
           )}
         </View>
 
-        {/* Coming soon */}
-        <View style={[s.comingSoon, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-          <Text style={s.comingSoonEmoji}>🚀</Text>
-          <Text style={[s.comingSoonTitle, { color: colors.textPrimary }]}>Online objednávanie — čoskoro</Text>
-          <Text style={[s.comingSoonSub, { color: colors.textSecondary }]}>
-            Priamy nákup produktov bude dostupný v ďalšej verzii aplikácie.
+        {/* Odporúčacie upozornenie */}
+        <View style={[s.comingSoon, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527655' : '#AED6F1' }]}>
+          <Text style={s.comingSoonEmoji}>💬</Text>
+          <Text style={[s.comingSoonTitle, { color: dark ? '#5DADE2' : '#1A5276' }]}>Potrebujete poradiť s výberom?</Text>
+          <Text style={[s.comingSoonSub, { color: dark ? '#7FB3D3' : '#1A5276' }]}>
+            Náš tím vám odporučí produkt na mieru. Napíšte nám cez AI Chat alebo priamo cez správy.
           </Text>
+          <TouchableOpacity
+            style={[s.comingSoonBtn, { backgroundColor: dark ? '#1A5276' : '#2980B9' }]}
+            onPress={() => router.push('/(patient)/chat')}
+            activeOpacity={0.85}
+          >
+            <Text style={s.comingSoonBtnText}>Spýtať sa AI asistenta →</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -264,7 +271,9 @@ const s = StyleSheet.create({
   emptySub:    { ...TYPO.body, textAlign: 'center' },
 
   // Coming soon
-  comingSoon:      { borderRadius: RADII.lg, padding: 20, alignItems: 'center', gap: 6, borderWidth: 1, borderStyle: 'dashed' },
+  comingSoon:      { borderRadius: RADII.lg, padding: 16, alignItems: 'center', gap: 8, borderWidth: 1 },
+  comingSoonBtn:   { borderRadius: RADII.md, paddingVertical: 10, paddingHorizontal: 20, marginTop: 4 },
+  comingSoonBtnText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#fff' },
   comingSoonEmoji: { fontSize: 32 },
   comingSoonTitle: { fontFamily: 'DMSans_500Medium', fontSize: 14 },
   comingSoonSub:   { ...TYPO.bodySm, textAlign: 'center' },

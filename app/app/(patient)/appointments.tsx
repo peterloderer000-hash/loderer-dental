@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Animated, Modal, RefreshControl, ScrollView, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -11,9 +12,10 @@ import { supabase } from '../../supabase';
 import { exportPatientHistory } from '../../utils/exportPDF';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyState } from '../../components/EmptyState';
+import { MonthCalendar } from '../../components/MonthCalendar';
 import {
-  getNextOpenDays, generateTimeSlotsForDay,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  generateTimeSlotsForDay,
+  jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
 
 type OpeningHour = { open_time: string; close_time: string };
@@ -58,21 +60,24 @@ function isToday(dateStr: string) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn }: {
+function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
   item: Appointment; onCancel: () => void; onReschedule: () => void;
-  onDetail: () => void; onRate: () => void; onCheckIn: () => void;
+  onDetail: () => void; onRate: () => void; onCheckIn: () => void; onQuestionnaire: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const cfg = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.scheduled;
   const now = new Date();
   const apptDate = new Date(item.appointment_date);
   const isPast = apptDate < now;
   const canCancel     = (item.status === 'scheduled' || item.status === 'pending') && !isPast;
   const canReschedule = item.status === 'scheduled' && !isPast;
-  // Prišiel som: len ak je dnes naplánovaný a ešte nezačal (do 15 min pred termínom = vhodný čas)
-  const canCheckIn    = item.status === 'scheduled' && isToday(item.appointment_date) && (apptDate.getTime() - now.getTime()) < 2 * 60 * 60 * 1000; // 2h pred
+  const canCheckIn    = item.status === 'scheduled' && isToday(item.appointment_date) && (apptDate.getTime() - now.getTime()) < 2 * 60 * 60 * 1000;
+  // Dotazník: 48h pred termínom, ešte neplánovaný/scheduled
+  const hoursUntil = (apptDate.getTime() - now.getTime()) / (60 * 60 * 1000);
+  const canFillQuestionnaire = item.status === 'scheduled' && !isPast && hoursUntil <= 48 && hoursUntil > 0;
 
   return (
-    <TouchableOpacity style={[styles.card, isPast && item.status === 'scheduled' && styles.cardMissed]} onPress={onDetail} activeOpacity={0.9}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isPast && item.status === 'scheduled' && styles.cardMissed]} onPress={onDetail} activeOpacity={0.9}>
       {/* Čas + status */}
       <View style={styles.cardTop}>
         <View style={styles.timeBox}>
@@ -87,7 +92,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
             {new Date(item.appointment_date).toLocaleDateString('sk-SK', { weekday: 'long' })}
           </Text>
         </View>
-        <View style={[styles.statusBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+        <View style={[styles.statusBadge, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: dark ? cfg.color + '44' : cfg.border }]}>
           <Ionicons name={cfg.icon} size={11} color={cfg.color} />
           <Text style={[styles.statusText, { color: cfg.color }]}>{cfg.label}</Text>
         </View>
@@ -160,6 +165,18 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
         </View>
       ) : null}
 
+      {/* Predtermínový dotazník */}
+      {canFillQuestionnaire && (
+        <TouchableOpacity
+          style={[styles.questionnaireBtn, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A5276' : '#AED6F1' }]}
+          onPress={onQuestionnaire} activeOpacity={0.85}
+        >
+          <Ionicons name="clipboard-outline" size={16} color={dark ? '#5DADE2' : COLORS.info} />
+          <Text style={[styles.questionnaireBtnText, { color: dark ? '#5DADE2' : COLORS.info }]}>Vyplniť predtermínový dotazník</Text>
+          <Ionicons name="chevron-forward" size={14} color={dark ? '#5DADE2' : COLORS.info} />
+        </TouchableOpacity>
+      )}
+
       {/* Check-in — "Prišiel som" tlačidlo */}
       {canCheckIn && (
         <TouchableOpacity style={styles.checkInBtn} onPress={onCheckIn} activeOpacity={0.85}>
@@ -229,6 +246,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   onClose: () => void;
   onDone: () => void;
 }) {
+  const { colors } = useAppTheme();
   const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [selDate, setSelDate] = useState<Date | null>(null);
@@ -237,7 +255,6 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
-  const days       = useMemo(() => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [], [openDbDays]);
 
   const selectedDayHours = useMemo((): OpeningHour | null => {
     if (!selDate) return null;
@@ -313,6 +330,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
       .eq('id', appointment.id);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const dateStr = dt.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
     // Notifikuj doktora o presune termínu
     supabase.from('notifications').insert({
@@ -334,7 +352,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={rs.overlay}>
-        <View style={rs.sheet}>
+        <View style={[rs.sheet, { backgroundColor: colors.cardBg }]}>
           <View style={rs.handle} />
           <View style={rs.sheetHeader}>
             <View style={{ flex: 1 }}>
@@ -348,22 +366,13 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
 
           {/* Výber dátumu */}
           <Text style={rs.label}>VYBERTE NOVÝ DÁTUM</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={rs.datesScroll} contentContainerStyle={rs.datesContent}>
-            {days.map(d => {
-              const isSel   = selDate?.toDateString() === d.toDateString();
-              const isToday = d.toDateString() === new Date().toDateString();
-              return (
-                <TouchableOpacity key={d.toISOString()}
-                  style={[rs.dateCell, isSel && rs.dateCellSel]}
-                  onPress={() => { setSelDate(d); setSelTime(''); }} activeOpacity={0.75}>
-                  <Text style={[rs.dateName, isSel && rs.dateSel]}>{isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}</Text>
-                  <Text style={[rs.dateNum,  isSel && rs.dateSel]}>{d.getDate()}</Text>
-                  <Text style={[rs.dateMon,  isSel && rs.dateSel]}>{SK_MONTHS_SHORT[d.getMonth()]}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          <MonthCalendar
+            selectedDate={selDate}
+            onSelectDate={(d) => { setSelDate(d); setSelTime(''); }}
+            openDbDays={openDbDays}
+            maxMonthsAhead={12}
+            warnMonthsAhead={6}
+          />
 
           {/* Výber času */}
           {selDate && (
@@ -417,14 +426,6 @@ const rs = StyleSheet.create({
   sheetSub:    { fontSize: 12, color: COLORS.wal },
   label:       { fontSize: 9, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 },
 
-  datesScroll:  { marginHorizontal: -20, marginBottom: 18 },
-  datesContent: { paddingHorizontal: 20, gap: 8 },
-  dateCell:   { width: 56, alignItems: 'center', paddingVertical: 10, borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
-  dateCellSel:{ backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  dateName:   { fontSize: 8, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase' },
-  dateNum:    { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginVertical: 2 },
-  dateMon:    { fontSize: 8, color: COLORS.wal, textTransform: 'uppercase' },
-  dateSel:    { color: COLORS.sand },
 
   slotsGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
   slot:           { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
@@ -444,6 +445,7 @@ const rs = StyleSheet.create({
 function RatingModal({ appointment, onClose, onDone }: {
   appointment: Appointment | null; onClose: () => void; onDone: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   const [rating,  setRating]  = useState(0);
   const [review,  setReview]  = useState('');
   const [saving,  setSaving]  = useState(false);
@@ -470,6 +472,7 @@ function RatingModal({ appointment, onClose, onDone }: {
     }).eq('id', appointment.id);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert('Ďakujeme za hodnotenie! ⭐', LABELS[rating], [
       { text: 'OK', onPress: () => { onDone(); onClose(); } },
     ]);
@@ -483,10 +486,10 @@ function RatingModal({ appointment, onClose, onDone }: {
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
       <View style={rStyles.overlay}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-        <View style={rStyles.sheet}>
-          <View style={rStyles.handle} />
-          <Text style={rStyles.title}>Ohodnoť návštevu</Text>
-          <Text style={rStyles.subtitle}>
+        <View style={[rStyles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[rStyles.handle, { backgroundColor: colors.bg3 }]} />
+          <Text style={[rStyles.title, { color: colors.textPrimary }]}>Ohodnoť návštevu</Text>
+          <Text style={[rStyles.subtitle, { color: colors.textSecondary }]}>
             {appointment.service?.emoji ?? '🦷'} {appointment.service?.name ?? 'Termín'} ·{' '}
             {new Date(appointment.appointment_date).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' })}
           </Text>
@@ -506,9 +509,9 @@ function RatingModal({ appointment, onClose, onDone }: {
 
           {/* Komentár */}
           <TextInput
-            style={rStyles.input}
+            style={[rStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Pridaj komentár (voliteľné)..."
-            placeholderTextColor="#999"
+            placeholderTextColor={dark ? '#666' : '#999'}
             value={review}
             onChangeText={setReview}
             multiline
@@ -517,8 +520,8 @@ function RatingModal({ appointment, onClose, onDone }: {
           />
 
           <View style={rStyles.actions}>
-            <TouchableOpacity style={rStyles.btnCancel} onPress={onClose} activeOpacity={0.8}>
-              <Text style={rStyles.btnCancelText}>Neskôr</Text>
+            <TouchableOpacity style={[rStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+              <Text style={[rStyles.btnCancelText, { color: colors.textSecondary }]}>Neskôr</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[rStyles.btnSubmit, (saving || rating === 0) && { opacity: 0.5 }]}
@@ -554,6 +557,7 @@ const rStyles = StyleSheet.create({
 function AppointmentDetailSheet({ appointment, onClose }: {
   appointment: Appointment | null; onClose: () => void;
 }) {
+  const { colors, dark } = useAppTheme();
   if (!appointment) return null;
   const cfg = STATUS_CONFIG[appointment.status] ?? STATUS_CONFIG.scheduled;
   const d   = new Date(appointment.appointment_date);
@@ -587,8 +591,8 @@ function AppointmentDetailSheet({ appointment, onClose }: {
     <Modal visible animationType="slide" transparent onRequestClose={onClose}>
       <View style={dsStyles.overlay}>
         <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onClose} />
-        <View style={dsStyles.sheet}>
-          <View style={dsStyles.handle} />
+        <View style={[dsStyles.sheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[dsStyles.handle, { backgroundColor: colors.bg3 }]} />
 
           {/* Status chip */}
           <View style={[dsStyles.statusChip, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
@@ -597,19 +601,19 @@ function AppointmentDetailSheet({ appointment, onClose }: {
           </View>
 
           {/* Title */}
-          <Text style={dsStyles.title}>{svc?.name ?? 'Termín'}</Text>
-          <Text style={dsStyles.subtitle}>
+          <Text style={[dsStyles.title, { color: colors.textPrimary }]}>{svc?.name ?? 'Termín'}</Text>
+          <Text style={[dsStyles.subtitle, { color: colors.textSecondary }]}>
             {svc?.emoji ?? '🦷'} {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
             {' · '}{d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
           </Text>
 
           {/* Detail rows */}
-          <View style={dsStyles.rows}>
+          <View style={[dsStyles.rows, { backgroundColor: colors.bg2 }]}>
             {rows.map((r) => (
-              <View key={r.label} style={dsStyles.row}>
+              <View key={r.label} style={[dsStyles.row, { borderBottomColor: colors.bg3 }]}>
                 <Text style={dsStyles.rowIcon}>{r.icon}</Text>
-                <Text style={dsStyles.rowLabel}>{r.label}</Text>
-                <Text style={dsStyles.rowValue} numberOfLines={2}>{r.value}</Text>
+                <Text style={[dsStyles.rowLabel, { color: colors.textSecondary }]}>{r.label}</Text>
+                <Text style={[dsStyles.rowValue, { color: colors.textPrimary }]} numberOfLines={2}>{r.value}</Text>
               </View>
             ))}
           </View>
@@ -768,6 +772,7 @@ export default function AppointmentsScreen() {
         { text: 'Nie', style: 'cancel' },
         { text: 'Áno, odstrániť', style: 'destructive', onPress: async () => {
           await supabase.from('waiting_list').update({ status: 'cancelled' }).eq('id', entry.id);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setWaitingList((prev) => prev.filter((e) => e.id !== entry.id));
         }},
       ]
@@ -804,6 +809,7 @@ export default function AppointmentsScreen() {
         { text: isPending ? 'Áno, odvolať' : 'Áno, zrušiť', style: 'destructive', onPress: async () => {
           const err = await updateStatus(appt.id, 'cancelled');
           if (err) { Alert.alert('Chyba', err.message); return; }
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           // Notifikuj doktora pri zrušení potvrdeného termínu
           if (!isPending) {
             const timeStr = new Date(appt.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
@@ -898,7 +904,7 @@ export default function AppointmentsScreen() {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.wlScroll}>
             {waitingList.map((entry) => (
-              <View key={entry.id} style={styles.wlCard}>
+              <View key={entry.id} style={[styles.wlCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#27AE6044' : '#A2D9CE' }]}>
                 <Text style={styles.wlEmoji}>{entry.service?.emoji ?? '⏳'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.wlService} numberOfLines={1}>
@@ -924,7 +930,7 @@ export default function AppointmentsScreen() {
         style={styles.filterScroll} contentContainerStyle={styles.filterContent}>
         {FILTERS.map((f) => (
           <TouchableOpacity key={f.key}
-            style={[styles.filterTab, filter === f.key && { backgroundColor: f.color, borderColor: f.color }]}
+            style={[styles.filterTab, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, filter === f.key && { backgroundColor: f.color, borderColor: f.color }]}
             onPress={() => setFilter(f.key)} activeOpacity={0.75}>
             <Text style={[styles.filterTabText, filter === f.key && styles.filterTabTextActive]}>
               {f.label}
@@ -967,10 +973,19 @@ export default function AppointmentsScreen() {
                   onReschedule={() => setRescheduleAppt(item)}
                   onDetail={() => setDetailAppt(item)}
                   onRate={() => setRatingAppt(item)}
+                  onQuestionnaire={() => router.push({
+                    pathname: '/(patient)/pre-questionnaire',
+                    params: {
+                      appointmentId:   item.id,
+                      appointmentDate: item.appointment_date,
+                      doctorId:        item.doctor_id,
+                      serviceName:     item.service?.name ?? '',
+                    },
+                  })}
                   onCheckIn={async () => {
                     const err = await selfCheckIn(item.id);
                     if (err) { Alert.alert('Chyba', err.message); return; }
-                    // Notifikuj doktora
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     await supabase.from('notifications').insert({
                       user_id:        item.doctor_id,
                       title:          '🟢 Pacient je v čakárni',
@@ -1076,6 +1091,8 @@ const styles = StyleSheet.create({
   cancelBtnText:    { fontSize: 13, fontWeight: '600', color: '#922B21' },
 
   // Check-in
+  questionnaireBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1.5 },
+  questionnaireBtnText: { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium' },
   checkInBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 10, paddingVertical: 12, borderRadius: 12, backgroundColor: '#0E6655', borderWidth: 1.5, borderColor: '#0B5345' },
   checkInBtnEmoji:{ fontSize: 16 },
   checkInBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },

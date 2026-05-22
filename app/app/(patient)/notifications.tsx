@@ -44,7 +44,7 @@ function timeAgo(dateStr: string): string {
 }
 
 // ─── Notification card ────────────────────────────────────────────────────────
-function NotifCard({ item, onPress, colors }: { item: AppNotification; onPress: () => void; colors: any }) {
+function NotifCard({ item, onPress, colors, dark }: { item: AppNotification; onPress: () => void; colors: any; dark: boolean }) {
   const cfg    = TYPE_CONFIG[item.type] ?? TYPE_CONFIG.info;
   const hasLink = !!item.appointment_id;
 
@@ -53,7 +53,7 @@ function NotifCard({ item, onPress, colors }: { item: AppNotification; onPress: 
       style={[
         nc.card,
         { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
-        !item.read && { backgroundColor: '#FDFAF6', borderColor: COLORS.goldLight },
+        !item.read && { backgroundColor: dark ? colors.bg3 : '#FDFAF6', borderColor: COLORS.goldLight },
         SHADOWS.sm,
       ]}
       onPress={onPress}
@@ -172,7 +172,7 @@ export default function NotificationsScreen() {
             <>
               <SectionLabel label={`NOVÉ (${unread.length})`} color={COLORS.gold} />
               {unread.map(n => (
-                <NotifCard key={n.id} item={n} colors={colors} onPress={async () => {
+                <NotifCard key={n.id} item={n} colors={colors} dark={dark} onPress={async () => {
                   await markRead(n.id);
                   if (n.appointment_id) router.push('/(patient)/appointments');
                 }} />
@@ -184,7 +184,7 @@ export default function NotificationsScreen() {
             <>
               <SectionLabel label="PREČÍTANÉ" color={COLORS.sand} />
               {read.map(n => (
-                <NotifCard key={n.id} item={n} colors={colors} onPress={() => {
+                <NotifCard key={n.id} item={n} colors={colors} dark={dark} onPress={() => {
                   if (n.appointment_id) router.push('/(patient)/appointments');
                 }} />
               ))}

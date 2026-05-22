@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, Linking, RefreshControl, ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -11,6 +12,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyWaitlist } from '../../components/EmptyState';
+import { useAppTheme } from '../../context/ThemeContext';
 
 type WaitlistRow = {
   id: string;
@@ -31,8 +33,13 @@ function timeAgo(dateStr: string): string {
   return days === 1 ? 'včera' : `pred ${days} dňami`;
 }
 
+function waitingDays(dateStr: string): number {
+  return Math.max(0, Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000));
+}
+
 export default function WaitlistScreen() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
   const [items,      setItems]      = useState<WaitlistRow[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -77,7 +84,10 @@ export default function WaitlistScreen() {
               .eq('id', item.id);
             setActing(null);
             if (error) Alert.alert('Chyba', error.message);
-            else setItems(prev => prev.filter(i => i.id !== item.id));
+            else {
+              setItems(prev => prev.filter(i => i.id !== item.id));
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
           },
         },
       ],
@@ -94,6 +104,7 @@ export default function WaitlistScreen() {
     setActing(null);
     if (error) { Alert.alert('Chyba', error.message); return; }
     setItems(prev => prev.filter(i => i.id !== item.id));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Naviguj na add-appointment s pacientom a službou prefill
     router.push({
       pathname: '/(doctor)/add-appointment',
@@ -108,9 +119,9 @@ export default function WaitlistScreen() {
   if (loading) return <SkeletonList count={4} />;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.esp }]} edges={['top']}>
       {/* Hlavička */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -126,7 +137,7 @@ export default function WaitlistScreen() {
       </View>
 
       <ScrollView
-        style={styles.scroll}
+        style={[styles.scroll, { backgroundColor: colors.bg2 }]}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}
@@ -135,9 +146,9 @@ export default function WaitlistScreen() {
           <EmptyWaitlist />
         ) : (
           <>
-            <View style={styles.infoBanner}>
-              <Ionicons name="information-circle-outline" size={14} color="#1A5276" />
-              <Text style={styles.infoBannerText}>
+            <View style={[styles.infoBanner, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527644' : '#AED6F1' }]}>
+              <Ionicons name="information-circle-outline" size={14} color={dark ? '#5DADE2' : '#1A5276'} />
+              <Text style={[styles.infoBannerText, { color: dark ? '#5DADE2' : '#1A5276' }]}>
                 Klepni "Rezervovať" pre otvorenie formulára s predvyplneným pacientom a službou.
               </Text>
             </View>
@@ -148,7 +159,7 @@ export default function WaitlistScreen() {
                 ? new Date(item.preferred_date).toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })
                 : null;
               return (
-                <View key={item.id} style={styles.card}>
+                <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                   {/* Hlavička karty */}
                   <View style={styles.cardHeader}>
                     <View style={styles.avatar}>
@@ -157,13 +168,26 @@ export default function WaitlistScreen() {
                       </Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.patientName}>{item.patient?.full_name ?? 'Pacient'}</Text>
+                      <Text style={[styles.patientName, { color: colors.textPrimary }]}>{item.patient?.full_name ?? 'Pacient'}</Text>
                       {item.patient?.phone_number && (
-                        <Text style={styles.patientPhone}>{item.patient.phone_number}</Text>
+                        <Text style={[styles.patientPhone, { color: colors.textSecondary }]}>{item.patient.phone_number}</Text>
                       )}
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <Text style={styles.timeAgo}>{timeAgo(item.created_at)}</Text>
+                      {(() => {
+                        const days = waitingDays(item.created_at);
+                        const isLong = days >= 14;
+                        return (
+                          <View style={[styles.waitBadge, {
+                            backgroundColor: isLong ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D2233' : '#EBF5FB'),
+                            borderColor: isLong ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#1A527633' : '#AED6F1'),
+                          }]}>
+                            <Text style={[styles.waitBadgeText, { color: isLong ? '#E74C3C' : (dark ? '#5DADE2' : '#1A5276') }]}>
+                              {days === 0 ? 'dnes' : days === 1 ? 'čaká 1 deň' : `čaká ${days} dní`}
+                            </Text>
+                          </View>
+                        );
+                      })()}
                       {item.patient?.phone_number && (
                         <TouchableOpacity
                           style={styles.callBtn}
@@ -179,36 +203,36 @@ export default function WaitlistScreen() {
                   {/* Detaily */}
                   <View style={styles.detailsRow}>
                     {item.service && (
-                      <View style={styles.detailChip}>
+                      <View style={[styles.detailChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                         <Text style={styles.detailChipEmoji}>{item.service.emoji ?? '🦷'}</Text>
-                        <Text style={styles.detailChipText}>{item.service.name}</Text>
+                        <Text style={[styles.detailChipText, { color: colors.textPrimary }]}>{item.service.name}</Text>
                       </View>
                     )}
                     {prefDate && (
-                      <View style={[styles.detailChip, styles.detailChipDate]}>
-                        <Ionicons name="calendar-outline" size={11} color="#1A5276" />
-                        <Text style={[styles.detailChipText, { color: '#1A5276' }]}>{prefDate}</Text>
+                      <View style={[styles.detailChip, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527644' : '#AED6F1' }]}>
+                        <Ionicons name="calendar-outline" size={11} color={dark ? '#5DADE2' : '#1A5276'} />
+                        <Text style={[styles.detailChipText, { color: dark ? '#5DADE2' : '#1A5276' }]}>{prefDate}</Text>
                       </View>
                     )}
                   </View>
 
                   {item.notes && (
-                    <View style={styles.notesRow}>
-                      <Ionicons name="document-text-outline" size={12} color={COLORS.wal} />
-                      <Text style={styles.notesText}>{item.notes}</Text>
+                    <View style={[styles.notesRow, { backgroundColor: colors.bg2 }]}>
+                      <Ionicons name="document-text-outline" size={12} color={colors.textSecondary} />
+                      <Text style={[styles.notesText, { color: colors.textSecondary }]}>{item.notes}</Text>
                     </View>
                   )}
 
                   {/* Akcie */}
                   <View style={styles.actionsRow}>
                     <TouchableOpacity
-                      style={[styles.btnDismiss, isActing && { opacity: 0.5 }]}
+                      style={[styles.btnDismiss, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B44' : '#F1948A' }, isActing && { opacity: 0.5 }]}
                       onPress={() => handleDismiss(item)}
                       disabled={!!acting}
                       activeOpacity={0.8}
                     >
-                      <Ionicons name="close-circle-outline" size={15} color="#922B21" />
-                      <Text style={styles.btnDismissText}>Zamietnuť</Text>
+                      <Ionicons name="close-circle-outline" size={15} color={dark ? '#E74C3C' : '#922B21'} />
+                      <Text style={[styles.btnDismissText, { color: dark ? '#E74C3C' : '#922B21' }]}>Zamietnuť</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.btnApprove, isActing && { opacity: 0.5 }]}
@@ -264,6 +288,8 @@ const styles = StyleSheet.create({
   patientName:{ fontSize: 15, fontWeight: '700', color: COLORS.esp },
   patientPhone:{ fontSize: 11, color: COLORS.wal, marginTop: 1 },
   timeAgo:    { fontSize: 10, color: '#bbb', fontStyle: 'italic' },
+  waitBadge:     { borderRadius: 8, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
+  waitBadgeText: { fontSize: 10, fontWeight: '700' },
   callBtn:    { width: 28, height: 28, borderRadius: 14, backgroundColor: '#1A8A44', alignItems: 'center', justifyContent: 'center' },
 
   detailsRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 8 },

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -80,7 +81,7 @@ const STATUS_COLOR: Record<Appointment['status'], string> = {
 
 export default function DoctorCalendar() {
   const router  = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const { appointments, loading, refetch } = useAppointments('doctor');
 
   const [weekOffset,  setWeekOffset]  = useState(0);
@@ -255,6 +256,7 @@ export default function DoctorCalendar() {
     });
     setSavingBlock(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowBlockModal(false);
     setBlockReason('');
     await loadBlocks(selectedDay);
@@ -264,7 +266,9 @@ export default function DoctorCalendar() {
     Alert.alert('Zmazať blok', 'Odstrániť tento blok z kalendára?', [
       { text: 'Nie', style: 'cancel' },
       { text: 'Zmazať', style: 'destructive', onPress: async () => {
-          await supabase.from('time_blocks').delete().eq('id', blockId);
+          const { error } = await supabase.from('time_blocks').delete().eq('id', blockId);
+          if (error) { Alert.alert('Chyba', error.message); return; }
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setTimeBlocks(prev => prev.filter(b => b.id !== blockId));
         },
       },
@@ -356,12 +360,12 @@ export default function DoctorCalendar() {
             const count      = scheduledByDay.get(d.toDateString()) ?? 0;
             return (
               <TouchableOpacity key={i}
-                style={[styles.dayCell, isSelected && styles.dayCellSel, isToday && !isSelected && styles.dayCellToday]}
+                style={[styles.dayCell, isSelected && styles.dayCellSel, isToday && !isSelected && (dark ? { backgroundColor: '#3B2A1A' } : styles.dayCellToday)]}
                 onPress={() => setSelectedDay(d)} activeOpacity={0.75}>
-                <Text style={[styles.dayName, isSelected && styles.dayNameSel, isToday && !isSelected && styles.dayNameToday]}>
+                <Text style={[styles.dayName, { color: colors.textSecondary }, isSelected && styles.dayNameSel, isToday && !isSelected && styles.dayNameToday]}>
                   {SK_DAYS[i]}
                 </Text>
-                <Text style={[styles.dayNum, isSelected && styles.dayNumSel, isToday && !isSelected && styles.dayNumToday]}>
+                <Text style={[styles.dayNum, { color: colors.textPrimary }, isSelected && styles.dayNumSel, isToday && !isSelected && styles.dayNumToday]}>
                   {d.getDate()}
                 </Text>
                 {count > 0
@@ -378,7 +382,7 @@ export default function DoctorCalendar() {
       {/* ── Deň-header + prepínač pohľadu ── */}
       <View style={[styles.dayHeader, dyn.bg, { borderBottomColor: colors.bg3 }]}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.dayHeaderText}>
+          <Text style={[styles.dayHeaderText, { color: colors.textPrimary }]}>
             {selectedDay.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
           </Text>
           <Text style={styles.dayHeaderSub}>{dayAppts.length} {pluralizeAppointments(dayAppts.length)}</Text>
@@ -409,9 +413,9 @@ export default function DoctorCalendar() {
               { mode: 'month',    icon: 'calendar-outline' },
             ] as { mode: 'list' | 'timeline' | 'month'; icon: any }[]).map(({ mode, icon }) => (
               <TouchableOpacity key={mode}
-                style={[styles.toggleBtn, viewMode === mode && styles.toggleBtnActive]}
+                style={[styles.toggleBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, viewMode === mode && styles.toggleBtnActive]}
                 onPress={() => setViewMode(mode)} activeOpacity={0.75}>
-                <Ionicons name={icon} size={15} color={viewMode === mode ? '#fff' : COLORS.wal} />
+                <Ionicons name={icon} size={15} color={viewMode === mode ? '#fff' : colors.textSecondary} />
               </TouchableOpacity>
             ))}
           </View>
@@ -420,7 +424,7 @@ export default function DoctorCalendar() {
 
       {/* ── Obsah ── */}
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
           <SkeletonList count={5} />
         </View>
 
@@ -446,13 +450,14 @@ export default function DoctorCalendar() {
                   style={[
                     styles.monthCell,
                     isSel    && styles.monthCellSel,
-                    isToday  && !isSel && styles.monthCellToday,
+                    isToday  && !isSel && (dark ? { backgroundColor: '#3B2A1A' } : styles.monthCellToday),
                     !inMonth && styles.monthCellOut,
                   ]}
                   onPress={() => { setSelectedDay(d); }}
                   activeOpacity={0.75}>
                   <Text style={[
                     styles.monthCellNum,
+                    { color: colors.textPrimary },
                     isSel    && styles.monthCellNumSel,
                     isToday  && !isSel && styles.monthCellNumToday,
                     !inMonth && styles.monthCellNumOut,
@@ -490,16 +495,16 @@ export default function DoctorCalendar() {
                     })}
                     activeOpacity={0.78}>
                     <View style={styles.apptTimeCol}>
-                      <Text style={styles.apptTimeStart}>{fmtTime(a.appointment_date)}</Text>
+                      <Text style={[styles.apptTimeStart, { color: colors.textPrimary }]}>{fmtTime(a.appointment_date)}</Text>
                       {dur > 0 && <Text style={styles.apptTimeEnd}>{fmtEnd(a.appointment_date, dur)}</Text>}
                     </View>
                     <View style={[styles.apptTimeLine, { backgroundColor: color }]} />
                     <View style={styles.apptContent}>
-                      <Text style={[styles.apptPatient, dyn.text]}>{a.patient?.full_name ?? 'Neznámy'}</Text>
+                      <Text style={[styles.apptPatient, dyn.text]} numberOfLines={1}>{a.patient?.full_name ?? 'Neznámy'}</Text>
                       {a.service && (
                         <View style={styles.apptSvcRow}>
                           <Text style={{ fontSize: 11 }}>{a.service.emoji ?? '🦷'}</Text>
-                          <Text style={styles.apptSvcName}>{a.service.name}</Text>
+                          <Text style={styles.apptSvcName} numberOfLines={1}>{a.service.name}</Text>
                           {dur > 0 && <Text style={styles.apptDur}>· {dur} min</Text>}
                         </View>
                       )}
@@ -551,7 +556,7 @@ export default function DoctorCalendar() {
 
                   {/* Čas stĺpec */}
                   <View style={styles.apptTimeCol}>
-                    <Text style={styles.apptTimeStart} numberOfLines={1}>{fmtTime(a.appointment_date)}</Text>
+                    <Text style={[styles.apptTimeStart, { color: colors.textPrimary }]} numberOfLines={1}>{fmtTime(a.appointment_date)}</Text>
                     {dur > 0 && (
                       <Text style={styles.apptTimeEnd} numberOfLines={1}>{fmtEnd(a.appointment_date, dur)}</Text>
                     )}
@@ -562,8 +567,8 @@ export default function DoctorCalendar() {
 
                   {/* Obsah */}
                   <View style={styles.apptContent}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      <Text style={[styles.apptPatient, dyn.text]}>{a.patient?.full_name ?? 'Neznámy pacient'}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'nowrap' }}>
+                      <Text style={[styles.apptPatient, dyn.text, { flex: 1 }]} numberOfLines={1}>{a.patient?.full_name ?? 'Neznámy pacient'}</Text>
                       {a.is_urgent && (
                         <View style={styles.urgentBadge}>
                           <Text style={styles.urgentBadgeText}>🚨</Text>
@@ -578,7 +583,7 @@ export default function DoctorCalendar() {
                     {a.service && (
                       <View style={styles.apptSvcRow}>
                         <Text style={{ fontSize: 11 }}>{a.service.emoji ?? '🦷'}</Text>
-                        <Text style={styles.apptSvcName}>{a.service.name}</Text>
+                        <Text style={styles.apptSvcName} numberOfLines={1}>{a.service.name}</Text>
                         {dur > 0 && <Text style={styles.apptDur}>· {dur} min</Text>}
                       </View>
                     )}
@@ -695,18 +700,18 @@ export default function DoctorCalendar() {
       {/* ── Modal: Blokovať čas ── */}
       <Modal visible={showBlockModal} transparent animationType="slide" onRequestClose={() => setShowBlockModal(false)}>
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowBlockModal(false)} />
-        <View style={styles.modalSheet}>
-          <View style={styles.modalHandle} />
-          <Text style={styles.modalTitle}>🔒 Blokovať čas</Text>
-          <Text style={styles.modalDate}>
+        <View style={[styles.modalSheet, { backgroundColor: colors.cardBg }]}>
+          <View style={[styles.modalHandle, { backgroundColor: colors.bg3 }]} />
+          <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>🔒 Blokovať čas</Text>
+          <Text style={[styles.modalDate, { color: colors.textSecondary }]}>
             {selectedDay.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}
           </Text>
 
           <View style={styles.timeRow}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.timeLabel}>Od</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Od</Text>
               <TextInput
-                style={styles.timeInput}
+                style={[styles.timeInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
                 value={blockStart}
                 onChangeText={setBlockStart}
                 placeholder="08:00"
@@ -717,9 +722,9 @@ export default function DoctorCalendar() {
             </View>
             <Ionicons name="arrow-forward" size={18} color={COLORS.wal} style={{ marginTop: 26 }} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.timeLabel}>Do</Text>
+              <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Do</Text>
               <TextInput
-                style={styles.timeInput}
+                style={[styles.timeInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
                 value={blockEnd}
                 onChangeText={setBlockEnd}
                 placeholder="09:00"
@@ -748,9 +753,9 @@ export default function DoctorCalendar() {
             ))}
           </ScrollView>
 
-          <Text style={styles.timeLabel}>Dôvod (voliteľné)</Text>
+          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>Dôvod (voliteľné)</Text>
           <TextInput
-            style={styles.reasonInput}
+            style={[styles.reasonInput, { backgroundColor: colors.bg3, borderColor: colors.bg3, color: colors.textPrimary }]}
             value={blockReason}
             onChangeText={setBlockReason}
             placeholder="Napr. Obed, Školenie, Dovolenka..."
@@ -832,7 +837,7 @@ const styles = StyleSheet.create({
   apptContent:   { flex: 1 },
   apptPatient:   { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 3 },
   apptSvcRow:    { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  apptSvcName:   { fontSize: 12, color: COLORS.wal, fontWeight: '500' },
+  apptSvcName:   { fontSize: 12, color: COLORS.wal, fontWeight: '500', flex: 1 },
   apptDur:       { fontSize: 12, color: '#888' },
   apptNotes:     { fontSize: 12, color: COLORS.wal, marginTop: 3 },
   statusBadge:   { borderRadius: 6, borderWidth: 1, paddingHorizontal: 6, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },

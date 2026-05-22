@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -58,16 +59,17 @@ const SEVERITY_CONFIG: Record<Severity, { label: string; bg: string; color: stri
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function DiagnosisCard({ item }: { item: Diagnosis }) {
+  const { colors } = useAppTheme();
   const sev = item.severity ? SEVERITY_CONFIG[item.severity] : null;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       {/* Top row */}
       <View style={styles.cardTopRow}>
         <View style={styles.cardTopLeft}>
           {item.icd_code ? (
-            <View style={styles.icdChip}>
-              <Text style={styles.icdChipText}>{item.icd_code}</Text>
+            <View style={[styles.icdChip, { backgroundColor: colors.bg3 }]}>
+              <Text style={[styles.icdChipText, { color: colors.textPrimary }]}>{item.icd_code}</Text>
             </View>
           ) : null}
           {sev ? (
@@ -76,17 +78,17 @@ function DiagnosisCard({ item }: { item: Diagnosis }) {
             </View>
           ) : null}
         </View>
-        <Text style={styles.cardDate}>{formatDate(item.created_at)}</Text>
+        <Text style={[styles.cardDate, { color: colors.textSecondary }]}>{formatDate(item.created_at)}</Text>
       </View>
 
       {/* Description */}
-      <Text style={styles.cardDescription}>{item.description}</Text>
+      <Text style={[styles.cardDescription, { color: colors.textPrimary }]}>{item.description}</Text>
 
       {/* Doctor */}
       {item.doctor?.full_name ? (
         <View style={styles.cardFooter}>
           <Ionicons name="person-circle-outline" size={12} color={COLORS.sand} />
-          <Text style={styles.cardDoctorName}>MUDr. {item.doctor.full_name}</Text>
+          <Text style={[styles.cardDoctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
         </View>
       ) : null}
     </View>
@@ -94,11 +96,12 @@ function DiagnosisCard({ item }: { item: Diagnosis }) {
 }
 
 function PrescriptionCard({ item }: { item: Prescription }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       {/* Top row */}
       <View style={styles.cardTopRow}>
-        <Text style={styles.medicationName} numberOfLines={1}>{item.medication}</Text>
+        <Text style={[styles.medicationName, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
         <View style={[
           styles.activeBadge,
           item.is_active ? styles.activeBadgeOn : styles.activeBadgeOff,
@@ -113,13 +116,13 @@ function PrescriptionCard({ item }: { item: Prescription }) {
       </View>
 
       {/* Date under title */}
-      <Text style={styles.cardDateSub}>{formatDate(item.created_at)}</Text>
+      <Text style={[styles.cardDateSub, { color: colors.textSecondary }]}>{formatDate(item.created_at)}</Text>
 
       {/* Dosage */}
       {item.dosage ? (
         <View style={styles.rxInfoRow}>
           <Text style={styles.rxInfoEmoji}>💊</Text>
-          <Text style={styles.rxInfoText}>{item.dosage}</Text>
+          <Text style={[styles.rxInfoText, { color: colors.textPrimary }]}>{item.dosage}</Text>
         </View>
       ) : null}
 
@@ -127,7 +130,7 @@ function PrescriptionCard({ item }: { item: Prescription }) {
       {item.instructions ? (
         <View style={styles.rxInfoRow}>
           <Text style={styles.rxInfoEmoji}>📋</Text>
-          <Text style={styles.rxInfoTextMulti}>{item.instructions}</Text>
+          <Text style={[styles.rxInfoTextMulti, { color: colors.textPrimary }]}>{item.instructions}</Text>
         </View>
       ) : null}
 
@@ -135,7 +138,7 @@ function PrescriptionCard({ item }: { item: Prescription }) {
       {item.valid_until ? (
         <View style={styles.rxInfoRow}>
           <Text style={styles.rxInfoEmoji}>📅</Text>
-          <Text style={styles.rxInfoText}>Platné do: {item.valid_until}</Text>
+          <Text style={[styles.rxInfoText, { color: colors.textPrimary }]}>Platné do: {item.valid_until}</Text>
         </View>
       ) : null}
 
@@ -143,7 +146,7 @@ function PrescriptionCard({ item }: { item: Prescription }) {
       {item.doctor?.full_name ? (
         <View style={styles.cardFooter}>
           <Ionicons name="person-circle-outline" size={12} color={COLORS.sand} />
-          <Text style={styles.cardDoctorName}>MUDr. {item.doctor.full_name}</Text>
+          <Text style={[styles.cardDoctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
         </View>
       ) : null}
     </View>
@@ -151,11 +154,12 @@ function PrescriptionCard({ item }: { item: Prescription }) {
 }
 
 function EmptyState({ emoji, subtitle }: { emoji: string; subtitle: string }) {
+  const { colors } = useAppTheme();
   return (
     <View style={styles.emptyState}>
       <Text style={styles.emptyEmoji}>{emoji}</Text>
-      <Text style={styles.emptyTitle}>Žiadne záznamy</Text>
-      <Text style={styles.emptySub}>{subtitle}</Text>
+      <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne záznamy</Text>
+      <Text style={[styles.emptySub, { color: colors.textSecondary }]}>{subtitle}</Text>
     </View>
   );
 }
@@ -166,6 +170,7 @@ type Tab = 'diagnoses' | 'prescriptions';
 
 export default function PrescriptionsScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
 
   const [tab, setTab] = useState<Tab>('diagnoses');
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
@@ -240,7 +245,7 @@ export default function PrescriptionsScreen() {
             <Text style={styles.headerTitle}>Recepty & Diagnózy</Text>
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
           <SkeletonList count={5} />
         </View>
       </SafeAreaView>
@@ -262,22 +267,22 @@ export default function PrescriptionsScreen() {
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar, { backgroundColor: colors.bg3 }]}>
         <TouchableOpacity
-          style={[styles.tabBtn, tab === 'diagnoses' && styles.tabBtnActive]}
+          style={[styles.tabBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, tab === 'diagnoses' && styles.tabBtnActive]}
           onPress={() => setTab('diagnoses')}
           activeOpacity={0.75}
         >
-          <Text style={[styles.tabBtnText, tab === 'diagnoses' && styles.tabBtnTextActive]}>
+          <Text style={[styles.tabBtnText, { color: colors.textSecondary }, tab === 'diagnoses' && styles.tabBtnTextActive]}>
             {'🩺 Diagnózy (' + diagnoses.length + ')'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tabBtn, tab === 'prescriptions' && styles.tabBtnActive]}
+          style={[styles.tabBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, tab === 'prescriptions' && styles.tabBtnActive]}
           onPress={() => setTab('prescriptions')}
           activeOpacity={0.75}
         >
-          <Text style={[styles.tabBtnText, tab === 'prescriptions' && styles.tabBtnTextActive]}>
+          <Text style={[styles.tabBtnText, { color: colors.textSecondary }, tab === 'prescriptions' && styles.tabBtnTextActive]}>
             {'💊 Recepty (' + prescriptions.length + ')'}
           </Text>
         </TouchableOpacity>
@@ -285,7 +290,7 @@ export default function PrescriptionsScreen() {
 
       {/* Content */}
       <ScrollView
-        style={styles.scroll}
+        style={[styles.scroll, { backgroundColor: colors.bg2 }]}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={

@@ -176,6 +176,36 @@ export default function MojZubarScreen() {
         </LinearGradient>
 
         <View style={{ backgroundColor: colors.bg2, padding: 16, gap: 12, paddingBottom: 120 }}>
+
+          {/* ── Quick action tlačidlá ── */}
+          <View style={qa.row}>
+            {displayDoctor.phone_number && (
+              <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`)} activeOpacity={0.8}>
+                <View style={[qa.icon, { backgroundColor: COLORS.successBg }]}>
+                  <Ionicons name="call" size={20} color={COLORS.success} />
+                </View>
+                <Text style={[qa.label, { color: colors.textPrimary }]}>Volať</Text>
+              </TouchableOpacity>
+            )}
+            {displayDoctor.clinic_address && (
+              <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(displayDoctor.clinic_address!)}`)} activeOpacity={0.8}>
+                <View style={[qa.icon, { backgroundColor: '#F5EEF8' }]}>
+                  <Ionicons name="navigate" size={20} color="#7D3C98" />
+                </View>
+                <Text style={[qa.label, { color: colors.textPrimary }]}>Navigovať</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+              onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent((displayDoctor.clinic_address ?? displayDoctor.clinic_name ?? 'Loderer Dental') + ' parkovanie')}`)} activeOpacity={0.8}>
+              <View style={[qa.icon, { backgroundColor: COLORS.warningBg }]}>
+                <Ionicons name="car" size={20} color={COLORS.warning} />
+              </View>
+              <Text style={[qa.label, { color: colors.textPrimary }]}>Parkovanie</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Contact */}
           <SectionCard title="KONTAKT" colors={colors}>
             <ContactRow
@@ -214,8 +244,37 @@ export default function MojZubarScreen() {
                   separator={!!displayDoctor.clinic_name}
                 />
               )}
+              <ContactRow
+                icon="car-outline"
+                iconBg={COLORS.warningBg}
+                iconColor={COLORS.warning}
+                label="Parkovanie"
+                value="Parkovisko v blízkosti ambulancie. Platené parkovanie na ulici."
+                colors={colors}
+                separator
+              />
             </SectionCard>
           )}
+
+          {/* Urgentný kontakt */}
+          <SectionCard title="URGENTNÁ POMOC" colors={colors}>
+            <View style={urg.wrap}>
+              <Ionicons name="warning-outline" size={18} color="#E74C3C" />
+              <Text style={[urg.text, { color: colors.textSecondary }]}>
+                Pri akútnej bolesti alebo úraze nás kontaktujte telefonicky. Mimo ordinačných hodín navštívte pohotovostnú stomatológiu.
+              </Text>
+            </View>
+            {displayDoctor.phone_number && (
+              <TouchableOpacity
+                style={[urg.callBtn, { backgroundColor: '#FDEDEC', borderColor: '#F1948A' }]}
+                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="call" size={16} color="#E74C3C" />
+                <Text style={urg.callText}>Zavolať — {displayDoctor.phone_number}</Text>
+              </TouchableOpacity>
+            )}
+          </SectionCard>
 
           {/* Opening hours */}
           {hours.length > 0 && (
@@ -375,4 +434,18 @@ const abt = StyleSheet.create({
   badges:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   badge:     { borderRadius: RADII.full, paddingHorizontal: 12, paddingVertical: 5, backgroundColor: COLORS.bg3 },
   badgeText: { fontFamily: 'DMSans_500Medium', fontSize: 11, color: COLORS.wal, letterSpacing: 0.3 },
+});
+
+const qa = StyleSheet.create({
+  row:   { flexDirection: 'row', gap: 10 },
+  btn:   { flex: 1, alignItems: 'center', gap: 8, paddingVertical: 14, borderRadius: RADII.lg, borderWidth: 1, ...SHADOWS.sm },
+  icon:  { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  label: { fontFamily: 'DMSans_500Medium', fontSize: 12 },
+});
+
+const urg = StyleSheet.create({
+  wrap:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14, paddingBottom: 10 },
+  text:     { flex: 1, ...TYPO.body, lineHeight: 20 },
+  callBtn:  { flexDirection: 'row', alignItems: 'center', gap: 8, margin: 14, marginTop: 4, padding: 12, borderRadius: RADII.md, borderWidth: 1 },
+  callText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#E74C3C' },
 });

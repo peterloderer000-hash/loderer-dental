@@ -20,13 +20,13 @@ export type ClinicAppointment = {
   doctor_id:           string;
   service_id:          string | null;
   // Hlavný status (existujúci)
-  status:              string;
-  arrived_at:          string | null;
-  // Clinic-specific (nové stĺpce)
-  clinic_status:       ClinicStatus;
-  chair_start_at:      string | null;
-  treatment_end_at:    string | null;
-  room_id:             string | null;
+  status:         string;
+  arrived_at:     string | null;
+  started_at:     string | null;   // kedy doktor začal (bolo: chair_start_at)
+  ended_at:       string | null;   // kedy výkon skončil (bolo: treatment_end_at)
+  // Clinic-specific
+  clinic_status:  ClinicStatus;
+  room_id:        string | null;
   // Relácie
   patient:  { full_name: string | null; phone_number: string | null } | null;
   service:  { name: string; emoji: string | null; duration_minutes: number } | null;
@@ -83,8 +83,8 @@ export function useClinic() {
         .from('appointments')
         .select(`
           id, appointment_date, patient_id, doctor_id, service_id,
-          status, arrived_at,
-          clinic_status, chair_start_at, treatment_end_at, room_id,
+          status, arrived_at, started_at, ended_at,
+          clinic_status, room_id,
           patient:profiles!appointments_patient_id_fkey(full_name, phone_number),
           service:services(name, emoji, duration_minutes),
           room:clinic_rooms(id, name, color, sort_order)
@@ -208,8 +208,8 @@ export function useClinic() {
   // Odoslanie do kresla (START)
   async function startTreatment(appt: ClinicAppointment): Promise<{ error: string | null }> {
     const res = await _updateAppt(appt.id, {
-      clinic_status:  'in_chair',
-      chair_start_at: new Date().toISOString(),
+      clinic_status: 'in_chair',
+      started_at:    new Date().toISOString(),
     });
     if (!res.error) await _logEvent(appt, 'treatment_started');
     return res;
@@ -218,8 +218,8 @@ export function useClinic() {
   // Výkon hotový (HOTOVO)
   async function endTreatment(appt: ClinicAppointment): Promise<{ error: string | null }> {
     const res = await _updateAppt(appt.id, {
-      clinic_status:    'treatment_done',
-      treatment_end_at: new Date().toISOString(),
+      clinic_status: 'treatment_done',
+      ended_at:      new Date().toISOString(),
     });
     if (!res.error) await _logEvent(appt, 'treatment_finished');
     return res;

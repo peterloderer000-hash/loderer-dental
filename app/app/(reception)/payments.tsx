@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ActivityIndicator, RefreshControl, ScrollView, StyleSheet,
+  ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -44,15 +44,21 @@ export default function ReceptionPayments() {
 
   async function load(silent = false) {
     if (!silent) setLoading(true);
-    const { data } = await supabase
-      .from('appointments')
-      .select('id, appointment_date, duration_minutes, clinic_status, payment_status, price, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, price)')
-      .gte('appointment_date', `${today}T00:00:00`)
-      .lte('appointment_date', `${today}T23:59:59`)
-      .order('appointment_date');
-    setAppointments((data as unknown as PayableAppointment[]) ?? []);
-    setLoading(false);
-    setRefreshing(false);
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, appointment_date, duration_minutes, clinic_status, payment_status, price, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, price)')
+        .gte('appointment_date', `${today}T00:00:00`)
+        .lte('appointment_date', `${today}T23:59:59`)
+        .order('appointment_date');
+      if (error) throw error;
+      setAppointments((data as unknown as PayableAppointment[]) ?? []);
+    } catch (e: any) {
+      console.error('[Payments] load failed:', e?.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -79,8 +85,9 @@ export default function ReceptionPayments() {
   async function markPaid(apt: PayableAppointment) {
     setMarking(apt.id);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await supabase.from('appointments').update({ payment_status: 'paid' }).eq('id', apt.id);
+    const { error } = await supabase.from('appointments').update({ payment_status: 'paid' }).eq('id', apt.id);
     setMarking(null);
+    if (error) { Alert.alert('Chyba', error.message); return; }
     load(true);
   }
 

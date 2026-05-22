@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { useClinic } from '../../hooks/useClinic';
 import { computeDayMetrics, fmtMins, CLINIC_STATUS_CFG } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -127,6 +128,7 @@ function generateMockResponse(
 // ─── Message bubble ───────────────────────────────────────────────────────────
 
 function Bubble({ msg }: { msg: Message }) {
+  const { colors } = useAppTheme();
   const isUser = msg.role === 'user';
   const parts  = msg.text.split(/\*\*(.*?)\*\*/g);
 
@@ -137,8 +139,8 @@ function Bubble({ msg }: { msg: Message }) {
           <Text style={bbl.avatarEmoji}>🤖</Text>
         </View>
       )}
-      <View style={[bbl.bubble, isUser ? bbl.bubbleUser : bbl.bubbleAI]}>
-        <Text style={isUser ? bbl.textUser : bbl.textAI}>
+      <View style={[bbl.bubble, isUser ? bbl.bubbleUser : [bbl.bubbleAI, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]]}>
+        <Text style={isUser ? bbl.textUser : [bbl.textAI, { color: colors.textPrimary }]}>
           {parts.map((part, i) =>
             i % 2 === 1
               ? <Text key={i} style={{ fontWeight: '800' }}>{part}</Text>
@@ -171,6 +173,7 @@ const bbl = StyleSheet.create({
 
 export default function ClinicAIScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
   const clinic  = useClinic();
   const metrics = computeDayMetrics(clinic.appointments);
 
@@ -249,7 +252,7 @@ export default function ClinicAIScreen() {
         {/* Messages */}
         <ScrollView
           ref={scrollRef}
-          style={s.scroll}
+          style={[s.scroll, { backgroundColor: colors.bg2 }]}
           contentContainerStyle={s.content}
           showsVerticalScrollIndicator={false}
           onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
@@ -258,7 +261,7 @@ export default function ClinicAIScreen() {
 
           {thinking && (
             <View style={s.thinkingRow}>
-              <View style={s.thinkingBubble}>
+              <View style={[s.thinkingBubble, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 <ActivityIndicator size="small" color={COLORS.wal} />
                 <Text style={s.thinkingText}>Premýšľam...</Text>
               </View>
@@ -268,20 +271,20 @@ export default function ClinicAIScreen() {
         </ScrollView>
 
         {/* Suggestions */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.suggestScroll} contentContainerStyle={s.suggestRow}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[s.suggestScroll, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]} contentContainerStyle={s.suggestRow}>
           {SUGGESTIONS.map(sug => (
-            <TouchableOpacity key={sug} style={s.suggestChip} onPress={() => send(sug)} activeOpacity={0.8}>
-              <Text style={s.suggestText}>{sug}</Text>
+            <TouchableOpacity key={sug} style={[s.suggestChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]} onPress={() => send(sug)} activeOpacity={0.8}>
+              <Text style={[s.suggestText, { color: colors.textSecondary }]}>{sug}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* Input */}
-        <View style={s.inputBar}>
+        <View style={[s.inputBar, { backgroundColor: colors.cardBg, borderTopColor: colors.bg3 }]}>
           <TextInput
-            style={s.input}
+            style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Opýtajte sa na stav kliniky..."
-            placeholderTextColor="#bbb"
+            placeholderTextColor={dark ? '#555' : '#bbb'}
             value={input}
             onChangeText={setInput}
             multiline

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Animated, Dimensions } from 'react-native';
+import { useAppTheme } from '../context/ThemeContext';
 
 interface SkeletonProps {
   width?: number | string;
@@ -11,6 +12,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SHIMMER_W = 200;
 
 export function Skeleton({ width = '100%', height = 16, borderRadius = 4 }: SkeletonProps) {
+  const { dark } = useAppTheme();
   const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -29,8 +31,8 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = 4 }: Skel
   });
 
   return (
-    <View style={[s.base, { width, height, borderRadius } as any]}>
-      <Animated.View style={[s.shimmer, { width: SHIMMER_W, opacity, transform: [{ translateX }] }]} />
+    <View style={[s.base, { width, height, borderRadius, backgroundColor: dark ? '#3D2E22' : '#EDE4D8' } as any]}>
+      <Animated.View style={[s.shimmer, { width: SHIMMER_W, opacity, transform: [{ translateX }], backgroundColor: dark ? '#6B5242' : '#C4A882' }]} />
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useAppTheme } from '../context/ThemeContext';
 
 interface EmptyStateProps {
   icon: string;
@@ -9,11 +10,12 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
+  const { colors } = useAppTheme();
   return (
     <View style={s.container}>
       <Text style={s.icon}>{icon}</Text>
-      <Text style={s.title}>{title}</Text>
-      {!!subtitle && <Text style={s.subtitle}>{subtitle}</Text>}
+      <Text style={[s.title, { color: colors.textPrimary }]}>{title}</Text>
+      {!!subtitle && <Text style={[s.subtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       {!!action && (
         <TouchableOpacity style={s.button} onPress={action.onPress} activeOpacity={0.85}>
           <Text style={s.buttonText}>{action.label}</Text>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Modal,
-  Platform, ScrollView, StyleSheet, Text, TextInput,
+  Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -137,6 +138,7 @@ function ChatView({
     setText('');
     await onSend(body);
     setSending(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 100);
   }
 
@@ -151,7 +153,7 @@ function ChatView({
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
       <FlatList
@@ -165,7 +167,7 @@ function ChatView({
           <View style={cv.empty}>
             <Text style={cv.emptyIcon}>💬</Text>
             <Text style={[cv.emptyTitle, { color: cvc.textPrimary }]}>Žiadne správy</Text>
-            <Text style={cv.emptySub}>Začnite konverzáciu s tímom</Text>
+            <Text style={[cv.emptySub, { color: cvc.textSecondary }]}>Začnite konverzáciu s tímom</Text>
           </View>
         }
         renderItem={({ item: group }) => (
@@ -230,7 +232,7 @@ function NewConvoModal({
       <View style={[nm.sheet, { backgroundColor: nc.cardBg }]}>
         <View style={[nm.handle, { backgroundColor: nc.bg3 }]} />
         <Text style={[nm.title, { color: nc.textPrimary }]}>Nová konverzácia</Text>
-        <Text style={nm.sub}>Vyber člena tímu</Text>
+        <Text style={[nm.sub, { color: nc.textSecondary }]}>Vyber člena tímu</Text>
         <ScrollView style={{ maxHeight: 360 }}>
           {others.map(s => (
             <TouchableOpacity key={s.id} style={nm.row} onPress={() => onSelect(s)} activeOpacity={0.75}>
@@ -238,8 +240,8 @@ function NewConvoModal({
                 <Text style={nm.avatarText}>{initials(s.full_name)}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={nm.name}>{s.full_name}</Text>
-                <Text style={nm.role}>{ROLE_LABELS[s.role] ?? s.role}</Text>
+                <Text style={[nm.name, { color: nc.textPrimary }]}>{s.full_name}</Text>
+                <Text style={[nm.role, { color: nc.textSecondary }]}>{ROLE_LABELS[s.role] ?? s.role}</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={COLORS.sand} />
             </TouchableOpacity>
@@ -270,6 +272,7 @@ export default function StaffChatScreen() {
   const [dmPartner, setDmPartner]     = useState<StaffMember | null>(null);
   const [loadingB, setLoadingB]       = useState(true);
   const [loadingDM, setLoadingDM]     = useState(false);
+  const [refreshingDM, setRefreshingDM] = useState(false);
   const [newConvoOpen, setNewConvoOpen] = useState(false);
 
   const staffRef     = useRef<StaffMember[]>([]);
@@ -485,6 +488,14 @@ export default function StaffChatScreen() {
               keyExtractor={t => t.partner.id}
               contentContainerStyle={{ paddingTop: 8, paddingBottom: 20 }}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshingDM}
+                  onRefresh={() => { setRefreshingDM(true); loadThreads().then(() => setRefreshingDM(false)); }}
+                  tintColor={COLORS.wal}
+                  colors={[COLORS.wal]}
+                />
+              }
               renderItem={({ item: thread }) => (
                 <TouchableOpacity style={[s.threadRow, dyn.card]} onPress={() => openDm(thread.partner)} activeOpacity={0.75}>
                   <View style={s.threadAvatar}>

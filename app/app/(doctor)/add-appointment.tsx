@@ -9,10 +9,12 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
+import { useAppTheme } from '../../context/ThemeContext';
 import { useServices, Service, formatPrice, formatDuration } from '../../hooks/useServices';
+import { MonthCalendar } from '../../components/MonthCalendar';
 import {
-  generateTimeSlotsForDay, getNextOpenDays,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  generateTimeSlotsForDay,
+  jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
 import { fetchBlockedMinutes } from '../../hooks/useTimeBlocks';
 
@@ -23,6 +25,7 @@ type Patient = { id: string; full_name: string | null; phone_number: string | nu
 
 export default function DoctorAddAppointment() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
   const params  = useLocalSearchParams<{ patientId?: string; patientName?: string; serviceId?: string }>();
   const { grouped: servicesGrouped, loading: loadingServices } = useServices();
 
@@ -50,11 +53,6 @@ export default function DoctorAddAppointment() {
   const effectiveDuration = customDuration ?? selectedService?.duration_minutes ?? 30;
 
   const openDbDays = useMemo(() => new Set(openingHoursMap.keys()), [openingHoursMap]);
-
-  const days = useMemo(
-    () => openDbDays.size > 0 ? getNextOpenDays(21, openDbDays) : [],
-    [openDbDays],
-  );
 
   const selectedDayHours = useMemo((): OpeningHour | null => {
     if (!selectedDate) return null;
@@ -89,7 +87,8 @@ export default function DoctorAddAppointment() {
         const { data: hours } = await supabase
           .from('opening_hours')
           .select('day_of_week, open_time, close_time, is_closed')
-          .eq('doctor_id', user.id);
+          .eq('doctor_id', user.id)
+          .limit(14);
         const map = new Map<number, OpeningHour>();
         (hours ?? []).forEach(h => {
           if (!h.is_closed && h.open_time && h.close_time) {
@@ -102,7 +101,7 @@ export default function DoctorAddAppointment() {
       // Pacienti
       const { data: pats } = await supabase
         .from('profiles').select('id, full_name, phone_number')
-        .eq('role', 'patient').order('full_name', { ascending: true });
+        .eq('role', 'patient').order('full_name', { ascending: true }).limit(500);
       const list = (pats ?? []) as Patient[];
       setPatients(list);
       if (params.patientId) {
@@ -225,6 +224,17 @@ export default function DoctorAddAppointment() {
       const { error } = await supabase.from('appointments').insert(rows);
       if (error) throw error;
 
+      // Notifikácia pacientovi o novom termíne
+      const firstDate = allDates[0];
+      const dateStr = firstDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
+      const timeStr = firstDate.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+      supabase.from('notifications').insert({
+        user_id: selectedPatient.id,
+        title:   `📅 Nový termín naplánovaný`,
+        body:    `${selectedService?.name ?? 'Termín'} · ${dateStr} o ${timeStr}${allDates.length > 1 ? ` (+${allDates.length - 1} opakovania)` : ''}`,
+        type:    'success',
+      }).then(null, () => {});
+
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       const msgBody = repeatType === 'none'
         ? `Termín pre ${selectedPatient.full_name ?? 'pacienta'} bol naplánovaný.`
@@ -255,17 +265,17 @@ export default function DoctorAddAppointment() {
       </View>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}
+        <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
           {/* ── Výber pacienta ── */}
-          <Text style={styles.sectionLabel}>PACIENT</Text>
-          <View style={styles.patientSearchWrap}>
+          <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>PACIENT</Text>
+          <View style={[styles.patientSearchWrap, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Ionicons name="person-outline" size={17} color={COLORS.wal} style={{ marginRight: 8 }} />
             <TextInput
-              style={styles.patientInput}
+              style={[styles.patientInput, { color: colors.textPrimary }]}
               placeholder="Vyhľadaj pacienta..."
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               value={patientQuery}
               onChangeText={(t) => { setQuery(t); setPatient(null); setDropdown(true); }}
               onFocus={() => setDropdown(true)}
@@ -278,14 +288,14 @@ export default function DoctorAddAppointment() {
 
           {/* Dropdown výsledky */}
           {showDropdown && patientQuery.length > 0 && !selectedPatient && (
-            <View style={styles.dropdown}>
+            <View style={[styles.dropdown, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               {loadingPatients ? (
                 <ActivityIndicator color={COLORS.wal} style={{ padding: 12 }} />
               ) : filteredPatients.length === 0 ? (
-                <Text style={styles.dropdownEmpty}>Žiadny pacient nenájdený</Text>
+                <Text style={[styles.dropdownEmpty, { color: colors.textSecondary }]}>Žiadny pacient nenájdený</Text>
               ) : (
                 filteredPatients.slice(0, 6).map((p) => (
-                  <TouchableOpacity key={p.id} style={styles.dropdownItem}
+                  <TouchableOpacity key={p.id} style={[styles.dropdownItem, { borderBottomColor: colors.bg3 }]}
                     onPress={() => { setPatient(p); setQuery(p.full_name ?? ''); setDropdown(false); }}
                     activeOpacity={0.75}>
                     <View style={styles.dropdownAvatar}>
@@ -294,12 +304,12 @@ export default function DoctorAddAppointment() {
                       </Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.dropdownName}>{p.full_name ?? 'Neznámy'}</Text>
+                      <Text style={[styles.dropdownName, { color: colors.textPrimary }]}>{p.full_name ?? 'Neznámy'}</Text>
                       {p.phone_number && (
-                        <Text style={styles.dropdownPhone}>{p.phone_number}</Text>
+                        <Text style={[styles.dropdownPhone, { color: colors.textSecondary }]}>{p.phone_number}</Text>
                       )}
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color="#ddd" />
+                    <Ionicons name="chevron-forward" size={16} color={colors.bg3} />
                   </TouchableOpacity>
                 ))
               )}
@@ -328,40 +338,40 @@ export default function DoctorAddAppointment() {
           )}
 
           {/* ── Výber služby ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 20 }]}>SLUŽBA</Text>
-          <TouchableOpacity style={styles.servicePickerBtn}
+          <Text style={[styles.sectionLabel, { marginTop: 20, color: colors.textSecondary }]}>SLUŽBA</Text>
+          <TouchableOpacity style={[styles.servicePickerBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
             onPress={() => setShowServices((v) => !v)} activeOpacity={0.8}>
             {selectedService ? (
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <Text style={{ fontSize: 20 }}>{selectedService.emoji ?? '🦷'}</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.servicePickerName}>{selectedService.name}</Text>
-                  <Text style={styles.servicePickerMeta}>
+                  <Text style={[styles.servicePickerName, { color: colors.textPrimary }]}>{selectedService.name}</Text>
+                  <Text style={[styles.servicePickerMeta, { color: colors.textSecondary }]}>
                     {formatDuration(selectedService.duration_minutes)} · {formatPrice(selectedService.price_min, selectedService.price_max)}
                   </Text>
                 </View>
               </View>
             ) : (
-              <Text style={styles.servicePickerPlaceholder}>Vyber službu...</Text>
+              <Text style={[styles.servicePickerPlaceholder, { color: dark ? '#666' : '#bbb' }]}>Vyber službu...</Text>
             )}
             <Ionicons name={showServices ? 'chevron-up' : 'chevron-down'} size={16} color={COLORS.wal} />
           </TouchableOpacity>
 
           {showServices && (
-            <View style={styles.serviceDropdown}>
+            <View style={[styles.serviceDropdown, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               {loadingServices
                 ? <ActivityIndicator color={COLORS.wal} style={{ padding: 12 }} />
                 : Object.entries(servicesGrouped).map(([cat, items]) => (
                   <View key={cat}>
-                    <Text style={styles.serviceDropdownCat}>{cat}</Text>
+                    <Text style={[styles.serviceDropdownCat, { backgroundColor: colors.bg2, color: colors.textSecondary }]}>{cat}</Text>
                     {items.map((svc) => (
-                      <TouchableOpacity key={svc.id} style={styles.serviceDropdownItem}
+                      <TouchableOpacity key={svc.id} style={[styles.serviceDropdownItem, { borderBottomColor: colors.bg3 }]}
                         onPress={() => { setService(svc); setTime(''); setShowServices(false); setCustomDuration(null); setCustomDurationText(''); }}
                         activeOpacity={0.8}>
                         <Text style={{ fontSize: 16 }}>{svc.emoji ?? '🦷'}</Text>
                         <View style={{ flex: 1 }}>
-                          <Text style={styles.serviceDropdownName}>{svc.name}</Text>
-                          <Text style={styles.serviceDropdownMeta}>
+                          <Text style={[styles.serviceDropdownName, { color: colors.textPrimary }]}>{svc.name}</Text>
+                          <Text style={[styles.serviceDropdownMeta, { color: colors.textSecondary }]}>
                             {formatDuration(svc.duration_minutes)} · {formatPrice(svc.price_min, svc.price_max)}
                           </Text>
                         </View>
@@ -379,30 +389,30 @@ export default function DoctorAddAppointment() {
           {/* ── Dĺžka ošetrenia ── */}
           {selectedService && (
             <>
-              <Text style={[styles.sectionLabel, { marginTop: 20 }]}>DĹŽKA OŠETRENIA</Text>
+              <Text style={[styles.sectionLabel, { marginTop: 20, color: colors.textSecondary }]}>DĹŽKA OŠETRENIA</Text>
               <View style={styles.durationRow}>
                 {[15, 30, 45, 60, 90, 120].map((min) => {
                   const isActive = effectiveDuration === min;
                   return (
                     <TouchableOpacity
                       key={min}
-                      style={[styles.durationChip, isActive && styles.durationChipActive]}
+                      style={[styles.durationChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isActive && styles.durationChipActive]}
                       onPress={() => { setCustomDuration(min); setCustomDurationText(String(min)); setTime(''); }}
                       activeOpacity={0.75}
                     >
-                      <Text style={[styles.durationChipText, isActive && styles.durationChipTextActive]}>
+                      <Text style={[styles.durationChipText, { color: colors.textSecondary }, isActive && styles.durationChipTextActive]}>
                         {min < 60 ? `${min} min` : `${min / 60} hod`}
                       </Text>
                     </TouchableOpacity>
                   );
                 })}
               </View>
-              <View style={styles.durationCustomRow}>
+              <View style={[styles.durationCustomRow, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 <Ionicons name="time-outline" size={16} color={COLORS.wal} />
                 <TextInput
-                  style={styles.durationInput}
+                  style={[styles.durationInput, { color: colors.textPrimary }]}
                   placeholder={`Vlastná (min) · teraz: ${effectiveDuration} min`}
-                  placeholderTextColor="#bbb"
+                  placeholderTextColor={dark ? '#666' : '#bbb'}
                   keyboardType="numeric"
                   value={customDurationText}
                   onChangeText={(t) => {
@@ -417,39 +427,20 @@ export default function DoctorAddAppointment() {
           )}
 
           {/* ── Výber dátumu ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 24 }]}>DÁTUM</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={styles.datesScroll} contentContainerStyle={styles.datesContent}>
-            {days.map((d) => {
-              const isSel   = selectedDate?.toDateString() === d.toDateString();
-              const isToday = d.toDateString() === new Date().toDateString();
-              const dbDay   = jsDayToDb(d.getDay());
-              const hrs     = openingHoursMap.get(dbDay);
-              return (
-                <TouchableOpacity key={d.toISOString()}
-                  style={[styles.dateCell, isSel && styles.dateCellSel]}
-                  onPress={() => { setDate(d); setTime(''); }} activeOpacity={0.75}>
-                  <Text style={[styles.dateDayName, isSel && styles.dateSel]}>
-                    {isToday ? 'Dnes' : SK_DAYS_SHORT[d.getDay()]}
-                  </Text>
-                  <Text style={[styles.dateDayNum, isSel && styles.dateSel]}>{d.getDate()}</Text>
-                  <Text style={[styles.dateMonth, isSel && styles.dateSel]}>
-                    {SK_MONTHS_SHORT[d.getMonth()]}
-                  </Text>
-                  {hrs && (
-                    <Text style={[styles.dateHours, isSel && styles.dateSel]}>
-                      {hrs.open_time}
-                    </Text>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+          <Text style={[styles.sectionLabel, { marginTop: 24, color: colors.textSecondary }]}>DÁTUM</Text>
+          <MonthCalendar
+            selectedDate={selectedDate}
+            onSelectDate={(d) => { setDate(d); setTime(''); }}
+            openDbDays={openDbDays}
+            loading={loadingP}
+            maxMonthsAhead={12}
+            warnMonthsAhead={0}
+          />
 
           {/* ── Výber času ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 8 }]}>ČAS</Text>
+          <Text style={[styles.sectionLabel, { marginTop: 8, color: colors.textSecondary }]}>ČAS</Text>
           {selectedService && (
-            <Text style={styles.slotSubLabel}>
+            <Text style={[styles.slotSubLabel, { color: colors.textSecondary }]}>
               {selectedDayHours
                 ? `Ordinuje: ${selectedDayHours.open_time}–${selectedDayHours.close_time}  ·  Trvanie: ${formatDuration(effectiveDuration)}`
                 : `Trvanie: ${formatDuration(effectiveDuration)}`}
@@ -464,14 +455,14 @@ export default function DoctorAddAppointment() {
                 const taken  = isSlotTaken(slot.start);
                 return (
                   <TouchableOpacity key={slot.start}
-                    style={[styles.timeCell, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
+                    style={[styles.timeCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
                     onPress={() => { if (!taken) setTime(slot.start); }}
                     activeOpacity={taken ? 1 : 0.75}
                     disabled={taken}>
-                    <Text style={[styles.timeText, isSel && styles.timeSel, taken && styles.timeTakenText]}>
+                    <Text style={[styles.timeText, { color: colors.textPrimary }, isSel && styles.timeSel, taken && styles.timeTakenText]}>
                       {slot.start}
                     </Text>
-                    <Text style={[styles.timeEndText, isSel && { color: COLORS.sand }, taken && styles.timeTakenText]}>
+                    <Text style={[styles.timeEndText, { color: colors.textSecondary }, isSel && { color: COLORS.sand }, taken && styles.timeTakenText]}>
                       –{slot.end}
                     </Text>
                     {taken && <Text style={styles.timeTakenLabel}>✗</Text>}
@@ -482,12 +473,12 @@ export default function DoctorAddAppointment() {
           )}
 
           {/* ── Poznámky ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 8 }]}>POZNÁMKY</Text>
-          <View style={styles.notesCard}>
+          <Text style={[styles.sectionLabel, { marginTop: 8, color: colors.textSecondary }]}>POZNÁMKY</Text>
+          <View style={[styles.notesCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <TextInput
-              style={styles.notesInput}
+              style={[styles.notesInput, { color: colors.textPrimary }]}
               placeholder="Dôvod návštevy, typ ošetrenia, poznámky..."
-              placeholderTextColor="#bbb"
+              placeholderTextColor={dark ? '#666' : '#bbb'}
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -497,7 +488,7 @@ export default function DoctorAddAppointment() {
           </View>
 
           {/* ── Opakovanie ── */}
-          <Text style={[styles.sectionLabel, { marginTop: 8 }]}>OPAKOVANIE</Text>
+          <Text style={[styles.sectionLabel, { marginTop: 8, color: colors.textSecondary }]}>OPAKOVANIE</Text>
           <View style={styles.repeatRow}>
             {([
               { key: 'none',      label: 'Žiadne' },
@@ -508,9 +499,9 @@ export default function DoctorAddAppointment() {
               const active = repeatType === opt.key;
               return (
                 <TouchableOpacity key={opt.key}
-                  style={[styles.repeatChip, active && styles.repeatChipActive]}
+                  style={[styles.repeatChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, active && styles.repeatChipActive]}
                   onPress={() => setRepeatType(opt.key)} activeOpacity={0.8}>
-                  <Text style={[styles.repeatChipText, active && styles.repeatChipTextActive]}>
+                  <Text style={[styles.repeatChipText, { color: colors.textSecondary }, active && styles.repeatChipTextActive]}>
                     {opt.label}
                   </Text>
                 </TouchableOpacity>
@@ -520,15 +511,15 @@ export default function DoctorAddAppointment() {
 
           {repeatType !== 'none' && (
             <>
-              <Text style={styles.repeatCountLabel}>POČET OPAKOVANÍ</Text>
+              <Text style={[styles.repeatCountLabel, { color: colors.textSecondary }]}>POČET OPAKOVANÍ</Text>
               <View style={styles.repeatRow}>
                 {[2, 3, 4, 5, 6, 8, 10, 12].map((n) => {
                   const active = repeatCount === n;
                   return (
                     <TouchableOpacity key={n}
-                      style={[styles.repeatCountChip, active && styles.repeatChipActive]}
+                      style={[styles.repeatCountChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, active && styles.repeatChipActive]}
                       onPress={() => setRepeatCount(n)} activeOpacity={0.8}>
-                      <Text style={[styles.repeatChipText, active && styles.repeatChipTextActive]}>
+                      <Text style={[styles.repeatChipText, { color: colors.textSecondary }, active && styles.repeatChipTextActive]}>
                         {n}×
                       </Text>
                     </TouchableOpacity>
@@ -536,9 +527,9 @@ export default function DoctorAddAppointment() {
                 })}
               </View>
               {selectedDate && selectedTime && (
-                <View style={styles.repeatPreview}>
+                <View style={[styles.repeatPreview, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                   <Ionicons name="repeat" size={13} color={COLORS.wal} />
-                  <Text style={styles.repeatPreviewText}>
+                  <Text style={[styles.repeatPreviewText, { color: colors.textSecondary }]}>
                     {`Celkom ${repeatCount} termínov · posledný: ${(() => {
                       const [h, m] = selectedTime.split(':').map(Number);
                       const base = new Date(selectedDate);
@@ -557,25 +548,25 @@ export default function DoctorAddAppointment() {
 
           {/* ── Zhrnutie ── */}
           {selectedPatient && selectedDate && selectedTime && (
-            <View style={styles.summaryCard}>
-              <Ionicons name="checkmark-circle" size={20} color="#1E8449" />
+            <View style={[styles.summaryCard, dark && { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' }]}>
+              <Ionicons name="checkmark-circle" size={20} color={dark ? '#27AE60' : '#1E8449'} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.summaryTitle}>Zhrnutie termínu</Text>
-                <Text style={styles.summaryLine}>
+                <Text style={[styles.summaryTitle, { color: dark ? '#27AE60' : '#1E8449' }]}>Zhrnutie termínu</Text>
+                <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                   👤 {selectedPatient.full_name}
                 </Text>
-                <Text style={styles.summaryLine}>
+                <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                   📅 {selectedDate.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })} o {selectedTime}
                 </Text>
-                <Text style={styles.summaryLine}>
+                <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                   ⏱ {formatDuration(effectiveDuration)}
                 </Text>
                 {repeatType !== 'none' && (
-                  <Text style={styles.summaryLine}>
+                  <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                     🔁 {repeatCount}× {repeatType === 'weekly' ? 'týždenné' : repeatType === 'biweekly' ? '2-týždenné' : 'mesačné'} opakovanie
                   </Text>
                 )}
-                {notes.trim() ? <Text style={styles.summaryLine}>📝 {notes.trim()}</Text> : null}
+                {notes.trim() ? <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>📝 {notes.trim()}</Text> : null}
               </View>
             </View>
           )}
@@ -633,26 +624,17 @@ const styles = StyleSheet.create({
   chipPhone: { fontSize: 11, color: '#27AE60', marginTop: 1 },
 
   // Dates
-  datesScroll:  { marginBottom: 12, marginHorizontal: -SIZES.padding },
-  datesContent: { paddingHorizontal: SIZES.padding, gap: 8 },
-  dateCell:     { width: 58, alignItems: 'center', paddingVertical: 10, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  dateCellSel:  { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  dateDayName:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 },
-  dateDayNum:   { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginVertical: 2 },
-  dateMonth:    { fontSize: 9, color: COLORS.wal, textTransform: 'uppercase' },
-  dateHours:    { fontSize: 7, color: COLORS.wal, marginTop: 2, letterSpacing: 0.2 },
-  dateSel:      { color: COLORS.sand },
 
   // Times
   timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 0, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
   timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   timeSel:        { color: COLORS.cream },
   timeTakenText:  { color: '#ccc' },
   timeTakenLabel: { fontSize: 9, color: '#E74C3C', marginTop: 2, fontWeight: '700' },
-  timeEndText:    { fontSize: 9, color: '#aaa', marginTop: 2 },
+  timeEndText:    { fontSize: 10, color: '#aaa', marginTop: 2 },
   slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
 
   // Service picker

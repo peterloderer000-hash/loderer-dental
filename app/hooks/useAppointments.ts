@@ -106,7 +106,23 @@ export function useAppointments(role: 'patient' | 'doctor') {
     if (doctorNotes !== undefined) payload.doctor_notes = doctorNotes.trim() || null;
     if (careInstructions !== undefined) payload.care_instructions = careInstructions.trim() || null;
     const { error } = await supabase.from('appointments').update(payload).eq('id', id);
-    if (!error) refetch();
+    if (!error) {
+      refetch();
+      // Notifikácia pacientovi pri zrušení termínu
+      if (status === 'cancelled') {
+        const appt = appointments.find(a => a.id === id);
+        if (appt?.patient_id) {
+          const dateStr = new Date(appt.appointment_date).toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+          supabase.from('notifications').insert({
+            user_id:        appt.patient_id,
+            title:          '❌ Termín zrušený',
+            body:           `Váš termín ${appt.service?.name ? `(${appt.service.name}) ` : ''}${dateStr} bol zrušený. Prosím rezervujte si nový termín.`,
+            type:           'warning',
+            appointment_id: id,
+          }).then(null, () => {});
+        }
+      }
+    }
     return error;
   }
 

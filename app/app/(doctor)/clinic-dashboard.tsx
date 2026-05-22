@@ -13,6 +13,7 @@ import {
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 
@@ -20,14 +21,15 @@ function StatCard({ label, value, sub, icon, color, bg }: {
   label: string; value: string | number; sub?: string;
   icon: string; color: string; bg: string;
 }) {
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={[sc.card, { backgroundColor: bg, borderColor: color + '44' }]}>
+    <View style={[sc.card, { backgroundColor: dark ? colors.cardBg : bg, borderColor: color + '44' }]}>
       <View style={[sc.iconWrap, { backgroundColor: color + '22' }]}>
         <Ionicons name={icon as any} size={18} color={color} />
       </View>
       <Text style={[sc.value, { color }]}>{value}</Text>
-      <Text style={sc.label}>{label}</Text>
-      {sub ? <Text style={sc.sub}>{sub}</Text> : null}
+      <Text style={[sc.label, { color: colors.textSecondary }]}>{label}</Text>
+      {sub ? <Text style={[sc.sub, { color: colors.textSecondary }]}>{sub}</Text> : null}
     </View>
   );
 }
@@ -43,8 +45,9 @@ const sc = StyleSheet.create({
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
 function ProgressBar({ pct, color }: { pct: number; color: string }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={pb.track}>
+    <View style={[pb.track, { backgroundColor: colors.bg3 }]}>
       <View style={[pb.fill, { width: `${Math.min(100, pct)}%`, backgroundColor: color }]} />
     </View>
   );
@@ -58,16 +61,17 @@ const pb = StyleSheet.create({
 // ─── Status row in appointment list ──────────────────────────────────────────
 
 function ApptRow({ appt }: { appt: ReturnType<typeof useClinic>['appointments'][number] }) {
+  const { colors } = useAppTheme();
   const cfg = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   return (
-    <View style={ar.row}>
+    <View style={[ar.row, { borderBottomColor: colors.bg3 }]}>
       <Text style={ar.emoji}>{cfg.emoji}</Text>
       <View style={{ flex: 1 }}>
-        <Text style={ar.name}>{appt.patient?.full_name ?? 'Pacient'}</Text>
-        <Text style={ar.service}>{appt.service?.name ?? '—'}</Text>
+        <Text style={[ar.name, { color: colors.textPrimary }]}>{appt.patient?.full_name ?? 'Pacient'}</Text>
+        <Text style={[ar.service, { color: colors.textSecondary }]}>{appt.service?.name ?? '—'}</Text>
       </View>
       <View style={{ alignItems: 'flex-end', gap: 2 }}>
-        <Text style={ar.time}>{fmtTime(appt.appointment_date)}</Text>
+        <Text style={[ar.time, { color: colors.textPrimary }]}>{fmtTime(appt.appointment_date)}</Text>
         <View style={[ar.statusBadge, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
           <Text style={[ar.statusText, { color: cfg.color }]}>{cfg.label}</Text>
         </View>
@@ -90,6 +94,7 @@ const ar = StyleSheet.create({
 
 export default function ClinicDashboardScreen() {
   const router  = useRouter();
+  const { colors, dark } = useAppTheme();
   const clinic  = useClinic();
   const metrics = computeDayMetrics(clinic.appointments);
 
@@ -112,9 +117,9 @@ export default function ClinicDashboardScreen() {
     metrics.utilizationPct >= 50     ? '#E67E22' : '#C0392B';
 
   return (
-    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top', 'bottom']}>
       {/* Header */}
-      <View style={s.header}>
+      <View style={[s.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -128,32 +133,32 @@ export default function ClinicDashboardScreen() {
       </View>
 
       {clinic.loading ? (
-        <View style={{ padding: 16 }}><SkeletonList count={5} /></View>
+        <View style={{ padding: 16, backgroundColor: colors.bg2 }}><SkeletonList count={5} /></View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
 
           {/* ── Quick nav ── */}
           <View style={s.navRow}>
-            <TouchableOpacity style={s.navBtn} onPress={() => router.push('/(doctor)/clinic-live')} activeOpacity={0.85}>
-              <Ionicons name="pulse-outline" size={16} color={COLORS.esp} />
-              <Text style={s.navBtnText}>Live</Text>
+            <TouchableOpacity style={[s.navBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={() => router.push('/(doctor)/clinic-live')} activeOpacity={0.85}>
+              <Ionicons name="pulse-outline" size={16} color={colors.textPrimary} />
+              <Text style={[s.navBtnText, { color: colors.textPrimary }]}>Live</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.navBtn} onPress={() => router.push('/(doctor)/clinic-room')} activeOpacity={0.85}>
-              <Ionicons name="bed-outline" size={16} color={COLORS.esp} />
-              <Text style={s.navBtnText}>Kreslo</Text>
+            <TouchableOpacity style={[s.navBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} onPress={() => router.push('/(doctor)/clinic-room')} activeOpacity={0.85}>
+              <Ionicons name="bed-outline" size={16} color={colors.textPrimary} />
+              <Text style={[s.navBtnText, { color: colors.textPrimary }]}>Kreslo</Text>
             </TouchableOpacity>
           </View>
 
           {/* ── Utilization ── */}
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Využitie dňa</Text>
-            <View style={s.utilizationCard}>
+            <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Využitie dňa</Text>
+            <View style={[s.utilizationCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <View style={s.utilizationTop}>
                 <Text style={[s.utilizationPct, { color: utilizationColor }]}>
                   {metrics.utilizationPct !== null ? `${metrics.utilizationPct}%` : '—'}
                 </Text>
                 <View style={{ flex: 1, gap: 4 }}>
-                  <Text style={s.utilizationLabel}>
+                  <Text style={[s.utilizationLabel, { color: colors.textSecondary }]}>
                     {metrics.completedToday} / {metrics.totalToday - metrics.cancelledToday - metrics.noShowToday} dokončených
                   </Text>
                   <ProgressBar pct={metrics.utilizationPct ?? 0} color={utilizationColor} />
@@ -163,11 +168,11 @@ export default function ClinicDashboardScreen() {
           </View>
 
           {/* ── Stats grid ── */}
-          <Text style={s.sectionTitle}>Aktuálny stav</Text>
+          <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Aktuálny stav</Text>
           <View style={s.statsGrid}>
             <StatCard
               label="Celkom dnes" value={metrics.totalToday}
-              icon="calendar-outline" color={COLORS.wal} bg={COLORS.bg2}
+              icon="calendar-outline" color={COLORS.wal} bg={colors.bg2}
             />
             <StatCard
               label="Čaká teraz" value={metrics.waitingNow}
@@ -204,8 +209,8 @@ export default function ClinicDashboardScreen() {
 
           {/* ── Timing stats ── */}
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Časové metriky</Text>
-            <View style={s.timingCard}>
+            <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Časové metriky</Text>
+            <View style={[s.timingCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <TimingRow
                 label="Priemerné čakanie"
                 value={fmtMins(metrics.avgWaitingMins)}
@@ -229,8 +234,8 @@ export default function ClinicDashboardScreen() {
           {/* ── Today's appointment list ── */}
           {clinic.appointments.length > 0 && (
             <View style={s.section}>
-              <Text style={s.sectionTitle}>Zoznam dnes ({clinic.appointments.length})</Text>
-              <View style={s.apptCard}>
+              <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Zoznam dnes ({clinic.appointments.length})</Text>
+              <View style={[s.apptCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                 {clinic.appointments.map(a => <ApptRow key={a.id} appt={a} />)}
               </View>
             </View>
@@ -246,11 +251,12 @@ export default function ClinicDashboardScreen() {
 function TimingRow({ label, value, icon, accent, last }: {
   label: string; value: string; icon: string; accent?: boolean; last?: boolean;
 }) {
+  const { colors } = useAppTheme();
   return (
-    <View style={[tr.row, last && { borderBottomWidth: 0 }]}>
-      <Ionicons name={icon as any} size={15} color={accent ? '#C0392B' : COLORS.wal} />
-      <Text style={tr.label}>{label}</Text>
-      <Text style={[tr.value, accent && { color: '#C0392B' }]}>{value}</Text>
+    <View style={[tr.row, { borderBottomColor: colors.bg3 }, last && { borderBottomWidth: 0 }]}>
+      <Ionicons name={icon as any} size={15} color={accent ? '#C0392B' : colors.textSecondary} />
+      <Text style={[tr.label, { color: colors.textSecondary }]}>{label}</Text>
+      <Text style={[tr.value, { color: colors.textPrimary }, accent && { color: '#C0392B' }]}>{value}</Text>
     </View>
   );
 }

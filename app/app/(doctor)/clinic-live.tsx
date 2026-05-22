@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useClinic, type ClinicAppointment } from '../../hooks/useClinic';
 import {
   CLINIC_STATUS_CFG, fmtTime, getWaitingMinutes,
@@ -13,6 +14,7 @@ import {
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Action definitions per status ───────────────────────────────────────────
 
@@ -38,32 +40,33 @@ type CardProps = {
 };
 
 function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoom, tick, actionLoading }: CardProps) {
+  const { colors, dark } = useAppTheme();
   const cfg      = CLINIC_STATUS_CFG[appt.clinic_status] ?? CLINIC_STATUS_CFG.scheduled;
   const waitMins = getWaitingMinutes(appt);
   const treatMin = getTreatmentMinutes(appt);
   const tooLong  = waitMins !== null && waitMins > 15 && appt.clinic_status === 'waiting';
 
   return (
-    <View style={[s.card, expanded && s.cardExpanded, { borderLeftColor: cfg.border, borderLeftWidth: 4 }]}>
+    <View style={[s.card, expanded && s.cardExpanded, { borderLeftColor: cfg.border, borderLeftWidth: 4, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
       <TouchableOpacity onPress={onToggle} activeOpacity={0.85}>
         {/* ── Row 1: status + name + time ── */}
         <View style={s.cardRow}>
-          <View style={[s.statusChip, { backgroundColor: cfg.bg, borderColor: cfg.border }]}>
+          <View style={[s.statusChip, { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.border }]}>
             <Text style={s.statusEmoji}>{cfg.emoji}</Text>
             <Text style={[s.statusLabel, { color: cfg.color }]}>{cfg.label}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={s.patientName} numberOfLines={1}>
+            <Text style={[s.patientName, { color: colors.textPrimary }]} numberOfLines={1}>
               {appt.patient?.full_name ?? 'Pacient'}
             </Text>
             {appt.service && (
-              <Text style={s.serviceName} numberOfLines={1}>
+              <Text style={[s.serviceName, { color: colors.textSecondary }]} numberOfLines={1}>
                 {appt.service.emoji ?? '🦷'} {appt.service.name}
               </Text>
             )}
           </View>
           <View style={s.timeCol}>
-            <Text style={s.scheduledTime}>{fmtTime(appt.appointment_date)}</Text>
+            <Text style={[s.scheduledTime, { color: colors.textPrimary }]}>{fmtTime(appt.appointment_date)}</Text>
             {appt.room && (
               <View style={[s.roomChip, { backgroundColor: appt.room.color + '22', borderColor: appt.room.color + '66' }]}>
                 <Text style={[s.roomChipText, { color: appt.room.color }]}>{appt.room.name}</Text>
@@ -72,7 +75,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           </View>
           <Ionicons
             name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={16} color={COLORS.wal} style={{ marginLeft: 6 }}
+            size={16} color={colors.textSecondary} style={{ marginLeft: 6 }}
           />
         </View>
 
@@ -81,11 +84,11 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           {appt.arrived_at && (
             <MetricPill icon="enter-outline" label="Príchod" value={fmtTime(appt.arrived_at)} />
           )}
-          {appt.chair_start_at && (
-            <MetricPill icon="medical-outline" label="Začiatok" value={fmtTime(appt.chair_start_at)} />
+          {appt.started_at && (
+            <MetricPill icon="medical-outline" label="Začiatok" value={fmtTime(appt.started_at)} />
           )}
-          {appt.treatment_end_at && (
-            <MetricPill icon="checkmark-circle-outline" label="Koniec" value={fmtTime(appt.treatment_end_at)} />
+          {appt.ended_at && (
+            <MetricPill icon="checkmark-circle-outline" label="Koniec" value={fmtTime(appt.ended_at)} />
           )}
           {waitMins !== null && appt.clinic_status === 'waiting' && (
             <MetricPill
@@ -103,27 +106,27 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 
       {/* ── Expanded: rooms + actions ── */}
       {expanded && (
-        <View style={s.expandedSection}>
+        <View style={[s.expandedSection, { backgroundColor: colors.bg2, borderTopColor: colors.bg3 }]}>
           {/* Room picker */}
           {rooms.length > 0 && (
             <View style={s.roomRow}>
-              <Text style={s.expandLabel}>MIESTNOSŤ</Text>
+              <Text style={[s.expandLabel, { color: colors.textSecondary }]}>MIESTNOSŤ</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
                 <TouchableOpacity
-                  style={[s.roomBtn, !appt.room_id && s.roomBtnActive]}
+                  style={[s.roomBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, !appt.room_id && s.roomBtnActive]}
                   onPress={() => onAssignRoom(appt, null)}
                   activeOpacity={0.8}
                 >
-                  <Text style={[s.roomBtnText, !appt.room_id && s.roomBtnTextActive]}>—</Text>
+                  <Text style={[s.roomBtnText, { color: colors.textSecondary }, !appt.room_id && s.roomBtnTextActive]}>—</Text>
                 </TouchableOpacity>
                 {rooms.map(r => (
                   <TouchableOpacity
                     key={r.id}
-                    style={[s.roomBtn, appt.room_id === r.id && { backgroundColor: r.color, borderColor: r.color }]}
+                    style={[s.roomBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, appt.room_id === r.id && { backgroundColor: r.color, borderColor: r.color }]}
                     onPress={() => onAssignRoom(appt, r.id)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[s.roomBtnText, appt.room_id === r.id && { color: '#fff' }]}>{r.name}</Text>
+                    <Text style={[s.roomBtnText, { color: colors.textSecondary }, appt.room_id === r.id && { color: '#fff' }]}>{r.name}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -133,18 +136,18 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
           {/* Action buttons */}
           {actions.length > 0 && (
             <View style={s.actionsWrap}>
-              <Text style={s.expandLabel}>AKCIE</Text>
+              <Text style={[s.expandLabel, { color: colors.textSecondary }]}>AKCIE</Text>
               {actionLoading ? (
                 <View style={s.loadingRow}>
-                  <ActivityIndicator size="small" color={COLORS.wal} />
-                  <Text style={s.loadingText}>Ukladám...</Text>
+                  <ActivityIndicator size="small" color={colors.textSecondary} />
+                  <Text style={[s.loadingText, { color: colors.textSecondary }]}>Ukladám...</Text>
                 </View>
               ) : (
                 <View style={s.actionsGrid}>
                   {actions.map(a => (
                     <TouchableOpacity
                       key={a.label}
-                      style={[s.actionBtn, { backgroundColor: a.bg, borderColor: a.color + '44' }]}
+                      style={[s.actionBtn, { backgroundColor: dark ? a.color + '22' : a.bg, borderColor: a.color + '44' }]}
                       onPress={() => a.handler(appt)}
                       activeOpacity={0.8}
                     >
@@ -170,11 +173,12 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 }
 
 function MetricPill({ icon, label, value, urgent }: { icon: string; label: string; value: string; urgent?: boolean }) {
+  const { colors, dark } = useAppTheme();
   return (
-    <View style={[s.pill, urgent && s.pillUrgent]}>
-      <Ionicons name={icon as any} size={11} color={urgent ? '#C0392B' : COLORS.wal} />
-      <Text style={[s.pillLabel, urgent && { color: '#C0392B' }]}>{label}</Text>
-      <Text style={[s.pillValue, urgent && { color: '#C0392B' }]}>{value}</Text>
+    <View style={[s.pill, urgent && s.pillUrgent, !urgent && { backgroundColor: colors.bg2, borderColor: colors.bg3 }, urgent && dark && { backgroundColor: '#4A1010', borderColor: '#C0392B' }]}>
+      <Ionicons name={icon as any} size={11} color={urgent ? '#C0392B' : colors.textSecondary} />
+      <Text style={[s.pillLabel, { color: colors.textSecondary }, urgent && { color: '#C0392B' }]}>{label}</Text>
+      <Text style={[s.pillValue, { color: colors.textPrimary }, urgent && { color: '#C0392B' }]}>{value}</Text>
     </View>
   );
 }
@@ -184,6 +188,7 @@ function MetricPill({ icon, label, value, urgent }: { icon: string; label: strin
 export default function ClinicLiveScreen() {
   const router   = useRouter();
   const clinic   = useClinic();
+  const { colors } = useAppTheme();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [tick,     setTick]     = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -212,7 +217,7 @@ export default function ClinicLiveScreen() {
   function wrapAction(apptId: string, fn: () => Promise<void>): () => Promise<void> {
     return async () => {
       setActionLoadingId(apptId);
-      try { await fn(); } finally { setActionLoadingId(null); }
+      try { await fn(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } finally { setActionLoadingId(null); }
     };
   }
 
@@ -301,6 +306,7 @@ export default function ClinicLiveScreen() {
         { text: 'Zrušiť', style: 'cancel' },
         { text: 'Áno, No-show', style: 'destructive', onPress: async () => {
           await clinic.markNoShow(appt);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setExpanded(null);
         }},
       ],
@@ -355,17 +361,17 @@ export default function ClinicLiveScreen() {
 
       {/* Content */}
       {clinic.loading ? (
-        <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={4} />
         </View>
       ) : activeAppts.length === 0 ? (
-        <View style={s.center}>
+        <View style={[s.center, { backgroundColor: colors.bg2 }]}>
           <Text style={s.emptyIcon}>🏥</Text>
-          <Text style={s.emptyTitle}>Žiadne termíny dnes</Text>
-          <Text style={s.emptySub}>Všetky termíny sú dokončené alebo žiadne nie sú naplánované</Text>
+          <Text style={[s.emptyTitle, { color: colors.textPrimary }]}>Žiadne termíny dnes</Text>
+          <Text style={[s.emptySub, { color: colors.textSecondary }]}>Všetky termíny sú dokončené alebo žiadne nie sú naplánované</Text>
         </View>
       ) : (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
           {activeAppts.map(appt => (
             <AppointmentCard
               key={appt.id}
@@ -387,8 +393,9 @@ export default function ClinicLiveScreen() {
 }
 
 function SummaryChip({ emoji, label, color, urgent }: { emoji: string; label: string; color: string; urgent?: boolean }) {
+  const { dark } = useAppTheme();
   return (
-    <View style={[s.summaryChip, urgent && { borderColor: color, backgroundColor: '#FDEDEC' }]}>
+    <View style={[s.summaryChip, urgent && { borderColor: color, backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
       <Text style={s.summaryEmoji}>{emoji}</Text>
       <Text style={[s.summaryLabel, { color }]}>{label}</Text>
     </View>
