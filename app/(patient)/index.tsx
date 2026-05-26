@@ -16,7 +16,9 @@ import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useNotifications } from '../../hooks/useNotifications';
 import { supabase } from '../../supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProgressRing, StatusPill, SectionHeader } from '../../components/ui';
+import OnboardingTour, { getOnboardingKey } from '../../components/OnboardingTour';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -136,8 +138,13 @@ export default function PatientHome() {
   const [ratingVal, setRatingVal]         = useState(0);
   const [ratingText, setRatingText]       = useState('');
   const [ratingSaving, setRatingSaving]   = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const starScale = useRef(new Animated.Value(1)).current;
   const seenCompletedRef = useRef<Set<string> | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(getOnboardingKey('patient')).then(v => { if (!v) setShowTour(true); });
+  }, []);
 
   const loadUnreadMsgs = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -271,6 +278,8 @@ export default function PatientHome() {
   const scoreLabel = dentalScore == null ? '?' : String(dentalScore);
 
   const bg = dark ? colors.bg2 : COLORS.bg2;
+
+  if (showTour) return <OnboardingTour role="patient" onFinish={() => setShowTour(false)} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
@@ -574,6 +583,8 @@ export default function PatientHome() {
                     color={scoreColor}
                     trackColor="rgba(255,255,255,0.1)"
                     label="/100"
+                    valueColor="#FAF6F0"
+                    labelColor="rgba(250,246,240,0.6)"
                     style={{ opacity: dentalScore == null ? 0.4 : 1 }}
                   />
               }

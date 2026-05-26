@@ -84,12 +84,13 @@ function MyCard({ ... }) {
 ## Supabase Tables
 - `profiles` (id, role, full_name, email, phone_number, avatar_url, date_of_birth, insurance_company, insurance_number, patient_note, clinic_name, clinic_address, clinic_ico, clinic_dic)
 - `appointments` (id, patient_id, doctor_id, appointment_date, custom_duration_minutes, status, notes, doctor_notes, service_id, clinic_status, arrived_at, started_at, ended_at, chair_id, is_urgent, payment_status, family_member_name, patient_rating, patient_review, created_at)
-- `patient_notes` (id, patient_id, doctor_id, content, updated_at) — UNIQUE(patient_id) — doktorove poznámky k pacientovi
+- `patient_notes` (id, patient_id, doctor_id, content, created_at) — UNIQUE(doctor_id, patient_id) — doktorove poznámky k pacientovi
 - `chairs` (id, name, color, is_active, sort_order)
 - `patients` (id, profile_id, date_of_birth, insurance_number, address)
 - `services` (id, name, duration_minutes, price_min, emoji, color, category, description)
 - `payments` (id, appointment_id, patient_id, amount_cents, currency, method, status, paid_at, receipt_url, notes)
-- `staff_messages` (id, sender_id, content, created_at, read_by)
+- `messages` (id, sender_id, receiver_id, body, is_read, created_at) — doctor-patient chat, RLS na sender/receiver
+- `staff_messages` (id, clinic_id, sender_id, recipient_id, subject, body, read_at, created_at) — recipient_id NULL = broadcast
 - `treatment_plans` (id, patient_id, doctor_id, title, notes, status, visible_to_patient, created_at, updated_at)
 - `treatment_plan_items` (id, plan_id, title, description, estimated_cost, tooth_number, status, sort_order)
 - `prescriptions` (id, patient_id, doctor_id, medication, dosage, instructions, valid_until, is_active, appointment_id, created_at)
@@ -103,7 +104,10 @@ function MyCard({ ... }) {
 - `notifications` (id, user_id, title, body, type, appointment_id, read_at, created_at)
 - `waiting_list` (id, patient_id, service_id, preferred_date, notes, status, created_at)
 - `health_passports` (id, patient_id, blood_type, insurance_provider, insurance_number, emergency_name, emergency_phone, is_pregnant, last_dental_visit, medical_history[], allergies, medications, visit_reasons[], dental_freq, fear_level, comfort, aesthetics[], lifestyle[], investment, open_q, updated_at)
+- `consent_forms` (id, doctor_id, title, content, is_active, created_at)
+- `patient_consents` (id, form_id, patient_id, status, signed_at, signed_name, created_at) — status: pending|signed|declined
 - `time_blocks` (id, doctor_id, title, block_type, start_time, end_time, note, created_at) — block_type: lunch|meeting|vacation|personal|other
+- `clinic_exceptions` (id, doctor_id, date, is_closed, open_time, close_time, note, created_at) — UNIQUE(doctor_id, date) — sviatky, dovolenky
 
 ### DB views (vytvorené v migration v40):
 - `kpi_daily` — denný prehľad (completed, cancelled, avg_wait, avg_treatment, daily_revenue)
@@ -159,16 +163,115 @@ eas build --platform android --profile preview
 - Fáza 2 klinické nástroje: HOTOVÁ ✅ (dental-chart, treatment-plan, prescriptions)
 - Dental Twin: HOTOVÝ ✅ (SVG arch mapa, 5-ročná predikcia, časová os, cenové porovnanie)
 - Pre-appointment dotazník: HOTOVÝ ✅ (pre-questionnaire.tsx — ukladá do appointment.notes)
+- Fáza 4 Komunikácia & Tím: HOTOVÁ ✅ (staff-chat, broadcast, recall — všetky obrazovky existujú)
+- Konzistenčné opravy (2026-05-21): HOTOVÉ ✅
+  - recall.tsx: opravené `content` → `body` (staff_messages stĺpec)
+  - broadcast.tsx: opravený dark mode (pastelové pozadia, ptRowSel, schedToggleActive)
+  - clinic-live.tsx: opravený SummaryChip dark mode
+  - patient/index.tsx: pridaný error handling na 5 Supabase queries
+  - admin.tsx: opravený stĺpec `date` → `appointment_date`, dark mode ROLE_COLORS + removeBtn
+  - waitlist.tsx: opravený dark mode (infoBanner, detailChipDate, btnDismiss)
+  - QuickActionsGrid.tsx: pridaný useAppTheme, dark mode pre 14 tile pozadí
+  - book-appointment.tsx: StepBar dark mode
+  - dental-chart.tsx: photoRemoveBtn dark mode
+  - family.tsx: relChip dark mode
+- Fáza 5 Správa kliniky: HOTOVÁ ✅ (admin, opening-hours, services, waitlist — všetky obrazovky existujú)
+- Dark mode audit: KOMPLETNÝ ✅ — všetky '#fff' v StyleSheet buď overridden inline alebo opravené
+- Fáza 6 UI/UX Polish: HOTOVÁ ✅
+  - Empty states: EmptyState komponent s dark mode, doplnený na všetky zoznamy
+  - Skeleton loadery: Skeleton + SkeletonList + SkeletonCard s dark mode shimmer, na všetkých obrazovkách
+  - Haptics: expo-haptics na všetkých save/create/delete/toggle akciách (admin, services, opening-hours, family, consent-forms, billing, appointments, consents, treatment-plan, patient-detail, calendar, clinic-live)
+
+- Bug audit: KOMPLETNÝ ✅
+  - Kritický bug: waiting_list chýbajúca UPDATE RLS policy → migrácia v43
+  - Error handling: pridaný na všetky delete operácie (calendar, opening-hours, treatment-plan, consent-forms, family, patient-attachments, admin)
+  - Haptics doplnené: patient-attachments, opening-hours exception delete, family delete
+
+- Performance optimalizácia: HOTOVÁ ✅
+  - Supabase queries: select('*') → explicit columns v 8 hookoch/obrazovkách
+  - useProfile: 2 sekvenčné queries → Promise.all (paralelné)
+  - usePatients: 2 sekvenčné follow-up queries → Promise.all
+  - useAppointments: pridaný .limit(300), explicit columns namiesto select('*')
+  - useServices: grouped memoizované cez useMemo (predtým reduce na každý render)
+  - useNotifications, useTimeBlocks: explicit columns
+  - messages (doctor+patient): pridaný .limit(200), explicit columns
+  - loadRecallCount: pridaný .limit(2000), optimalizovaný string comparison
+  - doctor/index.tsx: count queries select('*')→select('id'), todayCount/upcomingCount/completedToday memoizované do jedného useMemo
+  - React.memo: PatientCard, StatCard, StatusPill
+
+- Recepčné nástroje: HOTOVÉ ✅
+  - Denný prehľad (index.tsx): rozšírené KPI (Ø čakanie, Ø ošetrenie, využitie, príjem, no-show, nezapl.), časová os dňa, link na reporty
+  - Pokladničný systém (payments.tsx): výber spôsobu platby (hotovosť/karta/prevod) cez modal, rozpad príjmov podľa metódy, payment_method badge na kartách
+  - Check-in (checkin.tsx): alert banner pre pacientov čakajúcich > 15 min, tlačidlo "Neprišiel" (no-show) na scheduled termínoch
+  - Reporting (reports.tsx): NOVÁ obrazovka — 7/30-dňový report, KPI súhrn, graf termínov/dňa, graf príjmov/dňa, top služby, recall prehľad
+
+- Pacientske vylepšenia: HOTOVÉ ✅
+  - Lepší booking (book-appointment.tsx): sekcia "Naposledy rezervované" služby (horizontal scroll), odporúčané služby na základe dental_charts stavu, zobrazené pred vyhľadávaním
+  - Pacientsky dashboard (index.tsx): health summary karta (skóre, návštevy, problém. zuby, posledná návšteva), pending forms banner, 2. riadok quick actions (Formuláre, Hodnotenia, Zdravotný pas, Dental Twin)
+  - Forms hub (forms.tsx): NOVÁ obrazovka — centrum formulárov agregujúce pending consenty, health passport stav, predtermínové dotazníky
+  - Hodnotenia (reviews.tsx): NOVÁ obrazovka — priemerné skóre s distribúciou, nehodnotené návštevy, história hodnotení s komentármi
+
+- Doktorské vylepšenia: HOTOVÉ ✅
+  - Lepší pacientsky detail (patient-detail.tsx): HOTOVÝ ✅
+    - Kruhový ScoreGauge komponent (vizuálny ring skóre)
+    - Rýchly prehľad: 4-box štatistiky (návštevy, probl. zuby, posledná návšteva, ďalší termín)
+    - Dentálne skóre: gauge + dim bars vedľa seba (kompaktnejšie)
+    - Diagnózy sekcia: ICD kódy, severity badge, dátumy z diagnoses tabuľky
+    - Timeline redesign termínov: vertikálna os + farebné bodky, zoskupenie podľa mesiacov
+    - Dark mode kompletný na všetkých nových komponentoch
+  - Lepší doktorský dashboard (index.tsx): HOTOVÝ ✅
+    - 7-dňový bar chart (termíny + tržby za týždeň)
+    - Celkový príjem dňa badge
+    - Ďalší termín countdown banner (klikateľný → patient-detail)
+  - Vylepšený kalendár (calendar.tsx): HOTOVÝ ✅
+    - Farebné kódovanie podľa služby (service.color) v timeline
+    - Quick-add tap: klik na prázdny slot → add-appointment s prefill dátum+čas
+  - Štatistiky (stats.tsx): BEZ ZMENY (už kompletné — 1208 riadkov)
+  - Rýchlejšie pridanie termínu (add-appointment.tsx): HOTOVÝ ✅
+    - Prefill dátum+čas z kalendára quick-add (prefillDate/prefillTime params)
+    - Smart odporúčané sloty (⚡ prvé 3 voľné, zvýraznené zelenou)
+    - Nedávni pacienti (horizontal scroll, posledných 8 pacientov)
+    - Fix: loadingP → loadingPatients typo opravený
+
+- Nové vylepšenia (JS-only): HOTOVÉ ✅
+  - Owner Dashboard (owner-dashboard.tsx): HOTOVÝ ✅
+    - Výber obdobia (týždeň/mesiac/minulý mesiac)
+    - Celkové tržby s % porovnaním vs predchádzajúce obdobie
+    - KPI grid (dokončené, zrušené, no-show, Ø hodnotenie)
+    - Rozpad platieb (hotovosť/karta/prevod) s vizuálnym barom
+    - Výkon doktorov ranking (termíny, zrušenia, rating, tržby)
+    - Súhrn (úspešnosť, no-show rate, priemerná tržba/termín)
+  - PDF Exporty (pdf-exports.tsx + utils/pdfExport.ts): HOTOVÉ ✅
+    - Mesačný report PDF (KPI, rozpad platieb, zoznam termínov)
+    - Faktúra za ošetrenie PDF (údaje pacienta, služba, platba)
+    - Liečebný plán PDF (položky, ceny, stav)
+    - Zdieľanie cez expo-sharing
+  - Notifikácie redesign (notifications.tsx): HOTOVÝ ✅
+    - Nový filter: Termíny (success), Systém (info), Dôležité (warning/error)
+    - Zoskupenie podľa dňa (Dnes, Včera, Tento týždeň, Staršie)
+    - Počet notifikácií v "Všetky" filtri
+
+- JS-only vylepšenia (batch 2): HOTOVÉ ✅
+  - Globálny search (search.tsx): HOTOVÝ ✅
+    - Hľadá naprieč: pacienti, termíny, diagnózy, liečebné plány, služby
+    - SectionList s ikonami, dark mode kompletný
+    - Navigácia do patient-detail z výsledkov
+  - Offline cache (utils/offlineCache.ts): HOTOVÝ ✅
+    - AsyncStorage cache s TTL a verziou
+    - Integrovaný do: useProfile, useAppointments, useServices
+    - clearAllCache pri logout (doctor + patient profile)
+    - Cache keys: profile, appointments, services
+  - Onboarding tour (components/OnboardingTour.tsx): HOTOVÝ ✅
+    - 5 intro slidov pre doktora (termíny, pacienti, štatistiky, search, PDF)
+    - 5 intro slidov pre pacienta (booking, zdravie, notifikácie, formuláre, hodnotenia)
+    - Animated dots, skip/ďalej/začať tlačidlá, haptics
+    - Zobrazí sa len raz (AsyncStorage flag), integrovaný do doctor/index + patient/index
 
 ## Pending Deployment
-- OTA update: `eas update --branch preview --message "feat: dental twin + pre-questionnaire + dark mode fixes"`
-- Migration v32 + dental_twin: spustiť v Supabase Dashboard → SQL Editor (v tomto poradí)
+- OTA update: `eas update --branch preview --message "feat: search, offline cache, onboarding tour"`
+- Migration v43 (waiting_list UPDATE policy): spustiť v Supabase Dashboard → SQL Editor
 
 ## Pending Phases
-3. Pacientská skúsenosť — AI chat vylepšenia (booking ✅)
-4. Komunikácia & Tím — staff chat, broadcast, recall
-5. Správa kliniky — admin, opening hours, services, waitlist
-6. UI/UX Polish — empty states, skeletons, haptics
 --- PAID LATER ---
 7. Firebase Push Notifications
 8. Stripe online payments

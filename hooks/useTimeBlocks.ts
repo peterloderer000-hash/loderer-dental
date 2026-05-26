@@ -31,7 +31,7 @@ export function useTimeBlocks(doctorId: string | null) {
     setLoading(true);
     const { data } = await supabase
       .from('time_blocks')
-      .select('*')
+      .select('id, doctor_id, title, block_type, start_time, end_time, note, created_at')
       .eq('doctor_id', doctorId)
       .gte('end_time', new Date().toISOString())
       .order('start_time', { ascending: true });

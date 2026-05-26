@@ -18,11 +18,11 @@ import { useAppTheme } from '../../context/ThemeContext';
 
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
 
-const AUDIENCE_CFG: { key: Audience; label: string; desc: string; icon: string; color: string; bg: string }[] = [
-  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#F4ECE4' },
-  { key: 'upcoming', label: 'Najbližšie termíny',      desc: 'Pacienti s termínom v nasledujúcich 7 dňoch',                icon: 'calendar-outline',      color: '#1A5276',   bg: '#EBF5FB' },
-  { key: 'recall',   label: 'Recall — >6 mesiacov',   desc: 'Pacienti, ktorí neboli na kontrole viac ako 6 mesiacov',     icon: 'time-outline',          color: '#922B21',   bg: '#FDEDEC' },
-  { key: 'custom',   label: 'Vybraní pacienti',        desc: 'Vyberte konkrétnych pacientov zo zoznamu',                   icon: 'checkmark-circle-outline', color: '#1E8449', bg: '#EAFAF1' },
+const AUDIENCE_CFG: { key: Audience; label: string; desc: string; icon: string; color: string; bg: string; darkBg: string }[] = [
+  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#F4ECE4', darkBg: '#3D2E22' },
+  { key: 'upcoming', label: 'Najbližšie termíny',      desc: 'Pacienti s termínom v nasledujúcich 7 dňoch',                icon: 'calendar-outline',      color: '#1A5276',   bg: '#EBF5FB', darkBg: '#0D2233' },
+  { key: 'recall',   label: 'Recall — >6 mesiacov',   desc: 'Pacienti, ktorí neboli na kontrole viac ako 6 mesiacov',     icon: 'time-outline',          color: '#922B21',   bg: '#FDEDEC', darkBg: '#4A1010' },
+  { key: 'custom',   label: 'Vybraní pacienti',        desc: 'Vyberte konkrétnych pacientov zo zoznamu',                   icon: 'checkmark-circle-outline', color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F' },
 ];
 
 const MESSAGE_TEMPLATES = [
@@ -247,7 +247,7 @@ export default function BroadcastScreen() {
             {AUDIENCE_CFG.map((a) => (
               <TouchableOpacity
                 key={a.key}
-                style={[styles.audienceCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, audience === a.key && { borderColor: a.color, backgroundColor: a.bg }]}
+                style={[styles.audienceCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, audience === a.key && { borderColor: a.color, backgroundColor: dark ? a.darkBg : a.bg }]}
                 onPress={() => setAudience(a.key)}
                 activeOpacity={0.8}
               >
@@ -287,7 +287,7 @@ export default function BroadcastScreen() {
                   return (
                     <TouchableOpacity
                       key={p.id}
-                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && styles.ptRowSel]}
+                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && [styles.ptRowSel, { backgroundColor: dark ? '#3D2E22' : '#F4ECE4' }]]}
                       onPress={() => togglePatient(p.id)}
                       activeOpacity={0.8}
                     >
@@ -361,10 +361,10 @@ export default function BroadcastScreen() {
               <View style={[styles.previewCard, { backgroundColor: colors.bg2 }]}>
                 <View style={styles.previewHeader}>
                   <Ionicons name="notifications" size={14} color={COLORS.wal} />
-                  <Text style={styles.previewApp}>Loderer Dental</Text>
+                  <Text style={[styles.previewApp, { color: colors.textSecondary }]}>Loderer Dental</Text>
                 </View>
-                {title ? <Text style={styles.previewTitle} numberOfLines={1}>{title}</Text> : null}
-                {body ? <Text style={styles.previewBody} numberOfLines={3}>{body}</Text> : null}
+                {title ? <Text style={[styles.previewTitle, { color: colors.textPrimary }]} numberOfLines={1}>{title}</Text> : null}
+                {body ? <Text style={[styles.previewBody, { color: colors.textSecondary }]} numberOfLines={3}>{body}</Text> : null}
               </View>
             </View>
           )}
@@ -382,7 +382,7 @@ export default function BroadcastScreen() {
 
           {/* Naplánovať odoslanie */}
           <TouchableOpacity
-            style={[styles.schedToggle, { backgroundColor: colors.bg3 }, isScheduled && styles.schedToggleActive]}
+            style={[styles.schedToggle, { backgroundColor: colors.bg3 }, isScheduled && [styles.schedToggleActive, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]]}
             onPress={() => setIsScheduled(v => !v)}
             activeOpacity={0.85}
           >

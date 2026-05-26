@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, FlatList, Modal, RefreshControl,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -47,11 +48,11 @@ const ROLE_LABELS: Record<string, string> = {
   owner: 'Vlastník', patient: 'Pacient',
 };
 
-const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-  doctor:    { bg: '#EBF5FB', text: '#1A5276' },
-  reception: { bg: '#FEF9E7', text: '#7D6608' },
-  hygienist: { bg: '#EAFAF1', text: '#1E8449' },
-  owner:     { bg: '#F5EEF8', text: '#6C3483' },
+const ROLE_COLORS: Record<string, { bg: string; darkBg: string; text: string; darkText: string }> = {
+  doctor:    { bg: '#EBF5FB', darkBg: '#0D2233', text: '#1A5276', darkText: '#5DADE2' },
+  reception: { bg: '#FEF9E7', darkBg: '#2D2200', text: '#7D6608', darkText: '#F39C12' },
+  hygienist: { bg: '#EAFAF1', darkBg: '#0D3B1F', text: '#1E8449', darkText: '#27AE60' },
+  owner:     { bg: '#F5EEF8', darkBg: '#1E0D33', text: '#6C3483', darkText: '#AF7AC5' },
 };
 
 function initials(name: string) {
@@ -99,6 +100,7 @@ function InviteModal({
     setLoading(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
 
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
       'Pozvánka vytvorená',
       `Kód pre ${email.trim()}:\n\n${token}\n\nPlatí 7 dní.`,
@@ -229,7 +231,7 @@ export default function AdminScreen() {
     const [patients, appts, monthAppts, pending, payments, paid] = await Promise.all([
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'patient'),
       supabase.from('appointments').select('id', { count: 'exact', head: true }),
-      supabase.from('appointments').select('id', { count: 'exact', head: true }).gte('date', monthStart),
+      supabase.from('appointments').select('id', { count: 'exact', head: true }).gte('appointment_date', monthStart),
       supabase.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('payments').select('amount_cents'),
       supabase.from('payments').select('amount_cents').eq('status', 'paid'),
@@ -267,7 +269,9 @@ export default function AdminScreen() {
         {
           text: 'Odstrániť', style: 'destructive',
           onPress: async () => {
-            await supabase.from('profiles').update({ role: 'patient' }).eq('id', member.id);
+            const { error } = await supabase.from('profiles').update({ role: 'patient' }).eq('id', member.id);
+            if (error) { Alert.alert('Chyba', error.message); return; }
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             load();
           },
         },
@@ -287,6 +291,7 @@ export default function AdminScreen() {
     }).eq('id', clinic.id);
     setSavingClinic(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setClinic(prev => prev ? { ...prev, ...editForm } : prev);
     setEditing(false);
   }
@@ -362,7 +367,7 @@ export default function AdminScreen() {
                 </View>
               }
               renderItem={({ item: m }) => {
-                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, text: COLORS.wal };
+                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
                 return (
                   <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.memberAvatar}>
@@ -371,8 +376,8 @@ export default function AdminScreen() {
                     <View style={{ flex: 1 }}>
                       <View style={s.memberTop}>
                         <Text style={[s.memberName, { color: colors.textPrimary }]}>{m.full_name}</Text>
-                        <View style={[s.roleBadge, { backgroundColor: rc.bg }]}>
-                          <Text style={[s.roleBadgeText, { color: rc.text }]}>
+                        <View style={[s.roleBadge, { backgroundColor: dark ? rc.darkBg : rc.bg }]}>
+                          <Text style={[s.roleBadgeText, { color: dark ? rc.darkText : rc.text }]}>
                             {ROLE_LABELS[m.role] ?? m.role}
                           </Text>
                         </View>
@@ -385,8 +390,8 @@ export default function AdminScreen() {
                       )}
                     </View>
                     {m.role !== 'owner' && (
-                      <TouchableOpacity onPress={() => removeTeamMember(m)} style={s.removeBtn} activeOpacity={0.8}>
-                        <Ionicons name="person-remove-outline" size={16} color="#c0392b" />
+                      <TouchableOpacity onPress={() => removeTeamMember(m)} style={[s.removeBtn, { backgroundColor: dark ? '#4A1010' : '#FDF2F2' }]} activeOpacity={0.8}>
+                        <Ionicons name="person-remove-outline" size={16} color={dark ? '#E74C3C' : '#c0392b'} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -509,7 +514,7 @@ export default function AdminScreen() {
                   <Text style={[s.statsSection, { marginTop: 24, color: colors.textSecondary }]}>ŠTATISTIKY TÍMU</Text>
                   {team.filter(m => teamStats.has(m.id)).map(m => {
                     const ts = teamStats.get(m.id)!;
-                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, text: COLORS.wal };
+                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
                     return (
                       <View key={m.id} style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3, marginBottom: 12 }]}>
                         <View style={s.memberAvatar}>
@@ -518,8 +523,8 @@ export default function AdminScreen() {
                         <View style={{ flex: 1 }}>
                           <View style={s.memberTop}>
                             <Text style={[s.memberName, { color: colors.textPrimary }]} numberOfLines={1}>{m.full_name}</Text>
-                            <View style={[s.roleBadge, { backgroundColor: rc.bg }]}>
-                              <Text style={[s.roleBadgeText, { color: rc.text }]}>{ROLE_LABELS[m.role] ?? m.role}</Text>
+                            <View style={[s.roleBadge, { backgroundColor: dark ? rc.darkBg : rc.bg }]}>
+                              <Text style={[s.roleBadgeText, { color: dark ? rc.darkText : rc.text }]}>{ROLE_LABELS[m.role] ?? m.role}</Text>
                             </View>
                           </View>
                           <View style={s.teamStatsRow}>

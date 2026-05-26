@@ -101,7 +101,7 @@ export default function RecallScreen() {
       supabase
         .from('staff_messages')
         .select('id')
-        .or('content.ilike.%recall%,content.ilike.%návšteva%')
+        .or('body.ilike.%recall%,body.ilike.%návšteva%')
         .gte('created_at', monthStart.toISOString()),
     ]);
 
@@ -232,7 +232,7 @@ export default function RecallScreen() {
 
       await supabase.from('staff_messages').insert({
         sender_id: doctorId,
-        content:   `[recall] ${bulkMsg.trim()} (${targets.length} pacientov)`,
+        body:      `[recall] ${bulkMsg.trim()} (${targets.length} pacientov)`,
       });
 
       setShowBulkModal(false);

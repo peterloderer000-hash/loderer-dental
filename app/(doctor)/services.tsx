@@ -3,6 +3,7 @@ import {
   ActivityIndicator, Alert, Modal, RefreshControl, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -88,6 +89,7 @@ export default function ServicesScreen() {
       : await supabase.from('services').insert([{ ...payload, sort_order: active.length, is_active: true }]);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setModalOpen(false);
     load();
   }
@@ -96,8 +98,10 @@ export default function ServicesScreen() {
   async function archiveService() {
     if (!editingId) return;
     setSaving(true);
-    await supabase.from('services').update({ is_active: false }).eq('id', editingId);
+    const { error } = await supabase.from('services').update({ is_active: false }).eq('id', editingId);
     setSaving(false);
+    if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setModalOpen(false);
     load();
   }
@@ -390,7 +394,7 @@ const s = StyleSheet.create({
 
   saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', marginTop: 16 },
   saveBtnText: { color: COLORS.esp, fontSize: 15, fontWeight: '800' },
-  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, marginTop: 10 },
   archiveBtnText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
   cancelBtn:   { paddingVertical: 14, alignItems: 'center' },
   cancelBtnText: { fontSize: 14 },

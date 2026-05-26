@@ -183,9 +183,9 @@ const HYGIENE_OPTS: { label: string; emoji: string; value: number }[] = [
   { label: 'Výborná',  emoji: '🌟', value: 9 },
 ];
 
-function RiskPanel({
+const RiskPanel = React.memo(({
   risk, onChange,
-}: { risk: RiskFactors; onChange: (patch: Partial<RiskFactors>) => void }) {
+}: { risk: RiskFactors; onChange: (patch: Partial<RiskFactors>) => void }) => {
   const { dark } = useAppTheme();
   const [open, setOpen] = useState(false);
 
@@ -277,18 +277,18 @@ function RiskPanel({
       )}
     </View>
   );
-}
+});
 
-// ─── Score Ring (SVG animated) ────────────────────────────────────────────────
-const RING_R    = 74;
+// ─── Score Ring (SVG animated) — premium design ─────────────────────────────
+const RING_SIZE = 200;
+const RING_R    = 82;
 const RING_CIRC = 2 * Math.PI * RING_R;
 
-function ScoreRing({ score }: { score: number }) {
+const ScoreRing = React.memo(({ score }: { score: number }) => {
   const { dark } = useAppTheme();
   const info = scoreInfo(score);
 
   const [displayScore, setDisplayScore] = useState(0);
-  const animVal = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setDisplayScore(0);
@@ -298,50 +298,54 @@ function ScoreRing({ score }: { score: number }) {
       if (current >= score) { current = score; clearInterval(timer); }
       setDisplayScore(current);
     }, 20);
-
-    Animated.timing(animVal, {
-      toValue: score,
-      duration: 900,
-      useNativeDriver: false,
-    }).start();
-
     return () => clearInterval(timer);
   }, [score]);
 
   const offset = RING_CIRC * (1 - displayScore / 100);
+  const cx = RING_SIZE / 2;
 
   return (
     <View style={s.ringWrap}>
-      <Svg width={180} height={180} viewBox="0 0 180 180">
-        {/* Track */}
-        <Circle cx={90} cy={90} r={RING_R}
-          stroke={dark ? '#2A1F14' : '#1E1E1E'}
-          strokeWidth={14} fill="none" />
+      {/* Glow efekt pod ringom */}
+      <View style={[s.ringGlow, { backgroundColor: info.ring, shadowColor: info.ring }]} />
+      <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
+        {/* Vonkajší track — tenký accent */}
+        <Circle cx={cx} cy={cx} r={RING_R + 8}
+          stroke={dark ? 'rgba(201,168,76,0.06)' : 'rgba(30,30,30,0.08)'}
+          strokeWidth={1} fill="none" />
+        {/* Hlavný track */}
+        <Circle cx={cx} cy={cx} r={RING_R}
+          stroke={dark ? '#1E1610' : '#1E1E1E'}
+          strokeWidth={12} fill="none" />
         {/* Progress arc */}
-        <Circle cx={90} cy={90} r={RING_R}
+        <Circle cx={cx} cy={cx} r={RING_R}
           stroke={info.ring}
-          strokeWidth={14} fill="none"
+          strokeWidth={12} fill="none"
           strokeDasharray={RING_CIRC}
           strokeDashoffset={offset}
           strokeLinecap="round"
           rotation="-90"
-          origin="90, 90"
+          origin={`${cx}, ${cx}`}
         />
+        {/* Vnútorný accent ring */}
+        <Circle cx={cx} cy={cx} r={RING_R - 8}
+          stroke={dark ? 'rgba(201,168,76,0.04)' : 'rgba(30,30,30,0.05)'}
+          strokeWidth={0.5} fill="none" />
       </Svg>
       {/* Center text */}
       <View style={s.ringCenter}>
         <Text style={[s.ringScore, { color: info.ring }]}>{displayScore}</Text>
         <Text style={s.ringMax}>/100</Text>
-        <View style={[s.ringBadge, { backgroundColor: info.bg }]}>
+        <View style={[s.ringBadge, { backgroundColor: info.bg, borderColor: `${info.ring}33` }]}>
           <Text style={[s.ringBadgeTxt, { color: info.ring }]}>{info.label}</Text>
         </View>
       </View>
     </View>
   );
-}
+});
 
-// ─── Quadrant blok ────────────────────────────────────────────────────────────
-function QuadrantBlock({
+// ─── Quadrant blok — premium design ──────────────────────────────────────────
+const QuadrantBlock = React.memo(({
   label, fdis, teeth, baseTeeth, side, onPressTooth,
 }: {
   label: string; fdis: number[];
@@ -349,77 +353,71 @@ function QuadrantBlock({
   baseTeeth: Record<number, ToothStatus>;
   side: 'left' | 'right';
   onPressTooth: (fdi: number) => void;
-}) {
+}) => {
   const { dark } = useAppTheme();
   const issues  = fdis.filter(f => (teeth[f] ?? 'healthy') !== 'healthy').length;
   const changed = new Set(fdis.filter(f => (baseTeeth[f] ?? 'healthy') !== (teeth[f] ?? 'healthy')));
-  const align   = side === 'right' ? 'flex-end' : 'flex-start';
 
-  // Farba rámu kvadrantu podľa závažnosti
-  const borderColor = issues === 0
-    ? (dark ? '#1A3D1F' : '#1A3D1F')
-    : issues <= 2
-    ? '#7D4800'
-    : '#6B1010';
+  const statusColor = issues === 0 ? '#27AE60' : issues <= 2 ? '#F39C12' : '#E74C3C';
+  const statusBg    = issues === 0 ? '#0D3B1F' : issues <= 2 ? '#2D1500' : '#3A0E0E';
 
   return (
-    <View style={[s.quadrant, { backgroundColor: dark ? '#141209' : '#141414', borderColor }]}>
-      {/* Hlavička — label + počet problémov */}
-      <View style={[s.quadHeader, { alignItems: align }]}>
-        <Text style={[s.quadLabel, { color: dark ? '#666' : '#555' }]}>{label}</Text>
-        <View style={[s.quadBadge, {
-          backgroundColor: issues === 0 ? '#0D3B1F' : issues <= 2 ? '#2D1800' : '#4A0E0E',
-        }]}>
-          <Text style={[s.quadBadgeTxt, {
-            color: issues === 0 ? '#58D68D' : issues <= 2 ? '#F39C12' : '#E74C3C',
-          }]}>
-            {issues === 0 ? '✓ OK' : `${issues} ${issues === 1 ? 'problém' : issues < 5 ? 'problémy' : 'problémov'}`}
+    <View style={[s.quadrant, { backgroundColor: dark ? '#110E09' : '#141414', borderColor: `${statusColor}30` }]}>
+      {/* Hlavička */}
+      <View style={s.quadHeader}>
+        <Text style={[s.quadLabel, { color: dark ? '#8B7355' : '#777' }]}>{label}</Text>
+        <View style={[s.quadBadge, { backgroundColor: statusBg }]}>
+          <View style={[s.quadBadgeDot, { backgroundColor: statusColor }]} />
+          <Text style={[s.quadBadgeTxt, { color: statusColor }]}>
+            {issues === 0 ? 'OK' : `${issues}`}
           </Text>
         </View>
       </View>
 
-      {/* Dots — väčšie, zmenené zuby majú biely ring */}
-      <View style={[s.dotRow, { flexDirection: side === 'right' ? 'row-reverse' : 'row' }]}>
+      {/* Tooth dots — 2 riadky po 4 */}
+      <View style={s.dotGrid}>
         {fdis.map(fdi => {
           const st        = teeth[fdi] ?? 'healthy';
           const isChanged = changed.has(fdi);
+          const color     = dotColor(st);
           return (
-            <TouchableOpacity key={fdi} onPress={() => onPressTooth(fdi)} activeOpacity={0.65}>
+            <TouchableOpacity key={fdi} onPress={() => onPressTooth(fdi)} activeOpacity={0.6} style={s.toothWrap}>
               <View style={[
                 s.toothDot,
-                { backgroundColor: dotColor(st) },
-                isChanged && s.toothDotChanged,
-              ]}>
-                {isChanged && <View style={s.toothDotPulse} />}
-              </View>
+                { backgroundColor: color },
+                isChanged && [s.toothDotChanged, { borderColor: '#fff', shadowColor: color }],
+              ]} />
+              <Text style={[s.toothNum, { color: st === 'healthy' ? (dark ? '#444' : '#666') : color }]}>
+                {fdi}
+              </Text>
             </TouchableOpacity>
           );
         })}
       </View>
     </View>
   );
-}
+});
 
-// ─── Year Card (horizontal timeline) ─────────────────────────────────────────
-function YearCard({
+// ─── Year Card (horizontal timeline) — premium ──────────────────────────────
+const YearCard = React.memo(({
   year, newIssues, cumCost, active, onPress,
 }: {
   year: number; newIssues: number; cumCost: number;
   active: boolean; onPress: () => void;
-}) {
+}) => {
   const { dark } = useAppTheme();
   const color = newIssues === 0 ? '#27AE60' : newIssues <= 2 ? '#E67E22' : '#E74C3C';
   const bg    = active
     ? (newIssues === 0 ? '#0D3B1F' : newIssues <= 2 ? '#2D1500' : '#4A1010')
-    : (dark ? '#1A1209' : '#1A1A1A');
+    : (dark ? '#110E09' : '#1A1A1A');
 
   return (
     <TouchableOpacity
-      style={[s.yearCard, { backgroundColor: bg, borderColor: active ? color : (dark ? '#3D2E22' : '#333') }]}
+      style={[s.yearCard, { backgroundColor: bg, borderColor: active ? color : (dark ? '#2A1F14' : '#333') }]}
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Text style={[s.yearCardLabel, { color: active ? color : (dark ? '#888' : '#666') }]}>
+      <Text style={[s.yearCardLabel, { color: active ? color : (dark ? '#8B7355' : '#666') }]}>
         {year === 0 ? 'DNES' : `+${year}R`}
       </Text>
       <Text style={[s.yearCardIssues, { color }]}>
@@ -432,7 +430,7 @@ function YearCard({
       )}
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Tooth Detail Modal ───────────────────────────────────────────────────────
 type HistoryRecord = { status: string; notes: string | null; created_at: string };
@@ -468,7 +466,7 @@ function ToothModal({
 
   if (!fdi) return null;
   const present = snapshots[0]?.teeth[fdi] ?? 'healthy';
-  const cfg     = STATUS_CFG[present];
+  const cfg     = STATUS_CFG[present] ?? { label: present, color: '#FFE082', darkColor: '#FFB300', glowColor: '#FF9800', emoji: '🟠', severity: 2 };
   const name    = toothName(fdi);
   const future  = snapshots.slice(1).filter(s => s.newIssues.some(i => i.tooth === fdi));
 
@@ -585,9 +583,9 @@ function ToothModal({
 }
 
 // ─── Past Visit Card ─────────────────────────────────────────────────────────
-function PastVisitCard({
+const PastVisitCard = React.memo(({
   date, active, onPress,
-}: { date: string; active: boolean; onPress: () => void }) {
+}: { date: string; active: boolean; onPress: () => void }) => {
   const { dark } = useAppTheme();
   const label = new Date(date).toLocaleDateString('sk-SK', { month: 'short', year: '2-digit' });
   return (
@@ -604,7 +602,7 @@ function PastVisitCard({
       <Ionicons name="checkmark-circle" size={10} color={active ? '#C9A84C' : '#333'} />
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function DentalTwinScreen() {
@@ -715,8 +713,21 @@ export default function DentalTwinScreen() {
       .select('tooth_number, status')
       .eq('patient_id', user.id);
 
+    // Map chart statuses to prediction engine statuses
+    const STATUS_MAP: Record<string, ToothStatus> = {
+      cavity: 'caries_deep', early_cavity: 'caries_initial',
+      root_canal: 'endo', filled: 'filling', large_filling: 'filling',
+      replace_filling: 'caries_initial', bridge: 'crown', veneer: 'crown',
+      sealant: 'healthy', fracture: 'caries_deep', erosion: 'watch',
+      abrasion: 'watch', hypoplasia: 'watch', hypomineralization: 'watch',
+      periodontal: 'watch', mobility: 'watch',
+      improve_hygiene: 'watch', treatment_needed: 'caries_initial',
+    };
     const map: Record<number, ToothStatus> = {};
-    (charts ?? []).forEach((c: any) => { map[c.tooth_number] = c.status as ToothStatus; });
+    (charts ?? []).forEach((c: any) => {
+      const raw = c.status as string;
+      map[c.tooth_number] = (STATUS_MAP[raw] ?? raw) as ToothStatus;
+    });
 
     // Ak doktor ešte nezaznamenal žiadne zuby — defaultuj všetkých 32 ako zdravé
     // Toto zaistí, že predikcia má na čom pracovať
@@ -739,27 +750,35 @@ export default function DentalTwinScreen() {
 
   if (loading) {
     return (
-      <View style={[s.safe, { backgroundColor: '#080808', alignItems: 'center', justifyContent: 'center' }]}>
-        <ActivityIndicator color="#C9A84C" size="large" />
-        <Text style={{ marginTop: 14, fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#C9A84C' }}>
-          Počítam tvoje skóre...
+      <View style={[s.safe, { backgroundColor: '#0A0806', alignItems: 'center', justifyContent: 'center' }]}>
+        <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(201,168,76,0.06)', alignItems: 'center', justifyContent: 'center', marginBottom: 16, borderWidth: 1, borderColor: 'rgba(201,168,76,0.1)' }}>
+          <ActivityIndicator color="#C9A84C" size="large" />
+        </View>
+        <Text style={{ fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#C9A84C', letterSpacing: 0.5 }}>
+          Analyzujem tvoj chrup...
+        </Text>
+        <Text style={{ fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#555', marginTop: 4 }}>
+          Pripravujem 5-ročnú predikciu
         </Text>
       </View>
     );
   }
 
   return (
-    <View style={[s.safe, { backgroundColor: '#080808' }]}>
+    <View style={[s.safe, { backgroundColor: '#0A0806' }]}>
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
 
         {/* Header */}
         <View style={s.header}>
           <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.8}>
-            <Ionicons name="chevron-back" size={22} color="#C9A84C" />
+            <Ionicons name="chevron-back" size={20} color="#C9A84C" />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={s.headerSub}>DENTAL SCORE™</Text>
-            <Text style={s.headerTitle}>Tvoj chrup</Text>
+            <Text style={s.headerTitle}>Digitálny dvojník</Text>
+          </View>
+          <View style={[s.headerScorePill, { backgroundColor: info.bg, borderColor: `${info.ring}33` }]}>
+            <Text style={[s.headerScoreVal, { color: info.ring }]}>{score}</Text>
           </View>
         </View>
 
@@ -772,20 +791,22 @@ export default function DentalTwinScreen() {
           {/* ── Score Ring ── */}
           <View style={s.scoreSection}>
             <ScoreRing score={score} />
-            {/* Quick stats */}
-            <View style={s.statsRow}>
-              {[
-                { val: stats.healthy, lbl: 'Zdravých', color: '#27AE60' },
-                { val: stats.issues,  lbl: 'Problémov', color: '#E74C3C' },
-                { val: stats.watch,   lbl: 'Sledovanie', color: '#F39C12' },
-                { val: stats.treated, lbl: 'Ošetrených', color: '#C9A84C' },
-              ].map(({ val, lbl, color }) => (
-                <View key={lbl} style={s.statItem}>
-                  <Text style={[s.statNum, { color }]}>{val}</Text>
-                  <Text style={s.statLbl}>{lbl}</Text>
-                </View>
-              ))}
-            </View>
+          </View>
+
+          {/* ── Quick Stats — card row ── */}
+          <View style={s.statsRow}>
+            {[
+              { val: stats.healthy, lbl: 'Zdravých',    icon: 'checkmark-circle' as const, color: '#27AE60', bg: '#0D3B1F' },
+              { val: stats.issues,  lbl: 'Problémov',   icon: 'alert-circle' as const,     color: '#E74C3C', bg: '#3A0E0E' },
+              { val: stats.watch,   lbl: 'Sledovanie',  icon: 'eye' as const,              color: '#F39C12', bg: '#2D1500' },
+              { val: stats.treated, lbl: 'Ošetrených',  icon: 'shield-checkmark' as const, color: '#C9A84C', bg: '#2D2000' },
+            ].map(({ val, lbl, icon, color, bg }) => (
+              <View key={lbl} style={[s.statCard, { backgroundColor: bg, borderColor: `${color}20` }]}>
+                <Ionicons name={icon} size={14} color={color} />
+                <Text style={[s.statNum, { color }]}>{val}</Text>
+                <Text style={[s.statLbl, { color: `${color}99` }]}>{lbl}</Text>
+              </View>
+            ))}
           </View>
 
           {/* ── Risk Panel ── */}
@@ -969,21 +990,21 @@ export default function DentalTwinScreen() {
             <View style={s.section}>
               <Text style={s.sectionLabel}>5-ROČNÉ POROVNANIE</Text>
               <View style={s.compareRow}>
-                <View style={[s.compareBox, { backgroundColor: '#0D3B1F' }]}>
-                  <Ionicons name="shield-checkmark" size={22} color="#58D68D" />
+                <View style={[s.compareBox, { backgroundColor: '#0D3B1F', borderColor: 'rgba(39,174,96,0.2)' }]}>
+                  <Ionicons name="shield-checkmark" size={24} color="#58D68D" />
                   <Text style={[s.compareVal, { color: '#58D68D' }]}>{PREVENTION_COST * 5} €</Text>
                   <Text style={s.compareLbl}>Prevencia{'\n'}5× ročná prehliadka</Text>
                 </View>
                 <View style={s.compareVs}>
                   <Text style={{ fontSize: 11, color: '#555', fontFamily: 'DMSans_500Medium' }}>vs</Text>
-                  <Text style={{ fontSize: 11, color: '#58D68D', fontFamily: 'DMSans_500Medium', textAlign: 'center' }}>
+                  <Text style={{ fontSize: 12, color: '#58D68D', fontFamily: 'DMSans_500Medium', textAlign: 'center' }}>
                     úspora{'\n'}{Math.max(0, snapshots[5].cumulativeCost - PREVENTION_COST * 5)} €
                   </Text>
                 </View>
-                <View style={[s.compareBox, { backgroundColor: '#4A1010' }]}>
-                  <Ionicons name="warning" size={22} color="#F1948A" />
+                <View style={[s.compareBox, { backgroundColor: '#3A0E0E', borderColor: 'rgba(231,76,60,0.2)' }]}>
+                  <Ionicons name="warning" size={24} color="#F1948A" />
                   <Text style={[s.compareVal, { color: '#F1948A' }]}>{snapshots[5].cumulativeCost} €</Text>
-                  <Text style={s.compareLbl}>Bez prevencie{'\n'}{snapshots.slice(1).reduce((a,s)=>a+s.newIssues.length,0)} problémov</Text>
+                  <Text style={s.compareLbl}>Bez prevencie{'\n'}{snapshots.slice(1).reduce((a,snap)=>a+snap.newIssues.length,0)} problémov</Text>
                 </View>
               </View>
             </View>
@@ -1022,54 +1043,60 @@ export default function DentalTwinScreen() {
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles — premium dark theme ─────────────────────────────────────────────
+const QUAD_W = (W - 32 - 8) / 2;
 const s = StyleSheet.create({
   safe: { flex: 1 },
 
   // Header
-  header:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 14, gap: 12 },
-  backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.12)', alignItems: 'center', justifyContent: 'center' },
-  headerSub:  { fontSize: 9, letterSpacing: 2.5, color: '#C9A84C', fontFamily: 'DMSans_500Medium' },
-  headerTitle:{ fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0' },
+  header:         { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, gap: 12 },
+  backBtn:        { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(201,168,76,0.1)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(201,168,76,0.15)' },
+  headerSub:      { fontSize: 9, letterSpacing: 2.5, color: '#C9A84C', fontFamily: 'DMSans_500Medium' },
+  headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0', marginTop: 1 },
+  headerScorePill:{ borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1 },
+  headerScoreVal: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold' },
 
   // Score
-  scoreSection: { alignItems: 'center', paddingVertical: 8, paddingBottom: 20 },
-  ringWrap:     { width: 180, height: 180, alignItems: 'center', justifyContent: 'center' },
+  scoreSection: { alignItems: 'center', paddingVertical: 12, paddingBottom: 16 },
+  ringWrap:     { width: RING_SIZE, height: RING_SIZE, alignItems: 'center', justifyContent: 'center' },
+  ringGlow:     { position: 'absolute', width: 100, height: 100, borderRadius: 50, opacity: 0.08, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 60, elevation: 0 },
   ringCenter:   { position: 'absolute', alignItems: 'center' },
-  ringScore:    { fontSize: 44, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 50 },
-  ringMax:      { fontSize: 12, color: '#555', fontFamily: 'DMSans_500Medium', marginTop: -4 },
-  ringBadge:    { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4, marginTop: 6 },
-  ringBadgeTxt: { fontSize: 11, fontFamily: 'DMSans_500Medium', letterSpacing: 1 },
+  ringScore:    { fontSize: 48, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 54 },
+  ringMax:      { fontSize: 13, color: '#666', fontFamily: 'DMSans_500Medium', marginTop: -4 },
+  ringBadge:    { borderRadius: 10, paddingHorizontal: 12, paddingVertical: 5, marginTop: 6, borderWidth: 1 },
+  ringBadgeTxt: { fontSize: 11, fontFamily: 'DMSans_500Medium', letterSpacing: 1.5 },
 
-  // Stats row
-  statsRow: { flexDirection: 'row', gap: 24, marginTop: 8 },
-  statItem: { alignItems: 'center', gap: 2 },
-  statNum:  { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold' },
-  statLbl:  { fontSize: 9, color: '#555', fontFamily: 'DMSans_500Medium' },
+  // Stats row — card-based
+  statsRow:  { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 16 },
+  statCard:  { flex: 1, alignItems: 'center', gap: 4, borderRadius: 12, paddingVertical: 12, borderWidth: 1 },
+  statNum:   { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
+  statLbl:   { fontSize: 8, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, textTransform: 'uppercase' },
 
   // Sections
   section:      { marginBottom: 20 },
-  sectionLabel: { fontSize: 9, letterSpacing: 2, color: '#555', fontFamily: 'DMSans_500Medium', marginBottom: 12, paddingHorizontal: 16 },
-  tapHint:      { fontSize: 10, color: '#444', textAlign: 'center', marginTop: 8 },
+  sectionLabel: { fontSize: 9, letterSpacing: 2, color: '#8B7355', fontFamily: 'DMSans_500Medium', marginBottom: 12, paddingHorizontal: 16 },
+  tapHint:      { fontSize: 10, color: '#555', textAlign: 'center', marginTop: 10, fontFamily: 'DMSans_500Medium' },
 
   // Year-change banner
-  yearBanner:    { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, paddingHorizontal: 16, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 8, paddingVertical: 7, marginHorizontal: 16, borderWidth: 1, borderColor: 'rgba(231,76,60,0.25)' },
+  yearBanner:    { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12, paddingHorizontal: 14, backgroundColor: 'rgba(231,76,60,0.08)', borderRadius: 10, paddingVertical: 8, marginHorizontal: 16, borderWidth: 1, borderColor: 'rgba(231,76,60,0.2)' },
   yearBannerTxt: { flex: 1, fontSize: 10, color: '#E74C3C', fontFamily: 'DMSans_500Medium', letterSpacing: 0.3 },
 
-  // Quadrant grid
-  quadGrid:        { flexDirection: 'row', flexWrap: 'wrap', gap: 4, paddingHorizontal: 16 },
-  quadrant:        { width: (W - 32 - 4) / 2, borderRadius: 12, borderWidth: 1.5, padding: 12 },
-  quadHeader:      { marginBottom: 10, gap: 4 },
-  quadLabel:       { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, color: '#666' },
-  quadBadge:       { borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, alignSelf: 'flex-start' },
+  // Quadrant grid — larger dots with FDI numbers
+  quadGrid:        { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16 },
+  quadrant:        { width: QUAD_W, borderRadius: 14, borderWidth: 1, padding: 12, paddingBottom: 14 },
+  quadHeader:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  quadLabel:       { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5 },
+  quadBadge:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
+  quadBadgeDot:    { width: 6, height: 6, borderRadius: 3 },
   quadBadgeTxt:    { fontSize: 10, fontFamily: 'DMSans_500Medium' },
-  dotRow:          { flexDirection: 'row', gap: 4, flexWrap: 'nowrap' },
-  toothDot:        { width: 15, height: 15, borderRadius: 8 },
-  toothDotChanged: { borderWidth: 2.5, borderColor: '#fff', transform: [{ scale: 1.15 }] },
-  toothDotPulse:   { position: 'absolute', width: 21, height: 21, borderRadius: 11, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)', top: -3, left: -3 },
+  dotGrid:         { flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' },
+  toothWrap:       { alignItems: 'center', gap: 2, width: (QUAD_W - 24 - 6 * 3) / 4 },
+  toothDot:        { width: 22, height: 22, borderRadius: 11 },
+  toothDotChanged: { borderWidth: 2.5, transform: [{ scale: 1.1 }], shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.6, shadowRadius: 6, elevation: 4 },
+  toothNum:        { fontSize: 7, fontFamily: 'DMSans_500Medium' },
 
   // Year cards
-  yearCard:      { width: 72, borderRadius: 12, borderWidth: 1.5, padding: 10, alignItems: 'center', gap: 4 },
+  yearCard:      { width: 76, borderRadius: 14, borderWidth: 1.5, padding: 10, alignItems: 'center', gap: 4 },
   yearCardLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1 },
   yearCardIssues:{ fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 26 },
   yearCardCost:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
@@ -1078,12 +1105,12 @@ const s = StyleSheet.create({
   pastCard:      { alignItems: 'center', justifyContent: 'center', gap: 3, borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
   pastCardLabel: { fontSize: 10, fontFamily: 'DMSans_500Medium' },
   timelineSep:   { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 2 },
-  timelineLine:  { width: 12, height: 1, backgroundColor: '#333' },
+  timelineLine:  { width: 12, height: 1, backgroundColor: '#2A1F14' },
 
   // Year detail / Counter panel
-  yearOK:            { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 12, padding: 12 },
-  counterPanel:      { marginHorizontal: 16, marginTop: 12, borderRadius: 14, borderWidth: 1, backgroundColor: '#111', overflow: 'hidden' },
-  counterTitle:      { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#666', letterSpacing: 0.5, padding: 14, paddingBottom: 10 },
+  yearOK:            { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 14, padding: 14 },
+  counterPanel:      { marginHorizontal: 16, marginTop: 12, borderRadius: 16, borderWidth: 1, backgroundColor: '#0D0B08', overflow: 'hidden' },
+  counterTitle:      { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.5, padding: 14, paddingBottom: 10 },
   counterRow:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1 },
   counterEmoji:      { fontSize: 18, width: 26, textAlign: 'center' },
   counterLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
@@ -1092,7 +1119,7 @@ const s = StyleSheet.create({
   counterDivider:    { height: 1, marginHorizontal: 14, marginVertical: 4 },
   counterSummary:    { paddingHorizontal: 14, paddingBottom: 14, gap: 6 },
   counterSummaryRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  counterSavingsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, padding: 10, marginTop: 4 },
+  counterSavingsRow: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, padding: 12, marginTop: 4 },
   counterSummaryEmoji:{ fontSize: 14, width: 22 },
   counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#888', fontFamily: 'DMSans_500Medium' },
   counterSummaryVal:  { fontSize: 14, fontFamily: 'PlayfairDisplay_700Bold' },
@@ -1103,18 +1130,18 @@ const s = StyleSheet.create({
 
   // Compare
   compareRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16 },
-  compareBox:  { flex: 1, borderRadius: 12, padding: 14, alignItems: 'center', gap: 6 },
-  compareVal:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
-  compareLbl:  { fontSize: 9, color: '#888', textAlign: 'center', lineHeight: 14 },
+  compareBox:  { flex: 1, borderRadius: 14, padding: 16, alignItems: 'center', gap: 8, borderWidth: 1 },
+  compareVal:  { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold' },
+  compareLbl:  { fontSize: 9, color: '#888', textAlign: 'center', lineHeight: 14, fontFamily: 'DMSans_500Medium' },
   compareVs:   { alignItems: 'center', gap: 4, width: 50 },
 
   // CTA
-  ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 15 },
+  ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16 },
   ctaTxt:  { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
 
   // Modal
-  overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'flex-end' },
-  sheet:      { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40 },
+  overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' },
+  sheet:      { borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 20, paddingBottom: 40 },
   handle:     { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
   sheetHeader:{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
   statusDot:  { width: 14, height: 14, borderRadius: 7 },
@@ -1122,7 +1149,7 @@ const s = StyleSheet.create({
   closeBtn:   { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   statusCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
   okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
-  bookBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 12, paddingVertical: 14, marginBottom: 12 },
+  bookBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2C1F14', borderRadius: 14, paddingVertical: 14, marginBottom: 12, borderWidth: 1, borderColor: 'rgba(201,168,76,0.15)' },
   bookBtnTxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
 
   // Modal — história
@@ -1132,7 +1159,7 @@ const s = StyleSheet.create({
   histDot:   { width: 10, height: 10, borderRadius: 5, marginTop: 3 },
 
   // Risk panel
-  riskCard:       { backgroundColor: '#111', borderRadius: 14, borderWidth: 1 },
+  riskCard:       { backgroundColor: '#0D0B08', borderRadius: 14, borderWidth: 1 },
   riskHeader:     { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 14 },
   riskHeaderTxt:  { flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#C9A84C' },
   riskSummary:    { flexDirection: 'row', gap: 4 },
@@ -1142,7 +1169,7 @@ const s = StyleSheet.create({
   riskEmoji:      { fontSize: 20, width: 28, textAlign: 'center' },
   riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium' },
   riskHint:       { fontSize: 10, color: '#555', marginTop: 1 },
-  riskDisclaimer: { fontSize: 9, color: '#444', marginTop: 12, lineHeight: 14 },
+  riskDisclaimer: { fontSize: 9, color: '#555', marginTop: 12, lineHeight: 14 },
   toggle:         { width: 42, height: 24, borderRadius: 12, justifyContent: 'center', paddingHorizontal: 2 },
   thumb:          { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', alignSelf: 'flex-start' },
   thumbOn:        { alignSelf: 'flex-end' },

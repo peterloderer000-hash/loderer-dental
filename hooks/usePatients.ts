@@ -48,22 +48,20 @@ export function usePatients() {
         return;
       }
 
-      // Zisti, ktorí majú zdravotný pas
+      // Fetch passports + appointment stats paralelne
       const ids = profiles.map((p) => p.id);
-      const { data: passports } = ids.length
-        ? await supabase.from('health_passports').select('patient_id').in('patient_id', ids)
-        : { data: [] };
+      const [passportsRes, apptRes] = ids.length
+        ? await Promise.all([
+            supabase.from('health_passports').select('patient_id').in('patient_id', ids),
+            supabase.from('appointments')
+              .select('patient_id, appointment_date, status')
+              .in('patient_id', ids)
+              .neq('status', 'cancelled'),
+          ])
+        : [{ data: [] }, { data: [] }];
 
-      const passportSet = new Set((passports ?? []).map((pp: any) => pp.patient_id));
-
-      // Fetch appointment stats for each patient
-      const { data: apptData } = ids.length
-        ? await supabase
-            .from('appointments')
-            .select('patient_id, appointment_date, status')
-            .in('patient_id', ids)
-            .neq('status', 'cancelled')
-        : { data: [] };
+      const passportSet = new Set((passportsRes.data ?? []).map((pp: any) => pp.patient_id));
+      const apptData = apptRes.data;
 
       // Compute per-patient stats
       const sixMonthsAgo = new Date();

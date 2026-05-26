@@ -15,6 +15,7 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../context/ThemeContext';
+import { clearAllCache } from '../../utils/offlineCache';
 
 const AVATAR_BUCKET = 'avatars';
 
@@ -165,6 +166,7 @@ export default function DoctorProfile() {
 
   // ── Odhlásiť ─────────────────────────────────────────────────────────────
   async function handleSignOut() {
+    await clearAllCache();
     await supabase.auth.signOut();
     const parent = navigation.getParent() ?? navigation;
     parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));

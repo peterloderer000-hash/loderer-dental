@@ -31,14 +31,22 @@ export function useDentalChart(patientId: string) {
 
     async function load() {
       setLoading(true);
-      const { data } = await supabase
+      // Try with photo_url first; fall back without it if column doesn't exist yet
+      let result = await supabase
         .from('dental_charts')
         .select('tooth_number, status, notes, photo_url')
         .eq('patient_id', patientId);
 
-      if (!cancelled && data) {
+      if (result.error?.message?.includes('photo_url')) {
+        result = await supabase
+          .from('dental_charts')
+          .select('tooth_number, status, notes')
+          .eq('patient_id', patientId);
+      }
+
+      if (!cancelled && result.data) {
         const map: Record<number, ToothRecord> = {};
-        data.forEach((r) => { map[r.tooth_number] = r as ToothRecord; });
+        result.data.forEach((r: any) => { map[r.tooth_number] = { ...r, photo_url: r.photo_url ?? null } as ToothRecord; });
         setChart(map);
       }
       if (!cancelled) setLoading(false);
@@ -62,10 +70,19 @@ export function useDentalChart(patientId: string) {
     };
     if (photoUrl !== undefined) payload.photo_url = photoUrl;
 
-    const { error } = await supabase.from('dental_charts').upsert(
+    let { error } = await supabase.from('dental_charts').upsert(
       payload,
       { onConflict: 'patient_id,tooth_number' },
     );
+
+    // If photo_url column doesn't exist yet, retry without it
+    if (error?.message?.includes('photo_url')) {
+      delete payload.photo_url;
+      ({ error } = await supabase.from('dental_charts').upsert(
+        payload,
+        { onConflict: 'patient_id,tooth_number' },
+      ));
+    }
 
     if (!error) {
       await supabase.from('dental_records').insert({

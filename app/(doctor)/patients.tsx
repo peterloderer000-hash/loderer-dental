@@ -62,7 +62,7 @@ function Avatar({ name, avatarUrl }: { name: string | null; avatarUrl: string | 
 }
 
 // ─── Jedna karta pacienta ─────────────────────────────────────────────────────
-function PatientCard({ patient, onDetail, onChart, onPassport, onBook }: {
+const PatientCard = React.memo(function PatientCard({ patient, onDetail, onChart, onPassport, onBook }: {
   patient: Patient;
   onDetail:  () => void;
   onChart:   () => void;
@@ -129,7 +129,7 @@ function PatientCard({ patient, onDetail, onChart, onPassport, onBook }: {
       </TouchableOpacity>
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 type PatientFilter = 'all' | 'recall' | 'no_passport' | 'with_passport';

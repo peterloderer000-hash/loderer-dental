@@ -146,9 +146,9 @@ export default function WaitlistScreen() {
           <EmptyWaitlist />
         ) : (
           <>
-            <View style={styles.infoBanner}>
-              <Ionicons name="information-circle-outline" size={14} color="#1A5276" />
-              <Text style={styles.infoBannerText}>
+            <View style={[styles.infoBanner, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527644' : '#AED6F1' }]}>
+              <Ionicons name="information-circle-outline" size={14} color={dark ? '#5DADE2' : '#1A5276'} />
+              <Text style={[styles.infoBannerText, { color: dark ? '#5DADE2' : '#1A5276' }]}>
                 Klepni "Rezervovať" pre otvorenie formulára s predvyplneným pacientom a službou.
               </Text>
             </View>
@@ -209,9 +209,9 @@ export default function WaitlistScreen() {
                       </View>
                     )}
                     {prefDate && (
-                      <View style={[styles.detailChip, styles.detailChipDate]}>
-                        <Ionicons name="calendar-outline" size={11} color="#1A5276" />
-                        <Text style={[styles.detailChipText, { color: '#1A5276' }]}>{prefDate}</Text>
+                      <View style={[styles.detailChip, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527644' : '#AED6F1' }]}>
+                        <Ionicons name="calendar-outline" size={11} color={dark ? '#5DADE2' : '#1A5276'} />
+                        <Text style={[styles.detailChipText, { color: dark ? '#5DADE2' : '#1A5276' }]}>{prefDate}</Text>
                       </View>
                     )}
                   </View>
@@ -226,13 +226,13 @@ export default function WaitlistScreen() {
                   {/* Akcie */}
                   <View style={styles.actionsRow}>
                     <TouchableOpacity
-                      style={[styles.btnDismiss, isActing && { opacity: 0.5 }]}
+                      style={[styles.btnDismiss, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B44' : '#F1948A' }, isActing && { opacity: 0.5 }]}
                       onPress={() => handleDismiss(item)}
                       disabled={!!acting}
                       activeOpacity={0.8}
                     >
-                      <Ionicons name="close-circle-outline" size={15} color="#922B21" />
-                      <Text style={styles.btnDismissText}>Zamietnuť</Text>
+                      <Ionicons name="close-circle-outline" size={15} color={dark ? '#E74C3C' : '#922B21'} />
+                      <Text style={[styles.btnDismissText, { color: dark ? '#E74C3C' : '#922B21' }]}>Zamietnuť</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.btnApprove, isActing && { opacity: 0.5 }]}

@@ -60,9 +60,10 @@ export default function PatientMessagesScreen() {
     // Správy medzi mnou a doktorom
     const { data } = await supabase
       .from('messages')
-      .select('*')
+      .select('id, sender_id, receiver_id, body, is_read, created_at')
       .or(`and(sender_id.eq.${user.id},receiver_id.eq.${doc.id}),and(sender_id.eq.${doc.id},receiver_id.eq.${user.id})`)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .limit(200);
 
     setMessages((data ?? []) as Message[]);
     setLoading(false);
@@ -71,7 +72,7 @@ export default function PatientMessagesScreen() {
     if (data && data.length > 0) {
       const unread = data.filter((m) => m.receiver_id === user.id && !m.is_read).map((m) => m.id);
       if (unread.length > 0) {
-        await supabase.from('messages').update({ is_read: true }).in('id', unread).throwOnError().catch(() => {});
+        await supabase.from('messages').update({ is_read: true }).in('id', unread);
       }
     }
   }, []);

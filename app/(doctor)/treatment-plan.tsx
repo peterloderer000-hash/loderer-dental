@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -388,6 +389,7 @@ export default function TreatmentPlanScreen() {
         type:    'info',
       });
     }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowPlanModal(false);
     setEditingPlan(null);
     load();
@@ -397,7 +399,9 @@ export default function TreatmentPlanScreen() {
     Alert.alert('Zmazať plán', `Naozaj zmazať "${plan.title}"? Zmažú sa aj všetky výkony.`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Zmazať', style: 'destructive', onPress: async () => {
-        await supabase.from('treatment_plans').delete().eq('id', plan.id);
+        const { error } = await supabase.from('treatment_plans').delete().eq('id', plan.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         if (expandedPlan === plan.id) setExpandedPlan(null);
         load();
       }},
@@ -464,6 +468,7 @@ export default function TreatmentPlanScreen() {
       });
       if (error) { Alert.alert('Chyba', error.message); return; }
     }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowItemModal(false);
     setEditingItem(null);
     load();
@@ -473,7 +478,9 @@ export default function TreatmentPlanScreen() {
     Alert.alert('Zmazať výkon', `Zmazať "${item.title}"?`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Zmazať', style: 'destructive', onPress: async () => {
-        await supabase.from('treatment_plan_items').delete().eq('id', item.id);
+        const { error } = await supabase.from('treatment_plan_items').delete().eq('id', item.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         load();
       }},
     ]);

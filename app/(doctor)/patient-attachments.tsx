@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -182,7 +183,9 @@ export default function PatientAttachmentsScreen() {
       { text: 'Nie', style: 'cancel' },
       {
         text: 'Vymazať', style: 'destructive', onPress: async () => {
-          await supabase.from('patient_attachments').delete().eq('id', att.id);
+          const { error } = await supabase.from('patient_attachments').delete().eq('id', att.id);
+          if (error) { Alert.alert('Chyba', error.message); return; }
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setAttachments(prev => prev.filter(a => a.id !== att.id));
         },
       },

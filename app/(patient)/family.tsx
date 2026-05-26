@@ -8,6 +8,7 @@ import {
   ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -134,6 +135,7 @@ export default function FamilyScreen() {
     }
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowModal(false);
     load();
   }
@@ -142,7 +144,9 @@ export default function FamilyScreen() {
     Alert.alert('Odstrániť', `Odstrániť ${m.full_name} z rodinných profilov?`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Áno, odstrániť', style: 'destructive', onPress: async () => {
-        await supabase.from('family_members').delete().eq('id', m.id);
+        const { error } = await supabase.from('family_members').delete().eq('id', m.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setMembers(prev => prev.filter(x => x.id !== m.id));
       }},
     ]);
@@ -277,7 +281,7 @@ export default function FamilyScreen() {
                   const active = form.relationship === r;
                   return (
                     <TouchableOpacity key={r} activeOpacity={0.8}
-                      style={[styles.relChip, active && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
+                      style={[styles.relChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, active && { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.color }]}
                       onPress={() => setForm(f => ({ ...f, relationship: r }))}>
                       <Text style={styles.relChipIcon}>{cfg.icon}</Text>
                       <Text style={[styles.relChipLabel, active && { color: cfg.color, fontWeight: '700' }]} numberOfLines={1}>

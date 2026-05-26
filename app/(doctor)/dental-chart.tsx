@@ -271,8 +271,8 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving,
           {photoUrl ? (
             <View style={styles.photoWrap}>
               <Image source={{ uri: photoUrl }} style={styles.photoPreview} resizeMode="cover" />
-              <TouchableOpacity style={styles.photoRemoveBtn} onPress={() => setPhotoUrl(null)} activeOpacity={0.8}>
-                <Ionicons name="close-circle" size={22} color="#922B21" />
+              <TouchableOpacity style={[styles.photoRemoveBtn, { backgroundColor: colors.cardBg }]} onPress={() => setPhotoUrl(null)} activeOpacity={0.8}>
+                <Ionicons name="close-circle" size={22} color={dark ? '#E74C3C' : '#922B21'} />
               </TouchableOpacity>
             </View>
           ) : null}

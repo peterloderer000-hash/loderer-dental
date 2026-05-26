@@ -22,13 +22,14 @@ const TYPE_CONFIG = {
   error:   { icon: 'close-circle'       as const, color: COLORS.error,   bg: COLORS.errorBg,   border: '#F1948A' },
 };
 
-type FilterType = 'all' | 'unread' | 'info' | 'warning';
+type FilterType = 'all' | 'unread' | 'info' | 'warning' | 'success';
 
 const FILTERS: { key: FilterType; label: string }[] = [
   { key: 'all',     label: 'Všetky'      },
   { key: 'unread',  label: 'Nové'        },
-  { key: 'info',    label: 'Informácie'  },
-  { key: 'warning', label: 'Upozornenia' },
+  { key: 'success', label: 'Termíny'     },
+  { key: 'info',    label: 'Systém'      },
+  { key: 'warning', label: 'Dôležité'    },
 ];
 
 function timeAgo(dateStr: string): string {
@@ -103,14 +104,33 @@ export default function DoctorNotificationsScreen() {
   const filtered = useMemo(() => {
     switch (filter) {
       case 'unread':  return notifications.filter(n => !n.read);
-      case 'info':    return notifications.filter(n => n.type === 'info' || n.type === 'success');
+      case 'success': return notifications.filter(n => n.type === 'success');
+      case 'info':    return notifications.filter(n => n.type === 'info');
       case 'warning': return notifications.filter(n => n.type === 'warning' || n.type === 'error');
       default:        return notifications;
     }
   }, [notifications, filter]);
 
-  const unread = filtered.filter(n => !n.read);
-  const read   = filtered.filter(n =>  n.read);
+  // Group by day
+  const grouped = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
+    const groups: { label: string; items: typeof filtered }[] = [
+      { label: 'Dnes', items: [] },
+      { label: 'Včera', items: [] },
+      { label: 'Tento týždeň', items: [] },
+      { label: 'Staršie', items: [] },
+    ];
+    for (const n of filtered) {
+      const d = new Date(n.created_at); d.setHours(0, 0, 0, 0);
+      if (d.getTime() >= today.getTime()) groups[0].items.push(n);
+      else if (d.getTime() >= yesterday.getTime()) groups[1].items.push(n);
+      else if (d.getTime() >= weekAgo.getTime()) groups[2].items.push(n);
+      else groups[3].items.push(n);
+    }
+    return groups.filter(g => g.items.length > 0);
+  }, [filtered]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
@@ -143,6 +163,7 @@ export default function DoctorNotificationsScreen() {
               <Text style={[s.filterLabel, filter === tab.key ? { color: '#fff' } : { color: 'rgba(196,168,130,0.65)' }]}>
                 {tab.label}
                 {tab.key === 'unread' && unreadCount > 0 ? ` (${unreadCount})` : ''}
+                {tab.key === 'all' && notifications.length > 0 ? ` (${notifications.length})` : ''}
               </Text>
             </TouchableOpacity>
           ))}
@@ -160,27 +181,17 @@ export default function DoctorNotificationsScreen() {
           contentContainerStyle={{ paddingVertical: 12, paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.gold} />}
         >
-          {unread.length > 0 && (
-            <>
-              <SectionLabel label={`NOVÉ (${unread.length})`} color={COLORS.gold} />
-              {unread.map(n => (
+          {grouped.map(group => (
+            <React.Fragment key={group.label}>
+              <SectionLabel label={`${group.label.toUpperCase()} (${group.items.length})`} color={group.label === 'Dnes' ? COLORS.gold : COLORS.sand} />
+              {group.items.map(n => (
                 <NotifCard key={n.id} item={n} colors={colors} onPress={async () => {
-                  await markRead(n.id);
+                  if (!n.read) await markRead(n.id);
                   if (n.appointment_id) router.back();
                 }} />
               ))}
-            </>
-          )}
-          {read.length > 0 && (
-            <>
-              <SectionLabel label="PREČÍTANÉ" color={COLORS.sand} />
-              {read.map(n => (
-                <NotifCard key={n.id} item={n} colors={colors} onPress={() => {
-                  if (n.appointment_id) router.back();
-                }} />
-              ))}
-            </>
-          )}
+            </React.Fragment>
+          ))}
         </ScrollView>
       )}
     </SafeAreaView>

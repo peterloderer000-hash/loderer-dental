@@ -3,6 +3,7 @@ import { ActivityIndicator, Alert, Animated, Modal, RefreshControl, ScrollView, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { COLORS, SIZES } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -329,6 +330,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
       .eq('id', appointment.id);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const dateStr = dt.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
     // Notifikuj doktora o presune termínu
     supabase.from('notifications').insert({
@@ -470,6 +472,7 @@ function RatingModal({ appointment, onClose, onDone }: {
     }).eq('id', appointment.id);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert('Ďakujeme za hodnotenie! ⭐', LABELS[rating], [
       { text: 'OK', onPress: () => { onDone(); onClose(); } },
     ]);
@@ -744,7 +747,7 @@ export default function AppointmentsScreen() {
     })));
   }, []);
 
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const dyn = {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
@@ -769,6 +772,7 @@ export default function AppointmentsScreen() {
         { text: 'Nie', style: 'cancel' },
         { text: 'Áno, odstrániť', style: 'destructive', onPress: async () => {
           await supabase.from('waiting_list').update({ status: 'cancelled' }).eq('id', entry.id);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setWaitingList((prev) => prev.filter((e) => e.id !== entry.id));
         }},
       ]
@@ -805,6 +809,7 @@ export default function AppointmentsScreen() {
         { text: isPending ? 'Áno, odvolať' : 'Áno, zrušiť', style: 'destructive', onPress: async () => {
           const err = await updateStatus(appt.id, 'cancelled');
           if (err) { Alert.alert('Chyba', err.message); return; }
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           // Notifikuj doktora pri zrušení potvrdeného termínu
           if (!isPending) {
             const timeStr = new Date(appt.appointment_date).toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
@@ -969,7 +974,7 @@ export default function AppointmentsScreen() {
                   onDetail={() => setDetailAppt(item)}
                   onRate={() => setRatingAppt(item)}
                   onQuestionnaire={() => router.push({
-                    pathname: '/(patient)/pre-questionnaire',
+                    pathname: '/(patient)/pre-questionnaire' as any,
                     params: {
                       appointmentId:   item.id,
                       appointmentDate: item.appointment_date,
@@ -980,6 +985,7 @@ export default function AppointmentsScreen() {
                   onCheckIn={async () => {
                     const err = await selfCheckIn(item.id);
                     if (err) { Alert.alert('Chyba', err.message); return; }
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     await supabase.from('notifications').insert({
                       user_id:        item.doctor_id,
                       title:          '🟢 Pacient je v čakárni',

@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -86,6 +87,7 @@ export default function ConsentsScreen() {
     }).eq('id', signing.id);
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSigning(null);
     Alert.alert('Podpísané ✓', 'Súhlas bol úspešne podpísaný a odoslaný doktorovi.');
     load();
@@ -97,6 +99,7 @@ export default function ConsentsScreen() {
       { text: 'Nie', style: 'cancel' },
       { text: 'Áno, odmietnuť', style: 'destructive', onPress: async () => {
         await supabase.from('patient_consents').update({ status: 'declined' }).eq('id', signing.id);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setSigning(null);
         load();
       }},

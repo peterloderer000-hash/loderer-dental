@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
@@ -139,6 +140,7 @@ export default function BillingScreen() {
     const next = PAY_CFG[appt.payment_status]?.next ?? 'paid';
     const { error } = await supabase.from('appointments').update({ payment_status: next }).eq('id', appt.id);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setAppts(prev => prev.map(a => a.id === appt.id ? { ...a, payment_status: next } : a));
     // Notifikuj pacienta pri potvrdení platby
     if (next === 'paid') {

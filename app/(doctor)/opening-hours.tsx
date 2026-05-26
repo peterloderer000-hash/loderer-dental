@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, Switch, TouchableOpacity,
   ScrollView, StyleSheet, Alert, ActivityIndicator,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,11 +42,15 @@ export default function OpeningHoursScreen() {
   const [hours, setHours] = useState<DayRow[]>(
     DAYS.map((day, index) => ({
       id: null,
+      day_of_week: index + 1,
       day_index: index,
       day_name: day,
       is_open: index < 5,
+      is_closed: index >= 5,
       time_from: '08:00',
       time_to: '17:00',
+      open_time: '08:00',
+      close_time: '17:00',
       clinic_id: null,
     }))
   );
@@ -159,7 +164,9 @@ export default function OpeningHoursScreen() {
     Alert.alert('Odstrániť výnimku', `Odstrániť výnimku pre ${ex.date}?`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Odstrániť', style: 'destructive', onPress: async () => {
-        await supabase.from('clinic_exceptions').delete().eq('id', ex.id);
+        const { error } = await supabase.from('clinic_exceptions').delete().eq('id', ex.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         loadExceptions();
       }},
     ]);
@@ -177,7 +184,10 @@ export default function OpeningHoursScreen() {
     const { error } = await supabase.from('opening_hours').upsert(payload, { onConflict: 'day_of_week' });
     setSaving(false);
     if (error) Alert.alert('Chyba', error.message);
-    else Alert.alert('Uložené', 'Ordinačné hodiny boli uložené.');
+    else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Uložené', 'Ordinačné hodiny boli uložené.');
+    }
   }
 
   return (

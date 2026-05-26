@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useClinic, type ClinicAppointment } from '../../hooks/useClinic';
 import {
   CLINIC_STATUS_CFG, fmtTime, getWaitingMinutes,
@@ -216,7 +217,7 @@ export default function ClinicLiveScreen() {
   function wrapAction(apptId: string, fn: () => Promise<void>): () => Promise<void> {
     return async () => {
       setActionLoadingId(apptId);
-      try { await fn(); } finally { setActionLoadingId(null); }
+      try { await fn(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } finally { setActionLoadingId(null); }
     };
   }
 
@@ -305,6 +306,7 @@ export default function ClinicLiveScreen() {
         { text: 'Zrušiť', style: 'cancel' },
         { text: 'Áno, No-show', style: 'destructive', onPress: async () => {
           await clinic.markNoShow(appt);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setExpanded(null);
         }},
       ],
@@ -391,8 +393,9 @@ export default function ClinicLiveScreen() {
 }
 
 function SummaryChip({ emoji, label, color, urgent }: { emoji: string; label: string; color: string; urgent?: boolean }) {
+  const { dark } = useAppTheme();
   return (
-    <View style={[s.summaryChip, urgent && { borderColor: color, backgroundColor: '#FDEDEC' }]}>
+    <View style={[s.summaryChip, urgent && { borderColor: color, backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
       <Text style={s.summaryEmoji}>{emoji}</Text>
       <Text style={[s.summaryLabel, { color }]}>{label}</Text>
     </View>

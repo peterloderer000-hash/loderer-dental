@@ -16,7 +16,7 @@ interface Props {
   style?: ViewStyle;
 }
 
-export default function StatCard({ label, value, unit, icon, color = COLORS.gold, trend, trendUp, onPress, style }: Props) {
+function StatCard({ label, value, unit, icon, color = COLORS.gold, trend, trendUp, onPress, style }: Props) {
   return (
     <AppCard onPress={onPress} style={StyleSheet.flatten([s.card, style])} shadow="card">
       <View style={s.iconRow}>
@@ -37,6 +37,8 @@ export default function StatCard({ label, value, unit, icon, color = COLORS.gold
     </AppCard>
   );
 }
+
+export default React.memo(StatCard);
 
 const s = StyleSheet.create({
   card:       { flex: 1, padding: SPACING.lg, gap: SPACING.xs },

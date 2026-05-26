@@ -125,9 +125,10 @@ export default function DoctorMessagesScreen() {
     setChatLoading(true);
     const { data } = await supabase
       .from('messages')
-      .select('*')
+      .select('id, sender_id, receiver_id, body, is_read, created_at')
       .or(`and(sender_id.eq.${uid},receiver_id.eq.${patId}),and(sender_id.eq.${patId},receiver_id.eq.${uid})`)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .limit(200);
     setMessages((data ?? []) as Message[]);
     setChatLoading(false);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
@@ -154,6 +154,36 @@ export default function ReceptionCheckin() {
   const upcoming = filtered.filter(a => a.clinic_status === 'scheduled');
   const done     = filtered.filter(a => ['treatment_done', 'checkout', 'paid', 'late', 'no_show'].includes(a.clinic_status ?? ''));
 
+  // Pacienti čakajúci > 15 min
+  const longWaiters = useMemo(() => waiting.filter(a => {
+    if (!a.arrived_at) return false;
+    const mins = Math.round((Date.now() - new Date(a.arrived_at).getTime()) / 60000);
+    return mins > 15;
+  }), [waiting]);
+
+  async function markNoShow(apt: Appointment) {
+    Alert.alert(
+      'Neprišiel?',
+      `Označiť ${apt.patient?.full_name ?? 'pacienta'} ako neprišiel?`,
+      [
+        { text: 'Zrušiť', style: 'cancel' },
+        {
+          text: 'Neprišiel', style: 'destructive', onPress: async () => {
+            setUpdating(apt.id);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            const { error } = await supabase.from('appointments').update({
+              clinic_status: 'no_show',
+              status: 'cancelled',
+            }).eq('id', apt.id);
+            setUpdating(null);
+            if (error) { Alert.alert('Chyba', error.message); return; }
+            load(true);
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
       {/* ── Chair picker modal ── */}
@@ -249,11 +279,23 @@ export default function ReceptionCheckin() {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.gold} />}
         >
+          {/* Long wait alert */}
+          {longWaiters.length > 0 && (
+            <View style={[s.alertBanner, { backgroundColor: dark ? '#4A1010' : COLORS.errorBg, borderColor: dark ? '#922B2166' : '#F1948A' }]}>
+              <Ionicons name="warning" size={16} color={COLORS.error} />
+              <Text style={[s.alertText, { color: dark ? '#F1948A' : '#922B21' }]}>
+                {longWaiters.length === 1
+                  ? `${longWaiters[0].patient?.full_name ?? 'Pacient'} čaká viac ako 15 minút`
+                  : `${longWaiters.length} pacienti čakajú viac ako 15 minút`}
+              </Text>
+            </View>
+          )}
+
           {/* In chair */}
           {inChair.length > 0 && (
             <Section title={`V kresle (${inChair.length})`} accentColor="#7D3C98">
               {inChair.map(a => (
-                <AptRow key={a.id} apt={a} colors={colors} updating={updating} onAdvance={advance} />
+                <AptRow key={a.id} apt={a} colors={colors} dark={dark} updating={updating} onAdvance={advance} onNoShow={markNoShow} />
               ))}
             </Section>
           )}
@@ -262,7 +304,7 @@ export default function ReceptionCheckin() {
           {waiting.length > 0 && (
             <Section title={`Čakáreň (${waiting.length})`} accentColor={COLORS.warning}>
               {waiting.map(a => (
-                <AptRow key={a.id} apt={a} colors={colors} updating={updating} onAdvance={advance} />
+                <AptRow key={a.id} apt={a} colors={colors} dark={dark} updating={updating} onAdvance={advance} onNoShow={markNoShow} />
               ))}
             </Section>
           )}
@@ -271,7 +313,7 @@ export default function ReceptionCheckin() {
           {upcoming.length > 0 && (
             <Section title={`Nadchádzajúce (${upcoming.length})`} accentColor={COLORS.gold}>
               {upcoming.map(a => (
-                <AptRow key={a.id} apt={a} colors={colors} updating={updating} onAdvance={advance} />
+                <AptRow key={a.id} apt={a} colors={colors} dark={dark} updating={updating} onAdvance={advance} onNoShow={markNoShow} />
               ))}
             </Section>
           )}
@@ -280,7 +322,7 @@ export default function ReceptionCheckin() {
           {done.length > 0 && (
             <Section title={`Dokončené (${done.length})`} accentColor={COLORS.success}>
               {done.map(a => (
-                <AptRow key={a.id} apt={a} colors={colors} updating={updating} onAdvance={advance} />
+                <AptRow key={a.id} apt={a} colors={colors} dark={dark} updating={updating} onAdvance={advance} onNoShow={markNoShow} />
               ))}
             </Section>
           )}
@@ -321,11 +363,13 @@ function Section({ title, accentColor, children }: { title: string; accentColor:
   );
 }
 
-function AptRow({ apt, colors, updating, onAdvance }: {
+function AptRow({ apt, colors, dark, updating, onAdvance, onNoShow }: {
   apt: Appointment;
   colors: any;
+  dark: boolean;
   updating: string | null;
   onAdvance: (a: Appointment) => void;
+  onNoShow: (a: Appointment) => void;
 }) {
   const cfg       = STATUS_CFG[apt.clinic_status ?? 'scheduled'] ?? STATUS_CFG.scheduled;
   const nextLabel = NEXT_LABEL[apt.clinic_status ?? 'scheduled'];
@@ -396,22 +440,35 @@ function AptRow({ apt, colors, updating, onAdvance }: {
         </View>
       </View>
 
-      {nextLabel && (
-        <TouchableOpacity
-          style={ar.advBtn}
-          onPress={() => onAdvance(apt)}
-          activeOpacity={0.8}
-          disabled={isLoading}
-        >
-          {isLoading
-            ? <ActivityIndicator size="small" color={COLORS.gold} />
-            : <>
-                <Ionicons name="arrow-forward-circle-outline" size={16} color={COLORS.gold} />
-                <Text style={ar.advText}>{nextLabel}</Text>
-              </>
-          }
-        </TouchableOpacity>
-      )}
+      <View style={ar.actionsRow}>
+        {nextLabel && (
+          <TouchableOpacity
+            style={ar.advBtn}
+            onPress={() => onAdvance(apt)}
+            activeOpacity={0.8}
+            disabled={isLoading}
+          >
+            {isLoading
+              ? <ActivityIndicator size="small" color={COLORS.gold} />
+              : <>
+                  <Ionicons name="arrow-forward-circle-outline" size={16} color={COLORS.gold} />
+                  <Text style={ar.advText}>{nextLabel}</Text>
+                </>
+            }
+          </TouchableOpacity>
+        )}
+        {apt.clinic_status === 'scheduled' && (
+          <TouchableOpacity
+            style={[ar.noShowBtn, { borderColor: dark ? '#922B2144' : '#F1948A', backgroundColor: dark ? '#4A101015' : '#FDEDEC' }]}
+            onPress={() => onNoShow(apt)}
+            activeOpacity={0.8}
+            disabled={isLoading}
+          >
+            <Ionicons name="close-circle-outline" size={14} color={COLORS.error} />
+            <Text style={ar.noShowText}>Neprišiel</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }
@@ -431,6 +488,12 @@ const s = StyleSheet.create({
   empty:  { alignItems: 'center', paddingVertical: 48, gap: 10 },
   emptyTitle: { ...TYPO.h2, textAlign: 'center' },
   emptySub:   { ...TYPO.body, textAlign: 'center' },
+  alertBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    borderRadius: RADII.md, padding: 12, marginBottom: 16,
+    borderWidth: 1,
+  },
+  alertText: { flex: 1, fontFamily: 'DMSans_500Medium', fontSize: 12 },
 });
 
 const sb = StyleSheet.create({
@@ -473,6 +536,7 @@ const ar = StyleSheet.create({
   kpiRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
   kpiChip: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   kpiText: { fontFamily: 'DMSans_500Medium', fontSize: 10 },
+  actionsRow:  { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   advBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: 'rgba(201,168,76,0.10)',
@@ -481,7 +545,9 @@ const ar = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(201,168,76,0.25)',
     alignSelf: 'flex-start',
   },
-  advText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: COLORS.gold },
+  advText:     { fontFamily: 'DMSans_500Medium', fontSize: 13, color: COLORS.gold },
+  noShowBtn:   { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: RADII.sm, paddingHorizontal: 10, paddingVertical: 8, borderWidth: 1, alignSelf: 'flex-start' },
+  noShowText:  { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.error },
 });
 
 const cp = StyleSheet.create({

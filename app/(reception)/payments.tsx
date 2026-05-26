@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet,
+  ActivityIndicator, Alert, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,12 +13,15 @@ import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { fmtTime } from '../../utils/clinicMetrics';
 
+type PaymentMethod = 'cash' | 'card' | 'transfer';
+
 type PayableAppointment = {
   id: string;
   appointment_date: string;
   duration_minutes: number;
   clinic_status: string | null;
   payment_status: string | null;
+  payment_method: PaymentMethod | null;
   price: number | null;
   patient: { id: string; full_name: string } | null;
   service: { name: string; price: number | null } | null;
@@ -32,6 +35,12 @@ const FILTER_TABS: { key: FilterTab; label: string }[] = [
   { key: 'all',     label: 'Všetky'     },
 ];
 
+const PAYMENT_METHODS: { key: PaymentMethod; label: string; icon: string; color: string }[] = [
+  { key: 'cash',     label: 'Hotovosť', icon: 'cash-outline',     color: '#2E7D5E' },
+  { key: 'card',     label: 'Karta',    icon: 'card-outline',     color: '#1A5276' },
+  { key: 'transfer', label: 'Prevod',   icon: 'swap-horizontal-outline', color: '#7D3C98' },
+];
+
 export default function ReceptionPayments() {
   const { colors, dark } = useAppTheme();
   const [appointments, setAppointments] = useState<PayableAppointment[]>([]);
@@ -39,6 +48,7 @@ export default function ReceptionPayments() {
   const [refreshing, setRefreshing]     = useState(false);
   const [filter, setFilter]             = useState<FilterTab>('pending');
   const [marking, setMarking]           = useState<string | null>(null);
+  const [payModal, setPayModal]         = useState<PayableAppointment | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -47,7 +57,7 @@ export default function ReceptionPayments() {
     try {
       const { data, error } = await supabase
         .from('appointments')
-        .select('id, appointment_date, duration_minutes, clinic_status, payment_status, price, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, price)')
+        .select('id, appointment_date, duration_minutes, clinic_status, payment_status, payment_method, price, patient:profiles!appointments_patient_id_fkey(id, full_name), service:services(name, price)')
         .gte('appointment_date', `${today}T00:00:00`)
         .lte('appointment_date', `${today}T23:59:59`)
         .order('appointment_date');
@@ -82,14 +92,32 @@ export default function ReceptionPayments() {
     [appointments]
   );
 
-  async function markPaid(apt: PayableAppointment) {
+  async function markPaid(apt: PayableAppointment, method: PaymentMethod) {
     setMarking(apt.id);
+    setPayModal(null);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const { error } = await supabase.from('appointments').update({ payment_status: 'paid' }).eq('id', apt.id);
+    const { error } = await supabase.from('appointments').update({
+      payment_status: 'paid',
+      payment_method: method,
+    }).eq('id', apt.id);
     setMarking(null);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     load(true);
   }
+
+  const methodBreakdown = useMemo(() => {
+    const paid = appointments.filter(a => a.payment_status === 'paid');
+    const cash = paid.filter(a => a.payment_method === 'cash')
+      .reduce((sum, a) => sum + (a.price ?? a.service?.price ?? 0), 0);
+    const card = paid.filter(a => a.payment_method === 'card')
+      .reduce((sum, a) => sum + (a.price ?? a.service?.price ?? 0), 0);
+    const transfer = paid.filter(a => a.payment_method === 'transfer')
+      .reduce((sum, a) => sum + (a.price ?? a.service?.price ?? 0), 0);
+    const other = paid.filter(a => !a.payment_method)
+      .reduce((sum, a) => sum + (a.price ?? a.service?.price ?? 0), 0);
+    return { cash, card, transfer, other };
+  }, [appointments]);
 
   const fmtPrice = (val: number | null | undefined) =>
     val != null ? `${val.toLocaleString('sk-SK')} €` : '—';
@@ -117,6 +145,46 @@ export default function ReceptionPayments() {
           />
         </View>
       </LinearGradient>
+
+      {/* Method breakdown */}
+      {totalPaid > 0 && (
+        <View style={[s.methodRow, { backgroundColor: COLORS.esp }]}>
+          {methodBreakdown.cash > 0 && (
+            <View style={s.methodChip}>
+              <Ionicons name="cash-outline" size={12} color="#A8D5C0" />
+              <Text style={s.methodChipText}>{fmtPrice(methodBreakdown.cash)}</Text>
+            </View>
+          )}
+          {methodBreakdown.card > 0 && (
+            <View style={s.methodChip}>
+              <Ionicons name="card-outline" size={12} color="#AED6F1" />
+              <Text style={s.methodChipText}>{fmtPrice(methodBreakdown.card)}</Text>
+            </View>
+          )}
+          {methodBreakdown.transfer > 0 && (
+            <View style={s.methodChip}>
+              <Ionicons name="swap-horizontal-outline" size={12} color="#D2B4DE" />
+              <Text style={s.methodChipText}>{fmtPrice(methodBreakdown.transfer)}</Text>
+            </View>
+          )}
+          {methodBreakdown.other > 0 && (
+            <View style={s.methodChip}>
+              <Ionicons name="help-circle-outline" size={12} color={COLORS.sand} />
+              <Text style={s.methodChipText}>{fmtPrice(methodBreakdown.other)}</Text>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Payment method modal */}
+      <PaymentMethodModal
+        visible={!!payModal}
+        appointment={payModal}
+        onClose={() => setPayModal(null)}
+        onSelect={(method) => payModal && markPaid(payModal, method)}
+        loading={!!marking}
+        fmtPrice={fmtPrice}
+      />
 
       {/* Filter tabs */}
       <View style={[s.filterRow, { backgroundColor: COLORS.esp }]}>
@@ -198,10 +266,24 @@ export default function ReceptionPayments() {
                       </View>
                     </View>
 
+                    {isPaid && apt.payment_method && (
+                      <View style={[pc.methodBadge, { backgroundColor: dark ? '#ffffff10' : '#f5f5f5' }]}>
+                        <Ionicons
+                          name={(PAYMENT_METHODS.find(m => m.key === apt.payment_method)?.icon ?? 'cash-outline') as any}
+                          size={12}
+                          color={colors.textSecondary}
+                        />
+                        <Text style={[pc.methodText, { color: colors.textSecondary }]}>
+                          {PAYMENT_METHODS.find(m => m.key === apt.payment_method)?.label ?? apt.payment_method}
+                        </Text>
+                      </View>
+                    )}
+
                     {!isPaid && apt.clinic_status !== 'cancelled' && (
                       <TouchableOpacity
-                        style={pc.payBtn}
-                        onPress={() => markPaid(apt)}
+                    
+    style={pc.payBtn}
+                        onPress={() => setPayModal(apt)}
                         activeOpacity={0.8}
                         disabled={isLoading}
                       >
@@ -215,7 +297,7 @@ export default function ReceptionPayments() {
                             ? <ActivityIndicator size="small" color="#fff" />
                             : <>
                                 <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
-                                <Text style={pc.payText}>Označiť ako zaplatené</Text>
+                                <Text style={pc.payText}>Prijať platbu</Text>
                               </>
                           }
                         </LinearGradient>
@@ -243,11 +325,63 @@ function SummaryChip({ label, value, color, textColor }: {
   );
 }
 
+function PaymentMethodModal({ visible, appointment, onClose, onSelect, loading, fmtPrice }: {
+  visible: boolean;
+  appointment: PayableAppointment | null;
+  onClose: () => void;
+  onSelect: (method: PaymentMethod) => void;
+  loading: boolean;
+  fmtPrice: (val: number | null | undefined) => string;
+}) {
+  const { colors, dark } = useAppTheme();
+  if (!appointment) return null;
+  const price = appointment.price ?? appointment.service?.price ?? null;
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={pm.overlay}>
+        <View style={[pm.sheet, { backgroundColor: colors.cardBg }]}>
+          <Text style={[pm.title, { color: colors.textPrimary }]}>Prijať platbu</Text>
+
+          <View style={[pm.infoRow, { backgroundColor: dark ? '#ffffff08' : '#f8f8f8', borderColor: colors.bg3 }]}>
+            <Text style={[pm.infoName, { color: colors.textPrimary }]}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
+            <Text style={[pm.infoService, { color: colors.textSecondary }]}>{appointment.service?.name ?? '—'} · {fmtTime(appointment.appointment_date)}</Text>
+            <Text style={[pm.infoPrice, { color: colors.textPrimary }]}>{fmtPrice(price)}</Text>
+          </View>
+
+          <Text style={[pm.methodLabel, { color: colors.textSecondary }]}>Spôsob platby</Text>
+          <View style={pm.methodGrid}>
+            {PAYMENT_METHODS.map(m => (
+              <TouchableOpacity
+                key={m.key}
+                style={[pm.methodBtn, { backgroundColor: dark ? m.color + '20' : m.color + '10', borderColor: dark ? m.color + '44' : m.color + '30' }]}
+                onPress={() => { Haptics.selectionAsync(); onSelect(m.key); }}
+                activeOpacity={0.8}
+                disabled={loading}
+              >
+                <Ionicons name={m.icon as any} size={28} color={m.color} />
+                <Text style={[pm.methodBtnText, { color: dark ? '#F5EFE6' : m.color }]}>{m.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity style={[pm.cancelBtn, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+            <Text style={[pm.cancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, gap: 2 },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
   heroTitle: { ...TYPO.h1, color: '#FAF6F0', marginBottom: 14 },
   summaryRow: { flexDirection: 'row', gap: 10 },
+  methodRow:   { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingBottom: 8, flexWrap: 'wrap' },
+  methodChip:  { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: RADII.pill, paddingHorizontal: 10, paddingVertical: 5 },
+  methodChipText: { fontFamily: 'DMSans_500Medium', fontSize: 11, color: 'rgba(196,168,130,0.8)' },
   filterRow: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 14, paddingTop: 4, gap: 8 },
   filterTab: {
     flex: 1,
@@ -294,7 +428,25 @@ const pc = StyleSheet.create({
   price:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, lineHeight: 22 },
   paidBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   paidText:  { fontFamily: 'DMSans_500Medium', fontSize: 11, color: COLORS.success },
+  methodBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: RADII.pill, paddingHorizontal: 8, paddingVertical: 3 },
+  methodText:  { fontFamily: 'DMSans_500Medium', fontSize: 10, letterSpacing: 0.3 },
   payBtn:    { borderRadius: RADII.md, overflow: 'hidden' },
   payGrad:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10 },
   payText:   { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#fff' },
+});
+
+const pm = StyleSheet.create({
+  overlay:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  sheet:        { borderRadius: 20, padding: 24, width: '100%', maxWidth: 400, gap: 16 },
+  title:        { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', textAlign: 'center' },
+  infoRow:      { borderRadius: RADII.md, padding: 14, gap: 4, borderWidth: 1 },
+  infoName:     { fontFamily: 'DMSans_500Medium', fontSize: 15 },
+  infoService:  { fontFamily: 'DMSans_400Regular', fontSize: 12 },
+  infoPrice:    { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, marginTop: 4 },
+  methodLabel:  { fontFamily: 'DMSans_500Medium', fontSize: 11, letterSpacing: 0.8, textTransform: 'uppercase' },
+  methodGrid:   { flexDirection: 'row', gap: 10 },
+  methodBtn:    { flex: 1, alignItems: 'center', gap: 8, paddingVertical: 18, borderRadius: RADII.lg, borderWidth: 1.5 },
+  methodBtnText:{ fontFamily: 'DMSans_500Medium', fontSize: 13 },
+  cancelBtn:    { borderRadius: RADII.md, paddingVertical: 12, alignItems: 'center', borderWidth: 1 },
+  cancelText:   { fontFamily: 'DMSans_500Medium', fontSize: 14 },
 });

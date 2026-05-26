@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SIZES } from '../../styles/theme';
@@ -131,6 +132,7 @@ export default function ConsentFormsScreen() {
     }
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowFormModal(false);
     load();
   }
@@ -139,7 +141,9 @@ export default function ConsentFormsScreen() {
     Alert.alert('Odstrániť šablónu', `Odstrániť „${f.title}"?`, [
       { text: 'Nie', style: 'cancel' },
       { text: 'Odstrániť', style: 'destructive', onPress: async () => {
-        await supabase.from('consent_forms').delete().eq('id', f.id);
+        const { error } = await supabase.from('consent_forms').delete().eq('id', f.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setForms(prev => prev.filter(x => x.id !== f.id));
       }},
     ]);
@@ -156,14 +160,23 @@ export default function ConsentFormsScreen() {
   async function handleSend() {
     if (!sendFormId || !sendPatientId) { Alert.alert('Chyba', 'Vyber pacienta.'); return; }
     setSending(true);
-    const { error } = await supabase.from('patient_consents').insert({
+    let { error } = await supabase.from('patient_consents').insert({
       form_id:        sendFormId,
       patient_id:     sendPatientId,
       appointment_id: sendApptId.trim() || null,
       status:         'pending',
     });
+    // If appointment_id column doesn't exist yet, retry without it
+    if (error?.message?.includes('appointment_id')) {
+      ({ error } = await supabase.from('patient_consents').insert({
+        form_id:    sendFormId,
+        patient_id: sendPatientId,
+        status:     'pending',
+      }));
+    }
     setSending(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setShowSendModal(false);
     Alert.alert('Odoslané ✓', 'Pacient dostane výzvu na podpis pri najbližšom prihlásení.');
     load();
