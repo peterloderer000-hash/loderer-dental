@@ -62,7 +62,7 @@ function formatApptDate(iso: string) {
 const OH_DAYS = ['', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 type OHRow = { day_of_week: number; open_time: string | null; close_time: string | null; is_closed: boolean; note: string | null };
 
-function OpeningHoursCompact() {
+const OpeningHoursCompact = React.memo(function OpeningHoursCompact() {
   const { colors } = useAppTheme();
   const [hours, setHours] = React.useState<OHRow[]>([]);
   const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
@@ -94,7 +94,7 @@ function OpeningHoursCompact() {
       ))}
     </View>
   );
-}
+});
 
 const ohS = StyleSheet.create({
   card:       { backgroundColor: '#fff', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 14, overflow: 'hidden', ...SHADOWS.sm },

@@ -11,7 +11,7 @@ interface Props {
   style?: ViewStyle;
 }
 
-export default function HeroHeader({ greeting, subtitle, rightElement, bottomElement, style }: Props) {
+function HeroHeader({ greeting, subtitle, rightElement, bottomElement, style }: Props) {
   return (
     <LinearGradient
       colors={GRADIENTS.hero as [string, string, ...string[]]}
@@ -41,6 +41,8 @@ export default function HeroHeader({ greeting, subtitle, rightElement, bottomEle
     </LinearGradient>
   );
 }
+
+export default React.memo(HeroHeader);
 
 const s = StyleSheet.create({
   hero: {

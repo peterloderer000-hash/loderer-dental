@@ -253,7 +253,7 @@ const STATUS_CONFIG = {
   cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
 };
 
-function StatusBadge({ status }: { status: Appointment['status'] }) {
+const StatusBadge = React.memo(function StatusBadge({ status }: { status: Appointment['status'] }) {
   const { dark } = useAppTheme();
   const c = STATUS_CONFIG[status] ?? STATUS_CONFIG.scheduled;
   return (
@@ -261,9 +261,9 @@ function StatusBadge({ status }: { status: Appointment['status'] }) {
       <Text style={[styles.badgeText, { color: c.color }]}>{c.label}</Text>
     </View>
   );
-}
+});
 
-function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
+const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
   item: Appointment; onComplete: () => void; onCancel: () => void; onDentalChart: () => void; onPassport: () => void; onViewPatient: () => void; onReschedule: () => void; onApproveRequest?: () => void;
 }) {
   const { colors: ac, dark } = useAppTheme();
@@ -385,7 +385,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       </View>
     </View>
   );
-}
+});
 
 type Filter = 'today' | 'upcoming' | 'all';
 

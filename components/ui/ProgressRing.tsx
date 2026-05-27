@@ -27,7 +27,7 @@ const SIZES: Record<Size, { dim: number; stroke: number; fontSize: number }> = {
   lg: { dim: 120, stroke: 9,  fontSize: 28 },
 };
 
-export default function ProgressRing({
+function ProgressRing({
   value, max = 100, size = 'md', color = '#C9A84C', trackColor = 'rgba(201,168,76,0.15)',
   label, sublabel, valueColor, labelColor, style,
 }: Props) {
@@ -86,6 +86,8 @@ export default function ProgressRing({
     </View>
   );
 }
+
+export default React.memo(ProgressRing);
 
 const styles = StyleSheet.create({
   container: {

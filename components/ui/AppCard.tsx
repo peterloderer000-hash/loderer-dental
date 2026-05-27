@@ -12,7 +12,7 @@ interface Props {
   noPad?: boolean;
 }
 
-export default function AppCard({ children, style, onPress, shadow = 'card', noPad }: Props) {
+function AppCard({ children, style, onPress, shadow = 'card', noPad }: Props) {
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({
@@ -51,6 +51,8 @@ export default function AppCard({ children, style, onPress, shadow = 'card', noP
 
   return <View style={cardStyle}>{children}</View>;
 }
+
+export default React.memo(AppCard);
 
 const s = StyleSheet.create({
   card: {

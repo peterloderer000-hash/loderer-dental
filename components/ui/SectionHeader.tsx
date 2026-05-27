@@ -9,7 +9,7 @@ interface Props {
   style?: ViewStyle;
 }
 
-export default function SectionHeader({ title, subtitle, action, style }: Props) {
+const SectionHeader = React.memo(function SectionHeader({ title, subtitle, action, style }: Props) {
   return (
     <View style={[s.row, style]}>
       <View style={s.leftAccent} />
@@ -24,7 +24,9 @@ export default function SectionHeader({ title, subtitle, action, style }: Props)
       )}
     </View>
   );
-}
+});
+
+export default SectionHeader;
 
 const s = StyleSheet.create({
   row:       { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, paddingHorizontal: SPACING.xl, paddingVertical: SPACING.md },

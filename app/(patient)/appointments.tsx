@@ -60,7 +60,7 @@ function isToday(dateStr: string) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
+const AppointmentCard = React.memo(function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
   item: Appointment; onCancel: () => void; onReschedule: () => void;
   onDetail: () => void; onRate: () => void; onCheckIn: () => void; onQuestionnaire: () => void;
 }) {
@@ -237,7 +237,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
       )}
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Reschedule Modal ────────────────────────────────────────────────────────
 function RescheduleModal({ visible, appointment, onClose, onDone }: {
