@@ -905,6 +905,21 @@ export default function BookAppointmentScreen() {
                 <Text style={styles.successBtnText}>Zobraziť moje termíny</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                style={[styles.successBtnAnother, { borderColor: COLORS.gold }]}
+                onPress={() => {
+                  setService(null);
+                  setDate(null);
+                  setTime('');
+                  setNotes('');
+                  setIsUrgent(false);
+                  setBooked(false);
+                  setStep(1);
+                }}
+                activeOpacity={0.85}>
+                <Ionicons name="add-circle-outline" size={18} color={COLORS.gold} />
+                <Text style={styles.successBtnAnotherText}>Rezervovať ďalší termín</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[styles.successBtnSecondary, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
                 onPress={() => router.replace('/(patient)/' as any)} activeOpacity={0.85}>
                 <Text style={[styles.successBtnSecondaryText, { color: colors.textSecondary }]}>Späť na úvod</Text>
@@ -1142,6 +1157,8 @@ const styles = StyleSheet.create({
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
   successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 15, marginBottom: 10, elevation: 3 },
   successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+  successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, borderWidth: 1.5, paddingVertical: 14, marginBottom: 10, backgroundColor: 'transparent' },
+  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: COLORS.gold },
   successBtnSecondary:    { width: '100%', borderRadius: 14, borderWidth: 1.5, paddingVertical: 13, alignItems: 'center' },
   successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
 
