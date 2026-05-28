@@ -60,7 +60,7 @@ function isToday(dateStr: string) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
+const AppointmentCard = React.memo(function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onCheckIn, onQuestionnaire }: {
   item: Appointment; onCancel: () => void; onReschedule: () => void;
   onDetail: () => void; onRate: () => void; onCheckIn: () => void; onQuestionnaire: () => void;
 }) {
@@ -237,7 +237,7 @@ function AppointmentCard({ item, onCancel, onReschedule, onDetail, onRate, onChe
       )}
     </TouchableOpacity>
   );
-}
+});
 
 // ─── Reschedule Modal ────────────────────────────────────────────────────────
 function RescheduleModal({ visible, appointment, onClose, onDone }: {
@@ -747,7 +747,7 @@ export default function AppointmentsScreen() {
     })));
   }, []);
 
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const dyn = {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
@@ -974,7 +974,7 @@ export default function AppointmentsScreen() {
                   onDetail={() => setDetailAppt(item)}
                   onRate={() => setRatingAppt(item)}
                   onQuestionnaire={() => router.push({
-                    pathname: '/(patient)/pre-questionnaire',
+                    pathname: '/(patient)/pre-questionnaire' as any,
                     params: {
                       appointmentId:   item.id,
                       appointmentDate: item.appointment_date,

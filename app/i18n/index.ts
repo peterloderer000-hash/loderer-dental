@@ -7,7 +7,7 @@ import en from './en.json';
 const LANG_KEY = '@loderer_lang';
 
 i18n.use(initReactI18next).init({
-  compatibilityJSON: 'v3',
+  compatibilityJSON: 'v4',
   lng: 'sk',
   fallbackLng: 'sk',
   resources: {

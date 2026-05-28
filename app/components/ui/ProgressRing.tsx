@@ -16,6 +16,8 @@ interface Props {
   trackColor?: string;
   label?: string;
   sublabel?: string;
+  valueColor?: string;
+  labelColor?: string;
   style?: ViewStyle;
 }
 
@@ -25,9 +27,9 @@ const SIZES: Record<Size, { dim: number; stroke: number; fontSize: number }> = {
   lg: { dim: 120, stroke: 9,  fontSize: 28 },
 };
 
-export default function ProgressRing({
+function ProgressRing({
   value, max = 100, size = 'md', color = '#C9A84C', trackColor = 'rgba(201,168,76,0.15)',
-  label, sublabel, style,
+  label, sublabel, valueColor, labelColor, style,
 }: Props) {
   const { dim, stroke, fontSize } = SIZES[size];
   const r = (dim - stroke * 2) / 2;
@@ -77,13 +79,15 @@ export default function ProgressRing({
         />
       </Svg>
       <View style={styles.center}>
-        <Text style={[styles.value, { fontSize }]}>{displayValue}</Text>
-        {label && <Text style={styles.label}>{label}</Text>}
+        <Text style={[styles.value, { fontSize }, valueColor ? { color: valueColor } : undefined]}>{displayValue}</Text>
+        {label && <Text style={[styles.label, labelColor ? { color: labelColor } : undefined]}>{label}</Text>}
         {sublabel && <Text style={styles.sublabel}>{sublabel}</Text>}
       </View>
     </View>
   );
 }
+
+export default React.memo(ProgressRing);
 
 const styles = StyleSheet.create({
   container: {

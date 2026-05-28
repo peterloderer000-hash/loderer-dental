@@ -1,5 +1,5 @@
-﻿/**
- * Rodinné profily — pacient
+/**
+ * Rodinné profily — pacient (Premium V2)
  * Správa rodinných príslušníkov + rezervácia termínov za nich
  */
 import React, { useState, useCallback } from 'react';
@@ -9,15 +9,18 @@ import {
   TouchableOpacity, View,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, RADII, SPACING, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import HeroHeader from '../../components/ui/HeroHeader';
+import AppCard from '../../components/ui/AppCard';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 type FamilyMember = {
   id: string;
   full_name: string;
@@ -28,12 +31,12 @@ type FamilyMember = {
 
 const RELATIONSHIPS = ['dieťa', 'manžel/ka', 'rodič', 'súrodenec', 'iné'] as const;
 
-const REL_CFG: Record<string, { icon: string; color: string; bg: string }> = {
-  'dieťa':     { icon: '👶', color: '#1A5276', bg: '#EBF5FB' },
-  'manžel/ka': { icon: '💑', color: '#7D3C98', bg: '#F5EEF8' },
-  'rodič':     { icon: '👴', color: '#784212', bg: '#FEF9E7' },
-  'súrodenec': { icon: '🧑', color: '#1E8449', bg: '#EAFAF1' },
-  'iné':       { icon: '👤', color: COLORS.wal, bg: '#F4ECE4' },
+const REL_CFG: Record<string, { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string; darkBg: string }> = {
+  'dieťa':     { icon: 'happy-outline',  color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233' },
+  'manžel/ka': { icon: 'heart-outline',  color: '#7D3C98', bg: '#F5EEF8', darkBg: '#2A1040' },
+  'rodič':     { icon: 'people-outline', color: '#784212', bg: '#FEF9E7', darkBg: '#2D2000' },
+  'súrodenec': { icon: 'person-outline', color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F' },
+  'iné':       { icon: 'person-outline', color: COLORS.wal, bg: '#F4ECE4', darkBg: '#1E1610' },
 };
 
 function calcAge(dob: string | null): number | null {
@@ -48,6 +51,63 @@ function calcAge(dob: string | null): number | null {
 
 const EMPTY_FORM = { full_name: '', date_of_birth: '', relationship: 'dieťa', notes: '' };
 
+// ─── MemberCard ──────────────────────────────────────────────────────────────
+const MemberCard = React.memo(function MemberCard({
+  member, dark, colors, onEdit, onDelete, onBook,
+}: {
+  member: FamilyMember; dark: boolean; colors: any;
+  onEdit: () => void; onDelete: () => void; onBook: () => void;
+}) {
+  const cfg = REL_CFG[member.relationship] ?? REL_CFG['iné'];
+  const age = calcAge(member.date_of_birth);
+  const initials = member.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  return (
+    <AppCard style={st.card} shadow="sm">
+      <View style={st.cardTop}>
+        {/* Avatar */}
+        <View style={[st.avatar, { backgroundColor: dark ? cfg.darkBg : cfg.bg }]}>
+          <Ionicons name={cfg.icon} size={24} color={cfg.color} />
+        </View>
+
+        {/* Info */}
+        <View style={{ flex: 1 }}>
+          <Text style={[st.memberName, { color: colors.textPrimary }]}>{member.full_name}</Text>
+          <View style={st.metaRow}>
+            <View style={[st.relBadge, { backgroundColor: dark ? cfg.darkBg : cfg.bg }]}>
+              <Text style={[st.relBadgeText, { color: cfg.color }]}>{member.relationship}</Text>
+            </View>
+            {age !== null && (
+              <Text style={[st.ageText, { color: colors.textSecondary }]}>{age} rokov</Text>
+            )}
+          </View>
+          {member.notes ? (
+            <Text style={[st.memberNotes, { color: colors.textSecondary }]} numberOfLines={2}>{member.notes}</Text>
+          ) : null}
+        </View>
+
+        {/* Actions */}
+        <View style={st.cardActions}>
+          <TouchableOpacity onPress={onEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} style={[st.actionIcon, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+            <Ionicons name="create-outline" size={16} color={COLORS.gold} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onDelete} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} style={[st.actionIcon, { backgroundColor: dark ? '#3A0E0E' : '#FDEDEC' }]}>
+            <Ionicons name="trash-outline" size={16} color="#C0392B" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Book button */}
+      <TouchableOpacity style={[st.bookBtn, { borderColor: dark ? '#2A1F15' : COLORS.sand, backgroundColor: dark ? '#1E1610' : '#F4ECE4' }]} onPress={onBook} activeOpacity={0.85}>
+        <Ionicons name="calendar-outline" size={14} color={COLORS.gold} />
+        <Text style={[st.bookBtnText, { color: dark ? COLORS.sand : COLORS.wal }]}>Rezervovať termín</Text>
+        <Ionicons name="chevron-forward" size={13} color={COLORS.sand} style={{ marginLeft: 'auto' }} />
+      </TouchableOpacity>
+    </AppCard>
+  );
+});
+
+// ─── Main screen ─────────────────────────────────────────────────────────────
 export default function FamilyScreen() {
   const router = useRouter();
   const { colors, dark } = useAppTheme();
@@ -85,11 +145,11 @@ export default function FamilyScreen() {
     setEditing(null);
     setForm({ ...EMPTY_FORM });
     setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 
   function openEdit(m: FamilyMember) {
     setEditing(m);
-    // Convert YYYY-MM-DD → DD.MM.YYYY
     let dob = '';
     if (m.date_of_birth) {
       const [y, mo, d] = m.date_of_birth.split('-');
@@ -153,138 +213,114 @@ export default function FamilyScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>MÔJ ÚČET</Text>
-          <Text style={styles.headerTitle}>Rodinné profily</Text>
-        </View>
-        <TouchableOpacity style={styles.addBtn} onPress={openAdd} activeOpacity={0.85}>
-          <Ionicons name="add" size={18} color="#fff" />
-          <Text style={styles.addBtnText}>Pridať</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={[st.safe, { backgroundColor: dark ? '#0A0806' : colors.bg2 }]}>
+      <HeroHeader
+        title="Rodinné profily"
+        subtitle={members.length > 0 ? `${members.length} rodinných príslušníkov` : 'Správa rodinných profilov'}
+        icon="people-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity style={st.addBtn} onPress={openAdd} activeOpacity={0.85}>
+            <LinearGradient colors={[COLORS.goldDark, COLORS.gold]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={st.addBtnGrad}>
+              <Ionicons name="add" size={16} color="#1A1209" />
+              <Text style={st.addBtnText}>Pridať</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        }
+      />
 
-      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
+      <ScrollView
+        style={st.scroll}
+        contentContainerStyle={{ paddingTop: SPACING.lg, paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing}
-          onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
-
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.gold} />}
+      >
         {/* Info banner */}
-        <View style={styles.infoBanner}>
-          <Ionicons name="people-outline" size={14} color="#1A5276" />
-          <Text style={styles.infoBannerText}>
+        <View style={[st.infoBanner, { backgroundColor: dark ? '#1E1610' : '#F4ECE4', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
+          <Ionicons name="information-circle-outline" size={15} color={COLORS.gold} />
+          <Text style={[st.infoBannerText, { color: dark ? COLORS.sand : COLORS.wal }]}>
             Pridaj rodinných príslušníkov a rezervuj im termíny bez nutnosti vytvárať samostatné účty.
           </Text>
         </View>
 
         {loading ? (
-          <SkeletonList count={3} />
+          <View style={{ paddingHorizontal: SPACING.xl }}>
+            <SkeletonList count={3} />
+          </View>
         ) : members.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>👨‍👩‍👧‍👦</Text>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadni rodinní príslušníci</Text>
-            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Klepni „Pridať" a sprav profil pre dieťa alebo partnera</Text>
-            <TouchableOpacity style={styles.emptyBtn} onPress={openAdd} activeOpacity={0.85}>
-              <Ionicons name="add-circle-outline" size={16} color="#fff" />
-              <Text style={styles.emptyBtnText}>Pridať prvého člena</Text>
+          <View style={st.empty}>
+            <View style={[st.emptyCircle, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+              <Ionicons name="people-outline" size={44} color={COLORS.gold} />
+            </View>
+            <Text style={[st.emptyTitle, { color: colors.textPrimary }]}>Žiadni rodinní príslušníci</Text>
+            <Text style={[st.emptySub, { color: colors.textSecondary }]}>
+              Klepni „Pridať" a sprav profil pre dieťa alebo partnera
+            </Text>
+            <TouchableOpacity style={st.emptyActionBtn} onPress={openAdd} activeOpacity={0.85}>
+              <LinearGradient colors={[COLORS.goldDark, COLORS.gold]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={st.emptyActionGrad}>
+                <Ionicons name="add-circle-outline" size={16} color="#1A1209" />
+                <Text style={st.emptyActionText}>Pridať prvého člena</Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         ) : (
-          members.map(m => {
-            const cfg = REL_CFG[m.relationship] ?? REL_CFG['iné'];
-            const age = calcAge(m.date_of_birth);
-            const initials = m.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-            return (
-              <View key={m.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-                <View style={styles.cardTop}>
-                  {/* Avatar */}
-                  <View style={[styles.avatar, { backgroundColor: cfg.bg, borderColor: cfg.color + '55' }]}>
-                    <Text style={{ fontSize: 22 }}>{cfg.icon}</Text>
-                  </View>
-
-                  {/* Info */}
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.memberName, { color: colors.textPrimary }]}>{m.full_name}</Text>
-                    <View style={styles.metaRow}>
-                      <View style={[styles.relBadge, { backgroundColor: cfg.bg, borderColor: cfg.color + '44' }]}>
-                        <Text style={[styles.relBadgeText, { color: cfg.color }]}>{m.relationship}</Text>
-                      </View>
-                      {age !== null && (
-                        <Text style={[styles.ageText, { color: colors.textSecondary }]}>{age} rokov</Text>
-                      )}
-                    </View>
-                    {m.notes ? (
-                      <Text style={styles.memberNotes} numberOfLines={2}>{m.notes}</Text>
-                    ) : null}
-                  </View>
-
-                  {/* Akcie */}
-                  <View style={styles.cardActions}>
-                    <TouchableOpacity onPress={() => openEdit(m)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} style={styles.actionIcon}>
-                      <Ionicons name="create-outline" size={18} color={COLORS.wal} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleDelete(m)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} style={styles.actionIcon}>
-                      <Ionicons name="trash-outline" size={18} color="#E74C3C" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-
-                {/* Rezervovať termín */}
-                <TouchableOpacity
-                  style={styles.bookBtn}
-                  onPress={() => router.push({
-                    pathname: '/(patient)/book-appointment',
-                    params: { forFamily: '1', familyName: m.full_name, familyId: m.id },
-                  })}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="calendar-outline" size={14} color={COLORS.wal} />
-                  <Text style={styles.bookBtnText}>Rezervovať termín</Text>
-                  <Ionicons name="chevron-forward" size={13} color={COLORS.wal} style={{ marginLeft: 'auto' }} />
-                </TouchableOpacity>
-              </View>
-            );
-          })
+          members.map(m => (
+            <MemberCard
+              key={m.id}
+              member={m}
+              dark={dark}
+              colors={colors}
+              onEdit={() => openEdit(m)}
+              onDelete={() => handleDelete(m)}
+              onBook={() => router.push({
+                pathname: '/(patient)/book-appointment',
+                params: { forFamily: '1', familyName: m.full_name, familyId: m.id },
+              })}
+            />
+          ))
         )}
-
-        <View style={{ height: 100 }} />
       </ScrollView>
 
       {/* ── Modal: Pridať / Upraviť ── */}
       <Modal visible={showModal} animationType="slide" transparent onRequestClose={() => setShowModal(false)}>
-        <View style={styles.overlay}>
+        <View style={st.overlay}>
           <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setShowModal(false)} />
-          <View style={[styles.sheet, { backgroundColor: colors.cardBg }]}>
-            <View style={[styles.sheetHandle, { backgroundColor: colors.bg3 }]} />
-            <Text style={[styles.sheetTitle, { color: colors.textPrimary }]}>{editing ? 'Upraviť profil' : 'Pridať rodinného príslušníka'}</Text>
+          <View style={[st.sheet, { backgroundColor: dark ? '#110E09' : colors.cardBg }]}>
+            <View style={[st.sheetHandle, { backgroundColor: dark ? '#2A1F15' : colors.bg3 }]} />
+            <Text style={[st.sheetTitle, { color: colors.textPrimary }]}>
+              {editing ? 'Upraviť profil' : 'Pridať rodinného príslušníka'}
+            </Text>
 
             {/* Meno */}
-            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>CELÉ MENO *</Text>
-            <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={form.full_name}
+            <Text style={[st.formLabel, { color: colors.textSecondary }]}>CELÉ MENO *</Text>
+            <TextInput
+              style={[st.formInput, { backgroundColor: dark ? '#0A0806' : colors.bg2, color: colors.textPrimary, borderColor: dark ? '#2A1F15' : colors.bg3 }]}
+              value={form.full_name}
               onChangeText={v => setForm(f => ({ ...f, full_name: v }))}
-              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#666' : '#999'}
-              autoCapitalize="words" />
+              placeholder="Meno a priezvisko"
+              placeholderTextColor={dark ? '#555' : '#999'}
+              autoCapitalize="words"
+            />
 
             {/* Vzťah */}
-            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>VZŤAH</Text>
+            <Text style={[st.formLabel, { color: colors.textSecondary }]}>VZŤAH</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 14 }}>
               <View style={{ flexDirection: 'row', gap: 8, flexShrink: 0 }}>
                 {RELATIONSHIPS.map(r => {
                   const cfg = REL_CFG[r];
                   const active = form.relationship === r;
                   return (
-                    <TouchableOpacity key={r} activeOpacity={0.8}
-                      style={[styles.relChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, active && { backgroundColor: dark ? cfg.color + '22' : cfg.bg, borderColor: cfg.color }]}
-                      onPress={() => setForm(f => ({ ...f, relationship: r }))}>
-                      <Text style={styles.relChipIcon}>{cfg.icon}</Text>
-                      <Text style={[styles.relChipLabel, active && { color: cfg.color, fontWeight: '700' }]} numberOfLines={1}>
+                    <TouchableOpacity
+                      key={r} activeOpacity={0.8}
+                      style={[
+                        st.relChip,
+                        { backgroundColor: dark ? '#110E09' : colors.cardBg, borderColor: dark ? '#2A1F15' : colors.bg3 },
+                        active && { backgroundColor: dark ? cfg.darkBg : cfg.bg, borderColor: cfg.color },
+                      ]}
+                      onPress={() => { setForm(f => ({ ...f, relationship: r })); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                    >
+                      <Ionicons name={cfg.icon} size={15} color={active ? cfg.color : colors.textSecondary} />
+                      <Text style={[st.relChipLabel, { color: colors.textSecondary }, active && { color: cfg.color, fontWeight: '700' }]} numberOfLines={1}>
                         {r}
                       </Text>
                     </TouchableOpacity>
@@ -294,90 +330,107 @@ export default function FamilyScreen() {
             </ScrollView>
 
             {/* Dátum narodenia */}
-            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>DÁTUM NARODENIA</Text>
-            <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={form.date_of_birth}
+            <Text style={[st.formLabel, { color: colors.textSecondary }]}>DÁTUM NARODENIA</Text>
+            <TextInput
+              style={[st.formInput, { backgroundColor: dark ? '#0A0806' : colors.bg2, color: colors.textPrimary, borderColor: dark ? '#2A1F15' : colors.bg3 }]}
+              value={form.date_of_birth}
               onChangeText={v => setForm(f => ({ ...f, date_of_birth: v }))}
-              placeholder="DD.MM.RRRR" placeholderTextColor={dark ? '#666' : '#999'}
-              keyboardType="numbers-and-punctuation" maxLength={10} />
+              placeholder="DD.MM.RRRR"
+              placeholderTextColor={dark ? '#555' : '#999'}
+              keyboardType="numbers-and-punctuation"
+              maxLength={10}
+            />
 
             {/* Poznámka */}
-            <Text style={[styles.formLabel, { color: colors.textSecondary }]}>POZNÁMKA</Text>
-            <TextInput style={[styles.formInput, { minHeight: 60, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
-              value={form.notes} onChangeText={v => setForm(f => ({ ...f, notes: v }))}
-              placeholder="Alergie, špeciálne potreby..." placeholderTextColor={dark ? '#666' : '#999'}
-              multiline />
+            <Text style={[st.formLabel, { color: colors.textSecondary }]}>POZNÁMKA</Text>
+            <TextInput
+              style={[st.formInput, { minHeight: 60, textAlignVertical: 'top', backgroundColor: dark ? '#0A0806' : colors.bg2, color: colors.textPrimary, borderColor: dark ? '#2A1F15' : colors.bg3 }]}
+              value={form.notes}
+              onChangeText={v => setForm(f => ({ ...f, notes: v }))}
+              placeholder="Alergie, špeciálne potreby..."
+              placeholderTextColor={dark ? '#555' : '#999'}
+              multiline
+            />
 
             {/* Tlačidlá */}
-            <View style={styles.modalActions}>
-              <TouchableOpacity style={styles.modalCancel} onPress={() => setShowModal(false)} activeOpacity={0.8}>
-                <Text style={styles.modalCancelText}>Zrušiť</Text>
+            <View style={st.modalActions}>
+              <TouchableOpacity
+                style={[st.modalCancel, { borderColor: dark ? '#2A1F15' : colors.bg3 }]}
+                onPress={() => setShowModal(false)} activeOpacity={0.8}
+              >
+                <Text style={[st.modalCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalSave, saving && { opacity: 0.5 }]}
-                onPress={handleSave} disabled={saving} activeOpacity={0.85}>
-                {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
-                  : <Text style={styles.modalSaveText}>{editing ? 'Uložiť' : 'Pridať'}</Text>}
+                style={[st.modalSave, saving && { opacity: 0.5 }]}
+                onPress={handleSave} disabled={saving} activeOpacity={0.85}
+              >
+                <LinearGradient colors={[COLORS.goldDark, COLORS.gold]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={st.modalSaveGrad}>
+                  {saving
+                    ? <ActivityIndicator color="#1A1209" size="small" />
+                    : <Text style={st.modalSaveText}>{editing ? 'Uložiť' : 'Pridať'}</Text>}
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: COLORS.esp },
-  scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 14 },
-  center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+// ─── Styles ──────────────────────────────────────────────────────────────────
+const st = StyleSheet.create({
+  safe:   { flex: 1 },
+  scroll: { flex: 1 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
-  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
+  // Add button
+  addBtn:     { borderRadius: RADII.lg, overflow: 'hidden' },
+  addBtnGrad: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 9, borderRadius: RADII.lg },
+  addBtnText: { fontSize: 13, fontWeight: '700', color: '#1A1209' },
 
-  infoBanner:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8, backgroundColor: '#EBF5FB', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#AED6F1', marginBottom: 14 },
-  infoBannerText: { flex: 1, fontSize: 12, color: '#1A5276', lineHeight: 16 },
+  // Info banner
+  infoBanner:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8, borderRadius: RADII.xl, padding: SPACING.md, borderWidth: 1, marginHorizontal: SPACING.xl, marginBottom: SPACING.lg },
+  infoBannerText: { flex: 1, fontSize: 12, lineHeight: 17 },
 
-  empty:       { alignItems: 'center', paddingVertical: 50 },
-  emptyIcon:   { fontSize: 52, marginBottom: 14 },
-  emptyTitle:  { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
-  emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20, lineHeight: 18 },
-  emptyBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12 },
-  emptyBtnText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
+  // Empty
+  empty:          { alignItems: 'center', paddingVertical: 50 },
+  emptyCircle:    { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 18 },
+  emptyTitle:     { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+  emptySub:       { fontSize: 13, textAlign: 'center', lineHeight: 20, maxWidth: 260, marginBottom: 20 },
+  emptyActionBtn: { borderRadius: RADII.lg, overflow: 'hidden' },
+  emptyActionGrad:{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 22, paddingVertical: 13, borderRadius: RADII.lg },
+  emptyActionText:{ fontSize: 13, fontWeight: '700', color: '#1A1209' },
 
-  card:     { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
-  cardTop:  { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 12 },
-  avatar:   { width: 50, height: 50, borderRadius: 25, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  memberName: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 5 },
-  metaRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  relBadge:   { borderRadius: 8, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3 },
-  relBadgeText:{ fontSize: 11, fontWeight: '700' },
-  ageText:    { fontSize: 12, color: COLORS.wal },
-  memberNotes:{ fontSize: 12, color: '#888', fontStyle: 'italic', lineHeight: 15 },
-  cardActions:{ flexDirection: 'column', gap: 6 },
-  actionIcon: { padding: 2 },
+  // Card
+  card:        { marginHorizontal: SPACING.xl, marginBottom: SPACING.md },
+  cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 12 },
+  avatar:      { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  memberName:  { fontSize: 15, fontWeight: '700', marginBottom: 4 },
+  metaRow:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
+  relBadge:    { borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 3 },
+  relBadgeText:{ fontSize: 11, fontWeight: '700', textTransform: 'capitalize' },
+  ageText:     { fontSize: 12 },
+  memberNotes: { fontSize: 12, fontStyle: 'italic', lineHeight: 16 },
+  cardActions: { flexDirection: 'column', gap: 8 },
+  actionIcon:  { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
 
-  bookBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F4ECE4', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.sand },
-  bookBtnText: { fontSize: 13, fontWeight: '600', color: COLORS.wal, flex: 1 },
+  // Book button
+  bookBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1 },
+  bookBtnText: { fontSize: 13, fontWeight: '600', flex: 1 },
 
   // Modal
-  overlay:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44 },
-  sheetHandle:  { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
-  sheetTitle:   { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 18 },
-  formLabel:    { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
-  formInput:    { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 14 },
-  relChip:      { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff', flexShrink: 0 },
-  relChipIcon:  { fontSize: 15 },
-  relChipLabel: { fontSize: 13, fontWeight: '500', color: COLORS.wal, flexShrink: 0 },
-  modalActions: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  modalCancel:  { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  modalCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
-  modalSave:    { flex: 2, paddingVertical: 13, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  modalSaveText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
+  overlay:        { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  sheet:          { borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingBottom: 44 },
+  sheetHandle:    { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
+  sheetTitle:     { fontSize: 18, fontWeight: '700', marginBottom: 18 },
+  formLabel:      { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
+  formInput:      { borderWidth: 1.5, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, marginBottom: 14 },
+  relChip:        { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, borderWidth: 1.5, flexShrink: 0 },
+  relChipLabel:   { fontSize: 13, fontWeight: '500', flexShrink: 0 },
+  modalActions:   { flexDirection: 'row', gap: 10, marginTop: 6 },
+  modalCancel:    { flex: 1, paddingVertical: 13, borderRadius: 20, alignItems: 'center', borderWidth: 1.5 },
+  modalCancelText:{ fontSize: 14, fontWeight: '600' },
+  modalSave:      { flex: 2, borderRadius: 20, overflow: 'hidden' },
+  modalSaveGrad:  { paddingVertical: 13, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  modalSaveText:  { fontSize: 14, fontWeight: '700', color: '#1A1209' },
 });

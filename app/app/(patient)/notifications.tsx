@@ -95,7 +95,7 @@ function NotifCard({ item, onPress, colors, dark }: { item: AppNotification; onP
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function NotificationsScreen() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
   const { notifications, loading, unreadCount, refetch, markRead, markAllRead } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<FilterType>('all');

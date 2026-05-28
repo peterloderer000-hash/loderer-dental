@@ -9,7 +9,7 @@ interface EmptyStateProps {
   action?: { label: string; onPress: () => void };
 }
 
-export function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
+export const EmptyState = React.memo(function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
   const { colors } = useAppTheme();
   return (
     <View style={s.container}>
@@ -23,7 +23,7 @@ export function EmptyState({ icon, title, subtitle, action }: EmptyStateProps) {
       )}
     </View>
   );
-}
+});
 
 export function EmptyAppointments({ onPress }: { onPress?: () => void } = {}) {
   return <EmptyState icon="📅" title="Žiadne termíny" subtitle="Zatiaľ nemáte žiadne naplánované termíny"

@@ -26,7 +26,7 @@ type Patient = { id: string; full_name: string | null; phone_number: string | nu
 export default function DoctorAddAppointment() {
   const router  = useRouter();
   const { colors, dark } = useAppTheme();
-  const params  = useLocalSearchParams<{ patientId?: string; patientName?: string; serviceId?: string }>();
+  const params  = useLocalSearchParams<{ patientId?: string; patientName?: string; serviceId?: string; prefillDate?: string; prefillTime?: string }>();
   const { grouped: servicesGrouped, loading: loadingServices } = useServices();
 
   const [patients, setPatients]       = useState<Patient[]>([]);
@@ -48,6 +48,8 @@ export default function DoctorAddAppointment() {
   const [doctorUserId,    setDoctorUserId]    = useState('');
   const [bookedSlots,  setBookedSlots]  = useState<BookedSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [recentPatients, setRecentPatients] = useState<Patient[]>([]);
+  const [showRecent, setShowRecent] = useState(false);
 
   // Efektívna dĺžka = vlastná ak nastavená, inak z vybranej služby
   const effectiveDuration = customDuration ?? selectedService?.duration_minutes ?? 30;
@@ -108,6 +110,37 @@ export default function DoctorAddAppointment() {
         const found = list.find((p) => p.id === params.patientId);
         if (found) { setPatient(found); setQuery(found.full_name ?? ''); }
       }
+      // Prefill dátum + čas z kalendára quick-add
+      if (params.prefillDate) {
+        const [y, mo, da] = params.prefillDate.split('-').map(Number);
+        if (y && mo && da) {
+          const d = new Date(y, mo - 1, da);
+          setDate(d);
+        }
+      }
+      if (params.prefillTime) setTime(params.prefillTime);
+      // Nedávni pacienti (posledných 10 návštev)
+      if (user) {
+        const { data: recAppts } = await supabase
+          .from('appointments')
+          .select('patient_id, appointment_date, patient:profiles!appointments_patient_id_fkey(id, full_name, phone_number)')
+          .eq('doctor_id', user.id)
+          .order('appointment_date', { ascending: false })
+          .limit(30);
+        if (!cancelled && recAppts) {
+          const seen = new Set<string>();
+          const recents: Patient[] = [];
+          for (const a of recAppts) {
+            const p = a.patient as any;
+            if (p && !seen.has(p.id)) {
+              seen.add(p.id);
+              recents.push({ id: p.id, full_name: p.full_name, phone_number: p.phone_number });
+              if (recents.length >= 8) break;
+            }
+          }
+          setRecentPatients(recents);
+        }
+      }
       if (!cancelled) setLoadingP(false);
     }
     load();
@@ -151,6 +184,21 @@ export default function DoctorAddAppointment() {
     });
     return () => { cancelled = true; };
   }, [selectedDate, doctorUserId]);
+
+  // Smart odporúčané sloty — prvé 3 voľné (preferuj ranné)
+  const suggestedSlots = useMemo(() => {
+    if (!selectedDate || !selectedService) return [];
+    const now = new Date();
+    const isToday = selectedDate.toDateString() === now.toDateString();
+    const nowMin = isToday ? now.getHours() * 60 + now.getMinutes() : 0;
+    return slots
+      .filter(s => {
+        const m = timeToMinutes(s.start);
+        return m >= nowMin && !isSlotTaken(s.start);
+      })
+      .slice(0, 3)
+      .map(s => s.start);
+  }, [slots, bookedSlots, selectedDate, selectedService]);
 
   const filteredPatients = useMemo(() => {
     const q = patientQuery.trim().toLowerCase();
@@ -316,6 +364,39 @@ export default function DoctorAddAppointment() {
             </View>
           )}
 
+          {/* Nedávni pacienti */}
+          {!selectedPatient && recentPatients.length > 0 && !patientQuery.trim() && (
+            <View style={{ marginBottom: 10 }}>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}
+                onPress={() => setShowRecent(v => !v)} activeOpacity={0.7}>
+                <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
+                <Text style={{ fontSize: 11, fontWeight: '600', color: colors.textSecondary, letterSpacing: 1 }}>
+                  NEDÁVNI PACIENTI
+                </Text>
+                <Ionicons name={showRecent ? 'chevron-up' : 'chevron-down'} size={14} color={colors.textSecondary} />
+              </TouchableOpacity>
+              {showRecent && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 4 }}>
+                  {recentPatients.map(p => (
+                    <TouchableOpacity
+                      key={p.id}
+                      style={[styles.recentChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                      onPress={() => { setPatient(p); setQuery(p.full_name ?? ''); setShowRecent(false); }}
+                      activeOpacity={0.7}>
+                      <View style={styles.recentAvatar}>
+                        <Text style={styles.recentAvatarText}>{(p.full_name ?? '?').charAt(0).toUpperCase()}</Text>
+                      </View>
+                      <Text style={[styles.recentName, { color: colors.textPrimary }]} numberOfLines={1}>
+                        {p.full_name ?? 'Neznámy'}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+          )}
+
           {/* Vybraný pacient chip */}
           {selectedPatient && (
             <View style={styles.selectedChip}>
@@ -432,7 +513,7 @@ export default function DoctorAddAppointment() {
             selectedDate={selectedDate}
             onSelectDate={(d) => { setDate(d); setTime(''); }}
             openDbDays={openDbDays}
-            loading={loadingP}
+            loading={loadingPatients}
             maxMonthsAhead={12}
             warnMonthsAhead={0}
           />
@@ -446,6 +527,29 @@ export default function DoctorAddAppointment() {
                 : `Trvanie: ${formatDuration(effectiveDuration)}`}
             </Text>
           )}
+          {/* Odporúčané sloty */}
+          {suggestedSlots.length > 0 && !loadingSlots && (
+            <View style={{ marginBottom: 10 }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: dark ? '#27AE60' : '#1E8449', letterSpacing: 1, marginBottom: 6 }}>
+                ⚡ ODPORÚČANÉ
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {suggestedSlots.map(t => {
+                  const isSel = selectedTime === t;
+                  return (
+                    <TouchableOpacity key={t}
+                      style={[styles.suggestedSlot, isSel && styles.suggestedSlotSel,
+                        { borderColor: dark ? '#27AE6044' : '#A9DFBF', backgroundColor: isSel ? '#1E8449' : dark ? '#0D3B1F' : '#EAFAF1' }]}
+                      onPress={() => setTime(t)} activeOpacity={0.7}>
+                      <Ionicons name="flash" size={12} color={isSel ? '#fff' : dark ? '#27AE60' : '#1E8449'} />
+                      <Text style={[styles.suggestedSlotText, { color: isSel ? '#fff' : dark ? '#27AE60' : '#1E8449' }]}>{t}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
           {loadingSlots ? (
             <ActivityIndicator color={COLORS.wal} style={{ marginBottom: 16 }} />
           ) : (
@@ -453,9 +557,12 @@ export default function DoctorAddAppointment() {
               {slots.map((slot) => {
                 const isSel  = selectedTime === slot.start;
                 const taken  = isSlotTaken(slot.start);
+                const isSuggested = suggestedSlots.includes(slot.start);
                 return (
                   <TouchableOpacity key={slot.start}
-                    style={[styles.timeCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, isSel && styles.timeCellSel, taken && styles.timeCellTaken]}
+                    style={[styles.timeCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
+                      isSel && styles.timeCellSel, taken && styles.timeCellTaken,
+                      isSuggested && !isSel && !taken && { borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}
                     onPress={() => { if (!taken) setTime(slot.start); }}
                     activeOpacity={taken ? 1 : 0.75}
                     disabled={taken}>
@@ -680,4 +787,15 @@ const styles = StyleSheet.create({
   repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
   repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F4ECE4', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   repeatPreviewText:   { fontSize: 11, color: COLORS.wal, flex: 1, fontStyle: 'italic' },
+
+  // Recent patients
+  recentChip:       { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5, marginRight: 8 },
+  recentAvatar:     { width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  recentAvatarText: { fontSize: 12, fontWeight: '700', color: COLORS.cream },
+  recentName:       { fontSize: 12, fontWeight: '600', maxWidth: 100 },
+
+  // Suggested slots
+  suggestedSlot:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1.5 },
+  suggestedSlotSel:  { borderColor: '#1E8449' },
+  suggestedSlotText: { fontSize: 14, fontWeight: '700' },
 });

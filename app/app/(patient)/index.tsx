@@ -16,7 +16,9 @@ import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useNotifications } from '../../hooks/useNotifications';
 import { supabase } from '../../supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProgressRing, StatusPill, SectionHeader } from '../../components/ui';
+import OnboardingTour, { getOnboardingKey } from '../../components/OnboardingTour';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -60,7 +62,7 @@ function formatApptDate(iso: string) {
 const OH_DAYS = ['', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 type OHRow = { day_of_week: number; open_time: string | null; close_time: string | null; is_closed: boolean; note: string | null };
 
-function OpeningHoursCompact() {
+const OpeningHoursCompact = React.memo(function OpeningHoursCompact() {
   const { colors } = useAppTheme();
   const [hours, setHours] = React.useState<OHRow[]>([]);
   const todayNum = new Date().getDay() === 0 ? 7 : new Date().getDay();
@@ -68,7 +70,7 @@ function OpeningHoursCompact() {
   React.useEffect(() => {
     let cancelled = false;
     supabase.from('opening_hours').select('day_of_week,open_time,close_time,is_closed,note').order('day_of_week')
-      .then(({ data, error }) => { if (!cancelled && !error && data) setHours(data as OHRow[]); });
+      .then(({ data }) => { if (!cancelled && data) setHours(data as OHRow[]); });
     return () => { cancelled = true; };
   }, []);
 
@@ -92,7 +94,7 @@ function OpeningHoursCompact() {
       ))}
     </View>
   );
-}
+});
 
 const ohS = StyleSheet.create({
   card:       { backgroundColor: '#fff', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 14, overflow: 'hidden', ...SHADOWS.sm },
@@ -136,46 +138,42 @@ export default function PatientHome() {
   const [ratingVal, setRatingVal]         = useState(0);
   const [ratingText, setRatingText]       = useState('');
   const [ratingSaving, setRatingSaving]   = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const starScale = useRef(new Animated.Value(1)).current;
   const seenCompletedRef = useRef<Set<string> | null>(null);
 
+  useEffect(() => {
+    AsyncStorage.getItem(getOnboardingKey('patient')).then(v => { if (!v) setShowTour(true); });
+  }, []);
+
   const loadUnreadMsgs = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { count, error } = await supabase.from('messages').select('*', { count: 'exact', head: true })
-        .eq('receiver_id', user.id).eq('is_read', false);
-      if (!error) setUnreadMsgCount(count ?? 0);
-    } catch { /* silent — non-critical badge */ }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { count } = await supabase.from('messages').select('*', { count: 'exact', head: true })
+      .eq('receiver_id', user.id).eq('is_read', false);
+    setUnreadMsgCount(count ?? 0);
   }, []);
 
   const loadScore = useCallback(async () => {
     setScoreLoading(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setScoreLoading(false); return; }
-      const { data, error } = await supabase.from('dental_charts').select('tooth_number, status').eq('patient_id', user.id);
-      if (!error && data) {
-        setDentalScore(calcScore(data));
-        const WARN = ['cavity', 'early_cavity', 'watch', 'treatment_needed', 'fracture', 'periodontal', 'mobility'];
-        setProblemTeeth(data.filter(t => WARN.includes(t.status)).length);
-      } else {
-        setDentalScore(null);
-      }
-    } catch {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setScoreLoading(false); return; }
+    const { data } = await supabase.from('dental_charts').select('tooth_number, status').eq('patient_id', user.id);
+    if (data) {
+      setDentalScore(calcScore(data));
+      const WARN = ['cavity', 'early_cavity', 'watch', 'treatment_needed', 'fracture', 'periodontal', 'mobility'];
+      setProblemTeeth(data.filter(t => WARN.includes(t.status)).length);
+    } else {
       setDentalScore(null);
-    } finally {
-      setScoreLoading(false);
     }
+    setScoreLoading(false);
   }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    try {
-      await Promise.all([loadScore(), loadUnreadMsgs()]);
-      refetchProfile();
-      refetchAppts();
-    } catch { /* silent — pull-to-refresh error */ }
+    await Promise.all([loadScore(), loadUnreadMsgs()]);
+    refetchProfile();
+    refetchAppts();
     setRefreshing(false);
   }, [refetchProfile, refetchAppts, loadScore, loadUnreadMsgs]);
 
@@ -250,23 +248,19 @@ export default function PatientHome() {
     if (!arrivedAppt) { setQueuePosition(null); return; }
     let cancelled = false;
     async function loadQueue() {
-      try {
-        const today = new Date().toISOString().slice(0, 10);
-        const { data, error } = await supabase
-          .from('appointments')
-          .select('id, arrived_at, clinic_status')
-          .gte('appointment_date', `${today}T00:00:00`)
-          .lte('appointment_date', `${today}T23:59:59`)
-          .eq('status', 'arrived')
-          .order('arrived_at');
-        if (cancelled || error || !data) return;
-        const queue   = data as any[];
-        const myIdx   = queue.findIndex(a => a.id === arrivedAppt.id);
-        setQueuePosition(myIdx >= 0 ? myIdx + 1 : null);
-        setQueueTotal(queue.length);
-      } catch {
-        // silent — queue position is non-critical UI
-      }
+      const today = new Date().toISOString().slice(0, 10);
+      const { data } = await supabase
+        .from('appointments')
+        .select('id, arrived_at, clinic_status')
+        .gte('appointment_date', `${today}T00:00:00`)
+        .lte('appointment_date', `${today}T23:59:59`)
+        .eq('status', 'arrived')
+        .order('arrived_at');
+      if (cancelled || !data) return;
+      const queue   = data as any[];
+      const myIdx   = queue.findIndex(a => a.id === arrivedAppt.id);
+      setQueuePosition(myIdx >= 0 ? myIdx + 1 : null);
+      setQueueTotal(queue.length);
     }
     loadQueue();
     // Realtime update
@@ -284,6 +278,8 @@ export default function PatientHome() {
   const scoreLabel = dentalScore == null ? '?' : String(dentalScore);
 
   const bg = dark ? colors.bg2 : COLORS.bg2;
+
+  if (showTour) return <OnboardingTour role="patient" onFinish={() => setShowTour(false)} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
@@ -587,6 +583,8 @@ export default function PatientHome() {
                     color={scoreColor}
                     trackColor="rgba(255,255,255,0.1)"
                     label="/100"
+                    valueColor="#FAF6F0"
+                    labelColor="rgba(250,246,240,0.6)"
                     style={{ opacity: dentalScore == null ? 0.4 : 1 }}
                   />
               }

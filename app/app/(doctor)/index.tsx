@@ -21,6 +21,8 @@ import {
   getNextOpenDays, generateTimeSlotsForDay,
   SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
 } from '../../utils/timeSlots';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import OnboardingTour, { getOnboardingKey } from '../../components/OnboardingTour';
 
 type OpeningHour = { open_time: string; close_time: string };
 type BookedSlot  = { start: number; end: number };
@@ -251,7 +253,7 @@ const STATUS_CONFIG = {
   cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
 };
 
-function StatusBadge({ status }: { status: Appointment['status'] }) {
+const StatusBadge = React.memo(function StatusBadge({ status }: { status: Appointment['status'] }) {
   const { dark } = useAppTheme();
   const c = STATUS_CONFIG[status] ?? STATUS_CONFIG.scheduled;
   return (
@@ -259,9 +261,9 @@ function StatusBadge({ status }: { status: Appointment['status'] }) {
       <Text style={[styles.badgeText, { color: c.color }]}>{c.label}</Text>
     </View>
   );
-}
+});
 
-function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
+const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport, onViewPatient, onReschedule, onApproveRequest }: {
   item: Appointment; onComplete: () => void; onCancel: () => void; onDentalChart: () => void; onPassport: () => void; onViewPatient: () => void; onReschedule: () => void; onApproveRequest?: () => void;
 }) {
   const { colors: ac, dark } = useAppTheme();
@@ -383,7 +385,7 @@ function AppointmentCard({ item, onComplete, onCancel, onDentalChart, onPassport
       </View>
     </View>
   );
-}
+});
 
 type Filter = 'today' | 'upcoming' | 'all';
 
@@ -646,6 +648,7 @@ export default function DoctorHome() {
   const [rescheduleAppt, setRescheduleAppt] = useState<Appointment | null>(null);
   const [approvingAppt,  setApprovingAppt]  = useState<Appointment | null>(null);
   const [approveSaving,  setApproveSaving]  = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const [doctorId, setDoctorId] = useState('');
   const [exporting,  setExporting]  = useState(false);
   const [msgCount,      setMsgCount]      = useState(0);
@@ -654,6 +657,10 @@ export default function DoctorHome() {
   const [consentCount,  setConsentCount]  = useState(0);
   const [birthdays,     setBirthdays]     = useState<{ id: string; name: string; daysUntil: number; phone: string | null }[]>([]);
   const [sendingReminders, setSendingReminders] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(getOnboardingKey('doctor')).then(v => { if (!v) setShowTour(true); });
+  }, []);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -1010,6 +1017,8 @@ export default function DoctorHome() {
   const greeting = hour < 12 ? 'Dobré ráno' : hour < 18 ? 'Dobrý deň' : 'Dobrý večer';
   const todayDateStr = now.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' });
   const lastName = doctorName ? (doctorName.split(' ').pop() ?? doctorName) : 'Loderer';
+
+  if (showTour) return <OnboardingTour role="doctor" onFinish={() => setShowTour(false)} />;
 
   return (
     <ScreenWrapper>

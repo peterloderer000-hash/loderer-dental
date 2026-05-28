@@ -394,7 +394,7 @@ const s = StyleSheet.create({
 
   saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', marginTop: 16 },
   saveBtnText: { color: COLORS.esp, fontSize: 15, fontWeight: '800' },
-  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, alignItems: 'center', marginTop: 10 },
+  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, marginTop: 10 },
   archiveBtnText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
   cancelBtn:   { paddingVertical: 14, alignItems: 'center' },
   cancelBtnText: { fontSize: 14 },

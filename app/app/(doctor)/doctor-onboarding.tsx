@@ -139,7 +139,7 @@ export default function DoctorOnboardingScreen() {
                 ))}
               </View>
             </View>
-            <TouchableOpacity style={s.btn} onPress={() => router.replace('/(doctor)/')} activeOpacity={0.85}>
+            <TouchableOpacity style={s.btn} onPress={() => router.replace('/(doctor)/' as any)} activeOpacity={0.85}>
               <Text style={s.btnText}>Prejsť do aplikácie</Text>
             </TouchableOpacity>
           </View>

@@ -42,11 +42,15 @@ export default function OpeningHoursScreen() {
   const [hours, setHours] = useState<DayRow[]>(
     DAYS.map((day, index) => ({
       id: null,
+      day_of_week: index + 1,
       day_index: index,
       day_name: day,
       is_open: index < 5,
+      is_closed: index >= 5,
       time_from: '08:00',
       time_to: '17:00',
+      open_time: '08:00',
+      close_time: '17:00',
       clinic_id: null,
     }))
   );

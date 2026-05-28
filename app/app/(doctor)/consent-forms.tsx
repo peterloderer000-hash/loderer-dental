@@ -160,12 +160,20 @@ export default function ConsentFormsScreen() {
   async function handleSend() {
     if (!sendFormId || !sendPatientId) { Alert.alert('Chyba', 'Vyber pacienta.'); return; }
     setSending(true);
-    const { error } = await supabase.from('patient_consents').insert({
+    let { error } = await supabase.from('patient_consents').insert({
       form_id:        sendFormId,
       patient_id:     sendPatientId,
       appointment_id: sendApptId.trim() || null,
       status:         'pending',
     });
+    // If appointment_id column doesn't exist yet, retry without it
+    if (error?.message?.includes('appointment_id')) {
+      ({ error } = await supabase.from('patient_consents').insert({
+        form_id:    sendFormId,
+        patient_id: sendPatientId,
+        status:     'pending',
+      }));
+    }
     setSending(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

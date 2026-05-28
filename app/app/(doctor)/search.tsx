@@ -41,10 +41,28 @@ type Service = {
   price_min: number | null;
 };
 
+type Diagnosis = {
+  id: string;
+  icd_code: string;
+  description: string | null;
+  patient_id: string;
+  patient: { full_name: string | null } | null;
+  created_at: string;
+};
+
+type TreatmentPlan = {
+  id: string;
+  title: string;
+  patient_id: string;
+  patient: { id: string; full_name: string | null } | null;
+  status: string;
+  created_at: string;
+};
+
 type Section = {
   title: string;
   icon: string;
-  data: Array<{ type: 'patient' | 'appt' | 'service'; item: Patient | Appt | Service }>;
+  data: Array<{ type: 'patient' | 'appt' | 'service' | 'diagnosis' | 'plan'; item: Patient | Appt | Service | Diagnosis | TreatmentPlan }>;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -63,6 +81,8 @@ export default function SearchScreen() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [appts,    setAppts]    = useState<Appt[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [plans, setPlans] = useState<TreatmentPlan[]>([]);
   const [loading,  setLoading]  = useState(true);
 
   // Načítaj všetky dáta raz (cache)
@@ -74,7 +94,7 @@ export default function SearchScreen() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user || cancelled) return;
 
-        const [patsRes, apptsRes, svcsRes] = await Promise.all([
+        const [patsRes, apptsRes, svcsRes, diagRes, planRes] = await Promise.all([
           supabase.from('profiles')
             .select('id, full_name, phone_number, date_of_birth')
             .eq('role', 'patient')
@@ -87,12 +107,24 @@ export default function SearchScreen() {
           supabase.from('services')
             .select('id, name, emoji, category, price_min')
             .order('name'),
+          supabase.from('diagnoses')
+            .select('id, icd_code, description, patient_id, patient:profiles!diagnoses_patient_id_fkey(full_name), created_at')
+            .eq('doctor_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(100),
+          supabase.from('treatment_plans')
+            .select('id, title, patient_id, patient:profiles!treatment_plans_patient_id_fkey(id, full_name), status, created_at')
+            .eq('doctor_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(50),
         ]);
 
         if (!cancelled) {
           setPatients((patsRes.data ?? []) as Patient[]);
           setAppts((apptsRes.data ?? []) as unknown as Appt[]);
           setServices((svcsRes.data ?? []) as Service[]);
+          setDiagnoses((diagRes.data ?? []) as unknown as Diagnosis[]);
+          setPlans((planRes.data ?? []) as unknown as TreatmentPlan[]);
           setLoading(false);
         }
       } catch (e: any) {
@@ -125,6 +157,17 @@ export default function SearchScreen() {
       s.category.toLowerCase().includes(q)
     ).slice(0, 5);
 
+    const matchedDiagnoses = diagnoses.filter((d) =>
+      (d.icd_code ?? '').toLowerCase().includes(q) ||
+      (d.description ?? '').toLowerCase().includes(q) ||
+      (d.patient?.full_name ?? '').toLowerCase().includes(q)
+    ).slice(0, 5);
+
+    const matchedPlans = plans.filter((p) =>
+      p.title.toLowerCase().includes(q) ||
+      (p.patient?.full_name ?? '').toLowerCase().includes(q)
+    ).slice(0, 5);
+
     const result: Section[] = [];
     if (matchedPatients.length > 0) result.push({
       title: 'Pacienti', icon: '👤',
@@ -134,12 +177,20 @@ export default function SearchScreen() {
       title: 'Termíny', icon: '📅',
       data: matchedAppts.map((item) => ({ type: 'appt' as const, item })),
     });
+    if (matchedDiagnoses.length > 0) result.push({
+      title: 'Diagnózy', icon: '🩺',
+      data: matchedDiagnoses.map((item) => ({ type: 'diagnosis' as const, item })),
+    });
+    if (matchedPlans.length > 0) result.push({
+      title: 'Liečebné plány', icon: '📋',
+      data: matchedPlans.map((item) => ({ type: 'plan' as const, item })),
+    });
     if (matchedServices.length > 0) result.push({
       title: 'Služby', icon: '🦷',
       data: matchedServices.map((item) => ({ type: 'service' as const, item })),
     });
     return result;
-  }, [query, patients, appts, services]);
+  }, [query, patients, appts, services, diagnoses, plans]);
 
   const totalResults = sections.reduce((n, s) => n + s.data.length, 0);
 
@@ -191,6 +242,42 @@ export default function SearchScreen() {
       );
     }
 
+    if (row.type === 'diagnosis') {
+      const d = row.item as Diagnosis;
+      return (
+        <TouchableOpacity style={[styles.resultRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
+          onPress={() => router.push({ pathname: '/(doctor)/patient-detail', params: { patientId: d.patient_id } })}
+          activeOpacity={0.8}>
+          <View style={[styles.resultIcon, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
+            <Text style={{ fontSize: 16 }}>🩺</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.resultTitle, { color: colors.textPrimary }]}>{d.icd_code}{d.description ? ` — ${d.description}` : ''}</Text>
+            <Text style={[styles.resultSub, { color: colors.textSecondary }]}>
+              {d.patient?.full_name ?? 'Pacient'} · {new Date(d.created_at).toLocaleDateString('sk-SK')}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    if (row.type === 'plan') {
+      const p = row.item as TreatmentPlan;
+      return (
+        <TouchableOpacity style={[styles.resultRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}
+          onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId: p.patient?.id ?? p.patient_id } })}
+          activeOpacity={0.8}>
+          <View style={[styles.resultIcon, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+            <Text style={{ fontSize: 16 }}>📋</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.resultTitle, { color: colors.textPrimary }]}>{p.title}</Text>
+            <Text style={[styles.resultSub, { color: colors.textSecondary }]}>
+              {p.patient?.full_name ?? 'Pacient'} · {p.status === 'active' ? 'Aktívny' : p.status}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
     // service
     const s = row.item as Service;
     return (
@@ -218,7 +305,7 @@ export default function SearchScreen() {
           <TextInput
             ref={inputRef}
             style={styles.searchInput}
-            placeholder="Hľadaj pacienta, termín, poznámku..."
+            placeholder="Hľadaj pacienta, termín, diagnózu..."
             placeholderTextColor={COLORS.sand + 'AA'}
             value={query}
             onChangeText={setQuery}
@@ -243,7 +330,7 @@ export default function SearchScreen() {
         <View style={[styles.hint, { backgroundColor: colors.bg2 }]}>
           <Ionicons name="search" size={40} color={colors.bg3} />
           <Text style={[styles.hintTitle, { color: colors.textPrimary }]}>Zadaj aspoň 2 znaky</Text>
-          <Text style={[styles.hintSub, { color: colors.textSecondary }]}>Hľadaj podľa mena, telefónu, poznámky alebo názvu služby</Text>
+          <Text style={[styles.hintSub, { color: colors.textSecondary }]}>Hľadaj podľa mena, telefónu, diagnózy alebo názvu služby</Text>
         </View>
       ) : totalResults === 0 ? (
         <View style={[styles.hint, { backgroundColor: colors.bg2 }]}>

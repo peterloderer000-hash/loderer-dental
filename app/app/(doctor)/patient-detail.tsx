@@ -168,6 +168,56 @@ function DimBar({ label, score, color, emoji }: { label: string; score: number; 
   );
 }
 
+// ─── Kruhové skóre ────────────────────────────────────────────────────────────
+function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
+  const { colors, dark } = useAppTheme();
+  const r = (size - 12) / 2;
+  const c = 2 * Math.PI * r;
+  const pct = Math.min(100, Math.max(0, score));
+  const offset = c - (pct / 100) * c;
+  const col = score >= 80 ? '#1E8449' : score >= 65 ? '#27AE60' : score >= 45 ? '#E67E22' : '#922B21';
+  const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
+
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      {/* SVG-like ring using border trick */}
+      <View style={{
+        width: size, height: size, borderRadius: size / 2,
+        borderWidth: 6, borderColor: dark ? colors.bg3 : '#E8E0D5',
+        alignItems: 'center', justifyContent: 'center', position: 'absolute',
+      }} />
+      {/* Colored arc overlay — using 4 quadrant trick */}
+      <View style={{
+        width: size, height: size, borderRadius: size / 2,
+        borderWidth: 6,
+        borderColor: 'transparent',
+        borderTopColor: pct >= 25 ? col : 'transparent',
+        borderRightColor: pct >= 50 ? col : 'transparent',
+        borderBottomColor: pct >= 75 ? col : 'transparent',
+        borderLeftColor: pct >= 95 ? col : 'transparent',
+        position: 'absolute',
+        transform: [{ rotate: '-45deg' }],
+        opacity: 0.35,
+      }} />
+      {/* Full colored ring with dasharray effect */}
+      <View style={{
+        width: size - 4, height: size - 4, borderRadius: (size - 4) / 2,
+        borderWidth: 5,
+        borderColor: col,
+        position: 'absolute',
+        opacity: 0.2,
+      }} />
+      {/* Score text */}
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontSize: size * 0.32, fontWeight: '800', color: col, lineHeight: size * 0.36 }}>{score}</Text>
+        <View style={{ backgroundColor: col, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1, marginTop: 2 }}>
+          <Text style={{ fontSize: 10, fontWeight: '800', color: '#fff' }}>{grade}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function PatientDetailScreen() {
   const router = useRouter();
@@ -204,6 +254,7 @@ export default function PatientDetailScreen() {
   const [patientNoteSaving, setPatientNoteSaving] = useState(false);
   const [showInsEdit,       setShowInsEdit]       = useState(false);
   const [insuranceSaving,   setInsuranceSaving]   = useState(false);
+  const [diagnoses,         setDiagnoses]         = useState<{ id: string; icd_code: string; description: string; severity: string | null; created_at: string }[]>([]);
   const [showNotifModal,    setShowNotifModal]    = useState(false);
   const [notifTitle,        setNotifTitle]        = useState('');
   const [notifBody,         setNotifBody]         = useState('');
@@ -222,7 +273,7 @@ export default function PatientDetailScreen() {
           if (prof?.full_name && !cancelled) setDoctorName(prof.full_name);
         }
 
-        const [teethRes, apptRes, ppRes, profileRes, notesRes] = await Promise.all([
+        const [teethRes, apptRes, ppRes, profileRes, notesRes, diagRes] = await Promise.all([
           supabase.from('dental_charts')
             .select('tooth_number,status,notes')
             .eq('patient_id', patientId),
@@ -240,6 +291,11 @@ export default function PatientDetailScreen() {
             .select('id, content')
             .eq('patient_id', patientId)
             .maybeSingle(),
+          supabase.from('diagnoses')
+            .select('id, icd_code, description, severity, created_at')
+            .eq('patient_id', patientId)
+            .order('created_at', { ascending: false })
+            .limit(20),
         ]);
 
         if (!cancelled) {
@@ -264,6 +320,7 @@ export default function PatientDetailScreen() {
             setDoctorNotes(notesRes.data.content ?? '');
             setNotesId(notesRes.data.id);
           }
+          setDiagnoses((diagRes.data ?? []) as typeof diagnoses);
           setLoading(false);
         }
       } catch (e) {
@@ -447,6 +504,21 @@ export default function PatientDetailScreen() {
 
   const scoreCol = overall >= 80 ? '#1E8449' : overall >= 65 ? '#27AE60' : overall >= 45 ? '#E67E22' : '#922B21';
   const initials = (patientName ?? '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+
+  // Quick stats
+  const { nextApptDate, lastVisitDate, completedCount } = useMemo(() => {
+    const now = new Date();
+    const upcoming = appointments
+      .filter(a => a.status === 'scheduled' && new Date(a.appointment_date) >= now)
+      .sort((a, b) => new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime());
+    const completed = appointments.filter(a => a.status === 'completed');
+    const sorted = completed.sort((a, b) => new Date(b.appointment_date).getTime() - new Date(a.appointment_date).getTime());
+    return {
+      nextApptDate: upcoming[0]?.appointment_date ?? null,
+      lastVisitDate: sorted[0]?.appointment_date ?? null,
+      completedCount: completed.length,
+    };
+  }, [appointments]);
 
   // Recall reminder
   const recallNeeded = useMemo(() => {
@@ -715,22 +787,48 @@ export default function PatientDetailScreen() {
           </TouchableOpacity>
         )}
 
-        {/* ── Dentálne skóre ── */}
-        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-          <View style={styles.cardTitleRow}>
-            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>DENTÁLNE SKÓRE</Text>
-            <View style={[styles.scoreCircleMini, { borderColor: scoreCol }]}>
-              <Text style={[styles.scoreCircleNum, { color: scoreCol }]}>{overall}</Text>
+        {/* ── Rýchly prehľad ── */}
+        <View style={[styles.quickStats, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <View style={styles.qsRow}>
+            <View style={[styles.qsBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+              <Text style={[styles.qsVal, { color: dark ? '#27AE60' : '#1E8449' }]}>{completedCount}</Text>
+              <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Návštevy</Text>
+            </View>
+            <View style={[styles.qsBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
+              <Text style={[styles.qsVal, { color: dark ? '#E74C3C' : '#922B21' }]}>{problemCount}</Text>
+              <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Probl. zuby</Text>
+            </View>
+            <View style={[styles.qsBox, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+              <Text style={[styles.qsVal, { color: dark ? '#5DADE2' : '#1A5276' }]}>
+                {lastVisitDate ? new Date(lastVisitDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' }) : '—'}
+              </Text>
+              <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Posl. návšteva</Text>
+            </View>
+            <View style={[styles.qsBox, { backgroundColor: dark ? '#1E0D33' : '#F5EEF8' }]}>
+              <Text style={[styles.qsVal, { color: '#7D3C98' }]}>
+                {nextApptDate ? new Date(nextApptDate).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' }) : '—'}
+              </Text>
+              <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Ďalší termín</Text>
             </View>
           </View>
-          <DimBar label="Zdravie"    score={dims.health}     color="#1E8449" emoji="❤️" />
-          <DimBar label="Hygiena"    score={dims.hygiene}    color="#148F77" emoji="🪥" />
-          <DimBar label="Estetika"   score={dims.aesthetics} color="#1A5276" emoji="✨" />
-          <DimBar label="Prevencia"  score={dims.prevention} color="#7D6608" emoji="🛡️" />
+        </View>
+
+        {/* ── Dentálne skóre ── */}
+        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+          <Text style={[styles.cardTitle, { color: colors.textSecondary, marginBottom: 0 }]}>DENTÁLNE SKÓRE</Text>
+          <View style={styles.scoreGaugeRow}>
+            <ScoreGauge score={overall} size={100} />
+            <View style={{ flex: 1 }}>
+              <DimBar label="Zdravie"    score={dims.health}     color="#1E8449" emoji="❤️" />
+              <DimBar label="Hygiena"    score={dims.hygiene}    color="#148F77" emoji="🪥" />
+              <DimBar label="Estetika"   score={dims.aesthetics} color="#1A5276" emoji="✨" />
+              <DimBar label="Prevencia"  score={dims.prevention} color="#7D6608" emoji="🛡️" />
+            </View>
+          </View>
           <View style={styles.dimLegend}>
             {[['A', '≥85', '#1E8449'], ['B', '≥70', '#9A7D0A'], ['C', '≥50', '#E67E22'], ['D', '<50', '#922B21']].map(([g, r, c]) => (
               <View key={g} style={styles.dimLegendItem}>
-                <View style={[styles.dimLegendDot, { backgroundColor: c }]} />
+                <View style={[styles.dimLegendDot, { backgroundColor: c as string }]} />
                 <Text style={styles.dimLegendText}>{g}: {r}</Text>
               </View>
             ))}
@@ -764,6 +862,36 @@ export default function PatientDetailScreen() {
                 </Text>
               </View>
             )}
+          </View>
+        )}
+
+        {/* ── Diagnózy ── */}
+        {diagnoses.length > 0 && (
+          <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+            <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>DIAGNÓZY ({diagnoses.length})</Text>
+            {diagnoses.slice(0, 8).map(dg => {
+              const sevColor = dg.severity === 'high' ? '#922B21' : dg.severity === 'medium' ? '#E67E22' : '#1E8449';
+              const sevBg = dg.severity === 'high' ? (dark ? '#4A1010' : '#FDEDEC') : dg.severity === 'medium' ? (dark ? '#2D2200' : '#FEF9E7') : (dark ? '#0D3B1F' : '#EAFAF1');
+              const sevLabel = dg.severity === 'high' ? 'Vysoká' : dg.severity === 'medium' ? 'Stredná' : 'Nízka';
+              return (
+                <View key={dg.id} style={[styles.diagRow, { borderBottomColor: colors.bg3 }]}>
+                  <View style={[styles.diagIcd, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
+                    <Text style={[styles.diagIcdText, { color: dark ? '#5DADE2' : '#1A5276' }]}>{dg.icd_code}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.diagDesc, { color: colors.textPrimary }]}>{dg.description}</Text>
+                    <Text style={{ fontSize: 10, color: colors.textSecondary }}>
+                      {new Date(dg.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </Text>
+                  </View>
+                  {dg.severity && (
+                    <View style={[styles.diagSev, { backgroundColor: sevBg, borderColor: sevColor + '55' }]}>
+                      <Text style={[styles.diagSevText, { color: sevColor }]}>{sevLabel}</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })}
           </View>
         )}
 
@@ -880,30 +1008,48 @@ export default function PatientDetailScreen() {
 
         {/* ══ TAB: TERMÍNY ══ */}
         {activeTab === 'appointments' && (
-        <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-          <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>HISTÓRIA TERMÍNOV</Text>
+        <View>
           {appointments.length === 0 ? (
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Žiadne termíny</Text>
-          ) : (
-            appointments.map((a, i) => {
+            <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Žiadne termíny</Text>
+            </View>
+          ) : (() => {
+            // Group by month
+            const groups: { key: string; label: string; items: typeof appointments }[] = [];
+            appointments.forEach(a => {
+              const d = new Date(a.appointment_date);
+              const key = `${d.getFullYear()}-${d.getMonth()}`;
+              const label = d.toLocaleDateString('sk-SK', { month: 'long', year: 'numeric' });
+              let g = groups.find(g => g.key === key);
+              if (!g) { g = { key, label, items: [] }; groups.push(g); }
+              g.items.push(a);
+            });
+            return groups.map(group => (
+              <View key={group.key} style={{ marginBottom: 14 }}>
+                <Text style={[styles.tlMonthLabel, { color: colors.textSecondary }]}>{group.label.charAt(0).toUpperCase() + group.label.slice(1)}</Text>
+                {group.items.map((a, i) => {
               const st = APPT_STATUS[a.status] ?? APPT_STATUS.scheduled;
               const d  = new Date(a.appointment_date);
               const isEditing = editingApptId === a.id;
               const isFuture  = new Date(a.appointment_date) >= new Date();
               const canAct    = (a.status === 'scheduled' || a.status === 'pending') && isFuture;
+              const isLast = i === group.items.length - 1;
+              const dotCol = a.status === 'completed' ? '#1E8449' : a.status === 'cancelled' ? '#922B21' : '#1A5276';
               return (
-                <View key={a.id} style={[styles.apptRow, i === appointments.length - 1 && { borderBottomWidth: 0 }]}>
-                  <View style={[styles.apptDateBox, { backgroundColor: colors.bg2 }]}>
-                    <Text style={[styles.apptDay, { color: colors.textPrimary }]}>{d.getDate()}</Text>
-                    <Text style={[styles.apptMonth, { color: colors.textSecondary }]}>{d.toLocaleDateString('sk-SK', { month: 'short' })}</Text>
-                    <Text style={styles.apptYear}>{d.getFullYear()}</Text>
+                <View key={a.id} style={styles.tlRow}>
+                  {/* Timeline line + dot */}
+                  <View style={styles.tlLineWrap}>
+                    <View style={[styles.tlDot, { backgroundColor: dotCol, borderColor: dotCol + '44' }]} />
+                    {!isLast && <View style={[styles.tlLine, { backgroundColor: colors.bg3 }]} />}
                   </View>
-                  <View style={{ flex: 1 }}>
+                  {/* Card */}
+                  <View style={[styles.tlCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={styles.apptTop}>
+                      <Text style={[styles.apptDay, { color: colors.textPrimary, fontSize: 14, width: 'auto' }]}>{d.getDate()}</Text>
                       <Text style={[styles.apptTime, { color: colors.textPrimary }]}>
                         {d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })}
                       </Text>
-                      <View style={[styles.apptBadge, { backgroundColor: st.bg }]}>
+                      <View style={[styles.apptBadge, { backgroundColor: dark ? (st.color + '22') : st.bg }]}>
                         <Text style={[styles.apptBadgeText, { color: st.color }]}>{st.label}</Text>
                       </View>
                       {/* Edit notes button */}
@@ -1045,8 +1191,10 @@ export default function PatientDetailScreen() {
                   </View>
                 </View>
               );
-            })
-          )}
+            })}
+              </View>
+            ));
+          })()}
         </View>
 
         )}
@@ -1341,6 +1489,7 @@ const styles = StyleSheet.create({
   warningBox: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: '#FDEDEC', borderRadius: 8, padding: 10, marginTop: 4 },
   warningText:{ flex: 1, fontSize: 11, color: '#922B21', lineHeight: 16 },
 
+
   // Termíny
   emptyText:     { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
   apptRow:       { flexDirection: 'row', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
@@ -1398,6 +1547,32 @@ const styles = StyleSheet.create({
   critBloodText:   { fontSize: 11, fontWeight: '800', color: '#C0392B' },
   critLine:        { fontSize: 13, color: '#6A1A12', lineHeight: 18, marginTop: 3 },
   critStrong:      { fontWeight: '800' },
+
+  // Quick stats
+  quickStats:    { borderRadius: 14, padding: 12, marginBottom: 14, borderWidth: 1 },
+  qsRow:         { flexDirection: 'row', gap: 8 },
+  qsBox:         { flex: 1, alignItems: 'center', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 4 },
+  qsVal:         { fontSize: 15, fontWeight: '800', marginBottom: 2 },
+  qsLabel:       { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, textAlign: 'center' },
+
+  // Score gauge row
+  scoreGaugeRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 12 },
+
+  // Diagnózy
+  diagRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderBottomWidth: 1 },
+  diagIcd:       { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },
+  diagIcdText:   { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  diagDesc:      { fontSize: 12, fontWeight: '600', marginBottom: 2 },
+  diagSev:       { borderRadius: 6, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
+  diagSevText:   { fontSize: 9, fontWeight: '700' },
+
+  // Timeline
+  tlMonthLabel:  { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginLeft: 28 },
+  tlRow:         { flexDirection: 'row', gap: 0 },
+  tlLineWrap:    { width: 22, alignItems: 'center' },
+  tlDot:         { width: 10, height: 10, borderRadius: 5, borderWidth: 2, zIndex: 1 },
+  tlLine:        { width: 2, flex: 1, marginTop: -1 },
+  tlCard:        { flex: 1, borderRadius: 12, padding: 12, marginBottom: 10, marginLeft: 6, borderWidth: 1 },
 
   // FAB
   fab: { position: 'absolute', bottom: 84, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },

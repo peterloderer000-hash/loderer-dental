@@ -32,40 +32,54 @@ export default function ReceptionLayout() {
         },
       }}
     >
-      <Tabs.Screen name="index" options={{
-        title: 'Dnes',
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'today' : 'today-outline'} size={22} color={color} />
-        ),
-      }} />
-      <Tabs.Screen name="patients" options={{
-        title: 'Pacienti',
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
-        ),
-      }} />
-      <Tabs.Screen name="checkin" options={{
-        title: 'Čakáreň',
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'} size={22} color={color} />
-        ),
-      }} />
-      <Tabs.Screen name="payments" options={{
-        title: 'Platby',
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'card' : 'card-outline'} size={22} color={color} />
-        ),
-      }} />
-      <Tabs.Screen name="profile" options={{
-        title: 'Profil',
-        tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
-        ),
-      }} />
-
-      {/* Hidden screens */}
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Dnes',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'today' : 'today-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="patients"
+        options={{
+          title: 'Pacienti',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="checkin"
+        options={{
+          title: 'Čakáreň',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="payments"
+        options={{
+          title: 'Platby',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'card' : 'card-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profil',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen name="clinic-live" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="clinic-room" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="reports" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

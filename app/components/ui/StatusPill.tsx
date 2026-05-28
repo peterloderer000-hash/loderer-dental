@@ -21,7 +21,7 @@ const STATUS_CONFIG: Record<Status, { label: string; bg: string; text: string; b
   partial:   { label: 'Čiastočne',   bg: COLORS.warningBg, text: COLORS.warning, border: '#F0B97D' },
 };
 
-export default function StatusPill({ status, style, size = 'sm' }: Props) {
+function StatusPill({ status, style, size = 'sm' }: Props) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.scheduled;
   const isSmall = size === 'sm';
 
@@ -38,6 +38,8 @@ export default function StatusPill({ status, style, size = 'sm' }: Props) {
     </View>
   );
 }
+
+export default React.memo(StatusPill);
 
 const s = StyleSheet.create({
   pill:    { borderRadius: RADII.pill, borderWidth: 1, alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center' },

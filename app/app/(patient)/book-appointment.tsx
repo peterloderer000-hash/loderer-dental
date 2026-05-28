@@ -115,6 +115,8 @@ export default function BookAppointmentScreen() {
   const [wlJoined, setWlJoined]             = useState(false);
   const [doctors, setDoctors]               = useState<DoctorOption[]>([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
+  // Naposledy rezervované služby
+  const [recentServiceIds, setRecentServiceIds] = useState<string[]>([]);
   // Ordinačné hodiny doktora: kľúč = DB číslo dňa (1=Po … 7=Ne)
   const [openingHoursMap, setOpeningHoursMap] = useState<Map<number, OpeningHour>>(new Map());
   const [loadingHours, setLoadingHours]       = useState(false);
@@ -133,13 +135,14 @@ export default function BookAppointmentScreen() {
 
   // Časové sloty — dynamicky podľa ordinačných hodín doktora
   const slots = useMemo(() => {
-    if (!selectedService || !selectedDayHours) return [];
+    if (!selectedService || !selectedDate) return [];
+    const hours = selectedDayHours ?? { open_time: '08:00', close_time: '17:00' };
     return generateTimeSlotsForDay(
       selectedService.duration_minutes,
-      selectedDayHours.open_time,
-      selectedDayHours.close_time,
+      hours.open_time,
+      hours.close_time,
     );
-  }, [selectedService, selectedDayHours]);
+  }, [selectedService, selectedDate, selectedDayHours]);
 
   // Načítaj zoznam doktorov (krok 0)
   useEffect(() => {
@@ -206,6 +209,71 @@ export default function BookAppointmentScreen() {
     load();
     return () => { cancelled = true; };
   }, [doctorId]);
+
+  // Načítaj naposledy rezervované služby
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRecent() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled || !user) return;
+      const { data } = await supabase
+        .from('appointments')
+        .select('service_id')
+        .eq('patient_id', user.id)
+        .not('service_id', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (cancelled || !data) return;
+      // Unikátne service IDs v poradí posledných rezervácií
+      const seen = new Set<string>();
+      const ids: string[] = [];
+      for (const a of data) {
+        if (a.service_id && !seen.has(a.service_id)) { seen.add(a.service_id); ids.push(a.service_id); }
+        if (ids.length >= 4) break;
+      }
+      setRecentServiceIds(ids);
+    }
+    loadRecent();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Odporúčané služby na základe dental_charts
+  const [recommendedServiceNames, setRecommendedServiceNames] = useState<string[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRecommended() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (cancelled || !user) return;
+      const { data: teeth } = await supabase.from('dental_charts').select('status').eq('patient_id', user.id);
+      if (cancelled || !teeth) return;
+      const names: string[] = [];
+      const statuses = teeth.map(t => t.status);
+      if (statuses.some(s => s === 'cavity' || s === 'early_cavity')) names.push('Výplň');
+      if (statuses.some(s => s === 'periodontal' || s === 'mobility')) names.push('Parodontológia');
+      if (statuses.some(s => s === 'root_canal')) names.push('Endodoncia');
+      if (statuses.some(s => s === 'fracture' || s === 'treatment_needed')) names.push('Ošetrenie');
+      // Každý pacient by mal mať preventívku
+      if (!statuses.length || statuses.every(s => s === 'healthy')) names.push('Preventívna prehliadka');
+      setRecommendedServiceNames(names);
+    }
+    loadRecommended();
+    return () => { cancelled = true; };
+  }, []);
+
+  const recentServices = useMemo(() => {
+    if (!recentServiceIds.length || !flat.length) return [];
+    return recentServiceIds.map(id => flat.find(s => s.id === id)).filter(Boolean) as Service[];
+  }, [recentServiceIds, flat]);
+
+  const recommendedServices = useMemo(() => {
+    if (!recommendedServiceNames.length || !flat.length) return [];
+    const matched: Service[] = [];
+    for (const name of recommendedServiceNames) {
+      const svc = flat.find(s => s.name.toLowerCase().includes(name.toLowerCase()));
+      if (svc && !matched.some(m => m.id === svc.id)) matched.push(svc);
+    }
+    return matched.slice(0, 3);
+  }, [recommendedServiceNames, flat]);
 
   // Reset wlJoined pri zmene dátumu
   useEffect(() => { setWlJoined(false); }, [selectedDate]);
@@ -480,6 +548,68 @@ export default function BookAppointmentScreen() {
         ) : (
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
+
+            {/* ── Naposledy rezervované ── */}
+            {recentServices.length > 0 && !searchQuery.trim() && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={[styles.sectionLabel, { color: colors.textSecondary, marginBottom: 8 }]}>NAPOSLEDY REZERVOVANÉ</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+                  {recentServices.map(svc => (
+                    <TouchableOpacity
+                      key={svc.id}
+                      style={[styles.recentChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                      onPress={() => { setService(svc); setTime(''); setStep(2); }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={{ fontSize: 18 }}>{svc.emoji ?? '🦷'}</Text>
+                      <View>
+                        <Text style={[styles.recentChipName, { color: colors.textPrimary }]} numberOfLines={1}>{svc.name}</Text>
+                        <Text style={[styles.recentChipMeta, { color: colors.textSecondary }]}>{formatDuration(svc.duration_minutes)} · {formatPrice(svc.price_min, svc.price_max)}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            {/* ── Odporúčané pre vás ── */}
+            {recommendedServices.length > 0 && !searchQuery.trim() && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={[styles.sectionLabel, { color: colors.textSecondary, marginBottom: 8 }]}>ODPORÚČANÉ PRE VÁS</Text>
+                {recommendedServices.map(svc => (
+                  <TouchableOpacity
+                    key={svc.id}
+                    style={[styles.serviceCard, { backgroundColor: dark ? '#0D2233' : '#EBF5FB', borderColor: dark ? '#1A527644' : '#AED6F1' }]}
+                    onPress={() => { setService(svc); setTime(''); setStep(2); }}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[styles.serviceEmoji, { backgroundColor: dark ? '#1A5276' : '#D4E6F1' }]}>
+                      <Text style={{ fontSize: 26 }}>{svc.emoji ?? '🦷'}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Text style={[styles.serviceName, { color: colors.textPrimary }]}>{svc.name}</Text>
+                        <View style={{ backgroundColor: dark ? '#27AE6033' : '#D5F5E3', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 8 }}>
+                          <Text style={{ fontSize: 9, fontWeight: '700', color: dark ? '#58D68D' : '#1E8449' }}>ODPORÚČANÉ</Text>
+                        </View>
+                      </View>
+                      {svc.description && <Text style={[styles.serviceDesc, { color: colors.textSecondary }]} numberOfLines={1}>{svc.description}</Text>}
+                      <View style={styles.serviceMeta}>
+                        <View style={styles.metaPill}>
+                          <Ionicons name="time-outline" size={10} color={COLORS.wal} />
+                          <Text style={styles.metaText}>~{formatDuration(svc.duration_minutes)}</Text>
+                        </View>
+                        <View style={styles.metaPill}>
+                          <Ionicons name="pricetag-outline" size={10} color={COLORS.wal} />
+                          <Text style={styles.metaText}>{formatPrice(svc.price_min, svc.price_max)}</Text>
+                        </View>
+                      </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color={dark ? '#5DADE2' : '#1A5276'} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
             {/* ── Search bar ── */}
             <View style={[styles.searchBar, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -775,8 +905,23 @@ export default function BookAppointmentScreen() {
                 <Text style={styles.successBtnText}>Zobraziť moje termíny</Text>
               </TouchableOpacity>
               <TouchableOpacity
+                style={[styles.successBtnAnother, { borderColor: COLORS.gold }]}
+                onPress={() => {
+                  setService(null);
+                  setDate(null);
+                  setTime('');
+                  setNotes('');
+                  setIsUrgent(false);
+                  setBooked(false);
+                  setStep(1);
+                }}
+                activeOpacity={0.85}>
+                <Ionicons name="add-circle-outline" size={18} color={COLORS.gold} />
+                <Text style={styles.successBtnAnotherText}>Rezervovať ďalší termín</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[styles.successBtnSecondary, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
-                onPress={() => router.replace('/(patient)/')} activeOpacity={0.85}>
+                onPress={() => router.replace('/(patient)/' as any)} activeOpacity={0.85}>
                 <Text style={[styles.successBtnSecondaryText, { color: colors.textSecondary }]}>Späť na úvod</Text>
               </TouchableOpacity>
             </Reanimated.View>
@@ -932,7 +1077,6 @@ const styles = StyleSheet.create({
   chipDur:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
 
   // Dates
-  // ─── Mesačný kalendár ───────────────────────────────────────────────────────
   emptyDays:     { alignItems: 'center', paddingVertical: 40, gap: 10 },
   emptyDaysText: { fontSize: 15, fontWeight: '600', color: COLORS.esp, textAlign: 'center' },
   emptyDaysSub:  { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
@@ -1013,6 +1157,13 @@ const styles = StyleSheet.create({
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
   successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 15, marginBottom: 10, elevation: 3 },
   successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+  successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, borderWidth: 1.5, paddingVertical: 14, marginBottom: 10, backgroundColor: 'transparent' },
+  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: COLORS.gold },
   successBtnSecondary:    { width: '100%', borderRadius: 14, borderWidth: 1.5, paddingVertical: 13, alignItems: 'center' },
   successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
+
+  // Recent chips (horizontal scroll)
+  recentChip:     { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 14, paddingVertical: 10, minWidth: 160 },
+  recentChipName: { fontSize: 13, fontWeight: '700', maxWidth: 120 },
+  recentChipMeta: { fontSize: 10, marginTop: 1 },
 });

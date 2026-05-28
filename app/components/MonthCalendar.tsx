@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../styles/theme';
@@ -20,7 +20,7 @@ interface Props {
   warnMonthsAhead?: number;      // default 6, 0 = no warning
 }
 
-export function MonthCalendar({
+export const MonthCalendar = React.memo(function MonthCalendar({
   selectedDate, onSelectDate, openDbDays,
   loading = false, maxMonthsAhead = 12, warnMonthsAhead = 6,
 }: Props) {
@@ -188,7 +188,7 @@ export function MonthCalendar({
       )}
     </View>
   );
-}
+});
 
 const s = StyleSheet.create({
   nav:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 14, borderWidth: 1.5, paddingVertical: 8, paddingHorizontal: 4, marginBottom: 10 },

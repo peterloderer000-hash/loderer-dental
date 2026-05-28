@@ -609,7 +609,20 @@ export default function DoctorCalendar() {
       ) : (
         /* ── Timeline pohľad ── */
         <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-          <View style={[styles.timeline, { height: tlHeight }]}>
+          <View style={[styles.timeline, { height: tlHeight }]}
+            onStartShouldSetResponder={() => true}
+            onResponderRelease={(e) => {
+              // Quick add — tap empty area to create appointment at that time
+              const y = e.nativeEvent.locationY;
+              const min = Math.round((y / PX_PER_MIN + tlRange.open) / 15) * 15; // round to 15 min
+              const h = Math.floor(min / 60);
+              const m = min % 60;
+              if (h >= 7 && h <= 20) {
+                const dateStr = selectedDay.toISOString().slice(0, 10);
+                const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                router.push({ pathname: '/(doctor)/add-appointment', params: { prefillDate: dateStr, prefillTime: timeStr } });
+              }
+            }}>
 
             {/* Hodinové čiary */}
             {tlHours.map(hour => {
@@ -652,7 +665,8 @@ export default function DoctorCalendar() {
               const dur    = a.service?.duration_minutes ?? 30;
               const top    = (sMin - tlRange.open) * PX_PER_MIN;
               const height = Math.max(dur * PX_PER_MIN, 42);
-              const color  = STATUS_COLOR[a.status];
+              // Service color takes priority for visual variety, fallback to status color
+              const color  = (a.service as any)?.color || STATUS_COLOR[a.status];
               return (
                 <TouchableOpacity key={a.id}
                   style={[styles.tlBlock, { top, height, backgroundColor: color + '18', borderLeftColor: color }]}

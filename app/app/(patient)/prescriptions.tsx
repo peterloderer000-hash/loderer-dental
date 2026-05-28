@@ -1,22 +1,20 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+  RefreshControl, ScrollView, StyleSheet,
+  Text, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, RADII, SPACING, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import HeroHeader from '../../components/ui/HeroHeader';
+import AppCard from '../../components/ui/AppCard';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
 type Severity = 'mild' | 'moderate' | 'severe';
 
 type Diagnosis = {
@@ -41,136 +39,124 @@ type Prescription = {
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDate(isoStr: string): string {
-  return new Date(isoStr).toLocaleDateString('sk-SK', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
+function fmtDate(s: string) {
+  return new Date(s).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-const SEVERITY_CONFIG: Record<Severity, { label: string; bg: string; color: string; border: string }> = {
-  mild:     { label: 'Mierna',  bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF' },
-  moderate: { label: 'Stredná', bg: '#FEF9E7', color: '#7D6608', border: '#F9E79F' },
-  severe:   { label: 'Ťažká',   bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
+const SEV_CFG: Record<Severity, { label: string; color: string; bg: string; darkBg: string; icon: keyof typeof Ionicons.glyphMap }> = {
+  mild:     { label: 'Mierna',  color: '#2E7D5E', bg: '#EAFAF1', darkBg: '#0D3B1F', icon: 'shield-checkmark-outline' },
+  moderate: { label: 'Stredná', color: '#C9A84C', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'alert-circle-outline' },
+  severe:   { label: 'Ťažká',   color: '#C0392B', bg: '#FDEDEC', darkBg: '#3A0E0E', icon: 'warning-outline' },
 };
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-
-function DiagnosisCard({ item }: { item: Diagnosis }) {
-  const { colors } = useAppTheme();
-  const sev = item.severity ? SEVERITY_CONFIG[item.severity] : null;
+// ─── DiagnosisCard ───────────────────────────────────────────────────────────
+const DiagnosisCard = React.memo(function DiagnosisCard({ item, dark, colors }: { item: Diagnosis; dark: boolean; colors: any }) {
+  const sev = item.severity ? SEV_CFG[item.severity] : null;
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-      {/* Top row */}
-      <View style={styles.cardTopRow}>
-        <View style={styles.cardTopLeft}>
-          {item.icd_code ? (
-            <View style={[styles.icdChip, { backgroundColor: colors.bg3 }]}>
-              <Text style={[styles.icdChipText, { color: colors.textPrimary }]}>{item.icd_code}</Text>
-            </View>
-          ) : null}
-          {sev ? (
-            <View style={[styles.severityBadge, { backgroundColor: sev.bg, borderColor: sev.border }]}>
-              <Text style={[styles.severityText, { color: sev.color }]}>{sev.label}</Text>
-            </View>
-          ) : null}
+    <AppCard style={st.card} shadow="sm">
+      {/* Header row */}
+      <View style={st.cardRow}>
+        <View style={[st.cardIcon, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+          <Ionicons name="medkit-outline" size={18} color={COLORS.gold} />
         </View>
-        <Text style={[styles.cardDate, { color: colors.textSecondary }]}>{formatDate(item.created_at)}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={[st.cardTitle, { color: colors.textPrimary }]} numberOfLines={2}>{item.description}</Text>
+          <Text style={[st.cardDate, { color: colors.textSecondary }]}>{fmtDate(item.created_at)}</Text>
+        </View>
       </View>
 
-      {/* Description */}
-      <Text style={[styles.cardDescription, { color: colors.textPrimary }]}>{item.description}</Text>
+      {/* Chips */}
+      <View style={st.chipRow}>
+        {item.icd_code ? (
+          <View style={[st.chip, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+            <Text style={[st.chipText, { color: colors.textPrimary }]}>{item.icd_code}</Text>
+          </View>
+        ) : null}
+        {sev ? (
+          <View style={[st.chip, { backgroundColor: dark ? sev.darkBg : sev.bg }]}>
+            <Ionicons name={sev.icon} size={11} color={sev.color} />
+            <Text style={[st.chipText, { color: sev.color }]}>{sev.label}</Text>
+          </View>
+        ) : null}
+      </View>
 
       {/* Doctor */}
       {item.doctor?.full_name ? (
-        <View style={styles.cardFooter}>
-          <Ionicons name="person-circle-outline" size={12} color={COLORS.sand} />
-          <Text style={[styles.cardDoctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
+        <View style={[st.doctorRow, { borderTopColor: dark ? '#1E1610' : COLORS.bg3 }]}>
+          <Ionicons name="person-circle-outline" size={13} color={COLORS.sand} />
+          <Text style={[st.doctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
         </View>
       ) : null}
-    </View>
+    </AppCard>
   );
-}
+});
 
-function PrescriptionCard({ item }: { item: Prescription }) {
-  const { colors } = useAppTheme();
+// ─── PrescriptionCard ────────────────────────────────────────────────────────
+const PrescriptionCard = React.memo(function PrescriptionCard({ item, dark, colors }: { item: Prescription; dark: boolean; colors: any }) {
+  const isExpired = item.valid_until ? new Date(item.valid_until) < new Date() : false;
+  const active = item.is_active && !isExpired;
+
   return (
-    <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-      {/* Top row */}
-      <View style={styles.cardTopRow}>
-        <Text style={[styles.medicationName, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
-        <View style={[
-          styles.activeBadge,
-          item.is_active ? styles.activeBadgeOn : styles.activeBadgeOff,
-        ]}>
-          <Text style={[
-            styles.activeBadgeText,
-            item.is_active ? styles.activeBadgeTextOn : styles.activeBadgeTextOff,
-          ]}>
-            {item.is_active ? 'Aktívny' : 'Neaktívny'}
+    <AppCard style={st.card} shadow="sm">
+      {/* Header */}
+      <View style={st.cardRow}>
+        <View style={[st.cardIcon, { backgroundColor: active ? (dark ? '#0D3B1F' : '#EAFAF1') : (dark ? '#1A1C1D' : COLORS.bg2) }]}>
+          <Ionicons name="medical-outline" size={18} color={active ? '#2E7D5E' : '#7F8C8D'} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={[st.cardTitle, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
+          <Text style={[st.cardDate, { color: colors.textSecondary }]}>{fmtDate(item.created_at)}</Text>
+        </View>
+        <View style={[st.statusBadge, { backgroundColor: active ? (dark ? '#0D3B1F' : '#EAFAF1') : (dark ? '#1A1C1D' : COLORS.bg3) }]}>
+          <View style={[st.statusDot, { backgroundColor: active ? '#2E7D5E' : '#7F8C8D' }]} />
+          <Text style={[st.statusText, { color: active ? '#2E7D5E' : '#7F8C8D' }]}>
+            {active ? 'Aktívny' : isExpired ? 'Expirovaný' : 'Neaktívny'}
           </Text>
         </View>
       </View>
 
-      {/* Date under title */}
-      <Text style={[styles.cardDateSub, { color: colors.textSecondary }]}>{formatDate(item.created_at)}</Text>
-
-      {/* Dosage */}
-      {item.dosage ? (
-        <View style={styles.rxInfoRow}>
-          <Text style={styles.rxInfoEmoji}>💊</Text>
-          <Text style={[styles.rxInfoText, { color: colors.textPrimary }]}>{item.dosage}</Text>
-        </View>
-      ) : null}
-
-      {/* Instructions */}
-      {item.instructions ? (
-        <View style={styles.rxInfoRow}>
-          <Text style={styles.rxInfoEmoji}>📋</Text>
-          <Text style={[styles.rxInfoTextMulti, { color: colors.textPrimary }]}>{item.instructions}</Text>
-        </View>
-      ) : null}
-
-      {/* Valid until */}
-      {item.valid_until ? (
-        <View style={styles.rxInfoRow}>
-          <Text style={styles.rxInfoEmoji}>📅</Text>
-          <Text style={[styles.rxInfoText, { color: colors.textPrimary }]}>Platné do: {item.valid_until}</Text>
-        </View>
-      ) : null}
+      {/* Details */}
+      <View style={st.detailsWrap}>
+        {item.dosage ? (
+          <View style={st.detailRow}>
+            <Ionicons name="fitness-outline" size={14} color={COLORS.gold} />
+            <Text style={[st.detailText, { color: colors.textPrimary }]}>{item.dosage}</Text>
+          </View>
+        ) : null}
+        {item.instructions ? (
+          <View style={st.detailRow}>
+            <Ionicons name="document-text-outline" size={14} color={COLORS.gold} />
+            <Text style={[st.detailText, { color: colors.textPrimary }]}>{item.instructions}</Text>
+          </View>
+        ) : null}
+        {item.valid_until ? (
+          <View style={st.detailRow}>
+            <Ionicons name="calendar-outline" size={14} color={isExpired ? '#C0392B' : COLORS.gold} />
+            <Text style={[st.detailText, { color: isExpired ? '#C0392B' : colors.textPrimary }]}>
+              Platné do: {item.valid_until}
+            </Text>
+          </View>
+        ) : null}
+      </View>
 
       {/* Doctor */}
       {item.doctor?.full_name ? (
-        <View style={styles.cardFooter}>
-          <Ionicons name="person-circle-outline" size={12} color={COLORS.sand} />
-          <Text style={[styles.cardDoctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
+        <View style={[st.doctorRow, { borderTopColor: dark ? '#1E1610' : COLORS.bg3 }]}>
+          <Ionicons name="person-circle-outline" size={13} color={COLORS.sand} />
+          <Text style={[st.doctorName, { color: colors.textSecondary }]}>MUDr. {item.doctor.full_name}</Text>
         </View>
       ) : null}
-    </View>
+    </AppCard>
   );
-}
-
-function EmptyState({ emoji, subtitle }: { emoji: string; subtitle: string }) {
-  const { colors } = useAppTheme();
-  return (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyEmoji}>{emoji}</Text>
-      <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne záznamy</Text>
-      <Text style={[styles.emptySub, { color: colors.textSecondary }]}>{subtitle}</Text>
-    </View>
-  );
-}
+});
 
 // ─── Main screen ─────────────────────────────────────────────────────────────
-
 type Tab = 'diagnoses' | 'prescriptions';
 
 export default function PrescriptionsScreen() {
   const router = useRouter();
-  const { colors } = useAppTheme();
+  const { colors, dark } = useAppTheme();
 
   const [tab, setTab] = useState<Tab>('diagnoses');
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
@@ -232,316 +218,138 @@ export default function PrescriptionsScreen() {
     setRefreshing(false);
   }, [fetchData]);
 
-  // ── Loading ──
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-            <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerSub}>MÔJ ZDRAVOTNÝ ZÁZNAM</Text>
-            <Text style={styles.headerTitle}>Recepty & Diagnózy</Text>
-          </View>
-        </View>
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+  const activeRx = prescriptions.filter(p => p.is_active).length;
+
+  return (
+    <View style={[st.safe, { backgroundColor: dark ? '#0A0806' : colors.bg2 }]}>
+      <HeroHeader
+        title="Recepty & Diagnózy"
+        subtitle={`${diagnoses.length} diagnóz · ${activeRx} aktívnych receptov`}
+        icon="medkit-outline"
+        onBack={() => router.back()}
+      />
+
+      {/* Premium tabs */}
+      <View style={[st.tabBar, { backgroundColor: dark ? '#110E09' : COLORS.bg2 }]}>
+        {(['diagnoses', 'prescriptions'] as Tab[]).map(t => {
+          const active = tab === t;
+          const label = t === 'diagnoses'
+            ? `Diagnózy (${diagnoses.length})`
+            : `Recepty (${prescriptions.length})`;
+          const icon = t === 'diagnoses' ? 'medkit-outline' : 'medical-outline';
+          return (
+            <TouchableOpacity
+              key={t}
+              style={[st.tabBtn, active && st.tabBtnActive]}
+              onPress={() => { setTab(t); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              activeOpacity={0.8}
+            >
+              {active && (
+                <LinearGradient
+                  colors={[COLORS.goldDark, COLORS.gold]}
+                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                  style={st.tabBtnGrad}
+                />
+              )}
+              <Ionicons name={icon as any} size={15} color={active ? '#1A1209' : colors.textSecondary} style={{ zIndex: 1 }} />
+              <Text style={[st.tabBtnText, active ? st.tabBtnTextActive : { color: colors.textSecondary }]}>{label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {loading ? (
+        <View style={{ flex: 1, padding: SPACING.xl, paddingTop: 16 }}>
           <SkeletonList count={5} />
         </View>
-      </SafeAreaView>
-    );
-  }
-
-  // ── Content ──
-  return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>MÔJ ZDRAVOTNÝ ZÁZNAM</Text>
-          <Text style={styles.headerTitle}>Recepty & Diagnózy</Text>
-        </View>
-      </View>
-
-      {/* Tabs */}
-      <View style={[styles.tabBar, { backgroundColor: colors.bg3 }]}>
-        <TouchableOpacity
-          style={[styles.tabBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, tab === 'diagnoses' && styles.tabBtnActive]}
-          onPress={() => setTab('diagnoses')}
-          activeOpacity={0.75}
+      ) : (
+        <ScrollView
+          style={st.scroll}
+          contentContainerStyle={{ paddingTop: SPACING.lg, paddingBottom: 120 }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.gold} />}
         >
-          <Text style={[styles.tabBtnText, { color: colors.textSecondary }, tab === 'diagnoses' && styles.tabBtnTextActive]}>
-            {'🩺 Diagnózy (' + diagnoses.length + ')'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tabBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, tab === 'prescriptions' && styles.tabBtnActive]}
-          onPress={() => setTab('prescriptions')}
-          activeOpacity={0.75}
-        >
-          <Text style={[styles.tabBtnText, { color: colors.textSecondary }, tab === 'prescriptions' && styles.tabBtnTextActive]}>
-            {'💊 Recepty (' + prescriptions.length + ')'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Content */}
-      <ScrollView
-        style={[styles.scroll, { backgroundColor: colors.bg2 }]}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={COLORS.wal}
-            colors={[COLORS.wal]}
-          />
-        }
-      >
-        {tab === 'diagnoses' ? (
-          diagnoses.length === 0 ? (
-            <EmptyState
-              emoji="🩺"
-              subtitle="Váš lekár tu pridá diagnózy po vyšetrení."
-            />
+          {tab === 'diagnoses' ? (
+            diagnoses.length === 0 ? (
+              <View style={st.empty}>
+                <View style={[st.emptyCircle, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+                  <Ionicons name="medkit-outline" size={44} color={COLORS.gold} />
+                </View>
+                <Text style={[st.emptyTitle, { color: colors.textPrimary }]}>Žiadne diagnózy</Text>
+                <Text style={[st.emptySub, { color: colors.textSecondary }]}>
+                  Váš lekár tu pridá diagnózy po vyšetrení.
+                </Text>
+              </View>
+            ) : (
+              diagnoses.map(item => <DiagnosisCard key={item.id} item={item} dark={dark} colors={colors} />)
+            )
           ) : (
-            diagnoses.map((item) => <DiagnosisCard key={item.id} item={item} />)
-          )
-        ) : (
-          prescriptions.length === 0 ? (
-            <EmptyState
-              emoji="💊"
-              subtitle="Váš lekár tu pridá recepty po vyšetrení."
-            />
-          ) : (
-            prescriptions.map((item) => <PrescriptionCard key={item.id} item={item} />)
-          )
-        )}
-        <View style={{ height: 100 }} />
-      </ScrollView>
-    </SafeAreaView>
+            prescriptions.length === 0 ? (
+              <View style={st.empty}>
+                <View style={[st.emptyCircle, { backgroundColor: dark ? '#1E1610' : COLORS.bg2 }]}>
+                  <Ionicons name="medical-outline" size={44} color={COLORS.gold} />
+                </View>
+                <Text style={[st.emptyTitle, { color: colors.textPrimary }]}>Žiadne recepty</Text>
+                <Text style={[st.emptySub, { color: colors.textSecondary }]}>
+                  Váš lekár tu pridá recepty po vyšetrení.
+                </Text>
+              </View>
+            ) : (
+              prescriptions.map(item => <PrescriptionCard key={item.id} item={item} dark={dark} colors={colors} />)
+            )
+          )}
+        </ScrollView>
+      )}
+    </View>
   );
 }
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: COLORS.esp },
-
-  // Header
-  header: {
-    backgroundColor: COLORS.esp,
-    paddingHorizontal: SIZES.padding,
-    paddingTop: 14,
-    paddingBottom: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.wal,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerSub: {
-    fontSize: 9,
-    letterSpacing: 2,
-    color: COLORS.sand,
-    fontWeight: '500',
-    textTransform: 'uppercase',
-    marginBottom: 3,
-  },
-  headerTitle: {
-    fontSize: 19,
-    fontWeight: '600',
-    color: '#fff',
-  },
+const st = StyleSheet.create({
+  safe:   { flex: 1 },
+  scroll: { flex: 1 },
 
   // Tabs
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.bg3,
-    paddingHorizontal: SIZES.padding,
-    paddingVertical: 10,
-    gap: 8,
-  },
+  tabBar: { flexDirection: 'row', gap: 10, paddingHorizontal: SPACING.xl, paddingVertical: SPACING.md },
   tabBtn: {
-    flex: 1,
-    paddingVertical: 9,
-    paddingHorizontal: 10,
-    borderRadius: SIZES.radius,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1.5,
-    borderColor: COLORS.bg3,
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, paddingVertical: 11, borderRadius: RADII.lg, overflow: 'hidden',
+    borderWidth: 1, borderColor: 'transparent',
   },
-  tabBtnActive: {
-    backgroundColor: COLORS.esp,
-    borderColor: COLORS.wal,
-  },
-  tabBtnText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.wal,
-  },
-  tabBtnTextActive: {
-    color: COLORS.cream,
-  },
+  tabBtnActive: { borderColor: 'transparent' },
+  tabBtnGrad: { ...StyleSheet.absoluteFillObject, borderRadius: RADII.lg },
+  tabBtnText: { fontSize: 12, fontWeight: '600', zIndex: 1 },
+  tabBtnTextActive: { color: '#1A1209', fontWeight: '700', zIndex: 1 },
 
-  // Scroll
-  scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  scrollContent: { padding: SIZES.padding, paddingTop: 12, paddingBottom: 120 },
+  // Card
+  card: { marginHorizontal: SPACING.xl, marginBottom: SPACING.md },
+  cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
+  cardIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  cardTitle: { fontSize: 14, fontWeight: '600', marginBottom: 2 },
+  cardDate: { fontSize: 11 },
 
-  // Card shared
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: SIZES.radius,
-    padding: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: COLORS.bg3,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    gap: 8,
-  },
-  cardTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  cardTopLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
-    flex: 1,
-  },
-  cardDate: {
-    fontSize: 11,
-    color: COLORS.wal,
-    fontWeight: '500',
-    flexShrink: 0,
-  },
-  cardDateSub: {
-    fontSize: 11,
-    color: COLORS.wal,
-    marginTop: -4,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: COLORS.esp,
-    lineHeight: 21,
-    fontWeight: '500',
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    alignSelf: 'flex-end',
-    marginTop: 2,
-  },
-  cardDoctorName: {
-    fontSize: 11,
-    color: COLORS.wal,
-    fontStyle: 'italic',
-  },
+  // Chips
+  chipRow: { flexDirection: 'row', gap: 8, marginTop: 10, flexWrap: 'wrap' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADII.sm },
+  chipText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.3 },
 
-  // ICD chip
-  icdChip: {
-    backgroundColor: COLORS.bg3,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  icdChipText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.esp,
-    letterSpacing: 0.5,
-  },
+  // Status badge (prescription)
+  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADII.sm },
+  statusDot: { width: 6, height: 6, borderRadius: 3 },
+  statusText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 },
 
-  // Severity badge
-  severityBadge: {
-    borderRadius: 7,
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  severityText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
+  // Details
+  detailsWrap: { marginTop: 10, gap: 8 },
+  detailRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  detailText: { fontSize: 13, lineHeight: 19, flex: 1 },
 
-  // Prescription: medication name + active badge
-  medicationName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: COLORS.esp,
-    flex: 1,
-  },
-  activeBadge: {
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 9,
-    paddingVertical: 3,
-    flexShrink: 0,
-  },
-  activeBadgeOn:  { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' },
-  activeBadgeOff: { backgroundColor: COLORS.bg3, borderColor: COLORS.bg3 },
-  activeBadgeText: { fontSize: 11, fontWeight: '700' },
-  activeBadgeTextOn:  { color: '#1E8449' },
-  activeBadgeTextOff: { color: COLORS.wal },
-
-  // Prescription info rows
-  rxInfoRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-  },
-  rxInfoEmoji: { fontSize: 13, marginTop: 1 },
-  rxInfoText: {
-    fontSize: 13,
-    color: COLORS.esp,
-    lineHeight: 19,
-    flex: 1,
-  },
-  rxInfoTextMulti: {
-    fontSize: 13,
-    color: COLORS.esp,
-    lineHeight: 19,
-    flex: 1,
-  },
+  // Doctor
+  doctorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, paddingTop: 10, borderTopWidth: 1 },
+  doctorName: { fontSize: 11, fontStyle: 'italic' },
 
   // Empty state
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 64,
-    paddingHorizontal: 32,
-  },
-  emptyEmoji: { fontSize: 52, marginBottom: 14 },
-  emptyTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: COLORS.esp,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  emptySub: {
-    fontSize: 13,
-    color: COLORS.wal,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
+  empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 64, paddingHorizontal: 32 },
+  emptyCircle: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 18 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
+  emptySub: { fontSize: 13, textAlign: 'center', lineHeight: 20, maxWidth: 260 },
 });

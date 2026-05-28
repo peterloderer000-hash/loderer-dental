@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../supabase';
+import { getCache, setCache, CACHE_KEYS } from '../utils/offlineCache';
 
 export type Service = {
   id: string;
@@ -19,9 +20,17 @@ export function useServices() {
 
   useEffect(() => {
     let cancelled = false;
+
+    getCache<Service[]>(CACHE_KEYS.services, 60 * 60 * 1000).then(cached => {
+      if (cached && !cancelled && services.length === 0) {
+        setServices(cached);
+        setLoading(false);
+      }
+    });
+
     supabase
       .from('services')
-      .select('*')
+      .select('id, name, description, duration_minutes, price_min, price_max, category, emoji, is_active')
       .eq('is_active', true)
       .order('category')
       .order('duration_minutes')
@@ -32,41 +41,39 @@ export function useServices() {
           setLoading(false);
           return;
         }
-        setServices((data ?? []) as Service[]);
+        const svcs = (data ?? []) as Service[];
+        setServices(svcs);
         setLoading(false);
+        setCache(CACHE_KEYS.services, svcs);
       });
     return () => { cancelled = true; };
   }, []);
 
-  // Zoskup podľa kategórie
-  const grouped = services.reduce<Record<string, Service[]>>((acc, s) => {
+  const grouped = useMemo(() => services.reduce<Record<string, Service[]>>((acc, s) => {
     if (!acc[s.category]) acc[s.category] = [];
     acc[s.category].push(s);
     return acc;
-  }, {});
+  }, {}), [services]);
 
   return { services, flat: services, grouped, loading };
 }
 
-/** Formátuj cenu podľa cenníka (slovenský štandard) */
 export function formatPrice(min: number | null, max: number | null): string {
   if (min === null && max === null) return 'Cena na vyžiadanie';
   if (min === 0   && max === 0)    return 'Zadarmo';
   if (min === 0)                   return `do ${max} €`;
-  if (min === max || max === null) return `${min} €`;
-  return `od ${min} €`;   // pohyblivá cena — zobraz iba minimum (štandard "od")
+  if (min === max || max === null)  return `${min} €`;
+  return `od ${min} €`;
 }
 
-/** Formátuj cenu s celým rozsahom (pre detail, napr. card v booking) */
 export function formatPriceRange(min: number | null, max: number | null): string {
   if (min === null && max === null) return 'Cena na vyžiadanie';
   if (min === 0   && max === 0)    return 'Zadarmo';
   if (min === 0)                   return `do ${max} €`;
-  if (min === max || max === null) return `${min} €`;
+  if (min === max || max === null)  return `${min} €`;
   return `${min} – ${max} €`;
 }
 
-/** Formátuj dĺžku: "30 min" / "1 hod" / "1 hod 30 min" */
 export function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;
   const h = Math.floor(minutes / 60);

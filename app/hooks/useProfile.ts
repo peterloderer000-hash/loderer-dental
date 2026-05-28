@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
+import { getCache, setCache, CACHE_KEYS } from '../utils/offlineCache';
 
 type Profile = { id: string; role: string; full_name: string | null; phone_number: string | null; avatar_url: string | null };
 
@@ -16,40 +17,50 @@ export function useProfile() {
 
     async function loadData() {
       setLoading(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         if (!cancelled) setLoading(false);
         return;
       }
 
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+      // Skus nacitat z cache pre okamzity render
+      if (tick === 0) {
+        const cached = await getCache<{ profile: Profile; hasPassport: boolean }>(CACHE_KEYS.profile(user.id));
+        if (cached && !cancelled) {
+          setProfile(cached.profile);
+          setHasHealthPassport(cached.hasPassport);
+          setLoading(false);
+        }
+      }
 
-      // Check health passport
-      const { data: passportData } = await supabase
-        .from('health_passports')
-        .select('patient_id')
-        .eq('patient_id', user.id)
-        .maybeSingle();
+      // Fetch profile + health passport paralelne
+      const [profileRes, passportRes] = await Promise.all([
+        supabase.from('profiles')
+          .select('id, role, full_name, phone_number, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle(),
+        supabase.from('health_passports')
+          .select('patient_id')
+          .eq('patient_id', user.id)
+          .maybeSingle(),
+      ]);
+
+      const profileData = profileRes.data;
+      const passportData = passportRes.data;
 
       if (!cancelled) {
         setProfile(profileData);
         setHasHealthPassport(!!passportData);
         setLoading(false);
+        if (profileData) {
+          setCache(CACHE_KEYS.profile(user.id), { profile: profileData, hasPassport: !!passportData });
+        }
       }
     }
 
     loadData();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [tick]);
 
   return { profile, hasHealthPassport, loading, refetch };

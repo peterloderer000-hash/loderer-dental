@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Image, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
@@ -8,10 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useClinic } from '../../hooks/useClinic';
-import { computeDayMetrics, fmtTime } from '../../utils/clinicMetrics';
+import { computeDayMetrics, fmtTime, fmtMins } from '../../utils/clinicMetrics';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import { supabase } from '../../supabase';
 
 export default function ReceptionHome() {
   const router  = useRouter();
@@ -39,6 +40,54 @@ export default function ReceptionHome() {
 
   const nowHour  = new Date().getHours();
   const greeting = nowHour < 12 ? 'Dobré ráno' : nowHour < 18 ? 'Dobrý deň' : 'Dobrý večer';
+
+  // ── Denný príjem ──
+  const [dailyRevenue, setDailyRevenue] = useState<number>(0);
+  const [unpaidCount, setUnpaidCount]   = useState<number>(0);
+
+  useEffect(() => {
+    async function loadRevenue() {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data } = await supabase
+        .from('appointments')
+        .select('payment_status, service:services(price_min)')
+        .gte('appointment_date', `${today}T00:00:00`)
+        .lte('appointment_date', `${today}T23:59:59`)
+        .neq('status', 'cancelled');
+      if (!data) return;
+      let revenue = 0;
+      let unpaid = 0;
+      data.forEach((a: any) => {
+        const price = a.service?.price_min ?? 0;
+        if (a.payment_status === 'paid') revenue += price;
+        else unpaid++;
+      });
+      setDailyRevenue(revenue);
+      setUnpaidCount(unpaid);
+    }
+    loadRevenue();
+  }, [clinic.appointments]);
+
+  // ── Timeline: rozdelenie dňa na hodinové sloty ──
+  const timelineSlots = useMemo(() => {
+    const slots: { hour: number; count: number; completed: number }[] = [];
+    for (let h = 7; h <= 18; h++) {
+      const inSlot = clinic.appointments.filter(a => {
+        const aH = new Date(a.appointment_date).getHours();
+        return aH === h;
+      });
+      slots.push({
+        hour: h,
+        count: inSlot.length,
+        completed: inSlot.filter(a =>
+          ['treatment_done', 'checkout', 'paid'].includes(a.clinic_status)
+        ).length,
+      });
+    }
+    return slots;
+  }, [clinic.appointments]);
+
+  const maxSlotCount = useMemo(() => Math.max(1, ...timelineSlots.map(s => s.count)), [timelineSlots]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
@@ -108,6 +157,46 @@ export default function ReceptionHome() {
             </View>
           )}
 
+          {/* ── Rozšírené KPI ── */}
+          <View style={s.section}>
+            <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Dnešné štatistiky</Text>
+            <View style={[s.kpiGrid, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, SHADOWS.card]}>
+              <KpiItem icon="time-outline" label="Ø čakanie" value={fmtMins(metrics.avgWaitingMins)} color={dark ? '#5DADE2' : '#1A5276'} dark={dark} />
+              <KpiItem icon="medical-outline" label="Ø ošetrenie" value={fmtMins(metrics.avgTreatmentMins)} color={dark ? '#82E0AA' : '#1E6B45'} dark={dark} />
+              <KpiItem icon="pie-chart-outline" label="Využitie" value={metrics.utilizationPct !== null ? `${metrics.utilizationPct}%` : '—'} color={dark ? '#F0A030' : '#B87333'} dark={dark} />
+              <KpiItem icon="cash-outline" label="Príjem" value={`${dailyRevenue.toLocaleString('sk-SK')} €`} color={dark ? '#82E0AA' : '#2E7D5E'} dark={dark} />
+              <KpiItem icon="close-circle-outline" label="No-show" value={`${metrics.noShowToday}`} color={dark ? '#F1948A' : '#C0392B'} dark={dark} />
+              <KpiItem icon="card-outline" label="Nezapl." value={`${unpaidCount}`} color={dark ? '#F0C78A' : '#B87333'} dark={dark} />
+            </View>
+          </View>
+
+          {/* ── Časová os ── */}
+          <View style={s.section}>
+            <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Časová os dňa</Text>
+            <View style={[s.timelineCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, SHADOWS.card]}>
+              {timelineSlots.map(slot => {
+                const pct = (slot.count / maxSlotCount) * 100;
+                const compPct = slot.count > 0 ? (slot.completed / slot.count) * 100 : 0;
+                const isNow = new Date().getHours() === slot.hour;
+                return (
+                  <View key={slot.hour} style={s.tlRow}>
+                    <Text style={[s.tlHour, { color: isNow ? COLORS.gold : colors.textSecondary }, isNow && { fontFamily: 'DMSans_500Medium' }]}>
+                      {`${slot.hour}:00`}
+                    </Text>
+                    <View style={s.tlBarWrap}>
+                      <View style={[s.tlBarBg, { width: `${pct}%`, backgroundColor: dark ? '#1A5276' : '#EBF5FB' }]} />
+                      <View style={[s.tlBarFg, { width: `${compPct * pct / 100}%`, backgroundColor: dark ? '#2E7D5E' : '#A8D5C0' }]} />
+                      {isNow && <View style={s.tlNowDot} />}
+                    </View>
+                    <Text style={[s.tlCount, { color: slot.count > 0 ? colors.textPrimary : colors.bg3 }]}>
+                      {slot.count}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+
           {/* Quick actions */}
           <View style={s.section}>
             <Text style={[s.sectionTitle, { color: colors.textSecondary }]}>Rýchle akcie</Text>
@@ -146,6 +235,13 @@ export default function ReceptionHome() {
                 sub="Self check-in pacienta"
                 color="#7D3C98"
                 onPress={() => setShowKiosk(true)}
+              />
+              <QuickAction
+                icon="stats-chart-outline"
+                label="Reporty"
+                sub="Štatistiky a prehľady"
+                color="#1A5276"
+                onPress={() => router.push('/(reception)/reports' as any)}
               />
             </View>
           </View>
@@ -260,6 +356,19 @@ function QuickAction({ icon, label, sub, color, onPress }: {
   );
 }
 
+function KpiItem({ icon, label, value, color, dark }: {
+  icon: string; label: string; value: string; color: string; dark: boolean;
+}) {
+  const { colors } = useAppTheme();
+  return (
+    <View style={[kpi.item, { backgroundColor: dark ? color + '15' : color + '0A' }]}>
+      <Ionicons name={icon as any} size={18} color={color} />
+      <Text style={[kpi.value, { color: colors.textPrimary }]}>{value}</Text>
+      <Text style={[kpi.label, { color: colors.textSecondary }]}>{label}</Text>
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 14, paddingBottom: 20, overflow: 'hidden' },
   circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0' },
@@ -298,6 +407,16 @@ const s = StyleSheet.create({
 
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
 
+  kpiGrid:      { borderRadius: RADII.lg, borderWidth: 1, padding: 12, flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' },
+  timelineCard: { borderRadius: RADII.lg, borderWidth: 1, padding: 12 },
+  tlRow:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 3 },
+  tlHour:       { width: 38, fontSize: 10, fontFamily: 'DMSans_500Medium', textAlign: 'right' },
+  tlBarWrap:    { flex: 1, height: 14, borderRadius: 7, overflow: 'hidden', position: 'relative' as const },
+  tlBarBg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
+  tlBarFg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
+  tlNowDot:     { position: 'absolute' as const, right: -3, top: 3, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold, borderWidth: 1.5, borderColor: '#fff' },
+  tlCount:      { width: 20, fontSize: 11, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
+
   listCard:  { borderRadius: RADII.lg, borderWidth: 1, overflow: 'hidden' },
   listRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, borderBottomWidth: 1 },
   listName:  { ...TYPO.bodyMed },
@@ -328,8 +447,14 @@ const sp = StyleSheet.create({
 });
 
 const qa = StyleSheet.create({
-  card:    { width: '47%', backgroundColor: '#FFFDF9', borderRadius: RADII.lg, padding: 14, gap: 6, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:    { width: '47%', borderRadius: RADII.lg, padding: 14, gap: 6, ...SHADOWS.card, borderWidth: 1 },
   iconWrap:{ width: 44, height: 44, borderRadius: RADII.md, alignItems: 'center', justifyContent: 'center' },
-  label:   { fontFamily: 'DMSans_500Medium', fontSize: 14, color: COLORS.esp },
-  sub:     { fontFamily: 'DMSans_400Regular', fontSize: 11, color: COLORS.wal },
+  label:   { fontFamily: 'DMSans_500Medium', fontSize: 14 },
+  sub:     { fontFamily: 'DMSans_400Regular', fontSize: 11 },
+});
+
+const kpi = StyleSheet.create({
+  item:  { width: '31%', borderRadius: RADII.md, padding: 10, alignItems: 'center', gap: 4 },
+  value: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 16, lineHeight: 20 },
+  label: { fontFamily: 'DMSans_500Medium', fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase' },
 });

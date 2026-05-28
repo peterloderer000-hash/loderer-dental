@@ -18,6 +18,7 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
 import { useAppTheme } from '../../context/ThemeContext';
+import { clearAllCache } from '../../utils/offlineCache';
 import { setAppLanguage } from '../../i18n';
 
 const AVATAR_BUCKET = 'avatars';
@@ -201,6 +202,7 @@ export default function ProfileScreen() {
 
   async function handleSignOut() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    await clearAllCache();
     await supabase.auth.signOut();
     const parent = navigation.getParent() ?? navigation;
     parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
