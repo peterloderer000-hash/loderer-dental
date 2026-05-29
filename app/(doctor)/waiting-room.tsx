@@ -5,14 +5,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   ActivityIndicator, Modal, ScrollView, StyleSheet, Text,
-  TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -73,8 +73,7 @@ export default function WaitingRoomScreen() {
       room_name:        rData.find((rm) => rm.id === r.room_id)?.name ?? null,
       clinic_status:    r.clinic_status,
       patient:  Array.isArray(r.patient) ? r.patient[0] : r.patient,
-      service:  Array.isArray(r.service) ? r.service[0] : r.service,
-    }));
+      service:  Array.isArray(r.service) ? r.service[0] : r.service }));
 
     setWaiting(mapped.filter((p) => p.clinic_status === 'waiting'));
     setInChair(mapped.filter((p) => p.clinic_status === 'in_chair'));
@@ -105,8 +104,7 @@ export default function WaitingRoomScreen() {
     await supabase.from('appointments').update({
       clinic_status: 'in_chair',
       started_at:    new Date().toISOString(),
-      room_id:       roomId,
-    }).eq('id', pickerApptId);
+      room_id:       roomId }).eq('id', pickerApptId);
     setSaving(false);
     setPickerOpen(false);
     setPickerApptId(null);
@@ -119,8 +117,7 @@ export default function WaitingRoomScreen() {
     await supabase.from('appointments').update({
       clinic_status: 'treatment_done',
       ended_at:      new Date().toISOString(),
-      status:        'completed',
-    }).eq('id', apptId);
+      status:        'completed' }).eq('id', apptId);
     setSaving(false);
     load();
   }
@@ -128,15 +125,14 @@ export default function WaitingRoomScreen() {
   const total = waiting.length + inChair.length;
 
   return (
-    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.iconBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.headerSub}>ČAKÁREŇ</Text>
-          <Text style={s.headerTitle}>Aktuálne poradie</Text>
-        </View>
+    <View style={s.safe}>
+      <HeroHeader
+        title="Aktuálne poradie"
+        subtitle="Čakáreň"
+        icon="tv-outline"
+        onBack={() => router.back()}
+      />
+
         <TouchableOpacity onPress={load} style={s.iconBtn} activeOpacity={0.8}>
           <Ionicons name="refresh" size={20} color={COLORS.cream} />
         </TouchableOpacity>
@@ -203,7 +199,7 @@ export default function WaitingRoomScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
 
           {/* ── Čaká ── */}
@@ -246,7 +242,7 @@ export default function WaitingRoomScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
 
           <View style={{ height: 100 }} />
@@ -288,7 +284,7 @@ export default function WaitingRoomScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -301,8 +297,7 @@ const s = StyleSheet.create({
   header: {
     backgroundColor: COLORS.esp, paddingHorizontal: 16,
     paddingTop: 14, paddingBottom: 16,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-  },
+    flexDirection: 'row', alignItems: 'center', gap: 10 },
   iconBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
@@ -317,8 +312,7 @@ const s = StyleSheet.create({
     backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
-    gap: 12,
-  },
+    gap: 12 },
   cardUrgent:     { borderColor: '#F1948A', backgroundColor: '#FFF8F8' },
   cardInProgress: { borderColor: '#A9DFBF', backgroundColor: '#F0FAF4' },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 14 },
@@ -353,10 +347,8 @@ const s = StyleSheet.create({
   modalSub:     { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 4 },
   chairBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderWidth: 2, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 20,
-  },
+    borderWidth: 2, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 20 },
   chairDot:     { width: 16, height: 16, borderRadius: 8 },
   chairBtnText: { fontSize: 17, fontWeight: '700', flex: 1 },
   cancelBtn:    { paddingVertical: 14, alignItems: 'center', marginTop: 4 },
-  cancelBtnText:{ fontSize: 15, color: COLORS.wal, fontWeight: '600' },
-});
+  cancelBtnText:{ fontSize: 15, color: COLORS.wal, fontWeight: '600' } });

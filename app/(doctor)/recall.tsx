@@ -2,14 +2,15 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, FlatList, KeyboardAvoidingView, Modal,
   Platform, RefreshControl, ScrollView, StyleSheet,
-  Text, TextInput, TouchableOpacity, View,
+  Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -29,7 +30,7 @@ const FILTER_LABELS: Record<RecallFilter, string> = {
   all:    'Všetci',
   '6-12': '6–12 mes.',
   '12-24':'1–2 roky',
-  '24+':  '2+ roky',
+  '24+':  '2+ roky'
 };
 
 // ─── Urgentnosť ───────────────────────────────────────────────────────────────
@@ -38,19 +39,19 @@ function getUrgency(months: number, dark: boolean) {
     dot: '#E74C3C', color: '#922B21',
     bg: dark ? '#4A1010' : '#FDEDEC',
     border: dark ? '#C0392B33' : '#F5B7B1',
-    emoji: '🔴',
+    emoji: '🔴'
   };
   if (months >= 12) return {
     dot: '#F39C12', color: '#7D6608',
     bg: dark ? '#2D2200' : '#FEF9E7',
     border: dark ? '#E67E2233' : '#F9E79F',
-    emoji: '🟡',
+    emoji: '🟡'
   };
   return {
     dot: '#2ECC71', color: '#1E8449',
     bg: dark ? '#0D3B1F' : '#EAFAF1',
     border: dark ? '#27AE6033' : '#A9DFBF',
-    emoji: '🟢',
+    emoji: '🟢'
   };
 }
 
@@ -123,7 +124,7 @@ export default function RecallScreen() {
         list.push({
           id: profile.id, full_name: profile.full_name ?? 'Neznáme meno',
           phone_number: profile.phone_number ?? null,
-          lastVisit: null, monthsAbsent: 999, visitCount: 0,
+          lastVisit: null, monthsAbsent: 999, visitCount: 0
         });
         return;
       }
@@ -140,7 +141,7 @@ export default function RecallScreen() {
         list.push({
           id: profile.id, full_name: profile.full_name ?? 'Neznáme meno',
           phone_number: profile.phone_number ?? null,
-          lastVisit: lastVisitDate, monthsAbsent: months, visitCount,
+          lastVisit: lastVisitDate, monthsAbsent: months, visitCount
         });
       }
     });
@@ -166,7 +167,7 @@ export default function RecallScreen() {
     all:    patients.length,
     '6-12': patients.filter(p => p.monthsAbsent >= 6  && p.monthsAbsent < 12).length,
     '12-24':patients.filter(p => p.monthsAbsent >= 12 && p.monthsAbsent < 24).length,
-    '24+':  patients.filter(p => p.monthsAbsent >= 24).length,
+    '24+':  patients.filter(p => p.monthsAbsent >= 24).length
   }), [patients]);
 
   const avgAbsence = useMemo(() => {
@@ -202,7 +203,7 @@ export default function RecallScreen() {
         user_id: patient.id,
         title:   '🦷 Čas na preventívnu prehliadku',
         body:    `Dobrý deň ${firstName}, od vašej poslednej návštevy uplynulo ${absText}. Odporúčame preventívnu prehliadku. Rezervujte si termín priamo v aplikácii.`,
-        type:    'info',
+        type:    'info'
       });
       Alert.alert('Odoslané ✓', `Recall správa odoslaná pre ${patient.full_name}.`);
     } catch (e: any) {
@@ -226,13 +227,13 @@ export default function RecallScreen() {
           user_id: p.id,
           title:   '🦷 Vaša zubná ambulancia — Recall',
           body:    personalMsg,
-          type:    'info',
+          type:    'info'
         });
       }));
 
       await supabase.from('staff_messages').insert({
         sender_id: doctorId,
-        body:      `[recall] ${bulkMsg.trim()} (${targets.length} pacientov)`,
+        body:      `[recall] ${bulkMsg.trim()} (${targets.length} pacientov)`
       });
 
       setShowBulkModal(false);
@@ -324,41 +325,36 @@ export default function RecallScreen() {
   }
 
   if (loading) return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>PACIENTI</Text>
-          <Text style={styles.headerTitle}>Recall pacientov</Text>
-        </View>
-      </View>
-      <View style={{ flex: 1, padding: SIZES.padding, backgroundColor: colors.bg2 }}>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Recall pacientov"
+        subtitle="Pacienti"
+        icon="notifications-outline"
+        onBack={() => router.back()}
+      />
+      <View style={{ flex: 1, padding: SPACING.xl, backgroundColor: colors.bg2 }}>
         <SkeletonList count={5} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 
   const allSelected = selected.size === filtered.length && filtered.length > 0;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>PACIENTI</Text>
-          <Text style={styles.headerTitle}>Recall pacientov</Text>
-        </View>
-        {patients.length > 0 && (
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>{patients.length}</Text>
-          </View>
-        )}
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Recall pacientov"
+        subtitle="Pacienti"
+        icon="notifications-outline"
+        onBack={() => router.back()}
+        rightAction={
+          patients.length > 0 ? (
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{patients.length}</Text>
+            </View>
+          ) : undefined
+        }
+      />
 
       <FlatList
         data={filtered}
@@ -382,7 +378,7 @@ export default function RecallScreen() {
               <View style={styles.statBox}>
                 <Text style={[styles.statNum, { color: colors.textPrimary }]}>{patients.length}</Text>
                 <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Recall pacienti</Text>
-              </View>
+              </>
               <View style={[styles.statDiv, { backgroundColor: colors.bg3 }]} />
               <View style={styles.statBox}>
                 <Text style={[styles.statNum, { color: colors.textPrimary }]}>{avgAbsence} mes.</Text>
@@ -452,7 +448,7 @@ export default function RecallScreen() {
                 )}
               </View>
             )}
-          </>
+          </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyWrap}>
@@ -514,7 +510,7 @@ export default function RecallScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -522,10 +518,10 @@ export default function RecallScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   list:    { flex: 1 },
-  content: { padding: SIZES.padding, paddingBottom: 100, flexGrow: 1 },
+  content: { padding: SPACING.xl, paddingBottom: 100, flexGrow: 1 },
 
   // Header
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
@@ -588,5 +584,5 @@ const styles = StyleSheet.create({
   modalBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5 },
   modalBtnCancelText: { fontSize: 14, fontWeight: '600' },
   modalBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.esp },
-  modalBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
+  modalBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });

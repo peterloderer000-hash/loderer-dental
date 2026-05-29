@@ -3,11 +3,10 @@ import {
   Animated, KeyboardAvoidingView, Platform, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS, SPACING } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = { id: number; text: string; from: 'user' | 'bot'; time: string };
@@ -269,7 +268,7 @@ export default function ChatScreen() {
   const totalTopics = TOPIC_GROUPS.reduce((sum, g) => sum + g.questions.length, 0);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
       {/* ── Hero header ── */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.heroCircle, { width: 160, height: 160, right: -30, top: -50 }]} />
@@ -424,7 +423,7 @@ export default function ChatScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -7,9 +7,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Alert, KeyboardAvoidingView, Platform, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useClinic } from '../../hooks/useClinic';
@@ -166,7 +166,7 @@ const bbl = StyleSheet.create({
   bubbleAI:   { backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
   textUser:   { fontSize: 14, color: '#fff', lineHeight: 20 },
   textAI:     { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
-  time:       { fontSize: 9, color: '#999', marginTop: 4, textAlign: 'right' },
+  time:       { fontSize: 9, color: '#999', marginTop: 4, textAlign: 'right' }
 });
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ export default function ClinicAIScreen() {
     id:   'welcome',
     role: 'assistant',
     text: `Dobrý deň! Som váš AI asistent pre kliniku. Načítavam dáta...`,
-    time: new Date(),
+    time: new Date()
   }]);
   const [input,     setInput]     = useState('');
   const [thinking,  setThinking]  = useState(false);
@@ -195,7 +195,7 @@ export default function ClinicAIScreen() {
         id:   'welcome',
         role: 'assistant',
         text: `Dobrý deň! Som váš AI asistent pre kliniku.\n\nDnes: **${metrics.totalToday}** termínov · ${metrics.waitingNow} čaká · ${metrics.inChairNow} v kresle · ${metrics.completedToday} hotových. Na čo sa chcete opýtať?`,
-        time: new Date(),
+        time: new Date()
       }]);
     }
   }, [clinic.loading]);
@@ -203,13 +203,13 @@ export default function ClinicAIScreen() {
   // Role guard — len doctor
   if (!clinic.loading && clinic.clinicRole !== 'doctor') {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>AI asistent je dostupný len pre doktora.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -233,7 +233,7 @@ export default function ClinicAIScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
+    <View style={s.safe}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -302,7 +302,7 @@ export default function ClinicAIScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -314,7 +314,7 @@ const s = StyleSheet.create({
   header: {
     backgroundColor: COLORS.esp,
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 10
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
@@ -334,14 +334,14 @@ const s = StyleSheet.create({
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 10,
     padding: 12, backgroundColor: '#fff',
-    borderTopWidth: 1, borderTopColor: COLORS.bg3,
+    borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {
     flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 16,
     paddingHorizontal: 14, paddingVertical: 10,
     fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2,
-    maxHeight: 100,
+    maxHeight: 100
   },
   sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
-  sendBtnDisabled: { backgroundColor: COLORS.bg3 },
+  sendBtnDisabled: { backgroundColor: COLORS.bg3 }
 });

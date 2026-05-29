@@ -3,13 +3,14 @@ import {
   ActivityIndicator, Alert, Animated, BackHandler, Easing, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Reanimated, { FadeInDown } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII, GRADIENTS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 import { MonthCalendar } from '../../components/MonthCalendar';
@@ -427,17 +428,13 @@ export default function BookAppointmentScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={goBack} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerLabel}>KROK {step + 1} Z 5</Text>
-          <Text style={styles.headerTitle}>{STEP_LABELS[step]}</Text>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title={STEP_LABELS[step]}
+        subtitle={`Krok ${step + 1} z 5`}
+        icon="add-circle-outline"
+        onBack={goBack}
+      />
 
       <StepBar step={step} />
 
@@ -454,7 +451,7 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 0 — VÝBER DOKTORA */}
       {step === 0 && (
         loadingDoctors ? (
-          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
+          <View style={[{ flex: 1, padding: SPACING.xl }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={3} />
           </View>
         ) : (
@@ -542,7 +539,7 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 1 — SLUŽBA */}
       {step === 1 && (
         loadingServices ? (
-          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
+          <View style={[{ flex: 1, padding: SPACING.xl }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -726,7 +723,7 @@ export default function BookAppointmentScreen() {
       {/* ════════════════════════════════════════ KROK 2 — DÁTUM */}
       {step === 2 && (
         loadingHours ? (
-          <View style={[{ flex: 1, padding: SIZES.padding }, { backgroundColor: colors.bg2 }]}>
+          <View style={[{ flex: 1, padding: SPACING.xl }, { backgroundColor: colors.bg2 }]}>
             <SkeletonList count={4} />
           </View>
         ) : (
@@ -1005,7 +1002,7 @@ export default function BookAppointmentScreen() {
           </ScrollView>
         )
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -1013,15 +1010,15 @@ export default function BookAppointmentScreen() {
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 16 },
+  content:{ padding: SPACING.xl, paddingTop: 16 },
 
-  familyBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF9E7', paddingHorizontal: SIZES.padding, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0D9A8' },
+  familyBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF9E7', paddingHorizontal: SPACING.xl, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0D9A8' },
   familyBannerText: { fontSize: 13, color: '#784212' },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', gap: 12 },
   loadingText: { color: COLORS.wal, fontSize: 13 },
 
   // Header
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
@@ -1155,15 +1152,6 @@ const styles = StyleSheet.create({
   successCardDate:        { fontSize: 13, textAlign: 'center' },
   successCardTime:        { fontSize: 15, fontWeight: '700', textAlign: 'center' },
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
-  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 15, marginBottom: 10, elevation: 3 },
+  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 16 },
   successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
-  successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, borderWidth: 1.5, paddingVertical: 14, marginBottom: 10, backgroundColor: 'transparent' },
-  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: COLORS.gold },
-  successBtnSecondary:    { width: '100%', borderRadius: 14, borderWidth: 1.5, paddingVertical: 13, alignItems: 'center' },
-  successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
-
-  // Recent chips (horizontal scroll)
-  recentChip:     { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, borderWidth: 1.5, paddingHorizontal: 14, paddingVertical: 10, minWidth: 160 },
-  recentChipName: { fontSize: 13, fontWeight: '700', maxWidth: 120 },
-  recentChipMeta: { fontSize: 10, marginTop: 1 },
 });

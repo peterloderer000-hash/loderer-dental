@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator, Alert, Modal, RefreshControl, ScrollView,
-  StyleSheet, Text, TextInput, TouchableOpacity, View,
+  StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -82,7 +83,7 @@ export default function ServicesScreen() {
       duration_minutes: parseInt(duration, 10),
       price_min: priceMin ? parseFloat(priceMin) : null,
       price_max: priceMax ? parseFloat(priceMax) : null,
-      color: COLORS.sand,
+      color: COLORS.sand
     };
     const { error } = editingId
       ? await supabase.from('services').update(payload).eq('id', editingId)
@@ -132,33 +133,32 @@ export default function ServicesScreen() {
   }
 
   if (loading) return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <Text style={s.headerTitle}>Cenník služieb</Text>
-      </View>
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+    <View style={s.safe}>
+      <HeroHeader
+        title="Cenník služieb"
+        subtitle="Nastavenia"
+        icon="pricetags-outline"
+        onBack={() => router.back()}
+      />
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={5} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.headerSub}>NASTAVENIA</Text>
-          <Text style={s.headerTitle}>Cenník služieb</Text>
-        </View>
-        <View style={s.countBadge}>
-          <Text style={s.countText}>{active.length}</Text>
-        </View>
-      </View>
+    <View style={s.safe}>
+      <HeroHeader
+        title="Cenník služieb"
+        subtitle="Nastavenia"
+        icon="pricetags-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <View style={s.countBadge}>
+            <Text style={s.countText}>{active.length}</Text>
+          </View>
+        }
+      />
 
       <ScrollView
         style={[s.scroll, { backgroundColor: colors.bg2 }]}
@@ -241,7 +241,7 @@ export default function ServicesScreen() {
                 </TouchableOpacity>
               </View>
             ))}
-          </>
+          </View>
         )}
 
         <View style={{ height: 100 }} />
@@ -334,19 +334,19 @@ export default function ServicesScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1 },
-  content: { padding: SIZES.padding },
+  content: { padding: SPACING.xl },
 
   header: {
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
     paddingTop: 14, paddingBottom: 18,
-    flexDirection: 'row', alignItems: 'center', gap: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 12
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
@@ -377,7 +377,7 @@ const s = StyleSheet.create({
     position: 'absolute', bottom: 24, right: 24,
     width: 56, height: 56, borderRadius: 28,
     backgroundColor: COLORS.gold, alignItems: 'center', justifyContent: 'center',
-    elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6,
+    elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6
   },
 
   overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
@@ -397,5 +397,5 @@ const s = StyleSheet.create({
   archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, marginTop: 10 },
   archiveBtnText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
   cancelBtn:   { paddingVertical: 14, alignItems: 'center' },
-  cancelBtnText: { fontSize: 14 },
+  cancelBtnText: { fontSize: 14 }
 });

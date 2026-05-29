@@ -7,12 +7,13 @@ import {
   ActivityIndicator, RefreshControl, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, RADII, SHADOWS, SPACING, TYPO } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, SPACING, TYPO, GRADIENTS } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyState } from '../../components/EmptyState';
@@ -93,15 +94,15 @@ export default function FormsHubScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+      <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
         <Header dark={dark} colors={colors} router={router} />
         <View style={{ padding: SPACING.lg }}><SkeletonList count={4} /></View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
       <Header dark={dark} colors={colors} router={router} />
 
       <ScrollView
@@ -243,22 +244,19 @@ export default function FormsHubScreen() {
           />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 function Header({ dark, colors, router }: { dark: boolean; colors: any; router: any }) {
   return (
-    <View style={[styles.header, { backgroundColor: COLORS.esp }]}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-        <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-      </TouchableOpacity>
-      <View>
-        <Text style={styles.headerTitle}>Formuláre</Text>
-        <Text style={styles.headerSub}>Súhlasy, dotazníky, zdravotný pas</Text>
-      </View>
-    </View>
+    <HeroHeader
+      title="Formuláre"
+      subtitle="Súhlasy, dotazníky, zdravotný pas"
+      icon="documents-outline"
+      onBack={() => router.back()}
+    />
   );
 }
 

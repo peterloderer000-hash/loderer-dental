@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
   ActivityIndicator, Alert, StyleSheet, Text,
-  TextInput, TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  TextInput, TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type FoundAppt = {
@@ -47,8 +47,7 @@ export default function CheckInScreen() {
       id: data.id,
       appointment_date: data.appointment_date,
       patient: Array.isArray(data.patient) ? data.patient[0] : (data.patient as any),
-      service: Array.isArray(data.service) ? data.service[0] : (data.service as any),
-    });
+      service: Array.isArray(data.service) ? data.service[0] : (data.service as any) });
   }
 
   async function handleConfirm() {
@@ -57,8 +56,7 @@ export default function CheckInScreen() {
     setConfirming(true);
     const { error } = await supabase.from('appointments').update({
       status:     'arrived',
-      arrived_at: new Date().toISOString(),
-    }).eq('id', found.id);
+      arrived_at: new Date().toISOString() }).eq('id', found.id);
     setConfirming(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
     Alert.alert(
@@ -69,16 +67,14 @@ export default function CheckInScreen() {
   }
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top']}>
-      {/* Hlavička */}
-      <View style={[s.header, { backgroundColor: colors.esp }]}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.headerLabel}>RECEPCIA</Text>
-          <Text style={s.headerTitle}>Check-in pacienta</Text>
-        </View>
+    <View style={[s.safe, { backgroundColor: colors.esp }]}>
+      <HeroHeader
+        title="Check-in pacienta"
+        subtitle="Recepcia"
+        icon="qr-code-outline"
+        onBack={() => router.back()}
+      />
+
         <Ionicons name="qr-code-outline" size={28} color={COLORS.sand} />
       </View>
 
@@ -148,7 +144,7 @@ export default function CheckInScreen() {
                   : <>
                       <Ionicons name="checkmark-circle" size={20} color="#fff" />
                       <Text style={s.confirmText}>Potvrdiť príchod do čakárne</Text>
-                    </>}
+                    </View>}
               </TouchableOpacity>
             </View>
           )}
@@ -162,21 +158,20 @@ export default function CheckInScreen() {
           </Text>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const s = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   header: {
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
-    paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12,
-  },
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
+    paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
-  body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, gap: 14 },
+  body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl, gap: 14 },
   card:     { backgroundColor: '#fff', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   cardSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 18, lineHeight: 18 },
@@ -185,8 +180,7 @@ const s = StyleSheet.create({
   input:     {
     flex: 1, height: 52, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12,
     paddingHorizontal: 16, fontSize: 22, fontWeight: '800', color: COLORS.esp,
-    letterSpacing: 4, backgroundColor: COLORS.bg2, textAlign: 'center',
-  },
+    letterSpacing: 4, backgroundColor: COLORS.bg2, textAlign: 'center' },
   searchBtn: { width: 52, height: 52, borderRadius: 12, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
 
   resultCard:    { marginTop: 16, backgroundColor: '#E8F8F5', borderRadius: 12, padding: 14, borderWidth: 1.5, borderColor: '#A2D9CE' },
@@ -197,13 +191,10 @@ const s = StyleSheet.create({
   resultTime:    { fontSize: 12, fontWeight: '600', color: '#0E6655' },
   confirmBtn:    {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#0E6655', borderRadius: 12, paddingVertical: 13,
-  },
+    backgroundColor: '#0E6655', borderRadius: 12, paddingVertical: 13 },
   confirmText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
 
   hintCard: {
     flexDirection: 'row', gap: 10, alignItems: 'flex-start',
-    backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3,
-  },
-  hintText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 },
-});
+    backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  hintText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 } });

@@ -2,9 +2,9 @@
 import {
   ActivityIndicator, Alert, FlatList, KeyboardAvoidingView, Modal,
   Platform, RefreshControl, ScrollView, StyleSheet, Text,
-  TextInput, TouchableOpacity, View,
+  TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
@@ -32,23 +32,23 @@ interface Payment {
 interface PatientOption { id: string; full_name: string | null; }
 
 const METHOD_LABELS: Record<Method, string> = {
-  cash: 'Hotovosť', card: 'Karta', online: 'Online', insurance: 'Poisťovňa',
+  cash: 'Hotovosť', card: 'Karta', online: 'Online', insurance: 'Poisťovňa'
 };
 const METHOD_ICONS: Record<Method, string> = {
   cash: 'cash-outline', card: 'card-outline',
-  online: 'globe-outline', insurance: 'shield-outline',
+  online: 'globe-outline', insurance: 'shield-outline'
 };
 const STATUS_COLOR: Record<string, string> = {
-  pending: '#B7770D', paid: '#1A5C35', refunded: '#7B3F00', cancelled: '#888',
+  pending: '#B7770D', paid: '#1A5C35', refunded: '#7B3F00', cancelled: '#888'
 };
 const STATUS_BG: Record<string, string> = {
-  pending: '#FEF3CD', paid: '#D4EFDF', refunded: '#FAE5D3', cancelled: '#F2F2F2',
+  pending: '#FEF3CD', paid: '#D4EFDF', refunded: '#FAE5D3', cancelled: '#F2F2F2'
 };
 const STATUS_LABEL: Record<string, string> = {
-  pending: 'Čaká', paid: 'Zaplatené', refunded: 'Vrátené', cancelled: 'Zrušené',
+  pending: 'Čaká', paid: 'Zaplatené', refunded: 'Vrátené', cancelled: 'Zrušené'
 };
 const RANGE_LABELS: Record<DateRange, string> = {
-  today: 'Dnes', week: 'Týždeň', month: 'Mesiac',
+  today: 'Dnes', week: 'Týždeň', month: 'Mesiac'
 };
 
 function fmtEur(cents: number) {
@@ -109,7 +109,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
       currency:     'EUR',
       method,
       status:       'pending',
-      notes:        notes.trim() || null,
+      notes:        notes.trim() || null
     });
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
@@ -130,7 +130,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
       method,
       status:       'paid',
       paid_at:      new Date().toISOString(),
-      notes:        notes.trim() || null,
+      notes:        notes.trim() || null
     });
     setSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
@@ -325,7 +325,7 @@ export default function PaymentsScreen() {
   const totalPending = payments.filter(p => p.status === 'pending').reduce((s, p) => s + p.amount_cents, 0);
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[s.safe, { backgroundColor: colors.bg2 }]}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -442,7 +442,7 @@ export default function PaymentsScreen() {
         onClose={() => setShowModal(false)}
         onCreated={load}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -453,7 +453,7 @@ const s = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.esp, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16,
+    backgroundColor: COLORS.esp, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
@@ -489,7 +489,7 @@ const s = StyleSheet.create({
 
   card: {
     backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 10,
-    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3,
+    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3
   },
   cardTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   patientName: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
@@ -502,7 +502,7 @@ const s = StyleSheet.create({
   notes:       { fontSize: 12, color: '#888', marginTop: 8, fontStyle: 'italic' },
   payBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 9, marginTop: 10,
+    gap: 6, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 9, marginTop: 10
   },
   payBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 
@@ -510,8 +510,8 @@ const s = StyleSheet.create({
     position: 'absolute', right: 20, bottom: 28,
     width: 56, height: 56, borderRadius: 28,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
-    elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
-  },
+    elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8
+  }
 });
 
 // ─── Modal styles ─────────────────────────────────────────────────────────────
@@ -540,5 +540,5 @@ const m = StyleSheet.create({
   btnSecondary:  { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnSecondaryText: { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   btnPrimary:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: COLORS.wal },
-  btnPrimaryText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
+  btnPrimaryText:{ fontSize: 13, fontWeight: '700', color: '#fff' }
 });

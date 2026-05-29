@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { generateMonthlyReportPdf, generateInvoicePdf, generateTreatmentPlanPdf } from '../../utils/pdfExport';
 
@@ -86,15 +86,14 @@ export default function PdfExports() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerLabel}>DOKUMENTY</Text>
-          <Text style={styles.headerTitle}>PDF Exporty</Text>
-        </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="PDF Exporty"
+        subtitle="Dokumenty"
+        icon="document-outline"
+        onBack={() => router.back()}
+      />
+
       </View>
 
       {loading && (
@@ -165,15 +164,15 @@ export default function PdfExports() {
 
         <View style={{ height: 80 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1 },
-  content: { padding: SIZES.padding, paddingTop: 16 },
-  header:  { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  content: { padding: SPACING.xl, paddingTop: 16 },
+  header:  { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
@@ -192,5 +191,4 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 12, fontStyle: 'italic', marginBottom: 12 },
 
   loadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
-  loadingText: { marginTop: 12, fontSize: 14, fontWeight: '600' },
-});
+  loadingText: { marginTop: 12, fontSize: 14, fontWeight: '600' } });

@@ -6,15 +6,15 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useClinic, type ClinicAppointment, type ClinicRoom } from '../../hooks/useClinic';
 import {
   CLINIC_STATUS_CFG, fmtTime, getWaitingMinutes,
-  getTreatmentMinutes, fmtMins,
+  getTreatmentMinutes, fmtMins
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -163,11 +163,11 @@ const pc = StyleSheet.create({
   card: {
     backgroundColor: '#fff', borderRadius: 20, padding: 20,
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8,
+    elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8
   },
   statusBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start',
-    borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 12, borderWidth: 1,
+    borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 12, borderWidth: 1
   },
   statusEmoji: { fontSize: 14 },
   statusLabel: { fontSize: 12, fontWeight: '700' },
@@ -189,7 +189,7 @@ const pc = StyleSheet.create({
   doneRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
   doneText:   { fontSize: 15, color: '#1E8449', fontWeight: '600' },
   loadingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
-  loadingText:{ fontSize: 13, color: COLORS.wal, fontStyle: 'italic' },
+  loadingText:{ fontSize: 13, color: COLORS.wal, fontStyle: 'italic' }
 });
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -206,13 +206,13 @@ export default function ClinicRoomScreen() {
   // Role guard — patient nesmie vidieť clinic screens
   if (!clinic.loading && clinic.clinicRole === null) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Táto obrazovka je dostupná len pre doktora a recepciu.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -231,7 +231,7 @@ export default function ClinicRoomScreen() {
   // Prioritize: in_chair > waiting > arrived > treatment_done > checkout > scheduled > late
   const ORDER: Record<string, number> = {
     in_chair: 0, waiting: 1, arrived: 2, treatment_done: 3,
-    checkout: 4, scheduled: 5, late: 6, paid: 7,
+    checkout: 4, scheduled: 5, late: 6, paid: 7
   };
   const sorted = [...roomPatients].sort((a, b) =>
     (ORDER[a.clinic_status] ?? 9) - (ORDER[b.clinic_status] ?? 9),
@@ -271,7 +271,7 @@ export default function ClinicRoomScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
+    <View style={s.safe}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -360,7 +360,7 @@ export default function ClinicRoomScreen() {
 
         <View style={{ height: 100 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -372,7 +372,7 @@ const s = StyleSheet.create({
   header: {
     backgroundColor: COLORS.esp,
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 10
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
@@ -396,11 +396,11 @@ const s = StyleSheet.create({
   waitCard: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8,
-    borderWidth: 1.5, borderColor: COLORS.bg3,
+    borderWidth: 1.5, borderColor: COLORS.bg3
   },
   waitStatusDot: { width: 10, height: 10, borderRadius: 5 },
   waitName:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   waitService:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   assignBtn:     { backgroundColor: COLORS.esp, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 },
-  assignBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  assignBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' }
 });

@@ -6,14 +6,14 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
   ScrollView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
@@ -202,8 +202,7 @@ export default function BroadcastScreen() {
               title:        title.trim(),
               body:         body.trim(),
               type:         'info' as const,
-              scheduled_at: scheduledAt,
-            }));
+              scheduled_at: scheduledAt }));
             // Supabase má limit na insert, posielame po 100
             for (let i = 0; i < notifs.length; i += 100) {
               const { error } = await supabase.from('notifications').insert(notifs.slice(i, i + 100));
@@ -225,16 +224,14 @@ export default function BroadcastScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>KOMUNIKÁCIA</Text>
-          <Text style={styles.headerTitle}>Hromadná správa</Text>
-        </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Hromadná správa"
+        subtitle="Komunikácia"
+        icon="megaphone-outline"
+        onBack={() => router.back()}
+      />
+
       </View>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
@@ -435,22 +432,22 @@ export default function BroadcastScreen() {
                   <Text style={styles.sendBtnText}>
                     Odoslať správu ({recipientCount})
                   </Text>
-                </>}
+                </View>}
           </TouchableOpacity>
 
           <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 16 },
+  content:{ padding: SPACING.xl, paddingTop: 16 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
@@ -503,5 +500,4 @@ const styles = StyleSheet.create({
 
   recipientSummary:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 12 },
   recipientSummaryText:  { fontSize: 13, color: COLORS.wal },
-  recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 },
-});
+  recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 } });

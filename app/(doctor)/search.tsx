@@ -5,14 +5,15 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import {
   StyleSheet, Text, TextInput,
-  TouchableOpacity, View, SectionList,
+  TouchableOpacity, View, SectionList
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -67,10 +68,10 @@ type Section = {
 
 const STATUS_LABEL: Record<string, string> = {
   scheduled: 'Naplánovaný', completed: 'Dokončený',
-  cancelled: 'Zrušený',    pending:   'Čaká',    arrived: 'V čakárni',
+  cancelled: 'Zrušený',    pending:   'Čaká',    arrived: 'V čakárni'
 };
 const STATUS_COLOR: Record<string, string> = {
-  scheduled: '#1A5276', completed: '#1E8449', cancelled: '#922B21', pending: '#E67E22',
+  scheduled: '#1A5276', completed: '#1E8449', cancelled: '#922B21', pending: '#E67E22'
 };
 
 export default function SearchScreen() {
@@ -171,23 +172,23 @@ export default function SearchScreen() {
     const result: Section[] = [];
     if (matchedPatients.length > 0) result.push({
       title: 'Pacienti', icon: '👤',
-      data: matchedPatients.map((item) => ({ type: 'patient' as const, item })),
+      data: matchedPatients.map((item) => ({ type: 'patient' as const, item }))
     });
     if (matchedAppts.length > 0) result.push({
       title: 'Termíny', icon: '📅',
-      data: matchedAppts.map((item) => ({ type: 'appt' as const, item })),
+      data: matchedAppts.map((item) => ({ type: 'appt' as const, item }))
     });
     if (matchedDiagnoses.length > 0) result.push({
       title: 'Diagnózy', icon: '🩺',
-      data: matchedDiagnoses.map((item) => ({ type: 'diagnosis' as const, item })),
+      data: matchedDiagnoses.map((item) => ({ type: 'diagnosis' as const, item }))
     });
     if (matchedPlans.length > 0) result.push({
       title: 'Liečebné plány', icon: '📋',
-      data: matchedPlans.map((item) => ({ type: 'plan' as const, item })),
+      data: matchedPlans.map((item) => ({ type: 'plan' as const, item }))
     });
     if (matchedServices.length > 0) result.push({
       title: 'Služby', icon: '🦷',
-      data: matchedServices.map((item) => ({ type: 'service' as const, item })),
+      data: matchedServices.map((item) => ({ type: 'service' as const, item }))
     });
     return result;
   }, [query, patients, appts, services, diagnoses, plans]);
@@ -294,36 +295,38 @@ export default function SearchScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Hlavička + search bar */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={styles.searchBar}>
-          <Ionicons name="search-outline" size={16} color={COLORS.wal} />
-          <TextInput
-            ref={inputRef}
-            style={styles.searchInput}
-            placeholder="Hľadaj pacienta, termín, diagnózu..."
-            placeholderTextColor={COLORS.sand + 'AA'}
-            value={query}
-            onChangeText={setQuery}
-            autoCapitalize="none"
-            returnKeyType="search"
-            clearButtonMode="while-editing"
-            selectionColor={COLORS.cream}
-          />
-          {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="close-circle" size={16} color={COLORS.sand} />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Vyhľadávanie"
+        subtitle="Globálne"
+        icon="search-outline"
+        onBack={() => router.back()}
+        bottomElement={
+          <View style={styles.searchBar}>
+            <Ionicons name="search-outline" size={16} color={COLORS.wal} />
+            <TextInput
+              ref={inputRef}
+              style={styles.searchInput}
+              placeholder="Hľadaj pacienta, termín, diagnózu..."
+              placeholderTextColor={COLORS.sand + 'AA'}
+              value={query}
+              onChangeText={setQuery}
+              autoCapitalize="none"
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+              selectionColor={COLORS.cream}
+            />
+            {query.length > 0 && (
+              <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <Ionicons name="close-circle" size={16} color={COLORS.sand} />
+              </TouchableOpacity>
+            )}
+          </View>
+        }
+      />
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
           <SkeletonList count={5} />
         </View>
       ) : query.trim().length < 2 ? (
@@ -355,33 +358,33 @@ export default function SearchScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
 
-  header:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 12, backgroundColor: COLORS.esp },
+  header:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, backgroundColor: COLORS.esp },
   backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
   searchInput:{ flex: 1, fontSize: 14, color: '#fff', paddingVertical: 0 },
 
-  hint:      { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: SIZES.padding, gap: 8 },
+  hint:      { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl, gap: 8 },
   hintTitle: { fontSize: 16, fontWeight: '700', color: COLORS.esp, textAlign: 'center' },
   hintSub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
 
   listContent: { paddingBottom: 120, backgroundColor: COLORS.bg2 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: SIZES.padding, paddingVertical: 8, backgroundColor: COLORS.bg3, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: SPACING.xl, paddingVertical: 8, backgroundColor: COLORS.bg3, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   sectionIcon:   { fontSize: 14 },
   sectionTitle:  { flex: 1, fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionCount:  { fontSize: 11, fontWeight: '700', color: COLORS.wal, backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
 
-  resultRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SIZES.padding, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
+  resultRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
   resultIcon:     { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   resultInitials: { fontSize: 14, fontWeight: '700', color: COLORS.cream },
   resultTitle:    { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   resultSub:      { fontSize: 11, color: COLORS.wal },
-  resultNote:     { fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 },
+  resultNote:     { fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 }
 });

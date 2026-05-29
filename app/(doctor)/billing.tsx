@@ -5,15 +5,15 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
   Alert, Modal, RefreshControl, ScrollView, TextInput,
-  StyleSheet, Text, TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
@@ -34,8 +34,7 @@ type BillingAppt = {
 const PAY_CFG: Record<string, { label: string; icon: string; color: string; bg: string; border: string; next: string }> = {
   unpaid:  { label: 'Nezaplatené', icon: '💸', color: '#922B21', bg: '#FDEDEC', border: '#F5B7B1', next: 'paid'    },
   paid:    { label: 'Zaplatené',   icon: '✅', color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF', next: 'partial' },
-  partial: { label: 'Čiastočne',   icon: '⚠️', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F', next: 'unpaid'  },
-};
+  partial: { label: 'Čiastočne',   icon: '⚠️', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F', next: 'unpaid'  } };
 
 type Period = 'month' | 'last_month' | 'year' | 'all';
 type PayFilter = 'all' | 'unpaid' | 'partial' | 'paid';
@@ -44,8 +43,7 @@ const PERIOD_LABELS: Record<Period, string> = {
   month:      'Tento mesiac',
   last_month: 'Minulý mesiac',
   year:       'Tento rok',
-  all:        'Všetko',
-};
+  all:        'Všetko' };
 
 function getPeriodRange(period: Period): { from: Date | null; to: Date | null } {
   const now = new Date();
@@ -131,8 +129,7 @@ export default function BillingScreen() {
       paidTotal:    sum(paid),
       unpaidTotal:  sum(unpaid) + sum(partial),
       paidCount:    paid.length,
-      unpaidCount:  unpaid.length + partial.length,
-    };
+      unpaidCount:  unpaid.length + partial.length };
   }, [appts, period]);
 
   // ── Toggle platby ───────────────────────────────────────────────────────────
@@ -151,8 +148,7 @@ export default function BillingScreen() {
         title:          '🧾 Platba potvrdená',
         body:           `Platba za termín (${dateStr}${appt.service ? ` — ${appt.service.name}` : ''}${priceStr}) bola potvrdená. Ďakujeme!`,
         type:           'success',
-        appointment_id: appt.id,
-      }).then(null, () => {});
+        appointment_id: appt.id }).then(null, () => {});
     }
   }
 
@@ -168,20 +164,17 @@ export default function BillingScreen() {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
     text: { color: colors.textPrimary },
-    sub:  { color: colors.textSecondary },
-  };
+    sub:  { color: colors.textSecondary } };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>FINANCIE</Text>
-          <Text style={styles.headerTitle}>Fakturácia & Platby</Text>
-        </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Fakturácia & Platby"
+        subtitle="Financie"
+        icon="card-outline"
+        onBack={() => router.back()}
+      />
+
       </View>
 
       <ScrollView style={[styles.scroll, dyn.bg]} contentContainerStyle={styles.content}
@@ -368,7 +361,7 @@ export default function BillingScreen() {
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -378,12 +371,12 @@ const styles = StyleSheet.create({
   content:{ paddingBottom: 120 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
 
-  summaryCard: { backgroundColor: '#fff', margin: SIZES.padding, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  summaryCard: { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   summaryRow:  { flexDirection: 'row', gap: 10, marginBottom: 14 },
   summaryBox:  { flex: 1, borderRadius: 12, borderWidth: 1.5, padding: 12, alignItems: 'center' },
   summaryIcon: { fontSize: 22, marginBottom: 4 },
@@ -398,13 +391,13 @@ const styles = StyleSheet.create({
   ratePct:   { fontSize: 11, fontWeight: '800', color: '#1E8449', width: 36, textAlign: 'right' },
 
   tabsScroll:  { maxHeight: 46, marginTop: 12, marginBottom: 0 },
-  tabsContent: { paddingHorizontal: SIZES.padding, gap: 8, alignItems: 'center' },
+  tabsContent: { paddingHorizontal: SPACING.xl, gap: 8, alignItems: 'center' },
   periodTab:      { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
   periodTabActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   periodTabText:     { fontSize: 11, fontWeight: '600', color: COLORS.wal },
   periodTabTextActive:{ color: '#fff' },
 
-  payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SIZES.padding, marginTop: 10, marginBottom: 10 },
+  payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 10 },
   payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff', alignItems: 'center' },
   payFilterText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
 
@@ -430,7 +423,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 13, color: COLORS.wal },
 
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SIZES.padding, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SPACING.xl, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
   dateBox:    { width: 36, alignItems: 'center' },
   dateDay:    { fontSize: 17, fontWeight: '800', color: COLORS.esp, lineHeight: 20 },
   dateMon:    { fontSize: 9,  fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },
@@ -438,5 +431,4 @@ const styles = StyleSheet.create({
   rowService: { fontSize: 11, color: COLORS.wal },
   rowPrice:   { fontSize: 13, fontWeight: '800', color: '#1E8449', minWidth: 42, textAlign: 'right' },
   payBadge:   { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 8, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 4 },
-  payBadgeIcon:{ fontSize: 12 },
-});
+  payBadgeIcon:{ fontSize: 12 } });

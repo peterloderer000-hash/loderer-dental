@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator, Alert, Image, KeyboardAvoidingView, Modal, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportPatientHistory, exportInvoice } from '../../utils/exportPDF';
 import type { Appointment } from '../../hooks/useAppointments';
@@ -55,14 +56,14 @@ function isFront(n: number) { const p = n % 10; return p >= 1 && p <= 3; }
 
 const HEALTH_DED: Partial<Record<ToothStatus, number>> = {
   cavity: 15, early_cavity: 8, root_canal: 10, extracted: 14,
-  missing: 10, fracture: 12, periodontal: 10, mobility: 8,
+  missing: 10, fracture: 12, periodontal: 10, mobility: 8
 };
 const AESTH_DED: Partial<Record<ToothStatus, number>> = {
   cavity: 18, early_cavity: 10, extracted: 22, missing: 20,
-  root_canal: 12, erosion: 8, abrasion: 6, hypoplasia: 7, hypomineralization: 7, fracture: 14,
+  root_canal: 12, erosion: 8, abrasion: 6, hypoplasia: 7, hypomineralization: 7, fracture: 14
 };
 const HYG_DED: Partial<Record<ToothStatus, number>> = {
-  watch: 5, improve_hygiene: 12, large_filling: 4, early_cavity: 8, treatment_needed: 10,
+  watch: 5, improve_hygiene: 12, large_filling: 4, early_cavity: 8, treatment_needed: 10
 };
 const HYG_BONUS: Partial<Record<ToothStatus, number>> = { sealant: 4, filled: 1 };
 
@@ -130,20 +131,20 @@ const STATUS_CFG: Partial<Record<ToothStatus, { label: string; color: string; bg
   periodontal:       { label: 'Parodont.',     color: '#C0392B', bg: '#FDEDEC', emoji: '🦷' },
   mobility:          { label: 'Pohyblivosť',   color: '#922B21', bg: '#FDEDEC', emoji: '↔️' },
   improve_hygiene:   { label: 'Zlepš hygienu', color: '#2980B9', bg: '#EBF5FB', emoji: '🪥' },
-  treatment_needed:  { label: 'Na prerobenie', color: '#F39C12', bg: '#FEF9E7', emoji: '🔧' },
+  treatment_needed:  { label: 'Na prerobenie', color: '#F39C12', bg: '#FEF9E7', emoji: '🔧' }
 };
 
 const APPT_STATUS: Record<string, { label: string; color: string; bg: string }> = {
   scheduled:  { label: 'Naplánovaný', color: '#1A5276', bg: '#EBF5FB' },
   completed:  { label: 'Dokončený',   color: '#1E8449', bg: '#EAFAF1' },
   cancelled:  { label: 'Zrušený',     color: '#922B21', bg: '#FDEDEC' },
-  pending:    { label: 'Čaká',        color: '#E67E22', bg: '#FEF9E7' },
+  pending:    { label: 'Čaká',        color: '#E67E22', bg: '#FEF9E7' }
 };
 
 const PAYMENT_CFG: Record<string, { label: string; color: string; bg: string; icon: string; next: string }> = {
   unpaid:  { label: 'Nezaplatené', color: '#922B21', bg: '#FDEDEC', icon: '💸', next: 'paid'    },
   paid:    { label: 'Zaplatené',   color: '#1E8449', bg: '#EAFAF1', icon: '✅', next: 'partial' },
-  partial: { label: 'Čiastočne',  color: '#7D6608', bg: '#FEF9E7', icon: '⚠️', next: 'unpaid'  },
+  partial: { label: 'Čiastočne',  color: '#7D6608', bg: '#FEF9E7', icon: '⚠️', next: 'unpaid'  }
 };
 
 const RATING_LABELS = ['', 'Veľmi zlý', 'Zlý', 'Dobrý', 'Veľmi dobrý', 'Výborný!'];
@@ -184,7 +185,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
       <View style={{
         width: size, height: size, borderRadius: size / 2,
         borderWidth: 6, borderColor: dark ? colors.bg3 : '#E8E0D5',
-        alignItems: 'center', justifyContent: 'center', position: 'absolute',
+        alignItems: 'center', justifyContent: 'center', position: 'absolute'
       }} />
       {/* Colored arc overlay — using 4 quadrant trick */}
       <View style={{
@@ -197,7 +198,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
         borderLeftColor: pct >= 95 ? col : 'transparent',
         position: 'absolute',
         transform: [{ rotate: '-45deg' }],
-        opacity: 0.35,
+        opacity: 0.35
       }} />
       {/* Full colored ring with dasharray effect */}
       <View style={{
@@ -205,7 +206,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
         borderWidth: 5,
         borderColor: col,
         position: 'absolute',
-        opacity: 0.2,
+        opacity: 0.2
       }} />
       {/* Score text */}
       <View style={{ alignItems: 'center' }}>
@@ -307,7 +308,7 @@ export default function PatientDetailScreen() {
               allergies:      ppRes.data.allergies ?? null,
               isPregnant:     !!ppRes.data.is_pregnant,
               medicalHistory: ppRes.data.medical_history ?? null,
-              bloodType:      ppRes.data.blood_type ?? null,
+              bloodType:      ppRes.data.blood_type ?? null
             });
           }
           setPhone(profileRes.data?.phone_number ?? null);
@@ -361,7 +362,7 @@ export default function PatientDetailScreen() {
       statusCounts: sc,
       loyaltyPts: pts,
       loyaltyLevel: lvl,
-      avgRating: avg,
+      avgRating: avg
     };
   }, [teeth, appointments, hasPassport]);
 
@@ -442,7 +443,7 @@ export default function PatientDetailScreen() {
     setInsuranceSaving(true);
     await supabase.from('profiles').update({
       insurance_company: insuranceCompany.trim() || null,
-      insurance_number:  insuranceNumber.trim()  || null,
+      insurance_number:  insuranceNumber.trim()  || null
     }).eq('id', patientId);
     setInsuranceSaving(false);
     setShowInsEdit(false);
@@ -455,7 +456,7 @@ export default function PatientDetailScreen() {
       user_id: patientId,
       title:   notifTitle.trim(),
       body:    notifBody.trim() || null,
-      type:    'info',
+      type:    'info'
     });
     setNotifSending(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
@@ -492,10 +493,10 @@ export default function PatientDetailScreen() {
               body:    newStatus === 'completed'
                 ? `Váš termín${appt.service ? ` — ${appt.service.name}` : ''} (${dateStr}) bol dokončený. Ohodnoťte návštevu!`
                 : `Váš termín${appt.service ? ` — ${appt.service.name}` : ''} (${dateStr}) bol zrušený.`,
-              type:    newStatus === 'completed' ? 'success' : 'warning',
+              type:    newStatus === 'completed' ? 'success' : 'warning'
             });
           }
-        },
+        }
       },
     ]);
   }
@@ -516,7 +517,7 @@ export default function PatientDetailScreen() {
     return {
       nextApptDate: upcoming[0]?.appointment_date ?? null,
       lastVisitDate: sorted[0]?.appointment_date ?? null,
-      completedCount: completed.length,
+      completedCount: completed.length
     };
   }, [appointments]);
 
@@ -541,7 +542,7 @@ export default function PatientDetailScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -549,21 +550,19 @@ export default function PatientDetailScreen() {
 
   return (
     <ScreenWrapper>
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>PROFIL PACIENTA</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName}</Text>
-        </View>
-        <View style={[styles.scoreChip, { borderColor: scoreCol }]}>
-          <Text style={[styles.scoreChipNum, { color: scoreCol }]}>{overall}</Text>
-          <Text style={[styles.scoreChipLabel, { color: scoreCol }]}>skóre</Text>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title={patientName ?? 'Pacient'}
+        subtitle="Profil pacienta"
+        icon="person-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <View style={[styles.scoreChip, { borderColor: scoreCol }]}>
+            <Text style={[styles.scoreChipNum, { color: scoreCol }]}>{overall}</Text>
+            <Text style={[styles.scoreChipLabel, { color: scoreCol }]}>skóre</Text>
+          </View>
+        }
+      />
 
       {/* ── Tab bar ── */}
       {(() => {
@@ -930,7 +929,7 @@ export default function PatientDetailScreen() {
                   ? <ActivityIndicator color="#fff" size="small" />
                   : <><Ionicons name="save-outline" size={14} color="#fff" /><Text style={styles.notesSaveBtnText}>Uložiť</Text></>}
               </TouchableOpacity>
-            </>
+            </View>
           ) : (insuranceCompany || insuranceNumber) ? (
             <View style={[styles.insRow, { backgroundColor: colors.bg2 }]}>
               <Ionicons name="card-outline" size={14} color={COLORS.wal} />
@@ -1179,7 +1178,7 @@ export default function PatientDetailScreen() {
                           style={styles.apptActClone}
                           onPress={() => router.push({
                             pathname: '/(doctor)/add-appointment',
-                            params: { patientId: a.patient_id, patientName: patientName ?? '', serviceId: a.service_id ?? '' },
+                            params: { patientId: a.patient_id, patientName: patientName ?? '', serviceId: a.service_id ?? '' }
                           })}
                           activeOpacity={0.8}
                         >
@@ -1399,7 +1398,7 @@ export default function PatientDetailScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
     </ScreenWrapper>
   );
 }
@@ -1408,10 +1407,10 @@ export default function PatientDetailScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12, paddingBottom: 120 },
+  content: { padding: SPACING.xl, paddingTop: 12, paddingBottom: 120 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },
@@ -1592,7 +1591,7 @@ const styles = StyleSheet.create({
   notifBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   notifBtnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   notifBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: '#0E6655' },
-  notifBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
+  notifBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
 const tabStyles = StyleSheet.create({
@@ -1604,5 +1603,5 @@ const tabStyles = StyleSheet.create({
   tabText:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
   tabTextActive: { color: COLORS.gold, fontWeight: '700' },
   tabBadge:      { minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
-  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' },
+  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' }
 });

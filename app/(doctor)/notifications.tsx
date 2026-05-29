@@ -1,11 +1,11 @@
 ﻿import React, { useCallback, useMemo, useState } from 'react';
 import {
   RefreshControl, ScrollView, StyleSheet,
-  Text, TouchableOpacity, View,
+  Text, TouchableOpacity, View
 } from 'react-native';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyNotifications } from '../../components/EmptyState';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +19,7 @@ const TYPE_CONFIG = {
   info:    { icon: 'information-circle' as const, color: COLORS.info,    bg: COLORS.infoBg,    border: '#AED6F1' },
   success: { icon: 'checkmark-circle'   as const, color: COLORS.success, bg: COLORS.successBg, border: '#A9DFBF' },
   warning: { icon: 'warning'            as const, color: COLORS.warning,  bg: COLORS.warningBg, border: '#F0C78A' },
-  error:   { icon: 'close-circle'       as const, color: COLORS.error,   bg: COLORS.errorBg,   border: '#F1948A' },
+  error:   { icon: 'close-circle'       as const, color: COLORS.error,   bg: COLORS.errorBg,   border: '#F1948A' }
 };
 
 type FilterType = 'all' | 'unread' | 'info' | 'warning' | 'success';
@@ -133,7 +133,7 @@ export default function DoctorNotificationsScreen() {
   }, [filtered]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={s.heroRow}>
@@ -194,7 +194,7 @@ export default function DoctorNotificationsScreen() {
           ))}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -223,13 +223,13 @@ const s = StyleSheet.create({
 
   center:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
   emptyTitle: { ...TYPO.h2, textAlign: 'center' },
-  emptySub:   { ...TYPO.body, textAlign: 'center' },
+  emptySub:   { ...TYPO.body, textAlign: 'center' }
 });
 
 const sl = StyleSheet.create({
   row:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10, marginTop: 4 },
   dot:  { width: 6, height: 6, borderRadius: 3 },
-  text: { ...TYPO.label },
+  text: { ...TYPO.label }
 });
 
 const nc = StyleSheet.create({
@@ -237,7 +237,7 @@ const nc = StyleSheet.create({
     flexDirection: 'row', alignItems: 'flex-start', gap: 12,
     marginHorizontal: 16, marginBottom: 8,
     borderRadius: RADII.lg, padding: 14,
-    borderWidth: 1, overflow: 'hidden',
+    borderWidth: 1, overflow: 'hidden'
   },
   accent:    { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4 },
   iconWrap:  { width: 40, height: 40, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
@@ -248,5 +248,5 @@ const nc = StyleSheet.create({
   bottom:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
   time:      { fontFamily: 'DMSans_400Regular', fontSize: 11 },
   linkChip:  { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1 },
-  linkText:  { fontFamily: 'DMSans_500Medium', fontSize: 11 },
+  linkText:  { fontFamily: 'DMSans_500Medium', fontSize: 11 }
 });

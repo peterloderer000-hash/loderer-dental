@@ -1,20 +1,21 @@
 ﻿import React, { useState, useEffect, useMemo } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useServices, Service, formatPrice, formatDuration } from '../../hooks/useServices';
 import { MonthCalendar } from '../../components/MonthCalendar';
 import {
   generateTimeSlotsForDay,
-  jsDayToDb, timeToMinutes,
+  jsDayToDb, timeToMinutes
 } from '../../utils/timeSlots';
 import { fetchBlockedMinutes } from '../../hooks/useTimeBlocks';
 
@@ -266,7 +267,7 @@ export default function DoctorAddAppointment() {
         status:                  'scheduled',
         notes:                   notes.trim() || null,
         service_id:              selectedService?.id ?? null,
-        custom_duration_minutes: customDuration ?? selectedService?.duration_minutes ?? null,
+        custom_duration_minutes: customDuration ?? selectedService?.duration_minutes ?? null
       }));
 
       const { error } = await supabase.from('appointments').insert(rows);
@@ -280,7 +281,7 @@ export default function DoctorAddAppointment() {
         user_id: selectedPatient.id,
         title:   `📅 Nový termín naplánovaný`,
         body:    `${selectedService?.name ?? 'Termín'} · ${dateStr} o ${timeStr}${allDates.length > 1 ? ` (+${allDates.length - 1} opakovania)` : ''}`,
-        type:    'success',
+        type:    'success'
       }).then(null, () => {});
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -300,17 +301,13 @@ export default function DoctorAddAppointment() {
   const canSave = !!selectedPatient && !!selectedService && !!selectedDate && !!selectedTime;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerLabel}>DOKTOR</Text>
-          <Text style={styles.headerTitle}>Nový termín</Text>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Nový termín"
+        subtitle="Termíny"
+        icon="add-circle-outline"
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
@@ -696,16 +693,16 @@ export default function DoctorAddAppointment() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 20 },
+  content: { padding: SPACING.xl, paddingTop: 20 },
 
-  header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
@@ -797,5 +794,5 @@ const styles = StyleSheet.create({
   // Suggested slots
   suggestedSlot:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1.5 },
   suggestedSlotSel:  { borderColor: '#1E8449' },
-  suggestedSlotText: { fontSize: 14, fontWeight: '700' },
+  suggestedSlotText: { fontSize: 14, fontWeight: '700' }
 });

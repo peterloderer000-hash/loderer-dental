@@ -1,14 +1,15 @@
 ﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportTreatmentPlan } from '../../utils/exportPDF';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -45,14 +46,14 @@ const ITEM_STATUS_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', border: '#AED6F1', icon: 'time-outline'             as const },
   scheduled: { label: 'Naplánované', color: '#7D6608', bg: '#FEF9E7', darkBg: '#2D2200', border: '#F9E79F', icon: 'calendar-outline'         as const },
   completed: { label: 'Hotové',      color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
-  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const },
+  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const }
 };
 const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
 
 const PLAN_STATUS_CFG = {
   active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#F4ECE4' },
   completed: { label: 'Hotový',   color: '#1E8449',   bg: '#EAFAF1' },
-  cancelled: { label: 'Zrušený',  color: '#922B21',   bg: '#FDEDEC' },
+  cancelled: { label: 'Zrušený',  color: '#922B21',   bg: '#FDEDEC' }
 };
 
 // ─── Pomocné ──────────────────────────────────────────────────────────────────
@@ -178,7 +179,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
       description:    desc.trim() || null,
       estimated_cost: costNum,
       tooth_number:   toothNum,
-      status,
+      status
     });
     setSaving(false);
   }
@@ -205,7 +206,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
                           backgroundColor: itemTitle === svc.name
                             ? (dark ? COLORS.wal + '33' : '#F4ECE4')
                             : colors.bg2,
-                          borderColor: itemTitle === svc.name ? COLORS.wal : colors.bg3,
+                          borderColor: itemTitle === svc.name ? COLORS.wal : colors.bg3
                         }]}
                         onPress={() => applyService(svc)} activeOpacity={0.75}>
                         {svc.emoji ? <Text style={mStyles.svcChipEmoji}>{svc.emoji}</Text> : null}
@@ -299,7 +300,7 @@ const mStyles = StyleSheet.create({
   svcChip:      { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 20, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
   svcChipEmoji: { fontSize: 14 },
   svcChipText:  { fontSize: 12, fontWeight: '600' },
-  svcChipPrice: { fontSize: 11, fontWeight: '500', opacity: 0.75 },
+  svcChipPrice: { fontSize: 11, fontWeight: '500', opacity: 0.75 }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -342,7 +343,7 @@ export default function TreatmentPlanScreen() {
     const withItems: Plan[] = plansData.map((p: any) => ({
       ...p,
       visible_to_patient: p.visible_to_patient ?? false,
-      items: (itemsData ?? []).filter((i: any) => i.plan_id === p.id),
+      items: (itemsData ?? []).filter((i: any) => i.plan_id === p.id)
     }));
     setPlans(withItems);
     if (withItems.length > 0 && !expandedPlan) setExpandedPlan(withItems[0].id);
@@ -377,7 +378,7 @@ export default function TreatmentPlanScreen() {
       if (error) { Alert.alert('Chyba', error.message); return; }
     } else {
       const { data, error } = await supabase.from('treatment_plans').insert({
-        patient_id: patientId, doctor_id: doctorId, title, notes: notes || null,
+        patient_id: patientId, doctor_id: doctorId, title, notes: notes || null
       }).select().single();
       if (error) { Alert.alert('Chyba', error.message); return; }
       setExpandedPlan(data.id);
@@ -386,7 +387,7 @@ export default function TreatmentPlanScreen() {
         user_id: patientId,
         title:   '📋 Nový liečebný plán',
         body:    `Doktor pre vás pripravil liečebný plán: "${title}". Pozrite si ho v sekcii Liečebný plán.`,
-        type:    'info',
+        type:    'info'
       });
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -418,7 +419,7 @@ export default function TreatmentPlanScreen() {
         user_id: patientId,
         title:   '📋 Liečebný plán je dostupný',
         body:    `Doktor zdieľal liečebný plán „${plan.title}". Pozrite si ho v sekcii Liečebný plán.`,
-        type:    'info',
+        type:    'info'
       });
     }
     load();
@@ -435,7 +436,7 @@ export default function TreatmentPlanScreen() {
         user_id: patientId,
         title:   '🎉 Liečebný plán dokončený!',
         body:    `Váš liečebný plán "${plan.title}" bol úspešne dokončený. Ďakujeme za dôveru!`,
-        type:    'success',
+        type:    'success'
       });
     }
 
@@ -453,7 +454,7 @@ export default function TreatmentPlanScreen() {
         description:    item.description,
         estimated_cost: item.estimated_cost,
         tooth_number:   item.tooth_number,
-        status:         item.status,
+        status:         item.status
       }).eq('id', item.id);
       if (error) { Alert.alert('Chyba', error.message); return; }
     } else {
@@ -464,7 +465,7 @@ export default function TreatmentPlanScreen() {
         estimated_cost: item.estimated_cost,
         tooth_number:   item.tooth_number,
         status:         item.status,
-        sort_order:     plan.items.length,
+        sort_order:     plan.items.length
       });
       if (error) { Alert.alert('Chyba', error.message); return; }
     }
@@ -500,7 +501,7 @@ export default function TreatmentPlanScreen() {
           ? `✅ Výkon dokončený`
           : `📅 Výkon naplánovaný`,
         body:    `${item.title}${item.tooth_number ? ` (zub č. ${item.tooth_number})` : ''} — ${cfg.label}.`,
-        type:    next === 'completed' ? 'success' : 'info',
+        type:    next === 'completed' ? 'success' : 'info'
       });
     }
 
@@ -509,25 +510,23 @@ export default function TreatmentPlanScreen() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
-          <Ionicons name="chevron-back" size={22} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>LIEČEBNÝ PLÁN</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName}</Text>
-        </View>
-        <TouchableOpacity style={styles.addBtn}
-          onPress={() => { setEditingPlan(null); setShowPlanModal(true); }} activeOpacity={0.85}>
-          <Ionicons name="add" size={20} color="#fff" />
-          <Text style={styles.addBtnText}>Nový plán</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title={patientName ?? 'Pacient'}
+        subtitle="Liečebný plán"
+        icon="clipboard-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity style={styles.addBtn}
+            onPress={() => { setEditingPlan(null); setShowPlanModal(true); }} activeOpacity={0.85}>
+            <Ionicons name="add" size={20} color="#fff" />
+            <Text style={styles.addBtnText}>Nový plán</Text>
+          </TouchableOpacity>
+        }
+      />
 
       {loading ? (
-        <View style={{ padding: SIZES.padding }}><SkeletonList count={4} /></View>
+        <View style={{ padding: SPACING.xl }}><SkeletonList count={4} /></View>
       ) : plans.length === 0 ? (
         <View style={[styles.center, { backgroundColor: colors.bg2 }]}>
           <Text style={styles.emptyIcon}>📋</Text>
@@ -541,7 +540,7 @@ export default function TreatmentPlanScreen() {
         </View>
       ) : (
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]}
-          contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 120 }}
+          contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}>
           {plans.map((plan) => {
             const expanded  = expandedPlan === plan.id;
@@ -723,7 +722,7 @@ export default function TreatmentPlanScreen() {
                         </View>
                       </View>
                     )}
-                  </>
+                  </View>
                 )}
               </View>
             );
@@ -747,7 +746,7 @@ export default function TreatmentPlanScreen() {
         onClose={() => { setShowItemModal(false); setEditingItem(null); }}
         onSave={handleSaveItem}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -756,7 +755,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: 40 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
@@ -807,5 +806,5 @@ const styles = StyleSheet.create({
   summaryRow:   { flexDirection: 'row', margin: 12, marginTop: 4, gap: 8 },
   summaryBox:   { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 10, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: COLORS.bg3 },
   summaryLabel: { fontSize: 9, color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '600', marginBottom: 4 },
-  summaryVal:   { fontSize: 14, fontWeight: '800' },
+  summaryVal:   { fontSize: 14, fontWeight: '800' }
 });

@@ -6,16 +6,16 @@ import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, Image, RefreshControl,
   ScrollView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -42,8 +42,7 @@ const CAT_CFG: Record<string, { label: string; icon: string; color: string; bg: 
   xray:     { label: 'RTG',      icon: '🩻', color: '#1A5276', bg: '#EBF5FB' },
   photo:    { label: 'Fotka',    icon: '📸', color: '#1E8449', bg: '#EAFAF1' },
   document: { label: 'Dokument', icon: '📄', color: '#7D3C98', bg: '#F5EEF8' },
-  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FEF9E7' },
-};
+  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FEF9E7' } };
 
 export default function PatientAttachmentsScreen() {
   const router = useRouter();
@@ -163,8 +162,7 @@ export default function PatientAttachmentsScreen() {
         file_type:  'image',
         category:   formCategory,
         notes:      formNotes.trim() || null,
-        size_bytes: bytes.length,
-      });
+        size_bytes: bytes.length });
 
       if (dbErr) { Alert.alert('Chyba', dbErr.message); return; }
 
@@ -187,8 +185,7 @@ export default function PatientAttachmentsScreen() {
           if (error) { Alert.alert('Chyba', error.message); return; }
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setAttachments(prev => prev.filter(a => a.id !== att.id));
-        },
-      },
+        } },
     ]);
   }
 
@@ -198,29 +195,27 @@ export default function PatientAttachmentsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={4} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <View style={styles.safe}>
 
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>PRÍLOHY PACIENTA</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName}</Text>
-        </View>
-        <TouchableOpacity style={styles.addBtn} onPress={openPicker} activeOpacity={0.85}>
-          <Ionicons name="add" size={18} color="#fff" />
-          <Text style={styles.addBtnText}>Pridať</Text>
-        </TouchableOpacity>
-      </View>
+      <HeroHeader
+        title={patientName}
+        subtitle="Prílohy pacienta"
+        icon="attach-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity style={styles.addBtn} onPress={openPicker} activeOpacity={0.85}>
+            <Ionicons name="add" size={18} color="#fff" />
+            <Text style={styles.addBtnText}>Pridať</Text>
+          </TouchableOpacity>
+        }
+      />
 
       {/* ── Kategórie ── */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}
@@ -281,7 +276,7 @@ export default function PatientAttachmentsScreen() {
               {uploading
                 ? <ActivityIndicator color="#fff" size="small" />
                 : <><Ionicons name="cloud-upload-outline" size={14} color="#fff" />
-                    <Text style={styles.formSaveText}>Nahrať</Text></>}
+                    <Text style={styles.formSaveText}>Nahrať</Text></View>}
             </TouchableOpacity>
           </View>
         </View>
@@ -338,17 +333,17 @@ export default function PatientAttachmentsScreen() {
         )}
         <View style={{ height: 100 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 12 },
+  content:{ padding: SPACING.xl, paddingTop: 12 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
@@ -356,7 +351,7 @@ const styles = StyleSheet.create({
   addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   tabsBar:     { maxHeight: 48, backgroundColor: COLORS.esp },
-  tabsContent: { paddingHorizontal: SIZES.padding, paddingBottom: 8, gap: 6, alignItems: 'center' },
+  tabsContent: { paddingHorizontal: SPACING.xl, paddingBottom: 8, gap: 6, alignItems: 'center' },
   tab:         { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 11, paddingVertical: 5, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:   { backgroundColor: COLORS.wal },
   tabIcon:     { fontSize: 12 },
@@ -366,7 +361,7 @@ const styles = StyleSheet.create({
   tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
   tabBadgeText:{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
 
-  formCard:    { backgroundColor: '#fff', margin: SIZES.padding, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  formCard:    { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   previewImg:  { width: '100%', height: 130, borderRadius: 10, marginBottom: 10 },
   formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 8 },
   catChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
@@ -391,5 +386,5 @@ const styles = StyleSheet.create({
   catBadgeText:{ fontSize: 9, fontWeight: '700' },
   attDate:     { fontSize: 10, color: COLORS.wal },
   attSize:     { fontSize: 10, color: '#bbb' },
-  attNotes:    { fontSize: 10, color: '#888', fontStyle: 'italic', lineHeight: 14 },
-});
+  attNotes:    { fontSize: 10, color: '#888', fontStyle: 'italic', lineHeight: 14 } });
+                                                                                                                                                                                                                                                                                                

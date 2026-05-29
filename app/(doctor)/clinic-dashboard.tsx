@@ -1,15 +1,15 @@
 ﻿import React from 'react';
 import {
   ScrollView, StyleSheet, Text,
-  TouchableOpacity, View,
+  TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useClinic } from '../../hooks/useClinic';
 import {
   computeDayMetrics, CLINIC_STATUS_CFG,
-  fmtMins, fmtTime,
+  fmtMins, fmtTime
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -39,7 +39,7 @@ const sc = StyleSheet.create({
   iconWrap:{ width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   value:   { fontSize: 28, fontWeight: '900', lineHeight: 32 },
   label:   { fontSize: 11, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
-  sub:     { fontSize: 10, color: '#999', marginTop: 1 },
+  sub:     { fontSize: 10, color: '#999', marginTop: 1 }
 });
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
@@ -55,7 +55,7 @@ function ProgressBar({ pct, color }: { pct: number; color: string }) {
 
 const pb = StyleSheet.create({
   track: { height: 8, borderRadius: 4, backgroundColor: COLORS.bg3, overflow: 'hidden', flex: 1 },
-  fill:  { height: '100%', borderRadius: 4 },
+  fill:  { height: '100%', borderRadius: 4 }
 });
 
 // ─── Status row in appointment list ──────────────────────────────────────────
@@ -87,7 +87,7 @@ const ar = StyleSheet.create({
   service:     { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   time:        { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   statusBadge: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1 },
-  statusText:  { fontSize: 9, fontWeight: '700' },
+  statusText:  { fontSize: 9, fontWeight: '700' }
 });
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -101,13 +101,13 @@ export default function ClinicDashboardScreen() {
   // Role guard — len doctor
   if (!clinic.loading && clinic.clinicRole !== 'doctor') {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Denný dashboard je dostupný len pre doktora.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -117,7 +117,7 @@ export default function ClinicDashboardScreen() {
     metrics.utilizationPct >= 50     ? '#E67E22' : '#C0392B';
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top', 'bottom']}>
+    <View style={[s.safe, { backgroundColor: colors.esp }]}>
       {/* Header */}
       <View style={[s.header, { backgroundColor: colors.esp }]}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -244,7 +244,7 @@ export default function ClinicDashboardScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -264,7 +264,7 @@ function TimingRow({ label, value, icon, accent, last }: {
 const tr = StyleSheet.create({
   row:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   label: { flex: 1, fontSize: 13, color: COLORS.wal },
-  value: { fontSize: 16, fontWeight: '800', color: COLORS.esp },
+  value: { fontSize: 16, fontWeight: '800', color: COLORS.esp }
 });
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -278,7 +278,7 @@ const s = StyleSheet.create({
   header: {
     backgroundColor: COLORS.esp,
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 10
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
@@ -289,7 +289,7 @@ const s = StyleSheet.create({
   navBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7,
     backgroundColor: COLORS.cream, borderRadius: 12, paddingVertical: 11,
-    borderWidth: 1, borderColor: COLORS.sand,
+    borderWidth: 1, borderColor: COLORS.sand
   },
   navBtnText: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
 
@@ -298,7 +298,7 @@ const s = StyleSheet.create({
 
   utilizationCard: {
     backgroundColor: '#fff', borderRadius: 14, padding: 16,
-    borderWidth: 1.5, borderColor: COLORS.bg3,
+    borderWidth: 1.5, borderColor: COLORS.bg3
   },
   utilizationTop:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
   utilizationPct:  { fontSize: 40, fontWeight: '900', width: 80 },
@@ -308,5 +308,5 @@ const s = StyleSheet.create({
 
   timingCard: { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
 
-  apptCard: { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  apptCard: { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 }
 });

@@ -1,11 +1,11 @@
 ﻿import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
-  ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
@@ -98,7 +98,7 @@ export default function DoctorProfile() {
         clinic_name:     clinicName.trim()    || null,
         clinic_address:  clinicAddress.trim() || null,
         clinic_ico:      clinicIco.trim()     || null,
-        clinic_dic:      clinicDic.trim()     || null,
+        clinic_dic:      clinicDic.trim()     || null
       })
       .eq('id', userId);
     setSaving(false);
@@ -118,7 +118,7 @@ export default function DoctorProfile() {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.85,
+      quality: 0.85
     });
 
     if (result.canceled || !result.assets[0]) return;
@@ -139,7 +139,7 @@ export default function DoctorProfile() {
         .from(AVATAR_BUCKET)
         .upload(filePath, uint8Arr, {
           contentType: 'image/jpeg',
-          upsert: true,
+          upsert: true
         });
 
       if (upErr) throw upErr;
@@ -184,7 +184,7 @@ export default function DoctorProfile() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <View style={styles.safe}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
@@ -417,7 +417,7 @@ export default function DoctorProfile() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: COLORS.esp,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#fff',
+    borderWidth: 2, borderColor: '#fff'
   },
   roleBadge:  { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   roleText:   { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.sand },
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   // ── Prevádzka kliniky ──
   clinicOpsCard: {
     backgroundColor: COLORS.esp, borderRadius: RADII.lg, padding: 16,
-    marginBottom: 12, borderWidth: 1.5, borderColor: COLORS.wal,
+    marginBottom: 12, borderWidth: 1.5, borderColor: COLORS.wal
   },
   clinicOpsHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   clinicOpsTitle:  { ...TYPO.label, color: COLORS.sand },
@@ -505,11 +505,11 @@ const styles = StyleSheet.create({
   clinicOpsBtn: {
     width: '47%', backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: RADII.md, padding: 12, gap: 5,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)'
   },
   clinicOpsBtnIcon: {
     width: 36, height: 36, borderRadius: RADII.sm,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 4,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 4
   },
   clinicOpsBtnLabel: { ...TYPO.bodyMed, color: '#fff' },
   clinicOpsBtnSub:   { ...TYPO.bodySm, color: COLORS.sand },
@@ -518,5 +518,5 @@ const styles = StyleSheet.create({
   toggleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   toggleInfo:  { flexDirection: 'row', alignItems: 'center', flex: 1 },
   toggleLabel: { ...TYPO.bodyMed },
-  toggleSub:   { ...TYPO.bodySm, marginTop: 1 },
+  toggleSub:   { ...TYPO.bodySm, marginTop: 1 }
 });

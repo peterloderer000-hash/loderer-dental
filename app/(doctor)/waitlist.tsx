@@ -1,15 +1,15 @@
 ﻿import React, { useState, useCallback, useEffect } from 'react';
 import {
   ActivityIndicator, Alert, Linking, RefreshControl, ScrollView,
-  StyleSheet, Text, TouchableOpacity, View,
-} from 'react-native';
+  StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyWaitlist } from '../../components/EmptyState';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -88,8 +88,7 @@ export default function WaitlistScreen() {
               setItems(prev => prev.filter(i => i.id !== item.id));
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }
-          },
-        },
+          } },
       ],
     );
   }
@@ -111,24 +110,20 @@ export default function WaitlistScreen() {
       params: {
         patientId:   item.patient?.id    ?? '',
         patientName: item.patient?.full_name ?? '',
-        serviceId:   item.service?.id    ?? '',
-      },
-    });
+        serviceId:   item.service?.id    ?? '' } });
   }
 
   if (loading) return <SkeletonList count={4} />;
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.esp }]} edges={['top']}>
-      {/* Hlavička */}
-      <View style={[styles.header, { backgroundColor: colors.esp }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>PACIENTI</Text>
-          <Text style={styles.headerTitle}>Čakacia listina</Text>
-        </View>
+    <View style={[styles.safe, { backgroundColor: colors.esp }]}>
+      <HeroHeader
+        title="Čakacia listina"
+        subtitle="Pacienti"
+        icon="list-outline"
+        onBack={() => router.back()}
+      />
+
         {items.length > 0 && (
           <View style={styles.countBadge}>
             <Text style={styles.countBadgeNum}>{items.length}</Text>
@@ -180,8 +175,7 @@ export default function WaitlistScreen() {
                         return (
                           <View style={[styles.waitBadge, {
                             backgroundColor: isLong ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D2233' : '#EBF5FB'),
-                            borderColor: isLong ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#1A527633' : '#AED6F1'),
-                          }]}>
+                            borderColor: isLong ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#1A527633' : '#AED6F1') }]}>
                             <Text style={[styles.waitBadgeText, { color: isLong ? '#E74C3C' : (dark ? '#5DADE2' : '#1A5276') }]}>
                               {days === 0 ? 'dnes' : days === 1 ? 'čaká 1 deň' : `čaká ${days} dní`}
                             </Text>
@@ -245,28 +239,28 @@ export default function WaitlistScreen() {
                         : <>
                             <Ionicons name="calendar-outline" size={15} color="#fff" />
                             <Text style={styles.btnApproveText}>Rezervovať</Text>
-                          </>}
+                          </View>}
                     </TouchableOpacity>
                   </View>
                 </View>
               );
             })}
-          </>
+          </View>
         )}
 
         <View style={{ height: 100 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 16 },
+  content:{ padding: SPACING.xl, paddingTop: 16 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
@@ -305,5 +299,4 @@ const styles = StyleSheet.create({
   btnDismiss: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, borderRadius: 10, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnDismissText: { fontSize: 12, fontWeight: '700', color: '#922B21' },
   btnApprove: { flex: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#0E6655' },
-  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#fff' },
-});
+  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#fff' } });

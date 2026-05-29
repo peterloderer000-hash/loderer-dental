@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, Animated,
-  Dimensions, StyleSheet, Alert, ActivityIndicator,
+  Dimensions, StyleSheet, Alert, ActivityIndicator
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -28,7 +28,7 @@ export default function DoctorOnboardingScreen() {
     Animated.timing(slideAnim, {
       toValue: nextStep - 1,
       duration: 300,
-      useNativeDriver: true,
+      useNativeDriver: true
     }).start();
     setStep(nextStep);
   }
@@ -53,16 +53,16 @@ export default function DoctorOnboardingScreen() {
 
   const translateX = slideAnim.interpolate({
     inputRange:  [0, 1, 2],
-    outputRange: [0, -width, -width * 2],
+    outputRange: [0, -width, -width * 2]
   });
 
   const progressWidth = slideAnim.interpolate({
     inputRange:  [0, 1, 2],
-    outputRange: ['33.33%', '66.66%', '100%'],
+    outputRange: ['33.33%', '66.66%', '100%']
   });
 
   return (
-    <SafeAreaView style={[s.container, { backgroundColor: colors.bg2 }]}>
+    <View style={[s.container, { backgroundColor: colors.bg2 }]}>
       <View style={s.header}>
         <View style={s.headerSide}>
           {step === 2 && (
@@ -146,7 +146,7 @@ export default function DoctorOnboardingScreen() {
 
         </Animated.View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -172,5 +172,5 @@ const s = StyleSheet.create({
   bulletDot:   { fontSize: 20, color: '#C9A84C', marginRight: 12, lineHeight: 24 },
   bulletText:  { fontSize: 15, color: '#6B4F3A', lineHeight: 24, flex: 1 },
   btn:         { backgroundColor: '#C9A84C', paddingVertical: 16, borderRadius: 10, alignItems: 'center', marginBottom: 16 },
-  btnText:     { color: '#2C1F14', fontSize: 17, fontWeight: '800' },
+  btnText:     { color: '#2C1F14', fontSize: 17, fontWeight: '800' }
 });

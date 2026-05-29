@@ -12,15 +12,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, RADII, SPACING, GRADIENTS } from '../../styles/theme';
 import { exportHealthPassport } from '../../utils/exportPDF';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import HeroHeader from '../../components/ui/HeroHeader';
 
 const VISIT_REASONS = [
   'Bolesť', 'Estetika úsmevu', 'Kontrola', 'Implantáty',
@@ -91,10 +93,13 @@ function OtherInput({ value, onChange }: { value: string; onChange: (v: string) 
 }
 
 function SectionHeader({ num, title }: { num: string; title: string }) {
+  const { colors, dark } = useAppTheme();
   return (
     <View style={styles.secHeader}>
-      <View style={styles.secBadge}><Text style={styles.secBadgeText}>{num}</Text></View>
-      <Text style={styles.secTitle}>{title}</Text>
+      <LinearGradient colors={[COLORS.goldDark, COLORS.gold]} style={styles.secBadge}>
+        <Text style={styles.secBadgeText}>{num}</Text>
+      </LinearGradient>
+      <Text style={[styles.secTitle, { color: colors.textPrimary }]}>{title}</Text>
     </View>
   );
 }
@@ -300,39 +305,34 @@ export default function HealthPassportScreen() {
 
   if (loadingData) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+      <View style={[styles.safe, { backgroundColor: dark ? '#0A0806' : colors.bg2 }]}>
+        <HeroHeader title="Zdravotný pas" subtitle="Anamnestický dotazník" icon="shield-checkmark-outline" onBack={() => router.back()} />
+        <View style={{ flex: 1, padding: SPACING.xl, paddingTop: 16 }}>
           <SkeletonList count={6} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: dark ? '#0A0806' : colors.bg2 }]}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={22} color={COLORS.cream} />
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerLabel}>ZDRAVOTNÝ PAS</Text>
-            <Text style={styles.headerTitle}>Anamnestický dotazník</Text>
-          </View>
-          <TouchableOpacity style={styles.exportBtn} onPress={() => setShowQR(true)} activeOpacity={0.8}>
-            <Ionicons name="qr-code-outline" size={20} color={COLORS.cream} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.exportBtn, exporting && { opacity: 0.5 }]}
-            onPress={handleExport}
-            disabled={exporting}
-            activeOpacity={0.8}
-          >
-            {exporting
-              ? <ActivityIndicator color={COLORS.cream} size="small" />
-              : <Ionicons name="download-outline" size={20} color={COLORS.cream} />}
-          </TouchableOpacity>
-        </View>
+        <HeroHeader
+          title="Zdravotný pas"
+          subtitle="Anamnestický dotazník"
+          icon="shield-checkmark-outline"
+          onBack={() => router.back()}
+          rightElement={
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity style={styles.exportBtn} onPress={() => setShowQR(true)} activeOpacity={0.8}>
+                <Ionicons name="qr-code-outline" size={18} color={COLORS.cream} />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.exportBtn, exporting && { opacity: 0.5 }]} onPress={handleExport} disabled={exporting} activeOpacity={0.8}>
+                {exporting ? <ActivityIndicator color={COLORS.cream} size="small" /> : <Ionicons name="download-outline" size={18} color={COLORS.cream} />}
+              </TouchableOpacity>
+            </View>
+          }
+        />
 
         {/* ── QR Modal ── */}
         <Modal visible={showQR} transparent animationType="fade" onRequestClose={() => setShowQR(false)}>
@@ -384,9 +384,9 @@ export default function HealthPassportScreen() {
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
 
-          <View style={styles.introBanner}>
-            <Ionicons name="shield-checkmark-outline" size={15} color={COLORS.wal} />
-            <Text style={styles.introText}>
+          <View style={[styles.introBanner, { backgroundColor: dark ? '#1E1610' : COLORS.bg3, borderLeftColor: COLORS.gold }]}>
+            <Ionicons name="shield-checkmark-outline" size={15} color={COLORS.gold} />
+            <Text style={[styles.introText, { color: dark ? COLORS.sand : COLORS.wal }]}>
               Dotazník je dôverný. Pomáha nám poskytovať vám bezpečnú a personalizovanú starostlivosť.
             </Text>
           </View>
@@ -589,14 +589,16 @@ export default function HealthPassportScreen() {
 
           <TouchableOpacity style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
             onPress={handleSave} disabled={saving} activeOpacity={0.85}>
-            {saving
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <><Ionicons name="checkmark-circle-outline" size={18} color="#fff" /><Text style={styles.saveBtnText}>Uložiť dotazník</Text></>}
+            <LinearGradient colors={[COLORS.goldDark, COLORS.gold]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGrad}>
+              {saving
+                ? <ActivityIndicator color="#1A1209" size="small" />
+                : <><Ionicons name="checkmark-circle-outline" size={18} color="#1A1209" /><Text style={styles.saveBtnText}>Uložiť dotazník</Text></>}
+            </LinearGradient>
           </TouchableOpacity>
           <View style={{ height: 100 }} />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -604,43 +606,44 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
   content: { paddingBottom: 120 },
-  header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  exportBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.15)', alignItems: 'center', justifyContent: 'center' },
+  exportBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.15)', alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
-  introBanner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', backgroundColor: COLORS.bg3, borderRadius: SIZES.radius, borderLeftWidth: 3, borderLeftColor: COLORS.sand, padding: 12, margin: SIZES.padding, marginBottom: 4 },
+  introBanner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', backgroundColor: COLORS.bg3, borderRadius: RADII.md, borderLeftWidth: 3, borderLeftColor: COLORS.gold, padding: 12, margin: SPACING.xl, marginBottom: 4 },
   introText: { flex: 1, fontSize: 13, color: COLORS.wal, lineHeight: 20 },
-  secHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
-  secBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  secHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 8 },
+  secBadge: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden' as const, alignItems: 'center', justifyContent: 'center' },
   secBadgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
   secTitle: { fontSize: 12, letterSpacing: 1.5, color: COLORS.esp, fontWeight: '700', textTransform: 'uppercase' },
-  card: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, gap: 6 },
+  card: { backgroundColor: '#fff', borderRadius: RADII.md, marginHorizontal: SPACING.xl, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, gap: 6 },
   cardSub: { fontSize: 12, color: COLORS.wal, marginBottom: 6, lineHeight: 18 },
   dividerLine: { height: 1, backgroundColor: COLORS.bg3, marginVertical: 10 },
-  option: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, paddingHorizontal: 10, borderRadius: 8, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
-  optionSel: { backgroundColor: COLORS.esp, borderColor: COLORS.wal },
+  option: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, paddingHorizontal: 10, borderRadius: RADII.xs, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  optionSel: { backgroundColor: COLORS.esp, borderColor: COLORS.gold },
   optionText: { flex: 1, fontSize: 13, color: COLORS.esp },
   optionTextSel: { color: COLORS.cream, fontWeight: '500' },
   checkbox: { width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
-  checkboxSel: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
+  checkboxSel: { backgroundColor: COLORS.gold, borderColor: COLORS.gold },
   radio: { width: 18, height: 18, borderRadius: 9, borderWidth: 1.5, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
-  radioSel: { borderColor: COLORS.wal },
-  radioDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.wal },
+  radioSel: { borderColor: COLORS.gold },
+  radioDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold },
   fieldLabel: { fontSize: 9, letterSpacing: 1.8, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 6 },
-  input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: SIZES.radius - 2, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 42, lineHeight: 20 },
+  input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: RADII.sm, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 42, lineHeight: 20 },
   chipRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginBottom: 4 },
-  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 18, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
-  chipSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.wal },
+  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADII.pill, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  chipSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.gold },
   chipText:    { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   chipTextSel: { color: COLORS.cream },
-  otherInputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 8, borderWidth: 1.5, borderColor: COLORS.sand, paddingHorizontal: 10, paddingVertical: 4, marginTop: 2 },
+  otherInputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: RADII.xs, borderWidth: 1.5, borderColor: COLORS.sand, paddingHorizontal: 10, paddingVertical: 4, marginTop: 2 },
   otherInput:     { flex: 1, fontSize: 13, color: COLORS.esp, paddingVertical: 8 },
-  errorBox: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: SIZES.radius, padding: 12, marginHorizontal: SIZES.padding, marginTop: 12 },
+  errorBox: { flexDirection: 'row', gap: 8, alignItems: 'center', backgroundColor: '#FAE8E5', borderWidth: 1, borderColor: '#CC7060', borderRadius: RADII.md, padding: 12, marginHorizontal: SPACING.xl, marginTop: 12 },
   errorText: { flex: 1, fontSize: 13, color: '#8C2A18' },
-  saveBtn: { backgroundColor: COLORS.wal, borderRadius: SIZES.radius, paddingVertical: 15, marginHorizontal: SIZES.padding, marginTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, elevation: 4 },
+  saveBtn: { borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 20, overflow: 'hidden' as const, elevation: 4 },
+  saveGrad: { paddingVertical: 15, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
   saveBtnDisabled: { opacity: 0.55 },
-  saveBtnText: { fontSize: 15, fontWeight: '600', color: '#fff', letterSpacing: 0.3 },
+  saveBtnText: { fontSize: 15, fontWeight: '600', color: '#1A1209', letterSpacing: 0.3 },
 });
 
 const qrS = StyleSheet.create({

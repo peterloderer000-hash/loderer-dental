@@ -1,14 +1,15 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
-  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { exportPrescription } from '../../utils/exportPDF';
@@ -41,21 +42,21 @@ type Tab = 'diagnoses' | 'prescriptions';
 // ─── Pomocné funkcie ───────────────────────────────────────────────────────────
 function fmtDate(s: string): string {
   return new Date(s).toLocaleDateString('sk-SK', {
-    day: 'numeric', month: 'short', year: 'numeric',
+    day: 'numeric', month: 'short', year: 'numeric'
   });
 }
 
 const SEVERITY_CFG: Record<Severity, { label: string; color: string; bg: string; border: string }> = {
   mild:     { label: 'Mierna',  color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF' },
   moderate: { label: 'Stredná', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F' },
-  severe:   { label: 'Ťažká',   color: '#922B21', bg: '#FDEDEC', border: '#F5B7B1' },
+  severe:   { label: 'Ťažká',   color: '#922B21', bg: '#FDEDEC', border: '#F5B7B1' }
 };
 
 const SEVERITY_OPTIONS: Severity[] = ['mild', 'moderate', 'severe'];
 
 // ─── Modál: pridať diagnózu ───────────────────────────────────────────────────
 function AddDiagModal({
-  visible, onClose, onSave,
+  visible, onClose, onSave
 }: {
   visible: boolean;
   onClose: () => void;
@@ -84,7 +85,7 @@ function AddDiagModal({
     await onSave({
       icd_code:    icdCode.trim() || null,
       description: description.trim(),
-      severity,
+      severity
     });
     setSaving(false);
   }
@@ -166,7 +167,7 @@ function AddDiagModal({
 
 // ─── Modál: pridať recept ─────────────────────────────────────────────────────
 function AddRxModal({
-  visible, onClose, onSave,
+  visible, onClose, onSave
 }: {
   visible: boolean;
   onClose: () => void;
@@ -202,7 +203,7 @@ function AddRxModal({
       medication:   medication.trim(),
       dosage:       dosage.trim() || null,
       instructions: instructions.trim() || null,
-      valid_until:  validUntil.trim() || null,
+      valid_until:  validUntil.trim() || null
     });
     setSaving(false);
   }
@@ -297,7 +298,7 @@ const ms = StyleSheet.create({
   btnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:       { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  btnSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
+  btnSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -358,7 +359,7 @@ export default function PrescriptionsScreen() {
         setDoctorProfile({
           name:        prof.full_name     ?? 'MDDr. Loderer',
           clinicName:  prof.clinic_name   ?? null,
-          clinicAddress: prof.clinic_address ?? null,
+          clinicAddress: prof.clinic_address ?? null
         });
       }
     });
@@ -376,7 +377,7 @@ export default function PrescriptionsScreen() {
         doctor_id:  doctorId,
         icd_code:   diag.icd_code,
         description: diag.description,
-        severity:   diag.severity,
+        severity:   diag.severity
       })
       .select('id, icd_code, description, severity, created_at, appointment_id')
       .single();
@@ -398,7 +399,7 @@ export default function PrescriptionsScreen() {
             const { error } = await supabase.from('diagnoses').delete().eq('id', diag.id);
             if (error) { Alert.alert('Chyba', error.message); return; }
             setDiagnoses((prev) => prev.filter((d) => d.id !== diag.id));
-          },
+          }
         },
       ],
     );
@@ -417,7 +418,7 @@ export default function PrescriptionsScreen() {
         dosage:       rx.dosage,
         instructions: rx.instructions,
         valid_until:  rx.valid_until,
-        is_active:    true,
+        is_active:    true
       })
       .select('id, medication, dosage, instructions, valid_until, is_active, created_at, appointment_id')
       .single();
@@ -439,7 +440,7 @@ export default function PrescriptionsScreen() {
             const { error } = await supabase.from('prescriptions').delete().eq('id', rx.id);
             if (error) { Alert.alert('Chyba', error.message); return; }
             setPrescriptions((prev) => prev.filter((r) => r.id !== rx.id));
-          },
+          }
         },
       ],
     );
@@ -565,23 +566,21 @@ export default function PrescriptionsScreen() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* Hlavička */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>RECEPTY &amp; DIAGNÓZY</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName}</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={() => activeTab === 'diagnoses' ? setShowAddDiag(true) : setShowAddRx(true)}
-        >
-          <Ionicons name="add" size={22} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.safeArea}>
+      <HeroHeader
+        title={patientName ?? 'Pacient'}
+        subtitle="Recepty & Diagnózy"
+        icon="medkit-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => activeTab === 'diagnoses' ? setShowAddDiag(true) : setShowAddRx(true)}
+          >
+            <Ionicons name="add" size={22} color="#fff" />
+          </TouchableOpacity>
+        }
+      />
 
       {/* Taby */}
       <View style={[styles.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
@@ -643,7 +642,7 @@ export default function PrescriptionsScreen() {
         onClose={() => setShowAddRx(false)}
         onSave={handleAddRx}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -651,7 +650,7 @@ export default function PrescriptionsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLORS.esp,
+    backgroundColor: COLORS.esp
   },
 
   // Header
@@ -659,10 +658,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.esp,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl,
     paddingTop: 4,
     paddingBottom: 14,
-    gap: 12,
+    gap: 12
   },
   backBtn: {
     width: 38,
@@ -670,20 +669,20 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     backgroundColor: 'rgba(255,255,255,0.12)',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   headerSub: {
     fontSize: 9,
     letterSpacing: 2,
     color: COLORS.sand,
     fontWeight: '700',
-    textTransform: 'uppercase',
+    textTransform: 'uppercase'
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#fff',
-    marginTop: 1,
+    marginTop: 1
   },
   addBtn: {
     width: 40,
@@ -691,7 +690,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: COLORS.wal,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
 
   // Taby
@@ -699,35 +698,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.bg3,
+    borderBottomColor: COLORS.bg3
   },
   tab: {
     flex: 1,
     paddingVertical: 13,
     alignItems: 'center',
     borderBottomWidth: 3,
-    borderBottomColor: 'transparent',
+    borderBottomColor: 'transparent'
   },
   tabActive: {
-    borderBottomColor: COLORS.wal,
+    borderBottomColor: COLORS.wal
   },
   tabText: {
     fontSize: 13,
     fontWeight: '600',
-    color: COLORS.sand,
+    color: COLORS.sand
   },
   tabTextActive: {
-    color: COLORS.esp,
+    color: COLORS.esp
   },
 
   // Scroll
   scroll: {
     flex: 1,
-    backgroundColor: COLORS.bg2,
+    backgroundColor: COLORS.bg2
   },
   scrollContent: {
-    padding: SIZES.padding,
-    paddingBottom: 120,
+    padding: SPACING.xl,
+    paddingBottom: 120
   },
 
   // Loading
@@ -735,24 +734,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.bg2,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
 
   // Karta
   card: {
     backgroundColor: '#fff',
-    borderRadius: SIZES.radius,
+    borderRadius: RADII.md,
     borderWidth: 1,
     borderColor: COLORS.bg3,
     padding: 14,
-    marginBottom: 10,
+    marginBottom: 10
   },
   cardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 8
   },
 
   // Diagnóza
@@ -762,36 +761,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderWidth: 1,
-    borderColor: '#AED6F1',
+    borderColor: '#AED6F1'
   },
   icdText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#1A5276',
+    color: '#1A5276'
   },
   severityBadge: {
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderWidth: 1,
+    borderWidth: 1
   },
   severityText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '700'
   },
   dateText: {
     fontSize: 11,
     color: COLORS.sand,
     marginLeft: 'auto',
-    marginRight: 4,
+    marginRight: 4
   },
   deleteBtn: {
-    padding: 2,
+    padding: 2
   },
   descText: {
     fontSize: 14,
     color: COLORS.esp,
-    lineHeight: 20,
+    lineHeight: 20
   },
 
   // Recept
@@ -799,47 +798,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: COLORS.esp,
-    flex: 1,
+    flex: 1
   },
   activeBadge: {
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderWidth: 1,
+    borderWidth: 1
   },
   activeText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '700'
   },
   rxMeta: {
     fontSize: 13,
     color: COLORS.wal,
     marginTop: 4,
-    lineHeight: 18,
+    lineHeight: 18
   },
 
   // Empty state
   emptyWrap: {
     alignItems: 'center',
     paddingTop: 60,
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl
   },
   emptyEmoji: {
     fontSize: 52,
-    marginBottom: 14,
+    marginBottom: 14
   },
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.esp,
-    marginBottom: 8,
+    marginBottom: 8
   },
   emptySubtitle: {
     fontSize: 14,
     color: COLORS.wal,
     textAlign: 'center',
     lineHeight: 20,
-    marginBottom: 24,
+    marginBottom: 24
   },
   emptyBtn: {
     flexDirection: 'row',
@@ -848,11 +847,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.wal,
     paddingHorizontal: 22,
     paddingVertical: 12,
-    borderRadius: SIZES.radius,
+    borderRadius: RADII.md
   },
   emptyBtnText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#fff',
-  },
+    color: '#fff'
+  }
 });

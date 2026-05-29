@@ -36,13 +36,13 @@ export default function DoctorLayout() {
           shadowColor: '#8B6914',
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.08,
-          shadowRadius: 12,
+          shadowRadius: 12
         },
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '600',
-          marginTop: 2,
-        },
+          marginTop: 2
+        }
       }}
     >
       {/* ── 5 hlavných tabov ── */}
@@ -50,35 +50,35 @@ export default function DoctorLayout() {
         title: 'Termíny',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={22} color={color} />
-        ),
+        )
       }} />
 
       <Tabs.Screen name="patients" options={{
         title: 'Pacienti',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'people' : 'people-outline'} size={22} color={color} />
-        ),
+        )
       }} />
 
       <Tabs.Screen name="calendar" options={{
         title: 'Kalendár',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'calendar-number' : 'calendar-number-outline'} size={22} color={color} />
-        ),
+        )
       }} />
 
       <Tabs.Screen name="stats" options={{
         title: 'Štatistiky',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={22} color={color} />
-        ),
+        )
       }} />
 
       <Tabs.Screen name="profile" options={{
         title: 'Profil',
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'person' : 'person-outline'} size={22} color={color} />
-        ),
+        )
       }} />
 
       {/* ── Všetky ostatné — skryté z tab baru ── */}

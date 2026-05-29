@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../supabase';
-import { COLORS, SIZES } from '../styles/theme';
+import { COLORS, SPACING, RADII } from '../styles/theme';
 import { ONBOARDING_KEY } from './onboarding';
 
 const { width } = Dimensions.get('window');

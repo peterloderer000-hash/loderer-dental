@@ -1,14 +1,15 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform,
-  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -112,7 +113,7 @@ export default function DoctorMessagesScreen() {
         patientName: val.name,
         lastMessage: last.body,
         lastTime:    last.created_at,
-        unreadCount: unread,
+        unreadCount: unread
       });
     });
     convs.sort((a, b) => new Date(b.lastTime).getTime() - new Date(a.lastTime).getTime());
@@ -153,7 +154,7 @@ export default function DoctorMessagesScreen() {
     const channel = supabase.channel(`messages-doctor-${myId}`)
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'messages',
-        filter: `receiver_id=eq.${myId}`,
+        filter: `receiver_id=eq.${myId}`
       }, (payload) => {
         const msg = payload.new as Message;
         if (activePatient && msg.sender_id === activePatient.id) {
@@ -187,7 +188,7 @@ export default function DoctorMessagesScreen() {
       const { data, error } = await supabase.from('messages').insert({
         sender_id:   myId,
         receiver_id: activePatient.id,
-        body:        trimmed,
+        body:        trimmed
       }).select().single();
       if (error) throw error;
       setMessages((prev) => [...prev, data as Message]);
@@ -203,16 +204,13 @@ export default function DoctorMessagesScreen() {
   // ── ZOZNAM KONVERZÁCIÍ ──────────────────────────────────────────────────────
   if (view === 'list') {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-            <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerSub}>SPRÁVY</Text>
-            <Text style={styles.headerTitle}>Konverzácie s pacientmi</Text>
-          </View>
-        </View>
+      <View style={styles.safe}>
+        <HeroHeader
+          title="Konverzácie"
+          subtitle="Správy"
+          icon="chatbubbles-outline"
+          onBack={() => router.back()}
+        />
 
         {loading ? (
           <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 14 }}>
@@ -268,13 +266,13 @@ export default function DoctorMessagesScreen() {
             <View style={{ height: 100 }} />
           </ScrollView>
         )}
-      </SafeAreaView>
+      </View>
     );
   }
 
   // ── CHAT ────────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <View style={styles.safe}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => { setView('list'); setMessages([]); }} style={styles.backBtn} activeOpacity={0.75}>
           <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
@@ -290,7 +288,7 @@ export default function DoctorMessagesScreen() {
         </View>
         <TouchableOpacity onPress={() => router.push({
           pathname: '/(doctor)/patient-detail',
-          params: { patientId: activePatient?.id, patientName: activePatient?.name },
+          params: { patientId: activePatient?.id, patientName: activePatient?.name }
         })} activeOpacity={0.75}>
           <Ionicons name="person-circle-outline" size={26} color={COLORS.cream} />
         </TouchableOpacity>
@@ -370,7 +368,7 @@ export default function DoctorMessagesScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -378,7 +376,7 @@ const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg2 },
 
-  header:     { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16 },
+  header:     { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16 },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
@@ -421,5 +419,5 @@ const styles = StyleSheet.create({
   templatesScroll: { paddingHorizontal: 12, gap: 8 },
   templateChip:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateIcon:    { fontSize: 14 },
-  templateLabel:   { fontSize: 12, fontWeight: '700', color: COLORS.esp },
+  templateLabel:   { fontSize: 12, fontWeight: '700', color: COLORS.esp }
 });

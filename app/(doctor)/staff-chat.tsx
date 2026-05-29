@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Modal,
   Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View,
+  TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -59,7 +59,7 @@ function formatDate(iso: string) {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-  doctor: 'Doktor', reception: 'Recepcia', hygienist: 'Hygienista', owner: 'Vlastník',
+  doctor: 'Doktor', reception: 'Recepcia', hygienist: 'Hygienista', owner: 'Vlastník'
 };
 
 function initials(name: string) {
@@ -109,7 +109,7 @@ function ChatView({
   loading,
   myId,
   onSend,
-  placeholder,
+  placeholder
 }: {
   messages: Message[];
   loading: boolean;
@@ -144,7 +144,7 @@ function ChatView({
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl }}>
         <SkeletonList count={5} />
       </View>
     );
@@ -216,7 +216,7 @@ function NewConvoModal({
   staff,
   myId,
   onSelect,
-  onClose,
+  onClose
 }: {
   visible: boolean;
   staff: StaffMember[];
@@ -260,7 +260,7 @@ export default function StaffChatScreen() {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
     text: { color: colors.textPrimary },
-    sub:  { color: colors.textSecondary },
+    sub:  { color: colors.textSecondary }
   };
   const [tab, setTab] = useState<'broadcast' | 'dm'>('broadcast');
 
@@ -403,14 +403,14 @@ export default function StaffChatScreen() {
     await supabase.from('staff_messages').insert({
       sender_id: myId,
       recipient_id: dmPartner.id,
-      body,
+      body
     });
   }
 
   // ── DM conversation view ──
   if (dmPartner) {
     return (
-      <SafeAreaView style={[s.safe, dyn.bg]} edges={['top']}>
+      <View style={[s.safe, dyn.bg]}>
         <View style={s.header}>
           <TouchableOpacity onPress={() => { setDmPartner(null); loadThreads(); }} style={s.backBtn} activeOpacity={0.75}>
             <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
@@ -430,13 +430,13 @@ export default function StaffChatScreen() {
           onSend={sendDm}
           placeholder={`Napíš ${(dmPartner.full_name || 'správu').split(' ')[0]}...`}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 
   // ── Main tab view ──
   return (
-    <SafeAreaView style={[s.safe, dyn.bg]} edges={['top']}>
+    <View style={[s.safe, dyn.bg]}>
 
       {/* ── Header ── */}
       <View style={s.header}>
@@ -533,7 +533,7 @@ export default function StaffChatScreen() {
         onSelect={openDm}
         onClose={() => setNewConvoOpen(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -544,58 +544,58 @@ const s = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
-    paddingTop: 10, paddingBottom: 16,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
+    paddingTop: 10, paddingBottom: 16
   },
   headerIcon: {
     width: 38, height: 38, borderRadius: 19,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.12)',
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center'
   },
   dmAvatar: {
     width: 38, height: 38, borderRadius: 19,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   dmAvatarText: { fontSize: 14, fontWeight: '700', color: '#fff' },
   newBtn: {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.12)',
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center'
   },
 
   tabRow: {
     flexDirection: 'row', backgroundColor: COLORS.esp,
-    paddingHorizontal: SIZES.padding, paddingBottom: 14, gap: 8,
+    paddingHorizontal: SPACING.xl, paddingBottom: 14, gap: 8
   },
   tabBtn: {
     flex: 1, paddingVertical: 8, borderRadius: 10,
-    alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)',
+    alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)'
   },
   tabBtnActive: { backgroundColor: COLORS.wal },
   tabBtnText:   { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
   tabBtnTextActive: { color: '#fff' },
 
   emptyCenter: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 10,
+    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 10
   },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.esp },
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
 
   threadRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', marginHorizontal: SIZES.padding,
+    backgroundColor: '#fff', marginHorizontal: SPACING.xl,
     marginBottom: 8, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
+    borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   threadAvatar: {
     width: 46, height: 46, borderRadius: 23,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   threadAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   threadTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
@@ -608,9 +608,9 @@ const s = StyleSheet.create({
   unreadBadge: {
     backgroundColor: COLORS.wal, borderRadius: 10,
     minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: 5, marginLeft: 8,
+    paddingHorizontal: 5, marginLeft: 8
   },
-  unreadText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  unreadText: { fontSize: 11, fontWeight: '700', color: '#fff' }
 });
 
 // ChatView styles
@@ -628,19 +628,19 @@ const cv = StyleSheet.create({
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 8,
     paddingHorizontal: 12, paddingVertical: 10,
-    backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3,
+    backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {
     flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20,
     paddingHorizontal: 14, paddingVertical: 9,
     fontSize: 14, color: COLORS.esp, maxHeight: 100,
-    borderWidth: 1, borderColor: COLORS.bg3,
+    borderWidth: 1, borderColor: COLORS.bg3
   },
   sendBtn: {
     width: 42, height: 42, borderRadius: 21,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
-  sendDisabled: { opacity: 0.35 },
+  sendDisabled: { opacity: 0.35 }
 });
 
 // Bubble styles
@@ -649,12 +649,12 @@ const bubble = StyleSheet.create({
   wrapMe: { flexDirection: 'row-reverse' },
   avatar: {
     width: 30, height: 30, borderRadius: 15,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 2,
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 2
   },
   avatarText: { fontSize: 11, fontWeight: '700', color: '#fff' },
   box: {
     maxWidth: '75%', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8,
-    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2,
+    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2
   },
   boxMe:    { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
   boxOther: { backgroundColor: '#fff', borderBottomLeftRadius: 4 },
@@ -663,7 +663,7 @@ const bubble = StyleSheet.create({
   textMe: { color: '#fff' },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 4 },
   time:   { fontSize: 10, color: '#aaa' },
-  timeMe: { color: 'rgba(255,255,255,0.55)' },
+  timeMe: { color: 'rgba(255,255,255,0.55)' }
 });
 
 // NewConvoModal styles
@@ -671,23 +671,23 @@ const nm = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 32,
+    paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 32
   },
   handle: {
     width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3,
-    alignSelf: 'center', marginBottom: 16,
+    alignSelf: 'center', marginBottom: 16
   },
   title: { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   sub:   { fontSize: 13, color: COLORS.wal, marginBottom: 16 },
   row: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3,
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3
   },
   avatar: {
     width: 42, height: 42, borderRadius: 21,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   avatarText: { fontSize: 15, fontWeight: '700', color: '#fff' },
   name: { fontSize: 14, fontWeight: '600', color: COLORS.esp },
-  role: { fontSize: 12, color: COLORS.wal, marginTop: 2 },
+  role: { fontSize: 12, color: COLORS.wal, marginTop: 2 }
 });

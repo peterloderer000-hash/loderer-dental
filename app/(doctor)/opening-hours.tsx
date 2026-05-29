@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, TextInput, Switch, TouchableOpacity,
-  ScrollView, StyleSheet, Alert, ActivityIndicator,
-} from 'react-native';
+  ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {} from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type ClinicException = {
@@ -51,8 +51,7 @@ export default function OpeningHoursScreen() {
       time_to: '17:00',
       open_time: '08:00',
       close_time: '17:00',
-      clinic_id: null,
-    }))
+      clinic_id: null }))
   );
   const [saving,      setSaving]      = useState(false);
   const [exceptions,  setExceptions]  = useState<ClinicException[]>([]);
@@ -93,8 +92,7 @@ export default function OpeningHoursScreen() {
               time_to:     item.time_to   ?? item.close_time ?? '17:00',
               open_time:   item.open_time ?? item.time_from ?? '08:00',
               close_time:  item.close_time ?? item.time_to  ?? '17:00',
-              clinic_id:   item.clinic_id ?? null,
-            };
+              clinic_id:   item.clinic_id ?? null };
           }
         });
         return next;
@@ -152,8 +150,7 @@ export default function OpeningHoursScreen() {
       is_closed:  exClosed,
       open_time:  exClosed ? null : exOpen,
       close_time: exClosed ? null : exClose,
-      note:       exNote.trim() || null,
-    }, { onConflict: 'doctor_id,date' });
+      note:       exNote.trim() || null }, { onConflict: 'doctor_id,date' });
     setExSaving(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
     setExDate(''); setExNote(''); setExClosed(true); setShowExForm(false);
@@ -179,8 +176,7 @@ export default function OpeningHoursScreen() {
       day_of_week: rest.day_index + 1,
       is_closed:   !rest.is_open,
       open_time:   rest.time_from,
-      close_time:  rest.time_to,
-    }));
+      close_time:  rest.time_to }));
     const { error } = await supabase.from('opening_hours').upsert(payload, { onConflict: 'day_of_week' });
     setSaving(false);
     if (error) Alert.alert('Chyba', error.message);
@@ -191,15 +187,14 @@ export default function OpeningHoursScreen() {
   }
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.esp }]} edges={['top']}>
-      <View style={[s.header, { backgroundColor: colors.esp }]}>
-        <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={s.headerSub}>NASTAVENIA</Text>
-          <Text style={s.headerTitle}>Ordinačné hodiny</Text>
-        </View>
+    <View style={[s.safe, { backgroundColor: colors.esp }]}>
+      <HeroHeader
+        title="Ordinačné hodiny"
+        subtitle="Nastavenia"
+        icon="time-outline"
+        onBack={() => router.back()}
+      />
+
       </View>
 
       <ScrollView style={[s.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
@@ -353,7 +348,7 @@ export default function OpeningHoursScreen() {
 
         <View style={{ height: 60 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -364,23 +359,20 @@ const s = StyleSheet.create({
   header:  {
     backgroundColor: COLORS.esp, paddingHorizontal: 16,
     paddingTop: 14, paddingBottom: 18,
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-  },
+    flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
   row: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 10,
-    borderWidth: 1, borderColor: COLORS.bg3,
-  },
+    borderWidth: 1, borderColor: COLORS.bg3 },
   dayText:   { width: 30, fontSize: 15, fontWeight: '700', color: COLORS.esp },
   timeRow:   { flexDirection: 'row', alignItems: 'center' },
   timeInput: {
     width: 58, height: 36, borderWidth: 1, borderColor: COLORS.wal,
     borderRadius: 8, textAlign: 'center', fontSize: 14,
-    fontWeight: '600', color: COLORS.esp, backgroundColor: COLORS.cream,
-  },
+    fontWeight: '600', color: COLORS.esp, backgroundColor: COLORS.cream },
   disabled:    { backgroundColor: COLORS.bg3, color: COLORS.sand, borderColor: COLORS.bg3 },
   sep:         { marginHorizontal: 6, fontSize: 16, color: COLORS.wal },
   saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 15, borderRadius: 12, alignItems: 'center', marginTop: 20 },
@@ -401,5 +393,4 @@ const s = StyleSheet.create({
   exDateText:    { fontSize: 14, fontWeight: '800' },
   exDateYear:    { fontSize: 9, fontWeight: '600' },
   exStatus:      { fontSize: 13, fontWeight: '700', marginBottom: 2 },
-  exNoteText:    { fontSize: 11 },
-});
+  exNoteText:    { fontSize: 11 } });

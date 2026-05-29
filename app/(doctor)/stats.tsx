@@ -1,14 +1,15 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator, Alert, RefreshControl, ScrollView, StyleSheet,
-  Text, TouchableOpacity, View,
+  Text, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { pluralizeAppointments } from '../../utils/pluralize';
@@ -68,7 +69,7 @@ function MiniBar({ value, max, color }: { value: number; max: number; color: str
 }
 const bar = StyleSheet.create({
   track: { height: 6, borderRadius: 3, overflow: 'hidden', flex: 1 },
-  fill:  { height: 6, borderRadius: 3 },
+  fill:  { height: 6, borderRadius: 3 }
 });
 
 // ─── Štatistická karta ────────────────────────────────────────────────────────
@@ -142,7 +143,7 @@ const revenueBarStyles = StyleSheet.create({
   track:     { flex: 1, height: 22, borderRadius: 5, overflow: 'hidden' },
   fill:      { height: 22, borderRadius: 5, justifyContent: 'center', paddingLeft: 6 },
   fillLabel: { fontSize: 9, color: '#fff', fontWeight: '700' },
-  value:     { fontSize: 9, color: COLORS.wal, width: 38, textAlign: 'right' },
+  value:     { fontSize: 9, color: COLORS.wal, width: 38, textAlign: 'right' }
 });
 
 // ─── Service pie-like breakdown (percentage bars) ────────────────────────────
@@ -174,7 +175,7 @@ const svcBreakdownStyles = StyleSheet.create({
   name:  { width: 100, fontSize: 11, fontWeight: '500' },
   track: { flex: 1, height: 10, borderRadius: 5, overflow: 'hidden' },
   fill:  { height: 10, borderRadius: 5 },
-  pct:   { fontSize: 10, fontWeight: '700', color: COLORS.wal, width: 30, textAlign: 'right' },
+  pct:   { fontSize: 10, fontWeight: '700', color: COLORS.wal, width: 30, textAlign: 'right' }
 });
 
 // ─── Mesačný stĺpcový graf ────────────────────────────────────────────────────
@@ -265,7 +266,7 @@ const hm = StyleSheet.create({
   hourLabel:{ flex: 1, textAlign: 'center', fontSize: 9 },
   cell:     { flex: 1, height: 28, borderRadius: 5, marginHorizontal: 2, alignItems: 'center', justifyContent: 'center' },
   cellNum:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
-  legend:   { fontSize: 9, textAlign: 'center', marginTop: 6, fontStyle: 'italic' },
+  legend:   { fontSize: 9, textAlign: 'center', marginTop: 6, fontStyle: 'italic' }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -305,7 +306,7 @@ export default function StatsScreen() {
             clinic_name:    prof.clinic_name    ?? null,
             clinic_address: prof.clinic_address ?? null,
             clinic_ico:     prof.clinic_ico     ?? null,
-            clinic_dic:     prof.clinic_dic     ?? null,
+            clinic_dic:     prof.clinic_dic     ?? null
           });
         }
       }
@@ -339,7 +340,7 @@ export default function StatsScreen() {
         const chairs = (chairsData ?? []).map((c: any) => ({
           name: c.name,
           color: c.color ?? '#C9A84C',
-          count: chairCounts[c.id] ?? 0,
+          count: chairCounts[c.id] ?? 0
         }));
 
         const todayRow = Array.isArray(todayKpi) ? todayKpi[0] : todayKpi;
@@ -348,7 +349,7 @@ export default function StatsScreen() {
           avgTreatment,
           chairs,
           todayWait: todayRow?.avg_wait_minutes ?? null,
-          todayTreatment: todayRow?.avg_treatment_minutes ?? null,
+          todayTreatment: todayRow?.avg_treatment_minutes ?? null
         });
       }
     } catch (e) {
@@ -424,7 +425,7 @@ export default function StatsScreen() {
       return {
         label: ['Po','Ut','St','Št','Pi','So','Ne'][dayOffset],
         count,
-        isToday: sameDay(date, now),
+        isToday: sameDay(date, now)
       };
     });
 
@@ -456,7 +457,7 @@ export default function StatsScreen() {
         year: mDate.getFullYear(),
         count,
         revenue,
-        isCurrent: i === 5,
+        isCurrent: i === 5
       };
     });
 
@@ -521,7 +522,7 @@ export default function StatsScreen() {
       retentionRate,
       noShowRate,
       heatmap,
-      heatmapMax,
+      heatmapMax
     };
   }, [appts]);
 
@@ -566,7 +567,7 @@ export default function StatsScreen() {
           id:           a.id,
           appointment_date: a.appointment_date,
           patient_name: a.patient?.full_name ?? null,
-          service:      a.service ? { name: a.service.name, emoji: a.service.emoji, price_min: a.service.price_min } : null,
+          service:      a.service ? { name: a.service.name, emoji: a.service.emoji, price_min: a.service.price_min } : null
         })),
       );
     } finally {
@@ -576,7 +577,7 @@ export default function StatsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -588,23 +589,23 @@ export default function StatsScreen() {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
     text: { color: colors.textPrimary },
-    sub:  { color: colors.textSecondary },
+    sub:  { color: colors.textSecondary }
   };
 
   return (
     <ScreenWrapper>
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerSub}>PREHĽAD PRAXE</Text>
-          <Text style={styles.headerTitle}>Štatistiky</Text>
-        </View>
-        <View style={styles.headerDate}>
-          <Ionicons name="calendar-outline" size={12} color={COLORS.sand} />
-          <Text style={styles.headerDateText}>{new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Štatistiky"
+        subtitle="Prehľad praxe"
+        icon="stats-chart-outline"
+        rightAction={
+          <View style={styles.headerDate}>
+            <Ionicons name="calendar-outline" size={12} color={COLORS.sand} />
+            <Text style={styles.headerDateText}>{new Date().toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}</Text>
+          </View>
+        }
+      />
 
       <ScrollView
         style={[styles.scroll, dyn.bg]}
@@ -634,7 +635,7 @@ export default function StatsScreen() {
               <Text style={[styles.upcomingTime, dyn.text]}>
                 {new Date(stats.upcoming.appointment_date).toLocaleString('sk-SK', {
                   weekday: 'short', day: 'numeric', month: 'short',
-                  hour: '2-digit', minute: '2-digit',
+                  hour: '2-digit', minute: '2-digit'
                 })}
               </Text>
               {stats.upcoming.service && (
@@ -703,7 +704,7 @@ export default function StatsScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
         </View>
 
@@ -1050,7 +1051,7 @@ export default function StatsScreen() {
 
         <View style={{ height: 100 }} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
     </ScreenWrapper>
   );
 }
@@ -1059,10 +1060,10 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12 },
+  content: { padding: SPACING.xl, paddingTop: 12 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:        { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 20, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
+  header:        { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 20, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   headerSub:     { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle:   { fontSize: 22, fontWeight: '700', color: '#fff' },
   headerDate:    { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
@@ -1204,5 +1205,5 @@ const styles = StyleSheet.create({
   invoiceEmptyIcon:      { fontSize: 32 },
   invoiceEmptyText:      { fontSize: 12, color: COLORS.wal, textAlign: 'center', fontStyle: 'italic' },
   invoiceExportBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1A5276', borderRadius: 10, paddingVertical: 13, marginTop: 14 },
-  invoiceExportBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
+  invoiceExportBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' }
 });

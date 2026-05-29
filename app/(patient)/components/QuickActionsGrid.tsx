@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { COLORS, SIZES } from '../../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../../styles/theme';
 import { useAppTheme } from '../../../context/ThemeContext';
 
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
@@ -51,13 +51,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl,
     marginBottom: 14,
   },
   tile: {
     width: '30%',
     flexGrow: 1,
-    borderRadius: SIZES.radius,
+    borderRadius: RADII.md,
     borderWidth: 1,
     borderColor: COLORS.bg3,
     paddingVertical: 14,

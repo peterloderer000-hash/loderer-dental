@@ -1,16 +1,16 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   ActivityIndicator, Alert, ScrollView, StyleSheet,
-  Text, TouchableOpacity, View,
+  Text, TouchableOpacity, View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useClinic, type ClinicAppointment } from '../../hooks/useClinic';
 import {
   CLINIC_STATUS_CFG, fmtTime, getWaitingMinutes,
-  getTreatmentMinutes, fmtMins,
+  getTreatmentMinutes, fmtMins
 } from '../../utils/clinicMetrics';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -202,13 +202,13 @@ export default function ClinicLiveScreen() {
   // Role guard — patient nesmie vidieť clinic screens
   if (!clinic.loading && clinic.clinicRole === null) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
           <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Táto obrazovka je dostupná len pre doktora a recepciu.</Text>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -230,17 +230,17 @@ export default function ClinicLiveScreen() {
         {
           label: 'Pacient prišiel', icon: 'enter-outline',
           color: '#117A65', bg: '#E8F8F5',
-          handler: wrapAction(appt.id, async () => { await clinic.markArrived(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.markArrived(appt); setExpanded(null); })
         },
         ...(status === 'scheduled' ? [{
           label: 'Mešká', icon: 'time-outline',
           color: '#7D6608', bg: '#FEF9E7',
-          handler: wrapAction(appt.id, async () => { await clinic.markLate(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.markLate(appt); setExpanded(null); })
         }] : []),
         {
           label: 'No-show', icon: 'close-circle-outline',
           color: '#922B21', bg: '#FDEDEC',
-          handler: (a: ClinicAppointment) => confirmNoShow(a),
+          handler: (a: ClinicAppointment) => confirmNoShow(a)
         },
       ];
     }
@@ -250,12 +250,12 @@ export default function ClinicLiveScreen() {
         ...(isDoctor ? [{
           label: 'Do kresla', icon: 'medical-outline',
           color: '#1E8449', bg: '#EAFAF1',
-          handler: wrapAction(appt.id, async () => { await clinic.startTreatment(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.startTreatment(appt); setExpanded(null); })
         }] : []),
         {
           label: 'No-show', icon: 'close-circle-outline',
           color: '#922B21', bg: '#FDEDEC',
-          handler: (a: ClinicAppointment) => confirmNoShow(a),
+          handler: (a: ClinicAppointment) => confirmNoShow(a)
         },
       ];
     }
@@ -265,12 +265,12 @@ export default function ClinicLiveScreen() {
         ...(isDoctor ? [{
           label: 'Hotovo', icon: 'checkmark-circle-outline',
           color: '#7D3C98', bg: '#F5EEF8',
-          handler: wrapAction(appt.id, async () => { await clinic.endTreatment(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.endTreatment(appt); setExpanded(null); })
         }] : []),
         {
           label: 'Pomoc!', icon: 'alert-circle-outline',
           color: '#C0392B', bg: '#FDEDEC',
-          handler: wrapAction(appt.id, async () => { await clinic.needHelp(appt); }),
+          handler: wrapAction(appt.id, async () => { await clinic.needHelp(appt); })
         },
       ];
     }
@@ -280,7 +280,7 @@ export default function ClinicLiveScreen() {
         {
           label: 'Priprav účet', icon: 'receipt-outline',
           color: '#E67E22', bg: '#FEF3E2',
-          handler: wrapAction(appt.id, async () => { await clinic.prepareInvoice(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.prepareInvoice(appt); setExpanded(null); })
         },
       ];
     }
@@ -290,7 +290,7 @@ export default function ClinicLiveScreen() {
         {
           label: 'Zaplatené', icon: 'card-outline',
           color: '#1E8449', bg: '#EAFAF1',
-          handler: wrapAction(appt.id, async () => { await clinic.markPaid(appt); setExpanded(null); }),
+          handler: wrapAction(appt.id, async () => { await clinic.markPaid(appt); setExpanded(null); })
         },
       ];
     }
@@ -324,13 +324,13 @@ export default function ClinicLiveScreen() {
     in_chair:       activeAppts.filter(a => a.clinic_status === 'in_chair').length,
     treatment_done: activeAppts.filter(a => a.clinic_status === 'treatment_done').length,
     checkout:       activeAppts.filter(a => a.clinic_status === 'checkout').length,
-    late:           activeAppts.filter(a => a.clinic_status === 'late').length,
+    late:           activeAppts.filter(a => a.clinic_status === 'late').length
   };
 
   const totalToday = activeAppts.length;
 
   return (
-    <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
+    <View style={s.safe}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.75}>
@@ -388,7 +388,7 @@ export default function ClinicLiveScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -414,7 +414,7 @@ const s = StyleSheet.create({
   header: {
     backgroundColor: COLORS.esp,
     paddingHorizontal: 16, paddingTop: 14, paddingBottom: 14,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 10
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
@@ -431,7 +431,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 20,
     paddingHorizontal: 10, paddingVertical: 4,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)'
   },
   summaryEmoji: { fontSize: 12 },
   summaryLabel: { fontSize: 11, fontWeight: '600' },
@@ -440,7 +440,7 @@ const s = StyleSheet.create({
   card: {
     backgroundColor: '#fff', borderRadius: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3, overflow: 'hidden',
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
+    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4
   },
   cardExpanded: { borderColor: COLORS.sand },
 
@@ -449,7 +449,7 @@ const s = StyleSheet.create({
   statusChip: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
     borderRadius: 10, paddingHorizontal: 7, paddingVertical: 4,
-    borderWidth: 1,
+    borderWidth: 1
   },
   statusEmoji: { fontSize: 11 },
   statusLabel: { fontSize: 10, fontWeight: '700' },
@@ -467,7 +467,7 @@ const s = StyleSheet.create({
   pill: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
     backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4,
-    borderWidth: 1, borderColor: COLORS.bg3,
+    borderWidth: 1, borderColor: COLORS.bg3
   },
   pillUrgent: { backgroundColor: '#FDEDEC', borderColor: '#F1948A' },
   pillLabel:  { fontSize: 9, color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -481,7 +481,7 @@ const s = StyleSheet.create({
   roomRow: {},
   roomBtn: {
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-    borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff',
+    borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff'
   },
   roomBtnActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   roomBtnText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
@@ -494,7 +494,7 @@ const s = StyleSheet.create({
   actionBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10,
-    borderWidth: 1.5,
+    borderWidth: 1.5
   },
   actionBtnText: { fontSize: 13, fontWeight: '700' },
 
@@ -505,5 +505,5 @@ const s = StyleSheet.create({
   loadingText: { marginTop: 12, fontSize: 13, color: COLORS.wal },
   emptyIcon:   { fontSize: 56, marginBottom: 16 },
   emptyTitle:  { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 6, textAlign: 'center' },
-  emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20 },
+  emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20 }
 });

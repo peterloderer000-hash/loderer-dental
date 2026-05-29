@@ -8,13 +8,14 @@ import {
   ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, RADII, GRADIENTS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -111,45 +112,33 @@ export default function ConsentsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-            <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-          </TouchableOpacity>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.headerSub}>DOKUMENTY</Text>
-            <Text style={styles.headerTitle}>Informované súhlasy</Text>
-          </View>
-        </View>
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+      <View style={styles.safe}>
+        <HeroHeader title="Informované súhlasy" subtitle="Dokumenty" icon="document-text-outline" onBack={() => router.back()} />
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl, paddingTop: 16 }}>
           <SkeletonList count={4} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>DOKUMENTY</Text>
-          <Text style={styles.headerTitle}>Informované súhlasy</Text>
-        </View>
-        {pending.length > 0 && (
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Informované súhlasy"
+        subtitle="Dokumenty"
+        icon="document-text-outline"
+        onBack={() => router.back()}
+        rightAction={pending.length > 0 ? (
           <View style={styles.pendingBadge}>
             <Text style={styles.pendingBadgeText}>{pending.length} čaká</Text>
           </View>
-        )}
-      </View>
+        ) : undefined}
+      />
 
       <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing}
-          onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
+          onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.gold} />}>
 
         {/* ── Čakajúce ── */}
         {pending.length > 0 && (
@@ -277,17 +266,17 @@ export default function ConsentsScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 14 },
+  content:{ padding: SPACING.xl, paddingTop: 14 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:       { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:       { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:    { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:  { fontSize: 18, fontWeight: '700', color: '#fff' },

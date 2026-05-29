@@ -1,14 +1,15 @@
 ﻿import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, FlatList, Modal, RefreshControl,
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -45,14 +46,14 @@ interface Stats {
 
 const ROLE_LABELS: Record<string, string> = {
   doctor: 'Doktor', reception: 'Recepcia', hygienist: 'Hygienista',
-  owner: 'Vlastník', patient: 'Pacient',
+  owner: 'Vlastník', patient: 'Pacient'
 };
 
 const ROLE_COLORS: Record<string, { bg: string; darkBg: string; text: string; darkText: string }> = {
   doctor:    { bg: '#EBF5FB', darkBg: '#0D2233', text: '#1A5276', darkText: '#5DADE2' },
   reception: { bg: '#FEF9E7', darkBg: '#2D2200', text: '#7D6608', darkText: '#F39C12' },
   hygienist: { bg: '#EAFAF1', darkBg: '#0D3B1F', text: '#1E8449', darkText: '#27AE60' },
-  owner:     { bg: '#F5EEF8', darkBg: '#1E0D33', text: '#6C3483', darkText: '#AF7AC5' },
+  owner:     { bg: '#F5EEF8', darkBg: '#1E0D33', text: '#6C3483', darkText: '#AF7AC5' }
 };
 
 function initials(name: string) {
@@ -66,7 +67,7 @@ function euros(cents: number) {
 // ─── Invite Modal ─────────────────────────────────────────────────────────────
 
 function InviteModal({
-  visible, onClose, onSent,
+  visible, onClose, onSent
 }: {
   visible: boolean;
   onClose: () => void;
@@ -94,7 +95,7 @@ function InviteModal({
       email: email.trim().toLowerCase(),
       role,
       token,
-      expires_at: expiresAt,
+      expires_at: expiresAt
     });
 
     setLoading(false);
@@ -246,7 +247,7 @@ export default function AdminScreen() {
       thisMonthAppointments: monthAppts.count ?? 0,
       pendingAppointments:   pending.count ?? 0,
       totalPayments:         totalPay,
-      paidPayments:          paidPay,
+      paidPayments:          paidPay
     });
 
     setLoading(false);
@@ -273,7 +274,7 @@ export default function AdminScreen() {
             if (error) { Alert.alert('Chyba', error.message); return; }
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             load();
-          },
+          }
         },
       ],
     );
@@ -287,7 +288,7 @@ export default function AdminScreen() {
       address: editForm.address ?? null,
       phone:   editForm.phone   ?? null,
       email:   editForm.email   ?? null,
-      website: editForm.website ?? null,
+      website: editForm.website ?? null
     }).eq('id', clinic.id);
     setSavingClinic(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
@@ -305,30 +306,29 @@ export default function AdminScreen() {
   ];
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[s.safe, { backgroundColor: colors.bg2 }]}>
 
-      {/* ── Header ── */}
-      <View style={s.header}>
-        <View style={s.headerIcon}>
-          <Ionicons name="settings" size={20} color="#fff" />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={s.headerSub}>VLASTNÍK</Text>
-          <Text style={s.headerTitle}>Admin panel</Text>
-        </View>
-        {tab === 'team' && (
-          <TouchableOpacity style={s.inviteBtn} onPress={() => setInviteOpen(true)} activeOpacity={0.8}>
-            <Ionicons name="person-add-outline" size={16} color={COLORS.cream} />
-            <Text style={s.inviteBtnText}>Pozvať</Text>
-          </TouchableOpacity>
-        )}
-        {tab === 'clinic' && !editing && (
-          <TouchableOpacity style={s.inviteBtn} onPress={() => setEditing(true)} activeOpacity={0.8}>
-            <Ionicons name="create-outline" size={16} color={COLORS.cream} />
-            <Text style={s.inviteBtnText}>Upraviť</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <HeroHeader
+        title="Admin panel"
+        subtitle="Vlastník"
+        icon="settings-outline"
+        rightAction={
+          <>
+            {tab === 'team' && (
+              <TouchableOpacity style={s.inviteBtn} onPress={() => setInviteOpen(true)} activeOpacity={0.8}>
+                <Ionicons name="person-add-outline" size={16} color={COLORS.cream} />
+                <Text style={s.inviteBtnText}>Pozvať</Text>
+              </TouchableOpacity>
+            )}
+            {tab === 'clinic' && !editing && (
+              <TouchableOpacity style={s.inviteBtn} onPress={() => setEditing(true)} activeOpacity={0.8}>
+                <Ionicons name="create-outline" size={16} color={COLORS.cream} />
+                <Text style={s.inviteBtnText}>Upraviť</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        }
+      />
 
       {/* ── Tab row ── */}
       <View style={[s.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
@@ -341,7 +341,7 @@ export default function AdminScreen() {
       </View>
 
       {loading ? (
-        <View style={{ padding: SIZES.padding }}><SkeletonList count={5} /></View>
+        <View style={{ padding: SPACING.xl }}><SkeletonList count={5} /></View>
       ) : (
         <>
           {/* ── TEAM ── */}
@@ -350,7 +350,7 @@ export default function AdminScreen() {
               data={team}
               keyExtractor={m => m.id}
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
               ListHeaderComponent={
@@ -404,7 +404,7 @@ export default function AdminScreen() {
           {tab === 'clinic' && (
             <ScrollView
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               {clinic ? (
@@ -477,7 +477,7 @@ export default function AdminScreen() {
           {tab === 'stats' && stats && (
             <ScrollView
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               <Text style={[s.statsSection, { color: colors.textSecondary }]}>PACIENTI & TERMÍNY</Text>
@@ -559,7 +559,7 @@ export default function AdminScreen() {
       )}
 
       <InviteModal visible={inviteOpen} onClose={() => setInviteOpen(false)} onSent={load} />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -572,29 +572,29 @@ const s = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
-    paddingTop: 10, paddingBottom: 16,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
+    paddingTop: 10, paddingBottom: 16
   },
   headerIcon: {
     width: 38, height: 38, borderRadius: 19,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
   inviteBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 10,
-    paddingHorizontal: 12, paddingVertical: 8,
+    paddingHorizontal: 12, paddingVertical: 8
   },
   inviteBtnText: { fontSize: 12, fontWeight: '600', color: COLORS.cream },
 
   tabRow: {
     flexDirection: 'row', backgroundColor: '#fff',
-    borderBottomWidth: 1, borderBottomColor: COLORS.bg3,
+    borderBottomWidth: 1, borderBottomColor: COLORS.bg3
   },
   tabBtn: {
     flex: 1, paddingVertical: 12, alignItems: 'center', gap: 3,
-    borderBottomWidth: 3, borderBottomColor: 'transparent',
+    borderBottomWidth: 3, borderBottomColor: 'transparent'
   },
   tabBtnActive: { borderBottomColor: COLORS.esp },
   tabBtnText:   { fontSize: 11, fontWeight: '600', color: '#aaa' },
@@ -605,11 +605,11 @@ const s = StyleSheet.create({
   memberCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: '#fff', borderRadius: 14, padding: 14,
-    marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
+    marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   memberAvatar: {
     width: 46, height: 46, borderRadius: 23,
-    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   memberAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   memberTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 3 },
@@ -620,17 +620,17 @@ const s = StyleSheet.create({
   memberPhone: { fontSize: 12, color: '#888' },
   removeBtn: {
     width: 34, height: 34, borderRadius: 10,
-    backgroundColor: '#FDF2F2', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#FDF2F2', alignItems: 'center', justifyContent: 'center'
   },
 
   clinicCard: {
     backgroundColor: '#fff', borderRadius: 16, padding: 20,
-    borderWidth: 1, borderColor: COLORS.bg3, elevation: 2,
+    borderWidth: 1, borderColor: COLORS.bg3, elevation: 2
   },
   clinicHeader: { alignItems: 'center', marginBottom: 20, gap: 10 },
   clinicIcon: {
     width: 60, height: 60, borderRadius: 18,
-    backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center'
   },
   clinicName: { fontSize: 20, fontWeight: '800', color: COLORS.esp, textAlign: 'center' },
   clinicRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
@@ -641,17 +641,17 @@ const s = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12,
+    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12
   },
   input: { flex: 1, paddingVertical: 12, fontSize: 14, color: COLORS.esp },
   cancelBtn: {
     flex: 1, paddingVertical: 14, borderRadius: 12,
-    borderWidth: 1.5, borderColor: COLORS.bg3, alignItems: 'center', backgroundColor: '#fff',
+    borderWidth: 1.5, borderColor: COLORS.bg3, alignItems: 'center', backgroundColor: '#fff'
   },
   cancelBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   saveBtn: {
     flex: 2, paddingVertical: 14, borderRadius: 12,
-    backgroundColor: COLORS.esp, alignItems: 'center',
+    backgroundColor: COLORS.esp, alignItems: 'center'
   },
   saveBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
 
@@ -660,7 +660,7 @@ const s = StyleSheet.create({
   statCard: {
     width: '47%', backgroundColor: '#fff', borderRadius: 14,
     padding: 16, alignItems: 'center', gap: 6,
-    borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
+    borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   statValue: { fontSize: 28, fontWeight: '800' },
   statLabel: { fontSize: 11, color: COLORS.wal, textAlign: 'center', lineHeight: 15 },
@@ -668,7 +668,7 @@ const s = StyleSheet.create({
   payCards: { gap: 10 },
   payCard: {
     backgroundColor: '#EBF5FB', borderRadius: 14, padding: 18,
-    borderWidth: 1, borderColor: '#AED6F1',
+    borderWidth: 1, borderColor: '#AED6F1'
   },
   payCardLabel: { fontSize: 12, fontWeight: '600', color: '#1A5276', marginBottom: 6 },
   payCardValue: { fontSize: 28, fontWeight: '800', color: '#1A5276' },
@@ -683,9 +683,9 @@ const s = StyleSheet.create({
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
   emptyCta: {
     backgroundColor: COLORS.esp, borderRadius: 12,
-    paddingHorizontal: 20, paddingVertical: 12, marginTop: 6,
+    paddingHorizontal: 20, paddingVertical: 12, marginTop: 6
   },
-  emptyCtaText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  emptyCtaText: { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
 // InviteModal styles
@@ -693,7 +693,7 @@ const im = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 120,
+    paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 120
   },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 16 },
   title:  { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
@@ -702,21 +702,21 @@ const im = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12, marginBottom: 4,
+    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12, marginBottom: 4
   },
   input: { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
   roleRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
   roleBtn: {
     flex: 1, paddingVertical: 10, borderRadius: 10,
-    backgroundColor: COLORS.bg3, alignItems: 'center',
+    backgroundColor: COLORS.bg3, alignItems: 'center'
   },
   roleBtnActive:     { backgroundColor: COLORS.esp },
   roleBtnText:       { fontSize: 13, fontWeight: '600', color: COLORS.wal },
   roleBtnTextActive: { color: '#fff' },
   sendBtn: {
     backgroundColor: COLORS.esp, borderRadius: 14, paddingVertical: 15,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8
   },
   sendBtnDisabled: { opacity: 0.35 },
-  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' }
 });

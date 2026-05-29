@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
-  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -19,7 +19,7 @@ import { SkeletonList } from '../../components/Skeleton';
 import { useNotifications } from '../../hooks/useNotifications';
 import {
   getNextOpenDays, generateTimeSlotsForDay,
-  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes,
+  SK_DAYS_SHORT, SK_MONTHS_SHORT, jsDayToDb, timeToMinutes
 } from '../../utils/timeSlots';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingTour, { getOnboardingKey } from '../../components/OnboardingTour';
@@ -123,7 +123,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
       title:          '📅 Termín presunutý',
       body:           `Váš termín${appointment.service ? ` (${appointment.service.name})` : ''} bol presunutý na ${dateStr} o ${selTime}.`,
       type:           'info',
-      appointment_id: appointment.id,
+      appointment_id: appointment.id
     }).then(null, () => {});
     onDone(); onClose();
   }
@@ -230,7 +230,7 @@ const rsStyles = StyleSheet.create({
   btnCancel:   { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnConfirm:  { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  btnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  btnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
 // ─── Pomocné funkcie ──────────────────────────────────────────────────────────
@@ -250,7 +250,7 @@ const STATUS_CONFIG = {
   scheduled: { label: 'Naplánovaný',        bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1' },
   arrived:   { label: '🟢 V čakárni',       bg: '#E8F8F5', color: '#0E6655', border: '#A2D9CE' },
   completed: { label: 'Dokončený',           bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF' },
-  cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' },
+  cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' }
 };
 
 const StatusBadge = React.memo(function StatusBadge({ status }: { status: Appointment['status'] }) {
@@ -270,7 +270,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
   const adyn = {
     card: { backgroundColor: ac.cardBg, borderColor: ac.bg3 },
     text: { color: ac.textPrimary },
-    sub:  { color: ac.textSecondary },
+    sub:  { color: ac.textSecondary }
   };
   // Dark-mode aware button backgrounds
   const db = (lightBg: string, accent: string) => dark ? { backgroundColor: accent + '22', borderColor: accent + '44' } : { backgroundColor: lightBg };
@@ -513,7 +513,7 @@ const aStyles = StyleSheet.create({
   btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnRejectText: { fontSize: 13, fontWeight: '700', color: '#922B21' },
   btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#1E8449' },
-  btnApproveText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  btnApproveText: { fontSize: 13, fontWeight: '700', color: '#fff' }
 });
 
 // ─── Šablóny pokynov po ošetrení ─────────────────────────────────────────────
@@ -630,7 +630,7 @@ const cmStyles = StyleSheet.create({
   careBox:       { backgroundColor: '#EBF5FB', borderRadius: 10, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#AED6F1' },
   templatesRow:  { gap: 8, paddingBottom: 4 },
   templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#AED6F1' },
-  templateLabel: { fontSize: 11, fontWeight: '700', color: '#1A5276' },
+  templateLabel: { fontSize: 11, fontWeight: '700', color: '#1A5276' }
 });
 
 export default function DoctorHome() {
@@ -788,7 +788,7 @@ export default function DoctorHome() {
         title:          '📋 Pokyny po ošetrení',
         body:           `Po dnešnom ${svcName}: ${careInstructions.trim().slice(0, 120)}${careInstructions.length > 120 ? '…' : ''}`,
         type:           'info',
-        appointment_id: saved.id,
+        appointment_id: saved.id
       }).then(null, () => {});
     } else {
       supabase.from('notifications').insert({
@@ -796,7 +796,7 @@ export default function DoctorHome() {
         title:          `✅ Ošetrenie dokončené`,
         body:           `Dnešné ${svcName} bolo úspešne dokončené. Ďakujeme za vašu návštevu!`,
         type:           'success',
-        appointment_id: saved.id,
+        appointment_id: saved.id
       }).then(null, () => {});
     }
 
@@ -807,7 +807,7 @@ export default function DoctorHome() {
       body:           `Včera ste boli u nás na ${svcName}. Ak máte otázky alebo ťažkosti, neváhajte nás kontaktovať.`,
       type:           'info',
       appointment_id: saved.id,
-      created_at:     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      created_at:     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     }).then(null, () => {});
 
     // Ponúkni naplánovanie nasledujúceho termínu
@@ -818,7 +818,7 @@ export default function DoctorHome() {
         { text: 'Nie', style: 'cancel' },
         { text: '📅 Naplánovať', onPress: () => router.push({
           pathname: '/(doctor)/add-appointment',
-          params: { patientId: saved.patient_id, patientName: saved.patient?.full_name ?? '' },
+          params: { patientId: saved.patient_id, patientName: saved.patient?.full_name ?? '' }
         }) },
       ]
     );
@@ -839,7 +839,7 @@ export default function DoctorHome() {
         title:          '✅ Termín potvrdený!',
         body:           `Váš termín${saved.service ? ` (${saved.service.name})` : ''} bol potvrdený na ${dateStr} o ${timeStr}. Tešíme sa na vás!`,
         type:           'success',
-        appointment_id: saved.id,
+        appointment_id: saved.id
       }).then(({ error }) => { if (error) console.warn('Approve notif error:', error.message); });
     }
     setApproveSaving(false);
@@ -864,9 +864,9 @@ export default function DoctorHome() {
             title:          '❌ Žiadosť o termín odmietnutá',
             body:           `Vaša žiadosť o termín${saved.service ? ` (${saved.service.name})` : ''} nebola schválená. Skúste iný termín alebo nás kontaktujte.`,
             type:           'warning',
-            appointment_id: saved.id,
+            appointment_id: saved.id
           }).then(({ error }) => { if (error) console.warn('Reject notif error:', error.message); });
-        },
+        }
       },
     ]);
   }
@@ -876,7 +876,7 @@ export default function DoctorHome() {
       { text: 'Nie', style: 'cancel' },
       {
         text: 'Áno, zrušiť', style: 'destructive',
-        onPress: async () => { const err = await updateStatus(id, 'cancelled'); if (err) Alert.alert('Chyba', err.message); },
+        onPress: async () => { const err = await updateStatus(id, 'cancelled'); if (err) Alert.alert('Chyba', err.message); }
       },
     ]);
   }
@@ -913,7 +913,7 @@ export default function DoctorHome() {
                 title:          '📅 Pripomienka termínu',
                 body:           `Zajtra máte termín o ${timeStr}${a.service ? ` — ${a.service.name}` : ''}. Tešíme sa na vás!`,
                 type:           'info' as const,
-                appointment_id: a.id,
+                appointment_id: a.id
               };
             });
             const { error } = await supabase.from('notifications').insert(notifs);
@@ -1009,7 +1009,7 @@ export default function DoctorHome() {
     bg:   { backgroundColor: colors.bg2 },
     card: { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
     text: { color: colors.textPrimary },
-    sub:  { color: colors.textSecondary },
+    sub:  { color: colors.textSecondary }
   };
 
   const now = new Date();
@@ -1022,7 +1022,7 @@ export default function DoctorHome() {
 
   return (
     <ScreenWrapper>
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <View style={styles.safe}>
 
       {/* ── HERO ── */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={styles.hero}>
@@ -1087,7 +1087,7 @@ export default function DoctorHome() {
                 <Text style={[styles.heroStatNum, { color: COLORS.gold }]}>{pendingAppts.length}</Text>
                 <Text style={[styles.heroStatLbl, { color: COLORS.gold }]}>Čakajú</Text>
               </View>
-            </>
+            </View>
           )}
           <View style={{ flex: 1 }} />
           <TouchableOpacity
@@ -1211,7 +1211,7 @@ export default function DoctorHome() {
                                   title:          '❌ Žiadosť o termín odmietnutá',
                                   body:           `Vaša žiadosť o termín${appt.service ? ` (${appt.service.name})` : ''} nebola schválená. Skúste iný termín alebo nás kontaktujte.`,
                                   type:           'warning',
-                                  appointment_id: appt.id,
+                                  appointment_id: appt.id
                                 }).then(null, () => {});
                               }},
                           ]);
@@ -1408,15 +1408,15 @@ export default function DoctorHome() {
                   onApproveRequest={() => setApprovingAppt(item)}
                   onDentalChart={() => router.push({
                     pathname: '/(doctor)/dental-chart',
-                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' },
+                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' }
                   })}
                   onPassport={() => router.push({
                     pathname: '/(doctor)/patient-passport',
-                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' },
+                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' }
                   })}
                   onViewPatient={() => router.push({
                     pathname: '/(doctor)/patient-detail',
-                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' },
+                    params: { patientId: item.patient_id, patientName: item.patient?.full_name ?? 'Pacient' }
                   })} />
               ))}
             </View>
@@ -1460,7 +1460,7 @@ export default function DoctorHome() {
         onClose={() => setRescheduleAppt(null)}
         onDone={refetch}
       />
-    </SafeAreaView>
+    </View>
     </ScreenWrapper>
   );
 }
@@ -1474,12 +1474,12 @@ const styles = StyleSheet.create({
   heroCircle1: {
     position: 'absolute', top: -60, right: -40,
     width: 180, height: 180, borderRadius: 90,
-    backgroundColor: 'rgba(201,168,76,0.07)',
+    backgroundColor: 'rgba(201,168,76,0.07)'
   },
   heroCircle2: {
     position: 'absolute', bottom: -30, left: -30,
     width: 120, height: 120, borderRadius: 60,
-    backgroundColor: 'rgba(201,168,76,0.05)',
+    backgroundColor: 'rgba(201,168,76,0.05)'
   },
   heroHeader:  { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
   heroGreeting:{ fontFamily: 'PlayfairDisplay_700Bold_Italic', fontSize: 24, lineHeight: 30, color: COLORS.cream, letterSpacing: -0.3 },
@@ -1488,7 +1488,7 @@ const styles = StyleSheet.create({
   heroBtn:     {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.12)',
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center'
   },
   heroBadge: {
     position: 'absolute', top: -2, right: -2,
@@ -1496,7 +1496,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E74C3C',
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 2,
-    borderWidth: 1.5, borderColor: COLORS.esp,
+    borderWidth: 1.5, borderColor: COLORS.esp
   },
   heroBadgeText: { fontSize: 7, fontWeight: '800', color: '#fff' },
   heroGoldLine:  { height: 1, backgroundColor: COLORS.gold, opacity: 0.5, marginBottom: 12 },
@@ -1509,7 +1509,7 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center', justifyContent: 'center',
-    marginLeft: 6,
+    marginLeft: 6
   },
 
   // ── Quick action chips ────────────────────────────────────────────────────────
@@ -1522,7 +1522,7 @@ const styles = StyleSheet.create({
     minWidth: 14, height: 14, borderRadius: 7,
     backgroundColor: '#E74C3C',
     alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: 2,
+    paddingHorizontal: 2
   },
   quickBadgeText: { fontSize: 7, fontWeight: '800', color: '#fff' },
 
@@ -1587,7 +1587,7 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 82, right: 20,
     width: 56, height: 56, borderRadius: 28,
     overflow: 'hidden',
-    ...SHADOWS.gold,
+    ...SHADOWS.gold
   },
   fabGradient: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
@@ -1651,5 +1651,5 @@ const styles = StyleSheet.create({
   sheetBtnCancel:   { flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: RADII.md, paddingVertical: 14, alignItems: 'center' },
   sheetBtnCancelText:  { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   sheetBtnConfirm:     { flex: 2, borderRadius: RADII.md, paddingVertical: 14, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  sheetBtnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  sheetBtnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' }
 });

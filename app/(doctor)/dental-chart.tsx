@@ -1,16 +1,17 @@
 ﻿import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView,
-  StyleSheet, Text, TextInput, TouchableOpacity, View,
+  StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import Svg, { Rect, Text as SvgText, G } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useDentalChart, ToothStatus, ToothRecord } from '../../hooks/useDentalChart';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -142,7 +143,7 @@ const Tooth = React.memo(function Tooth({ num, record, onPress }: {
         width: TOOTH_SYM_SIZE,
         height: TOOTH_SYM_SIZE + 8,
         backgroundColor: bg,
-        borderColor: border,
+        borderColor: border
       }]}
     >
       <Text style={[styles.toothNum, { color: border }]}>{num}</Text>
@@ -370,7 +371,7 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
                   return (
                     <View key={h.id} style={[dStyles.historyRow, {
                       backgroundColor: isNew ? (dark ? hSt.color + '22' : hSt.bg) : colors.bg2,
-                      borderColor:     isNew ? hSt.color + '55' : colors.bg3,
+                      borderColor:     isNew ? hSt.color + '55' : colors.bg3
                     }]}>
                       <View style={[dStyles.histDot, { backgroundColor: hSt.color }]} />
                       <View style={{ flex: 1 }}>
@@ -410,13 +411,13 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
             <TouchableOpacity
               style={[dStyles.btn, { marginTop: 10,
                 backgroundColor: dark ? '#0D3B1F' : '#EAFAF1',
-                borderWidth: 1.5, borderColor: dark ? '#27AE6044' : '#A9DFBF',
+                borderWidth: 1.5, borderColor: dark ? '#27AE6044' : '#A9DFBF'
               }]}
               onPress={() => {
                 onClose();
                 router.push({
                   pathname: '/(doctor)/treatment-plan',
-                  params: { patientId, patientName, prefilledTooth: String(tooth) },
+                  params: { patientId, patientName, prefilledTooth: String(tooth) }
                 });
               }}
               activeOpacity={0.85}
@@ -444,7 +445,7 @@ const dStyles = StyleSheet.create({
   histNote:      { fontSize: 12, lineHeight: 17 },
   histDate:      { fontSize: 10, fontWeight: '600', marginTop: 2, flexShrink: 0 },
   btn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12, paddingVertical: 14 },
-  btnTextWhite:  { fontSize: 14, fontWeight: '700', color: '#fff' },
+  btnTextWhite:  { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -484,17 +485,13 @@ export default function DentalChart() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Hlavička */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>ZUBNÁ KARTA</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName ?? 'Pacient'}</Text>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title={patientName ?? 'Pacient'}
+        subtitle="Zubná karta"
+        icon="grid-outline"
+        onBack={() => router.back()}
+      />
 
       {loading ? (
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
@@ -634,7 +631,7 @@ export default function DentalChart() {
           noteOverride={noteOverride}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -710,5 +707,5 @@ const styles = StyleSheet.create({
   photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: '#fff', borderRadius: 11 },
   photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
   photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#F4ECE4', borderWidth: 1.5, borderColor: COLORS.sand },
-  photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal },
+  photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal }
 });

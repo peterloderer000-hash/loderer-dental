@@ -1,10 +1,11 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme, AppColors } from '../../context/ThemeContext';
 
@@ -76,19 +77,16 @@ export default function PatientPassport() {
   }, [patientId]);
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.esp }]} edges={['top']}>
-      <View style={[styles.header, { backgroundColor: colors.esp }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>ZDRAVOTNÝ DOTAZNÍK</Text>
-          <Text style={styles.headerTitle} numberOfLines={1}>{patientName ?? 'Pacient'}</Text>
-        </View>
-      </View>
+    <View style={[styles.safe, { backgroundColor: colors.esp }]}>
+      <HeroHeader
+        title={patientName ?? 'Pacient'}
+        subtitle="Zdravotný dotazník"
+        icon="fitness-outline"
+        onBack={() => router.back()}
+      />
 
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding, paddingTop: 16 }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl, paddingTop: 16 }}>
           <SkeletonList count={5} />
         </View>
       ) : !passport ? (
@@ -220,17 +218,17 @@ export default function PatientPassport() {
           <View style={{ height: 100 }} />
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding },
+  content:{ padding: SPACING.xl },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header: { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16 },
+  header: { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
@@ -268,5 +266,5 @@ const styles = StyleSheet.create({
   bloodRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, marginBottom: 2 },
   bloodLbl:    { fontSize: 12, fontWeight: '600', color: COLORS.esp },
   bloodBadge:  { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-  bloodText:   { fontSize: 14, fontWeight: '800', color: '#C0392B', letterSpacing: 1 },
-});
+  bloodText:   { fontSize: 14, fontWeight: '800', color: '#C0392B', letterSpacing: 1 } });
+                                                                                                                                                                                                                                                                                                                                    

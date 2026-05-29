@@ -6,15 +6,15 @@ import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, Modal, RefreshControl,
   ScrollView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -42,16 +42,13 @@ type Patient = { id: string; full_name: string | null };
 const DEFAULT_TEMPLATES = [
   {
     title: 'Súhlas so stomatologickým ošetrením',
-    content: 'Ja, dolu podpísaný/á, súhlasím so stomatologickým ošetrením vrátane potrebných röntgenových snímok, lokálnej anestézie a ďalších diagnostických a terapeutických výkonov podľa uváženia ošetrujúceho lekára.\n\nBeriem na vedomie, že mi boli vysvetlené možné riziká a alternatívy liečby. Súhlasím so spracovaním svojich osobných a zdravotných údajov na účely poskytovania zdravotnej starostlivosti.',
-  },
+    content: 'Ja, dolu podpísaný/á, súhlasím so stomatologickým ošetrením vrátane potrebných röntgenových snímok, lokálnej anestézie a ďalších diagnostických a terapeutických výkonov podľa uváženia ošetrujúceho lekára.\n\nBeriem na vedomie, že mi boli vysvetlené možné riziká a alternatívy liečby. Súhlasím so spracovaním svojich osobných a zdravotných údajov na účely poskytovania zdravotnej starostlivosti.' },
   {
     title: 'Súhlas s extrakciou zuba',
-    content: 'Súhlasím s extrakciou zuba/zubov podľa odporúčania ošetrujúceho lekára. Som informovaný/á o možných komplikáciách (krvácanie, infekcia, poškodenie susedných zubov, alveolitis sicca) a beriem ich na vedomie.\n\nPo výkone budem dodržiavať pokyny lekára ohľadom stravy, hygieny a prípadnej medikácie.',
-  },
+    content: 'Súhlasím s extrakciou zuba/zubov podľa odporúčania ošetrujúceho lekára. Som informovaný/á o možných komplikáciách (krvácanie, infekcia, poškodenie susedných zubov, alveolitis sicca) a beriem ich na vedomie.\n\nPo výkone budem dodržiavať pokyny lekára ohľadom stravy, hygieny a prípadnej medikácie.' },
   {
     title: 'Súhlas s implantologickým výkonom',
-    content: 'Súhlasím s plánovaným implantologickým výkonom. Som oboznámený/á s priebehom liečby, vrátane chirurgickej fázy, hojenia a protetickej fázy. Beriem na vedomie, že úspešnosť implantátu závisí od celkového zdravotného stavu, dodržiavania hygieny a nekurenia.\n\nSúhlasím s použitím röntgenového vyšetrenia (OPG, CBCT) na diagnostické účely.',
-  },
+    content: 'Súhlasím s plánovaným implantologickým výkonom. Som oboznámený/á s priebehom liečby, vrátane chirurgickej fázy, hojenia a protetickej fázy. Beriem na vedomie, že úspešnosť implantátu závisí od celkového zdravotného stavu, dodržiavania hygieny a nekurenia.\n\nSúhlasím s použitím röntgenového vyšetrenia (OPG, CBCT) na diagnostické účely.' },
 ];
 
 export default function ConsentFormsScreen() {
@@ -164,15 +161,13 @@ export default function ConsentFormsScreen() {
       form_id:        sendFormId,
       patient_id:     sendPatientId,
       appointment_id: sendApptId.trim() || null,
-      status:         'pending',
-    });
+      status:         'pending' });
     // If appointment_id column doesn't exist yet, retry without it
     if (error?.message?.includes('appointment_id')) {
       ({ error } = await supabase.from('patient_consents').insert({
         form_id:    sendFormId,
         patient_id: sendPatientId,
-        status:     'pending',
-      }));
+        status:     'pending' }));
     }
     setSending(false);
     if (error) { Alert.alert('Chyba', error.message); return; }
@@ -185,24 +180,21 @@ export default function ConsentFormsScreen() {
   const STATUS_CFG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
     pending: { label: 'Čaká na podpis', color: '#7D6608', bg: '#FEF9E7', icon: '⏳' },
     signed:  { label: 'Podpísaný',      color: '#1E8449', bg: '#EAFAF1', icon: '✅' },
-    declined:{ label: 'Odmietnutý',     color: '#922B21', bg: '#FDEDEC', icon: '❌' },
-  };
+    declined:{ label: 'Odmietnutý',     color: '#922B21', bg: '#FDEDEC', icon: '❌' } };
 
   if (loading) return <SkeletonList count={4} />;
 
   const pendingCount = consents.filter(c => c.status === 'pending').length;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>DOKUMENTÁCIA</Text>
-          <Text style={styles.headerTitle}>Informované súhlasy</Text>
-        </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Informované súhlasy"
+        subtitle="Dokumentácia"
+        icon="document-text-outline"
+        onBack={() => router.back()}
+      />
+
         {activeTab === 'forms' && (
           <TouchableOpacity style={styles.addBtn} onPress={() => openCreate()} activeOpacity={0.85}>
             <Ionicons name="add" size={18} color="#fff" />
@@ -286,7 +278,7 @@ export default function ConsentFormsScreen() {
                 </View>
               ))
             )}
-          </>
+          </View>
         )}
 
         {/* ── TAB: Odoslané ── */}
@@ -392,7 +384,7 @@ export default function ConsentFormsScreen() {
                 onPress={handleSend} disabled={sending || !sendPatientId} activeOpacity={0.85}>
                 {sending ? <ActivityIndicator color="#fff" size="small" />
                   : <><Ionicons name="send-outline" size={14} color="#fff" />
-                      <Text style={styles.modalSaveText}>Odoslať</Text></>}
+                      <Text style={styles.modalSaveText}>Odoslať</Text></View>}
               </TouchableOpacity>
             </View>
           </View>
@@ -415,24 +407,24 @@ export default function ConsentFormsScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 12 },
+  content:{ padding: SPACING.xl, paddingTop: 12 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
   addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
 
-  tabsRow:       { flexDirection: 'row', backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingBottom: 12, gap: 10 },
+  tabsRow:       { flexDirection: 'row', backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingBottom: 12, gap: 10 },
   tab:           { flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:     { backgroundColor: COLORS.wal },
   tabText:       { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
@@ -483,5 +475,4 @@ const styles = StyleSheet.create({
   modalCancel:     { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   modalCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   modalSave:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: COLORS.wal },
-  modalSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
-});
+  modalSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' } });

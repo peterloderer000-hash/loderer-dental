@@ -3,11 +3,12 @@ import {
   Alert, KeyboardAvoidingView, Platform, ScrollView,
   StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, RADII, SHADOWS } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, SPACING, GRADIENTS } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 
 const QUESTIONS = [
@@ -83,17 +84,13 @@ export default function PreQuestionnaireScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-      {/* Header */}
-      <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-          <Ionicons name="arrow-back" size={22} color={COLORS.sand} />
-        </TouchableOpacity>
-        <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={s.headerLabel}>PRED TERMÍNOM</Text>
-          <Text style={s.headerTitle}>Krátky dotazník</Text>
-        </View>
-      </View>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <HeroHeader
+        title="Krátky dotazník"
+        subtitle="Pred termínom"
+        icon="clipboard-outline"
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
@@ -185,7 +182,7 @@ export default function PreQuestionnaireScreen() {
           <Text style={s.submitText}>{saving ? 'Odosielam...' : 'Odoslať doktorovi'}</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

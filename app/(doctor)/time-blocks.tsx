@@ -1,14 +1,14 @@
 ﻿import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   ActivityIndicator, Alert, Modal, ScrollView, StyleSheet,
-  Text, TextInput, TouchableOpacity, View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useTimeBlocks, BLOCK_CONFIG, BlockType, TimeBlock } from '../../hooks/useTimeBlocks';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -61,32 +61,28 @@ function quickBlocks(now: Date) {
       block_type: 'lunch' as BlockType,
       title: 'Obed',
       start: (() => { const d = new Date(today); d.setHours(12, 0, 0, 0); return d; })(),
-      end:   (() => { const d = new Date(today); d.setHours(13, 0, 0, 0); return d; })(),
-    },
+      end:   (() => { const d = new Date(today); d.setHours(13, 0, 0, 0); return d; })() },
     {
       label: '🌙 Poobede dnes',
       sub: '13:00 – 17:00',
       block_type: 'personal' as BlockType,
       title: 'Voľno poobede',
       start: (() => { const d = new Date(today); d.setHours(13, 0, 0, 0); return d; })(),
-      end:   (() => { const d = new Date(today); d.setHours(17, 0, 0, 0); return d; })(),
-    },
+      end:   (() => { const d = new Date(today); d.setHours(17, 0, 0, 0); return d; })() },
     {
       label: '📋 Celé zajtra',
       sub: fmtDateShort(tomorrow),
       block_type: 'meeting' as BlockType,
       title: 'Voľný deň',
       start: (() => { const d = new Date(tomorrow); d.setHours(8, 0, 0, 0); return d; })(),
-      end:   (() => { const d = new Date(tomorrow); d.setHours(17, 0, 0, 0); return d; })(),
-    },
+      end:   (() => { const d = new Date(tomorrow); d.setHours(17, 0, 0, 0); return d; })() },
     {
       label: '🏖️ Do konca týždňa',
       sub: `do ${fmtDateShort(sunday)}`,
       block_type: 'vacation' as BlockType,
       title: 'Dovolenka',
       start: (() => { const d = new Date(today); d.setHours(0, 0, 0, 0); return d; })(),
-      end:   sunday,
-    },
+      end:   sunday },
   ];
 }
 
@@ -122,8 +118,7 @@ const bStyles = StyleSheet.create({
   cardIcon: { fontSize: 22, marginTop: 1 },
   cardTitle:{ fontSize: 14, fontWeight: '700', marginBottom: 3 },
   cardDate: { fontSize: 11, color: COLORS.wal, fontWeight: '500' },
-  cardNote: { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginTop: 3 },
-});
+  cardNote: { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginTop: 3 } });
 
 // ─── Modal: vlastné blokovanie ────────────────────────────────────────────────
 function AddBlockModal({ visible, onClose, onSave }: {
@@ -181,8 +176,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
       block_type: blockType,
       start_time: start.toISOString(),
       end_time:   end.toISOString(),
-      note:       note.trim() || undefined,
-    });
+      note:       note.trim() || undefined });
     setSaving(false);
     if (err) { Alert.alert('Chyba', err.message); return; }
     onClose();
@@ -315,7 +309,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
               {saving
                 ? <ActivityIndicator color="#fff" size="small" />
                 : <><Ionicons name="lock-closed-outline" size={15} color="#fff" />
-                    <Text style={mStyles.btnSaveText}>Zablokovať čas</Text></>}
+                    <Text style={mStyles.btnSaveText}>Zablokovať čas</Text></View>}
             </TouchableOpacity>
           </View>
         </View>
@@ -349,8 +343,7 @@ const mStyles = StyleSheet.create({
   btnCancel: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:   { flex: 1.6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.esp },
-  btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' },
-});
+  btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' } });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function TimeBlocksScreen() {
@@ -377,8 +370,7 @@ export default function TimeBlocksScreen() {
       title:      tpl.title,
       block_type: tpl.block_type,
       start_time: tpl.start.toISOString(),
-      end_time:   tpl.end.toISOString(),
-    });
+      end_time:   tpl.end.toISOString() });
     setQuickSaving(null);
     if (err) Alert.alert('Chyba', err.message);
   }
@@ -410,16 +402,14 @@ export default function TimeBlocksScreen() {
   }, [blocks]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Hlavička */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>SPRÁVA ROZVRHU</Text>
-          <Text style={styles.headerTitle}>Blokovanie času</Text>
-        </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Blokovanie času"
+        subtitle="Správa rozvrhu"
+        icon="calendar-outline"
+        onBack={() => router.back()}
+      />
+
         <TouchableOpacity style={styles.addBtn} onPress={() => setShowModal(true)} activeOpacity={0.85}>
           <Ionicons name="add" size={20} color="#fff" />
           <Text style={styles.addBtnText}>Pridať</Text>
@@ -475,7 +465,7 @@ export default function TimeBlocksScreen() {
         </Text>
 
         {loading ? (
-          <View style={{ padding: SIZES.padding }}><SkeletonList count={3} /></View>
+          <View style={{ padding: SPACING.xl }}><SkeletonList count={3} /></View>
         ) : blocks.length === 0 ? (
           <View style={styles.emptyCenter}>
             <Ionicons name="checkmark-circle-outline" size={48} color={COLORS.bg3} />
@@ -508,7 +498,7 @@ export default function TimeBlocksScreen() {
           return err;
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -516,9 +506,9 @@ export default function TimeBlocksScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 14 },
+  content: { padding: SPACING.xl, paddingTop: 14 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
@@ -545,5 +535,4 @@ const styles = StyleSheet.create({
 
   emptyCenter: { alignItems: 'center', paddingVertical: 40, gap: 10 },
   emptyTitle:  { fontSize: 16, fontWeight: '600', color: COLORS.esp },
-  emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
-});
+  emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center' } });
