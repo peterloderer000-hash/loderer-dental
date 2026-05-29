@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { usePatients, Patient } from '../../hooks/usePatients';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { ScreenWrapper } from '../../components/ScreenWrapper';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -397,7 +397,7 @@ export default function PatientsScreen() {
                 <Text style={styles.wlSectionTitle}>ČAKACIA LISTINA ({waitingList.length})</Text>
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: SIZES.padding, gap: 10, paddingBottom: 4 }}>
+                contentContainerStyle={{ paddingHorizontal: SPACING.xl, gap: 10, paddingBottom: 4 }}>
                 {waitingList.map((entry) => (
                   <View key={entry.id} style={[styles.wlCard, { backgroundColor: colors.cardBg }]}>
                     <View style={styles.wlCardTop}>
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: 32 },
 
   // Header
-  header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding + 4, paddingTop: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
+  header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl + 4, paddingTop: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
   headerTitle: { fontSize: 20, fontWeight: '600', color: '#fff' },
   countBadge: { backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8, alignItems: 'center', borderWidth: 2, borderColor: COLORS.sand },
@@ -497,25 +497,25 @@ const styles = StyleSheet.create({
   countLabel: { fontSize: 10, color: COLORS.cream, letterSpacing: 1, textTransform: 'uppercase' },
 
   // Search bar
-  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: SIZES.padding, marginTop: 14, marginBottom: 4, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: SPACING.xl, marginTop: 14, marginBottom: 4, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   searchIcon:  { flexShrink: 0 },
   searchInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: COLORS.esp },
   sortBtn:        { width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   sortBtnActive:  { backgroundColor: COLORS.wal },
-  sortPanel:      { backgroundColor: '#fff', marginHorizontal: SIZES.padding, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
+  sortPanel:      { backgroundColor: '#fff', marginHorizontal: SPACING.xl, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
   sortOption:     { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   sortOptionActive:{ backgroundColor: '#F4ECE4' },
   sortOptionText: { fontSize: 13, color: COLORS.esp, fontWeight: '500' },
   sortOptionTextActive: { fontWeight: '700', color: COLORS.wal },
 
   // Stats
-  statsRow: { flexDirection: 'row', gap: 10, paddingHorizontal: SIZES.padding, marginTop: 12, marginBottom: 4 },
+  statsRow: { flexDirection: 'row', gap: 10, paddingHorizontal: SPACING.xl, marginTop: 12, marginBottom: 4 },
   statChip: { flex: 1, borderRadius: 12, borderWidth: 1, paddingVertical: 10, alignItems: 'center' },
   statNum:  { fontSize: 22, fontWeight: '800', lineHeight: 26 },
   statLbl:  { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 },
 
   // Filter chips
-  filterRow:              { flexDirection: 'row', gap: 8, paddingHorizontal: SIZES.padding, marginTop: 10, marginBottom: 4, flexWrap: 'wrap' },
+  filterRow:              { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 4, flexWrap: 'wrap' },
   filterChip:             { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive:       { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterChipText:         { fontSize: 11, fontWeight: '600', color: COLORS.wal },
@@ -525,10 +525,10 @@ const styles = StyleSheet.create({
   filterChipBadgeText:    { fontSize: 9, fontWeight: '800', color: COLORS.wal },
 
   // Result label
-  resultLabel: { fontSize: 11, color: COLORS.wal, paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 4, fontStyle: 'italic' },
+  resultLabel: { fontSize: 11, color: COLORS.wal, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 4, fontStyle: 'italic' },
 
   // Patient card
-  card: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
+  card: { backgroundColor: '#fff', borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
 
   avatar:     { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
 
   // Waiting list
   wlSection:       { backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingTop: 10, paddingBottom: 12 },
-  wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SIZES.padding, marginBottom: 10 },
+  wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.xl, marginBottom: 10 },
   wlDot:           { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D4AC0D' },
   wlSectionTitle:  { fontSize: 9, fontWeight: '800', color: '#7D6608', letterSpacing: 1.5 },
   wlCard:          { width: 190, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', elevation: 2 },

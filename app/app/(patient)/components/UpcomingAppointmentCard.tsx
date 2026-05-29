@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../../styles/theme';
 import type { Appointment } from '../../../hooks/useAppointments';
 
 // ─── Odpočítavanie ────────────────────────────────────────────────────────────
@@ -133,8 +133,8 @@ export default function UpcomingAppointmentCard({ appointment, onPress, onCancel
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.esp,
-    borderRadius: SIZES.radius + 2,
-    marginHorizontal: SIZES.padding,
+    borderRadius: RADII.md + 2,
+    marginHorizontal: SPACING.xl,
     marginBottom: 14,
     borderWidth: 1,
     borderColor: COLORS.wal,

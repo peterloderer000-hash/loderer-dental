@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type FoundAppt = {
@@ -169,14 +169,14 @@ export default function CheckInScreen() {
 const s = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   header: {
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
     paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12,
   },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
-  body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding, gap: 14 },
+  body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl, gap: 14 },
   card:     { backgroundColor: '#fff', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   cardSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 18, lineHeight: 18 },

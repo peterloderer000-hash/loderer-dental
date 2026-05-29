@@ -8,7 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { pluralizeAppointments } from '../../utils/pluralize';
@@ -424,7 +424,7 @@ export default function DoctorCalendar() {
 
       {/* ── Obsah ── */}
       {loading ? (
-        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+        <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
           <SkeletonList count={5} />
         </View>
 
@@ -804,14 +804,14 @@ const styles = StyleSheet.create({
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', gap: 10 },
 
   // Header
-  header:       { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding + 4, paddingTop: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center' },
+  header:       { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl + 4, paddingTop: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center' },
   headerLabel:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
   headerTitle:  { fontSize: 20, fontWeight: '600', color: '#fff' },
   todayBtn:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 },
   todayBtnText: { fontSize: 11, fontWeight: '700', color: COLORS.cream },
 
   // Week nav
-  weekNav:   { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.bg3, paddingVertical: 10, paddingHorizontal: SIZES.padding },
+  weekNav:   { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.bg3, paddingVertical: 10, paddingHorizontal: SPACING.xl },
   navBtn:    { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   weekLabel: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '600', color: COLORS.esp },
 
@@ -833,7 +833,7 @@ const styles = StyleSheet.create({
   emptyDot:          { width: 4, height: 4, borderRadius: 2, backgroundColor: 'transparent' },
 
   // Day header
-  dayHeader:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 10, backgroundColor: COLORS.bg2, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  dayHeader:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 10, backgroundColor: COLORS.bg2, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   dayHeaderText: { fontSize: 13, fontWeight: '700', color: COLORS.esp, textTransform: 'capitalize' },
   dayHeaderSub:  { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   dayHeaderRight:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
   toggleBtnActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.wal },
 
   // List view
-  apptRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', marginHorizontal: SIZES.padding, marginTop: 8, padding: 12, borderRadius: SIZES.radius, borderWidth: 1, borderColor: COLORS.bg3, borderLeftWidth: 4, elevation: 1 },
+  apptRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', marginHorizontal: SPACING.xl, marginTop: 8, padding: 12, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.bg3, borderLeftWidth: 4, elevation: 1 },
   apptTimeCol:   { width: 54, alignItems: 'flex-end' },
   apptTimeStart: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   apptTimeEnd:   { fontSize: 11, color: COLORS.wal, marginTop: 2 },
@@ -860,9 +860,9 @@ const styles = StyleSheet.create({
   urgentBadgeText: { fontSize: 10 },
 
   // Month grid
-  monthDayNames: { flexDirection: 'row', paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 4 },
+  monthDayNames: { flexDirection: 'row', paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 4 },
   monthDayName:  { flex: 1, textAlign: 'center', fontSize: 10, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
-  monthGrid:     { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: SIZES.padding - 4 },
+  monthGrid:     { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: SPACING.xl - 4 },
   monthCell:     { width: '14.28%', alignItems: 'center', paddingVertical: 6, borderRadius: 10, gap: 2 },
   monthCellSel:  { backgroundColor: COLORS.esp },
   monthCellToday:{ backgroundColor: '#F4ECE4' },
@@ -875,7 +875,7 @@ const styles = StyleSheet.create({
   monthDot:      { width: 5, height: 5, borderRadius: 2.5, backgroundColor: COLORS.wal },
   monthDotSel:   { backgroundColor: COLORS.sand },
   monthDotMore:  { fontSize: 8, color: COLORS.wal, fontWeight: '700' },
-  monthApptSection: { borderTopWidth: 1, marginTop: 12, paddingTop: 14, paddingHorizontal: SIZES.padding },
+  monthApptSection: { borderTopWidth: 1, marginTop: 12, paddingTop: 14, paddingHorizontal: SPACING.xl },
   monthApptTitle:   { fontSize: 13, fontWeight: '700', color: COLORS.esp, textTransform: 'capitalize', marginBottom: 10 },
   monthApptEmpty:   { fontSize: 13, color: COLORS.wal, fontStyle: 'italic', paddingBottom: 20 },
 
@@ -885,7 +885,7 @@ const styles = StyleSheet.create({
   emptySub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
 
   // Timeline
-  timeline:    { position: 'relative', marginHorizontal: SIZES.padding, paddingLeft: 52 },
+  timeline:    { position: 'relative', marginHorizontal: SPACING.xl, paddingLeft: 52 },
   tlHour:      { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center' },
   tlHourLabel: { width: 46, fontSize: 11, fontWeight: '600', color: '#888', textAlign: 'right', paddingRight: 6 },
   tlHourLine:  { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
   blockBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#F5EEF8', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#D7BDE2' },
 
   // Block row in list view
-  blockRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F5EEF8', marginHorizontal: SIZES.padding, marginTop: 8, padding: 10, borderRadius: 10, borderWidth: 1, borderColor: '#D7BDE2', borderLeftWidth: 3, borderLeftColor: '#7D3C98' },
+  blockRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F5EEF8', marginHorizontal: SPACING.xl, marginTop: 8, padding: 10, borderRadius: 10, borderWidth: 1, borderColor: '#D7BDE2', borderLeftWidth: 3, borderLeftColor: '#7D3C98' },
   blockTime:   { fontSize: 12, fontWeight: '700', color: '#7D3C98' },
   blockReason: { fontSize: 11, color: '#A569BD', marginTop: 1 },
 

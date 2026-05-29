@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportTreatmentPlan } from '../../utils/exportPDF';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -527,7 +527,7 @@ export default function TreatmentPlanScreen() {
       </View>
 
       {loading ? (
-        <View style={{ padding: SIZES.padding }}><SkeletonList count={4} /></View>
+        <View style={{ padding: SPACING.xl }}><SkeletonList count={4} /></View>
       ) : plans.length === 0 ? (
         <View style={[styles.center, { backgroundColor: colors.bg2 }]}>
           <Text style={styles.emptyIcon}>📋</Text>
@@ -541,7 +541,7 @@ export default function TreatmentPlanScreen() {
         </View>
       ) : (
         <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]}
-          contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 120 }}
+          contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}>
           {plans.map((plan) => {
             const expanded  = expandedPlan === plan.id;
@@ -756,7 +756,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: 40 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },

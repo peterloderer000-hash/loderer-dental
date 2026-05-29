@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
@@ -378,12 +378,12 @@ const styles = StyleSheet.create({
   content:{ paddingBottom: 120 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
 
-  summaryCard: { backgroundColor: '#fff', margin: SIZES.padding, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  summaryCard: { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   summaryRow:  { flexDirection: 'row', gap: 10, marginBottom: 14 },
   summaryBox:  { flex: 1, borderRadius: 12, borderWidth: 1.5, padding: 12, alignItems: 'center' },
   summaryIcon: { fontSize: 22, marginBottom: 4 },
@@ -398,13 +398,13 @@ const styles = StyleSheet.create({
   ratePct:   { fontSize: 11, fontWeight: '800', color: '#1E8449', width: 36, textAlign: 'right' },
 
   tabsScroll:  { maxHeight: 46, marginTop: 12, marginBottom: 0 },
-  tabsContent: { paddingHorizontal: SIZES.padding, gap: 8, alignItems: 'center' },
+  tabsContent: { paddingHorizontal: SPACING.xl, gap: 8, alignItems: 'center' },
   periodTab:      { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
   periodTabActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   periodTabText:     { fontSize: 11, fontWeight: '600', color: COLORS.wal },
   periodTabTextActive:{ color: '#fff' },
 
-  payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SIZES.padding, marginTop: 10, marginBottom: 10 },
+  payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 10 },
   payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff', alignItems: 'center' },
   payFilterText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
 
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 13, color: COLORS.wal },
 
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SIZES.padding, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SPACING.xl, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
   dateBox:    { width: 36, alignItems: 'center' },
   dateDay:    { fontSize: 17, fontWeight: '800', color: COLORS.esp, lineHeight: 20 },
   dateMon:    { fontSize: 9,  fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },

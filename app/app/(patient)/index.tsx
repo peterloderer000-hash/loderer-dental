@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import Reanimated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, SIZES, GRADIENTS, SHADOWS, RADII, SPACING, TYPO } from '../../styles/theme';
+import { COLORS, GRADIENTS, SHADOWS, RADII, SPACING, TYPO } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useProfile } from '../../hooks/useProfile';
 import { useAppointments } from '../../hooks/useAppointments';
@@ -1101,5 +1101,4 @@ const styles = StyleSheet.create({
   ratingBtnSkip:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   ratingBtnSkipText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
   ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
-  ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
-});
+  ratingBtnSubmitText: { fontSize: 14, fontFamily: 

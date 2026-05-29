@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { ActivityIndicator, Alert, Animated, Modal, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, RADII, GRADIENTS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useAppTheme } from '../../context/ThemeContext';
 import { useAppointments, Appointment } from '../../hooks/useAppointments';
 import { supabase } from '../../supabase';
@@ -867,30 +868,24 @@ export default function AppointmentsScreen() {
   ], [counts]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerLabel}>MÔJ PREHĽAD</Text>
-          <Text style={styles.headerTitle}>História termínov</Text>
-        </View>
-        <View style={styles.totalBadge}>
-          <Text style={styles.totalNum}>{counts.all}</Text>
-          <Text style={styles.totalLabel} numberOfLines={1} adjustsFontSizeToFit>TERMÍNY</Text>
-        </View>
-        <TouchableOpacity
-          style={[styles.exportBtn, exporting && { opacity: 0.5 }]}
-          onPress={handleExport}
-          disabled={exporting || appointments.length === 0}
-          activeOpacity={0.8}>
-          {exporting
-            ? <ActivityIndicator color={COLORS.cream} size="small" />
-            : <Ionicons name="download-outline" size={18} color={COLORS.cream} />}
-        </TouchableOpacity>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title="História termínov"
+        subtitle={`${counts.all} termínov celkovo`}
+        icon="calendar-outline"
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity
+            style={[styles.exportBtn, exporting && { opacity: 0.5 }]}
+            onPress={handleExport}
+            disabled={exporting || appointments.length === 0}
+            activeOpacity={0.8}>
+            {exporting
+              ? <ActivityIndicator color={COLORS.cream} size="small" />
+              : <Ionicons name="download-outline" size={18} color={COLORS.gold} />}
+          </TouchableOpacity>
+        }
+      />
 
       {/* ── Čakacia listina ── */}
       {waitingList.length > 0 && (
@@ -955,7 +950,7 @@ export default function AppointmentsScreen() {
         />
       ) : (
         <ScrollView style={[styles.scroll, dyn.bg]} showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}>
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.gold} />}>
           {Object.entries(grouped).map(([month, items]) => (
             <View key={month}>
               {/* Mesiac header */}
@@ -1019,7 +1014,7 @@ export default function AppointmentsScreen() {
         onClose={() => setRatingAppt(null)}
         onDone={refetch}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -1029,22 +1024,16 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: 32 },
 
-  header: { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
-  totalBadge: { backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 7, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.sand, minWidth: 100 },
-  exportBtn:  { width: 38, height: 38, borderRadius: 19, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.sand },
-  totalNum:   { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#fff', lineHeight: 24 },
-  totalLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', color: COLORS.cream, letterSpacing: 1, textTransform: 'uppercase' },
+  header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  exportBtn:  { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(201,168,76,0.15)', alignItems: 'center', justifyContent: 'center' },
 
   // Waiting list section
   wlSection:       { backgroundColor: '#E8F8F5', borderBottomWidth: 1, borderBottomColor: '#A2D9CE', paddingVertical: 10 },
-  wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SIZES.padding, marginBottom: 8 },
+  wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.xl, marginBottom: 8 },
   wlSectionTitle:  { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', color: '#0E6655', textTransform: 'uppercase' },
   wlBadge:         { backgroundColor: '#17A589', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 1 },
   wlBadgeText:     { fontSize: 9, fontWeight: '800', color: '#fff' },
-  wlScroll:        { paddingHorizontal: SIZES.padding, gap: 8 },
+  wlScroll:        { paddingHorizontal: SPACING.xl, gap: 8 },
   wlCard:          { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1.5, borderColor: '#A2D9CE', paddingHorizontal: 12, paddingVertical: 9, maxWidth: 260 },
   wlEmoji:         { fontSize: 18 },
   wlService:       { fontSize: 13, fontWeight: '700', color: '#0E6655', marginBottom: 2 },
@@ -1058,14 +1047,14 @@ const styles = StyleSheet.create({
   filterTabTextActive: { color: '#fff', fontFamily: 'DMSans_500Medium', fontSize: 13 },
 
   // Month group
-  monthHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 8 },
-  monthDot:   { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.wal },
+  monthHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 8 },
+  monthDot:   { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold },
   monthLabel: { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp, textTransform: 'capitalize' },
   monthCount: { backgroundColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 },
   monthCountText: { fontSize: 11, fontWeight: '700', color: COLORS.wal },
 
   // Card
-  card: { backgroundColor: '#fff', borderRadius: SIZES.radius, marginHorizontal: SIZES.padding, marginBottom: 10, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3 },
+  card: { backgroundColor: '#fff', borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginBottom: 10, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3 },
   cardMissed: { borderColor: '#F9E79F', backgroundColor: '#FEFDF0' },
 
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 },
@@ -1134,6 +1123,7 @@ const styles = StyleSheet.create({
   emptyIcon:   { fontSize: 52, marginBottom: 14 },
   emptyTitle:  { fontSize: 17, fontWeight: '600', color: COLORS.esp, marginBottom: 6, textAlign: 'center' },
   emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20 },
-  clearFilter: { marginTop: 18, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10 },
-  clearFilterText: { fontSize: 13, fontWeight: '600', color: '#fff' },
+  clearFilter: { marginTop: 18, backgroundColor: COLORS.gold, borderRadius: RADII.sm, paddingHorizontal: 20, paddingVertical: 10 },
+  clearFilterText: { fontSize: 13, fontWeight: '600', color: '#1A1209' },
 });
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             

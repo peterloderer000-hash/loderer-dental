@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -422,17 +422,17 @@ export default function ConsentFormsScreen() {
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 12 },
+  content:{ padding: SPACING.xl, paddingTop: 12 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
   addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
 
-  tabsRow:       { flexDirection: 'row', backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingBottom: 12, gap: 10 },
+  tabsRow:       { flexDirection: 'row', backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingBottom: 12, gap: 10 },
   tab:           { flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:     { backgroundColor: COLORS.wal },
   tabText:       { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },

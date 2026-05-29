@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -139,7 +139,7 @@ export default function ServicesScreen() {
         </TouchableOpacity>
         <Text style={s.headerTitle}>Cenník služieb</Text>
       </View>
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={5} />
       </View>
     </SafeAreaView>
@@ -341,10 +341,10 @@ export default function ServicesScreen() {
 const s = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1 },
-  content: { padding: SIZES.padding },
+  content: { padding: SPACING.xl },
 
   header: {
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
     paddingTop: 14, paddingBottom: 18,
     flexDirection: 'row', alignItems: 'center', gap: 12,
   },

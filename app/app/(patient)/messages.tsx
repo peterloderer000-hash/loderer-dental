@@ -3,13 +3,14 @@ import {
   ActivityIndicator, FlatList, Image, KeyboardAvoidingView,
   Platform, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, RADII, GRADIENTS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -151,22 +152,13 @@ export default function PatientMessagesScreen() {
   }, [messages.length]);
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* Hlavička */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <View style={styles.doctorAvatar}>
-            <Text style={{ fontSize: 18 }}>👨‍⚕️</Text>
-          </View>
-          <View>
-            <Text style={styles.headerName}>{doctorName}</Text>
-            <Text style={styles.headerSub}>Zubná ambulancia</Text>
-          </View>
-        </View>
-      </View>
+    <View style={styles.safe}>
+      <HeroHeader
+        title={doctorName}
+        subtitle="Zubná ambulancia"
+        icon="chatbubbles-outline"
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
         {loading ? (
@@ -232,7 +224,7 @@ export default function PatientMessagesScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -241,7 +233,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.bg2 },
 
   // Header
-  header:     { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16 },
+  header:     { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16 },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
   doctorAvatar:{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },

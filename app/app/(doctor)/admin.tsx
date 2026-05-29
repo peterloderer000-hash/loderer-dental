@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -341,7 +341,7 @@ export default function AdminScreen() {
       </View>
 
       {loading ? (
-        <View style={{ padding: SIZES.padding }}><SkeletonList count={5} /></View>
+        <View style={{ padding: SPACING.xl }}><SkeletonList count={5} /></View>
       ) : (
         <>
           {/* ── TEAM ── */}
@@ -350,7 +350,7 @@ export default function AdminScreen() {
               data={team}
               keyExtractor={m => m.id}
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               showsVerticalScrollIndicator={false}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
               ListHeaderComponent={
@@ -404,7 +404,7 @@ export default function AdminScreen() {
           {tab === 'clinic' && (
             <ScrollView
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               {clinic ? (
@@ -477,7 +477,7 @@ export default function AdminScreen() {
           {tab === 'stats' && stats && (
             <ScrollView
               style={{ backgroundColor: colors.bg2 }}
-              contentContainerStyle={{ padding: SIZES.padding, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: SPACING.xl, paddingBottom: 100 }}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={COLORS.wal} />}
             >
               <Text style={[s.statsSection, { color: colors.textSecondary }]}>PACIENTI & TERMÍNY</Text>
@@ -572,7 +572,7 @@ const s = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
     paddingTop: 10, paddingBottom: 16,
   },
   headerIcon: {
@@ -693,7 +693,7 @@ const im = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 120,
+    paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 120,
   },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 16 },
   title:  { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },

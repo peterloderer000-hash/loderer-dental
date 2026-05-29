@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -144,7 +144,7 @@ function ChatView({
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl }}>
         <SkeletonList count={5} />
       </View>
     );
@@ -544,7 +544,7 @@ const s = StyleSheet.create({
 
   header: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding,
+    backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl,
     paddingTop: 10, paddingBottom: 16,
   },
   headerIcon: {
@@ -571,7 +571,7 @@ const s = StyleSheet.create({
 
   tabRow: {
     flexDirection: 'row', backgroundColor: COLORS.esp,
-    paddingHorizontal: SIZES.padding, paddingBottom: 14, gap: 8,
+    paddingHorizontal: SPACING.xl, paddingBottom: 14, gap: 8,
   },
   tabBtn: {
     flex: 1, paddingVertical: 8, borderRadius: 10,
@@ -589,7 +589,7 @@ const s = StyleSheet.create({
 
   threadRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', marginHorizontal: SIZES.padding,
+    backgroundColor: '#fff', marginHorizontal: SPACING.xl,
     marginBottom: 8, borderRadius: 14, padding: 14,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
   },
@@ -671,7 +671,7 @@ const nm = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-    paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 32,
+    paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 32,
   },
   handle: {
     width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3,

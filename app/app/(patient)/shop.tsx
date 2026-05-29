@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import {
   Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS, SPACING } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Category = 'all' | 'brushes' | 'floss' | 'whitening' | 'mouthwash';
@@ -62,7 +61,7 @@ export default function ShopScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.circle, { width: 200, height: 200, right: -60, top: -60, opacity: 0.06 }]} />
@@ -214,7 +213,7 @@ export default function ShopScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

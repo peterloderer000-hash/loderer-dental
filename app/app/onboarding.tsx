@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { supabase } from '../supabase';
-import { COLORS, SIZES } from '../styles/theme';
+import { COLORS, SPACING, RADII } from '../styles/theme';
 
 // ─── Export pre index.tsx ─────────────────────────────────────────────────────
 export const ONBOARDING_KEY = 'onboarding_done';
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   // Skip
   skipBtn: {
     alignSelf:         'flex-end',
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl,
     paddingTop:        8,
     paddingBottom:     4,
     zIndex:            10,
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     flexDirection:   'row',
     alignItems:      'center',
     justifyContent:  'space-between',
-    paddingHorizontal: SIZES.padding + 4,
+    paddingHorizontal: SPACING.xl + 4,
     paddingBottom:   24,
     paddingTop:      20,
   },

@@ -2,11 +2,12 @@ import React, { useMemo, useState } from 'react';
 import {
   Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { COLORS, SIZES } from '../../styles/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, SPACING, RADII, GRADIENTS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useServices, Service, formatDuration } from '../../hooks/useServices';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -80,22 +81,18 @@ export default function CalculatorScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
-      {/* ── Hlavička ── */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.75}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.cream} />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.headerSub}>ORIENTAČNÁ CENA</Text>
-          <Text style={styles.headerTitle}>Kalkulačka služieb</Text>
-        </View>
-        {basket.length > 0 && (
+    <View style={styles.safe}>
+      <HeroHeader
+        title="Kalkulačka služieb"
+        subtitle="Orientačná cena"
+        icon="calculator-outline"
+        onBack={() => router.back()}
+        rightAction={basket.length > 0 ? (
           <TouchableOpacity onPress={clearBasket} style={styles.clearBtn} activeOpacity={0.75}>
             <Ionicons name="trash-outline" size={17} color="#922B21" />
           </TouchableOpacity>
-        )}
-      </View>
+        ) : undefined}
+      />
 
       <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
@@ -249,7 +246,7 @@ export default function CalculatorScreen() {
           </>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -257,9 +254,9 @@ export default function CalculatorScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12 },
+  content: { padding: SPACING.xl, paddingTop: 12 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   clearBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#FDEDEC', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
@@ -294,7 +291,7 @@ const styles = StyleSheet.create({
   qtyCount:   { fontSize: 13, fontWeight: '800', color: COLORS.esp, minWidth: 16, textAlign: 'center' },
 
   // Súhrnný panel
-  summaryPanel: { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SIZES.padding, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 12 },
+  summaryPanel: { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 12 },
   emptyBasket:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   emptyText:    { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
 

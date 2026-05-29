@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
@@ -448,9 +448,9 @@ export default function BroadcastScreen() {
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 16 },
+  content:{ padding: SPACING.xl, paddingTop: 16 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },

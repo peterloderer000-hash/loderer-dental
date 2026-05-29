@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { pluralizeAppointments } from '../../utils/pluralize';
@@ -576,7 +576,7 @@ export default function StatsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -1059,10 +1059,10 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12 },
+  content: { padding: SPACING.xl, paddingTop: 12 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:        { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 18, paddingBottom: 20, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
+  header:        { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 20, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   headerSub:     { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle:   { fontSize: 22, fontWeight: '700', color: '#fff' },
   headerDate:    { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },

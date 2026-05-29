@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 import { exportPrescription } from '../../utils/exportPDF';
@@ -659,7 +659,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.esp,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl,
     paddingTop: 4,
     paddingBottom: 14,
     gap: 12,
@@ -726,7 +726,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg2,
   },
   scrollContent: {
-    padding: SIZES.padding,
+    padding: SPACING.xl,
     paddingBottom: 120,
   },
 
@@ -741,7 +741,7 @@ const styles = StyleSheet.create({
   // Karta
   card: {
     backgroundColor: '#fff',
-    borderRadius: SIZES.radius,
+    borderRadius: RADII.md,
     borderWidth: 1,
     borderColor: COLORS.bg3,
     padding: 14,
@@ -822,7 +822,7 @@ const styles = StyleSheet.create({
   emptyWrap: {
     alignItems: 'center',
     paddingTop: 60,
-    paddingHorizontal: SIZES.padding,
+    paddingHorizontal: SPACING.xl,
   },
   emptyEmoji: {
     fontSize: 52,
@@ -848,7 +848,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.wal,
     paddingHorizontal: 22,
     paddingVertical: 12,
-    borderRadius: SIZES.radius,
+    borderRadius: RADII.md,
   },
   emptyBtnText: {
     fontSize: 15,

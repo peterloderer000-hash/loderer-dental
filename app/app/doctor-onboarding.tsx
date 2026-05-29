@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { supabase } from '../supabase';
-import { COLORS, SIZES } from '../styles/theme';
+import { COLORS, SPACING, RADII } from '../styles/theme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -402,7 +402,7 @@ const main = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg2 },
 
   progress: {
-    backgroundColor: '#fff', paddingHorizontal: SIZES.padding,
+    backgroundColor: '#fff', paddingHorizontal: SPACING.xl,
     paddingTop: 16, paddingBottom: 14,
     borderBottomWidth: 1, borderBottomColor: COLORS.bg3,
     gap: 12,
@@ -418,7 +418,7 @@ const main = StyleSheet.create({
 });
 
 const step = StyleSheet.create({
-  scroll: { padding: SIZES.padding, paddingBottom: 40 },
+  scroll: { padding: SPACING.xl, paddingBottom: 40 },
 
   heroBox: {
     alignItems: 'center', backgroundColor: COLORS.esp,

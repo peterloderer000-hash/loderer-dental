@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import Animated, { useSharedValue, useAnimatedProps, withTiming, Easing } from 'react-native-reanimated';
-import { TYPO } from '../../styles/theme';
+import { TYPO, SPACING, RADII } from '../../styles/theme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -114,6 +114,3 @@ const styles = StyleSheet.create({
     ...TYPO.overline,
     color: '#C4A882',
     fontSize: 8,
-    marginTop: 1,
-  },
-});

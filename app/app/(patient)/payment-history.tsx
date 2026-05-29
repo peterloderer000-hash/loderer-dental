@@ -3,14 +3,13 @@ import {
   Alert, RefreshControl, ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS, SPACING } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SkeletonList } from '../../components/Skeleton';
 
@@ -116,16 +115,16 @@ export default function PaymentHistoryScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 20 }}>
           <SkeletonList count={5} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.circle, { width: 200, height: 200, right: -60, top: -60, opacity: 0.05 }]} />
@@ -274,7 +273,7 @@ export default function PaymentHistoryScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

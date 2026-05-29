@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { addToCalendar } from '../../utils/calendarSync';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -76,7 +75,7 @@ export default function BookingSuccessScreen() {
   ];
 
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
       <Animated.View style={{ flex: 1, opacity }}>
         <ScrollView
           contentContainerStyle={styles.container}
@@ -172,13 +171,13 @@ export default function BookingSuccessScreen() {
 
         </ScrollView>
       </Animated.View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe:      { flex: 1, backgroundColor: COLORS.bg2 },
-  container: { flexGrow: 1, padding: SIZES.padding, paddingTop: 24, paddingBottom: 100, alignItems: 'center', justifyContent: 'center' },
+  container: { flexGrow: 1, padding: SPACING.xl, paddingTop: 24, paddingBottom: 100, alignItems: 'center', justifyContent: 'center' },
 
   // Icon
   iconWrap:   { alignItems: 'center', marginBottom: 20 },

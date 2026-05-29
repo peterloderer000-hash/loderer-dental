@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -334,7 +334,7 @@ export default function RecallScreen() {
           <Text style={styles.headerTitle}>Recall pacientov</Text>
         </View>
       </View>
-      <View style={{ flex: 1, padding: SIZES.padding, backgroundColor: colors.bg2 }}>
+      <View style={{ flex: 1, padding: SPACING.xl, backgroundColor: colors.bg2 }}>
         <SkeletonList count={5} />
       </View>
     </SafeAreaView>
@@ -522,10 +522,10 @@ export default function RecallScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   list:    { flex: 1 },
-  content: { padding: SIZES.padding, paddingBottom: 100, flexGrow: 1 },
+  content: { padding: SPACING.xl, paddingBottom: 100, flexGrow: 1 },
 
   // Header
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },

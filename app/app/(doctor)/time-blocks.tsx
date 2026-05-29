@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useTimeBlocks, BLOCK_CONFIG, BlockType, TimeBlock } from '../../hooks/useTimeBlocks';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -475,7 +475,7 @@ export default function TimeBlocksScreen() {
         </Text>
 
         {loading ? (
-          <View style={{ padding: SIZES.padding }}><SkeletonList count={3} /></View>
+          <View style={{ padding: SPACING.xl }}><SkeletonList count={3} /></View>
         ) : blocks.length === 0 ? (
           <View style={styles.emptyCenter}>
             <Ionicons name="checkmark-circle-outline" size={48} color={COLORS.bg3} />
@@ -516,9 +516,9 @@ export default function TimeBlocksScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 14 },
+  content: { padding: SPACING.xl, paddingTop: 14 },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },

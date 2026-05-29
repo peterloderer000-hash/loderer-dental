@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { useAppTheme } from '../../context/ThemeContext';
 
 const SCREEN_W = Dimensions.get('window').width;
@@ -304,8 +304,8 @@ export default function OwnerDashboard() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1 },
-  content: { padding: SIZES.padding, paddingTop: 16 },
-  header:  { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  content: { padding: SPACING.xl, paddingTop: 16 },
+  header:  { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
   changeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
 
   kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  kpiBox:  { width: (SCREEN_W - SIZES.padding * 2 - 10) / 2 - 0.5, borderRadius: 12, borderWidth: 1.5, padding: 14, alignItems: 'center' },
+  kpiBox:  { width: (SCREEN_W - SPACING.xl * 2 - 10) / 2 - 0.5, borderRadius: 12, borderWidth: 1.5, padding: 14, alignItems: 'center' },
   kpiVal:  { fontSize: 22, fontWeight: '800', marginBottom: 4 },
   kpiLabel: { fontSize: 10, fontWeight: '600' },
 

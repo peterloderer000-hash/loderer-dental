@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { exportPatientHistory, exportInvoice } from '../../utils/exportPDF';
 import type { Appointment } from '../../hooks/useAppointments';
@@ -541,7 +541,7 @@ export default function PatientDetailScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={6} />
       </View>
     );
@@ -1408,10 +1408,10 @@ export default function PatientDetailScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: COLORS.esp },
   scroll:  { flex: 1, backgroundColor: COLORS.bg2 },
-  content: { padding: SIZES.padding, paddingTop: 12, paddingBottom: 120 },
+  content: { padding: SPACING.xl, paddingTop: 12, paddingBottom: 120 },
   center:  { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:         { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },

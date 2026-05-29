@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
-import { COLORS, SIZES } from '../../styles/theme';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -198,7 +198,7 @@ export default function PatientAttachmentsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SIZES.padding }}>
+      <View style={{ flex: 1, backgroundColor: colors.bg2, padding: SPACING.xl }}>
         <SkeletonList count={4} />
       </View>
     );
@@ -345,10 +345,10 @@ export default function PatientAttachmentsScreen() {
 const styles = StyleSheet.create({
   safe:   { flex: 1, backgroundColor: COLORS.esp },
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SIZES.padding, paddingTop: 12 },
+  content:{ padding: SPACING.xl, paddingTop: 12 },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
 
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SIZES.padding, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   tabsBar:     { maxHeight: 48, backgroundColor: COLORS.esp },
-  tabsContent: { paddingHorizontal: SIZES.padding, paddingBottom: 8, gap: 6, alignItems: 'center' },
+  tabsContent: { paddingHorizontal: SPACING.xl, paddingBottom: 8, gap: 6, alignItems: 'center' },
   tab:         { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 11, paddingVertical: 5, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:   { backgroundColor: COLORS.wal },
   tabIcon:     { fontSize: 12 },
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
   tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
   tabBadgeText:{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
 
-  formCard:    { backgroundColor: '#fff', margin: SIZES.padding, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  formCard:    { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   previewImg:  { width: '100%', height: 130, borderRadius: 10, marginBottom: 10 },
   formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 8 },
   catChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
