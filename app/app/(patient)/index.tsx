@@ -1100,5 +1100,6 @@ const styles = StyleSheet.create({
   ratingActions:     { flexDirection: 'row', gap: 10 },
   ratingBtnSkip:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   ratingBtnSkipText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
-  ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
-  ratingBtnSubmitText: { fontSize: 14, fontFamily: 
+  ratingBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
+  ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
+});

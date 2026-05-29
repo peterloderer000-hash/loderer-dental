@@ -1152,4 +1152,6 @@ const styles = StyleSheet.create({
   successCardDate:        { fontSize: 13, textAlign: 'center' },
   successCardTime:        { fontSize: 15, fontWeight: '700', textAlign: 'center' },
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
-  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, 
+  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 16 },
+  successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+});

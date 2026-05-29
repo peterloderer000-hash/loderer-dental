@@ -114,3 +114,6 @@ const styles = StyleSheet.create({
     ...TYPO.overline,
     color: '#C4A882',
     fontSize: 8,
+    marginTop: 1,
+  },
+});
