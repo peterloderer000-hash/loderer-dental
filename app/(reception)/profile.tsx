@@ -6,9 +6,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, CommonActions } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
-import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
+import { COLORS, RADII, SHADOWS, TYPO } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
 
@@ -77,24 +77,21 @@ export default function ReceptionProfile() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero */}
-        <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-          <View style={[s.circle, { width: 180, height: 180, right: -50, top: -50, opacity: 0.06 }]} />
-          <View style={[s.circle, { width: 100, height: 100, left: -20, bottom: -20, opacity: 0.04 }]} />
-
-          {/* Avatar */}
-          <View style={s.avatarWrap}>
-            <View style={s.avatar}>
-              <Text style={s.avatarInitials}>{initials}</Text>
+        <HeroHeader
+          title={fullName || 'Recepcia'}
+          subtitle={email}
+          icon="person-circle-outline"
+          bottomElement={
+            <View style={{ alignItems: 'center', gap: 8 }}>
+              <View style={s.avatar}>
+                <Text style={s.avatarInitials}>{initials}</Text>
+              </View>
+              <View style={s.roleBadge}>
+                <Text style={s.roleText}>🏥  Recepcia</Text>
+              </View>
             </View>
-          </View>
-
-          <Text style={s.heroName}>{fullName || 'Recepcia'}</Text>
-          <View style={s.roleBadge}>
-            <Text style={s.roleText}>🏥  Recepcia</Text>
-          </View>
-          <Text style={s.heroEmail}>{email}</Text>
-        </LinearGradient>
+          }
+        />
 
         <View style={{ backgroundColor: colors.bg2, padding: 16, gap: 12 }}>
           {/* Nastavenia */}

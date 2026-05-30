@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -147,17 +148,14 @@ export default function ReceptionReports() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-      {/* Hero */}
-      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-        <TouchableOpacity style={s.backBtn} onPress={() => {}} activeOpacity={0.8}>
-          <Ionicons name="arrow-back" size={20} color={COLORS.sand} />
-        </TouchableOpacity>
-        <Text style={s.heroLabel}>RECEPCIA</Text>
-        <Text style={s.heroTitle}>Reporty</Text>
-      </LinearGradient>
+      <HeroHeader
+        title="Reporty"
+        subtitle="Recepcia"
+        icon="bar-chart-outline"
+      />
 
       {/* Period tabs */}
-      <View style={[s.tabRow, { backgroundColor: COLORS.esp }]}>
+      <View style={[s.tabRow, { backgroundColor: dark ? '#1A120B' : COLORS.esp }]}>
         {PERIOD_TABS.map(tab => (
           <TouchableOpacity
             key={tab.key}
