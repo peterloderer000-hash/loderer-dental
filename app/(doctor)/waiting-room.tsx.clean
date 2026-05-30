@@ -133,6 +133,15 @@ export default function WaitingRoomScreen() {
         onBack={() => router.back()}
       />
 
+        <TouchableOpacity onPress={load} style={s.iconBtn} activeOpacity={0.8}>
+          <Ionicons name="refresh" size={20} color={COLORS.cream} />
+        </TouchableOpacity>
+        <View style={s.timeBadge}>
+          <Ionicons name="time-outline" size={12} color={COLORS.sand} />
+          <Text style={s.timeText}>{fmtTime(lastUpdate.toISOString())}</Text>
+        </View>
+      </View>
+
       {loading ? (
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
           <SkeletonList count={4} />
@@ -190,7 +199,7 @@ export default function WaitingRoomScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
 
           {/* ── Čaká ── */}
@@ -233,7 +242,7 @@ export default function WaitingRoomScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
 
           <View style={{ height: 100 }} />

@@ -378,7 +378,7 @@ export default function RecallScreen() {
               <View style={styles.statBox}>
                 <Text style={[styles.statNum, { color: colors.textPrimary }]}>{patients.length}</Text>
                 <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Recall pacienti</Text>
-              </View>
+              </>
               <View style={[styles.statDiv, { backgroundColor: colors.bg3 }]} />
               <View style={styles.statBox}>
                 <Text style={[styles.statNum, { color: colors.textPrimary }]}>{avgAbsence} mes.</Text>
@@ -448,7 +448,7 @@ export default function RecallScreen() {
                 )}
               </View>
             )}
-          </>
+          </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyWrap}>

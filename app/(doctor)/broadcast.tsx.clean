@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Hromadná správa — doktor
  * Pošle in-app notifikáciu vybranej skupine pacientov
  */
@@ -498,5 +498,4 @@ const styles = StyleSheet.create({
 
   recipientSummary:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 12 },
   recipientSummaryText:  { fontSize: 13, color: COLORS.wal },
-  recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 },
-});
+  recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 } });

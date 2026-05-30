@@ -94,8 +94,6 @@ export default function PdfExports() {
         onBack={() => router.back()}
       />
 
-      </View>
-
       {loading && (
         <View style={styles.loadingOverlay}>
           <ActivityIndicator size="large" color={COLORS.gold} />

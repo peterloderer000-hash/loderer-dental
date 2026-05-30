@@ -270,7 +270,7 @@ export default function ConsentFormsScreen() {
                 </View>
               ))
             )}
-          </>
+          </View>
         )}
 
         {/* ── TAB: Odoslané ── */}

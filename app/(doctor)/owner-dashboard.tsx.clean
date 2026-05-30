@@ -291,7 +291,7 @@ export default function OwnerDashboard() {
             </View>
 
             <View style={{ height: 80 }} />
-          </>
+          </View>
         )}
       </ScrollView>
     </View>

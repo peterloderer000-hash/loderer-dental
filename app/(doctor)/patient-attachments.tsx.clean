@@ -276,7 +276,7 @@ export default function PatientAttachmentsScreen() {
               {uploading
                 ? <ActivityIndicator color="#fff" size="small" />
                 : <><Ionicons name="cloud-upload-outline" size={14} color="#fff" />
-                    <Text style={styles.formSaveText}>Nahrať</Text></>}
+                    <Text style={styles.formSaveText}>Nahrať</Text></View>}
             </TouchableOpacity>
           </View>
         </View>

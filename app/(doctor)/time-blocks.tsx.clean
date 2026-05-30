@@ -410,6 +410,12 @@ export default function TimeBlocksScreen() {
         onBack={() => router.back()}
       />
 
+        <TouchableOpacity style={styles.addBtn} onPress={() => setShowModal(true)} activeOpacity={0.85}>
+          <Ionicons name="add" size={20} color="#fff" />
+          <Text style={styles.addBtnText}>Pridať</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}>
 

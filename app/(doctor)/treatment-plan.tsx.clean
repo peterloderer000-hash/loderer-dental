@@ -722,7 +722,7 @@ export default function TreatmentPlanScreen() {
                         </View>
                       </View>
                     )}
-                  </>
+                  </View>
                 )}
               </View>
             );

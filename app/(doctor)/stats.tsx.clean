@@ -704,7 +704,7 @@ export default function StatsScreen() {
                   </View>
                 );
               })}
-            </>
+            </View>
           )}
         </View>
 

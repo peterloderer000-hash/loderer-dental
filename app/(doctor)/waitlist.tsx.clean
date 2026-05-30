@@ -238,7 +238,7 @@ export default function WaitlistScreen() {
                 </View>
               );
             })}
-          </>
+          </View>
         )}
 
         <View style={{ height: 100 }} />
@@ -292,5 +292,4 @@ const styles = StyleSheet.create({
   btnDismiss: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, borderRadius: 10, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnDismissText: { fontSize: 12, fontWeight: '700', color: '#922B21' },
   btnApprove: { flex: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#0E6655' },
-  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#fff' },
-});
+  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#fff' } });

@@ -929,7 +929,7 @@ export default function PatientDetailScreen() {
                   ? <ActivityIndicator color="#fff" size="small" />
                   : <><Ionicons name="save-outline" size={14} color="#fff" /><Text style={styles.notesSaveBtnText}>Uložiť</Text></>}
               </TouchableOpacity>
-            </>
+            </View>
           ) : (insuranceCompany || insuranceNumber) ? (
             <View style={[styles.insRow, { backgroundColor: colors.bg2 }]}>
               <Ionicons name="card-outline" size={14} color={COLORS.wal} />
