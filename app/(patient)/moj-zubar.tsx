@@ -99,7 +99,7 @@ export default function MojZubarScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 20 }}>
           <SkeletonList count={5} />
         </View>
@@ -123,7 +123,7 @@ export default function MojZubarScreen() {
   const initials    = (displayDoctor.full_name ?? 'DL').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}

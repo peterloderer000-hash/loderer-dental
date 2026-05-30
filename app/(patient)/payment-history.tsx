@@ -115,7 +115,7 @@ export default function PaymentHistoryScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16, paddingTop: 20 }}>
           <SkeletonList count={5} />
         </View>
@@ -124,7 +124,7 @@ export default function PaymentHistoryScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.circle, { width: 200, height: 200, right: -60, top: -60, opacity: 0.05 }]} />

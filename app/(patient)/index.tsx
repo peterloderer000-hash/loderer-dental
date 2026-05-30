@@ -258,7 +258,7 @@ export default function PatientHome() {
         .order('arrived_at');
       if (cancelled || !data) return;
       const queue   = data as any[];
-      const myIdx   = queue.findIndex(a => a.id === arrivedAppt.id);
+      const myIdx   = queue.findIndex(a => a.id === arrivedAppt?.id);
       setQueuePosition(myIdx >= 0 ? myIdx + 1 : null);
       setQueueTotal(queue.length);
     }

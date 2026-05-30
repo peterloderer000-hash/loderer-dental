@@ -100,7 +100,7 @@ export default function ReviewsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+      <View style={[styles.safe, { backgroundColor: colors.bg2 }]}>
         <Header dark={dark} colors={colors} router={router} />
         <View style={{ padding: SPACING.lg }}><SkeletonList count={5} /></View>
       </View>
@@ -108,7 +108,7 @@ export default function ReviewsScreen() {
   }
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: colors.bg2 }]}>
       <Header dark={dark} colors={colors} router={router} />
 
       <ScrollView

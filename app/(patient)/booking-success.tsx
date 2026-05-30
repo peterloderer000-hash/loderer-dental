@@ -75,7 +75,7 @@ export default function BookingSuccessScreen() {
   ];
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: colors.bg2 }]}>
       <Animated.View style={{ flex: 1, opacity }}>
         <ScrollView
           contentContainerStyle={styles.container}

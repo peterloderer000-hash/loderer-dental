@@ -355,9 +355,9 @@ export default function PatientTreatmentPlanScreen() {
           {/* Aktívne plány */}
           {activePlans.length > 0 && (
             <>
-              <SectionHeader label={`Prebiehajúce (${activePlans.length})`} style={{ marginHorizontal: SPACING.xl }} />
+              <SectionHeader title={`Prebiehajúce (${activePlans.length})`} style={{ marginHorizontal: SPACING.xl }} />
               {activePlans.map(p => (
-                <PlanCard key={p.id} plan={p} colors={colors} dark={dark} onBook={() => router.push('/(patient)/booking')} />
+                <PlanCard key={p.id} plan={p} colors={colors} dark={dark} onBook={() => router.push('/(patient)/book-appointment')} />
               ))}
             </>
           )}
@@ -365,9 +365,9 @@ export default function PatientTreatmentPlanScreen() {
           {/* Dokončené/zrušené */}
           {completedPlans.length > 0 && (
             <>
-              <SectionHeader label={`História (${completedPlans.length})`} style={{ marginHorizontal: SPACING.xl, marginTop: SPACING.lg }} />
+              <SectionHeader title={`História (${completedPlans.length})`} style={{ marginHorizontal: SPACING.xl, marginTop: SPACING.lg }} />
               {completedPlans.map(p => (
-                <PlanCard key={p.id} plan={p} colors={colors} dark={dark} onBook={() => router.push('/(patient)/booking')} />
+                <PlanCard key={p.id} plan={p} colors={colors} dark={dark} onBook={() => router.push('/(patient)/book-appointment')} />
               ))}
             </>
           )}

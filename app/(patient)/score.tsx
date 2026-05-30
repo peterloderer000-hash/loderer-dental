@@ -357,7 +357,7 @@ export default function ScoreScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+      <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
           <Text style={s.heroLabel}>ANALÝZA CHRUPU</Text>
           <Text style={s.heroTitle}>Dentálne skóre</Text>
@@ -370,7 +370,7 @@ export default function ScoreScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
