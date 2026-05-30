@@ -500,3 +500,4 @@ const styles = StyleSheet.create({
   recipientSummaryText:  { fontSize: 13, color: COLORS.wal },
   recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 },
 });
+  
