@@ -1,23 +1,30 @@
-﻿/**
+/**
  * Prílohy pacienta — doktor
- * Upload fotiek (RTG, pred/po, dokumenty) cez Supabase Storage
+ * Fotogaléria s grid/list zobrazením, full-screen preview, pred/po porovnanie
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
-  ActivityIndicator, Alert, Image, RefreshControl,
-  ScrollView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View } from 'react-native';
-import {} from 'react-native-safe-area-context';
+  ActivityIndicator, Alert, Dimensions, FlatList, Image, Modal,
+  RefreshControl, ScrollView, StyleSheet, Text, TextInput,
+  TouchableOpacity, View, PanResponder,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
+import Animated, { FadeIn, FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
+
+const { width: SCREEN_W } = Dimensions.get('window');
+const GRID_GAP = 4;
+const GRID_COLS = 3;
+const TILE_SIZE = (SCREEN_W - SPACING.xl * 2 - GRID_GAP * (GRID_COLS - 1)) / GRID_COLS;
 
 type Attachment = {
   id: string;
@@ -42,8 +49,157 @@ const CAT_CFG: Record<string, { label: string; icon: string; color: string; bg: 
   xray:     { label: 'RTG',      icon: '🩻', color: '#1A5276', bg: '#EBF5FB' },
   photo:    { label: 'Fotka',    icon: '📸', color: '#1E8449', bg: '#EAFAF1' },
   document: { label: 'Dokument', icon: '📄', color: '#7D3C98', bg: '#F5EEF8' },
-  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FEF9E7' } };
+  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FEF9E7' },
+};
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// FULL-SCREEN PREVIEW MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+function PreviewModal({
+  visible, attachment, onClose, onDelete, dark, colors,
+}: {
+  visible: boolean;
+  attachment: Attachment | null;
+  onClose: () => void;
+  onDelete: (a: Attachment) => void;
+  dark: boolean;
+  colors: any;
+}) {
+  if (!attachment) return null;
+  const cat = CAT_CFG[attachment.category] ?? CAT_CFG.general;
+  const d = new Date(attachment.created_at);
+
+  return (
+    <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
+      <View style={ms.backdrop}>
+        {/* Close */}
+        <TouchableOpacity style={ms.closeBtn} onPress={onClose} activeOpacity={0.8}>
+          <Ionicons name="close" size={24} color="#fff" />
+        </TouchableOpacity>
+
+        {/* Image */}
+        <Image
+          source={{ uri: attachment.file_url }}
+          style={ms.fullImage}
+          resizeMode="contain"
+        />
+
+        {/* Info bar */}
+        <View style={ms.infoBar}>
+          <Text style={ms.infoName} numberOfLines={1}>{attachment.name}</Text>
+          <View style={ms.infoRow}>
+            <View style={[ms.infoCatBadge, { backgroundColor: cat.bg }]}>
+              <Text style={[ms.infoCatText, { color: cat.color }]}>{cat.icon} {cat.label}</Text>
+            </View>
+            <Text style={ms.infoDate}>
+              {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </Text>
+          </View>
+          {attachment.notes ? (
+            <Text style={ms.infoNotes} numberOfLines={2}>{attachment.notes}</Text>
+          ) : null}
+
+          {/* Delete */}
+          <TouchableOpacity style={ms.deleteBtn} onPress={() => onDelete(attachment)} activeOpacity={0.8}>
+            <Ionicons name="trash-outline" size={16} color="#E74C3C" />
+            <Text style={ms.deleteBtnText}>Vymazať</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BEFORE/AFTER COMPARISON MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+function CompareModal({
+  visible, images, onClose, dark, colors,
+}: {
+  visible: boolean;
+  images: { before: Attachment | null; after: Attachment | null };
+  onClose: () => void;
+  dark: boolean;
+  colors: any;
+}) {
+  const [sliderX, setSliderX] = useState(SCREEN_W / 2);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: (_, gs) => {
+        const x = Math.max(20, Math.min(SCREEN_W - 20, gs.moveX));
+        setSliderX(x);
+      },
+    })
+  ).current;
+
+  if (!images.before || !images.after) return null;
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent statusBarTranslucent>
+      <View style={cs.backdrop}>
+        {/* Header */}
+        <View style={cs.header}>
+          <Text style={cs.headerTitle}>Pred / Po porovnanie</Text>
+          <TouchableOpacity onPress={onClose} style={cs.closeBtn} activeOpacity={0.8}>
+            <Ionicons name="close" size={22} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Comparison area */}
+        <View style={cs.compareArea} {...panResponder.panHandlers}>
+          {/* After image (full width, behind) */}
+          <Image source={{ uri: images.after.file_url }} style={cs.fullImg} resizeMode="cover" />
+
+          {/* Before image (clipped) */}
+          <View style={[cs.beforeClip, { width: sliderX }]}>
+            <Image source={{ uri: images.before.file_url }} style={[cs.fullImg, { width: SCREEN_W }]} resizeMode="cover" />
+          </View>
+
+          {/* Slider line */}
+          <View style={[cs.sliderLine, { left: sliderX }]}>
+            <View style={cs.sliderHandle}>
+              <Ionicons name="swap-horizontal" size={16} color="#fff" />
+            </View>
+          </View>
+
+          {/* Labels */}
+          <View style={cs.labelLeft}>
+            <Text style={cs.labelText}>PRED</Text>
+          </View>
+          <View style={cs.labelRight}>
+            <Text style={cs.labelText}>PO</Text>
+          </View>
+        </View>
+
+        {/* Info */}
+        <View style={cs.footer}>
+          <View style={cs.footerItem}>
+            <Text style={cs.footerLabel}>Pred</Text>
+            <Text style={cs.footerName} numberOfLines={1}>{images.before.name}</Text>
+            <Text style={cs.footerDate}>
+              {new Date(images.before.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </Text>
+          </View>
+          <View style={cs.footerDivider} />
+          <View style={cs.footerItem}>
+            <Text style={cs.footerLabel}>Po</Text>
+            <Text style={cs.footerName} numberOfLines={1}>{images.after.name}</Text>
+            <Text style={cs.footerDate}>
+              {new Date(images.after.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN SCREEN
+// ═══════════════════════════════════════════════════════════════════════════════
 export default function PatientAttachmentsScreen() {
   const router = useRouter();
   const { patientId, patientName } =
@@ -55,6 +211,7 @@ export default function PatientAttachmentsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab,  setActiveTab]  = useState('all');
   const [doctorId,   setDoctorId]   = useState<string | null>(null);
+  const [viewMode,   setViewMode]   = useState<'grid' | 'list'>('grid');
 
   // Upload form
   const [showForm,     setShowForm]     = useState(false);
@@ -65,6 +222,15 @@ export default function PatientAttachmentsScreen() {
   const [pendingUri,   setPendingUri]   = useState<string | null>(null);
   const [pendingB64,   setPendingB64]   = useState<string | null>(null);
   const [pendingMime,  setPendingMime]  = useState('image/jpeg');
+
+  // Preview modal
+  const [previewAtt, setPreviewAtt] = useState<Attachment | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Compare modal
+  const [compareMode,   setCompareMode]   = useState(false);
+  const [compareSelect, setCompareSelect] = useState<Attachment[]>([]);
+  const [showCompare,   setShowCompare]   = useState(false);
 
   async function load() {
     try {
@@ -86,7 +252,7 @@ export default function PatientAttachmentsScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [patientId]));
 
-  // ── Picker ────────────────────────────────────────────────────────────────
+  // ── Picker ──────────────────────────────────────────────────────────────────
   async function pickImage(fromCamera: boolean) {
     const perm = fromCamera
       ? await ImagePicker.requestCameraPermissionsAsync()
@@ -126,14 +292,13 @@ export default function PatientAttachmentsScreen() {
     setFormName(''); setFormNotes(''); setFormCategory('photo');
   }
 
-  // ── Upload ────────────────────────────────────────────────────────────────
+  // ── Upload ──────────────────────────────────────────────────────────────────
   async function handleUpload() {
     if (!patientId || !doctorId || !pendingB64) return;
     if (!formName.trim()) { Alert.alert('Chyba', 'Zadaj názov prílohy.'); return; }
 
     setUploading(true);
     try {
-      // Base64 → Uint8Array
       const binary = atob(pendingB64);
       const bytes  = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -162,7 +327,8 @@ export default function PatientAttachmentsScreen() {
         file_type:  'image',
         category:   formCategory,
         notes:      formNotes.trim() || null,
-        size_bytes: bytes.length });
+        size_bytes: bytes.length,
+      });
 
       if (dbErr) { Alert.alert('Chyba', dbErr.message); return; }
 
@@ -175,7 +341,7 @@ export default function PatientAttachmentsScreen() {
     }
   }
 
-  // ── Delete ────────────────────────────────────────────────────────────────
+  // ── Delete ──────────────────────────────────────────────────────────────────
   function handleDelete(att: Attachment) {
     Alert.alert('Vymazať prílohu', `Odstrániť „${att.name}"?`, [
       { text: 'Nie', style: 'cancel' },
@@ -185,13 +351,55 @@ export default function PatientAttachmentsScreen() {
           if (error) { Alert.alert('Chyba', error.message); return; }
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setAttachments(prev => prev.filter(a => a.id !== att.id));
-        } },
+          if (showPreview) { setShowPreview(false); setPreviewAtt(null); }
+        },
+      },
     ]);
+  }
+
+  // ── Compare ─────────────────────────────────────────────────────────────────
+  function toggleCompareMode() {
+    if (compareMode) {
+      setCompareMode(false);
+      setCompareSelect([]);
+    } else {
+      setCompareMode(true);
+      setCompareSelect([]);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }
+
+  function handleCompareSelect(att: Attachment) {
+    if (att.file_type !== 'image') return;
+    const already = compareSelect.find(a => a.id === att.id);
+    if (already) {
+      setCompareSelect(prev => prev.filter(a => a.id !== att.id));
+    } else if (compareSelect.length < 2) {
+      const next = [...compareSelect, att];
+      setCompareSelect(next);
+      if (next.length === 2) {
+        // Sort by date — older is "before"
+        const sorted = [...next].sort(
+          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        setShowCompare(true);
+        setCompareMode(false);
+      }
+    }
+  }
+
+  // ── Preview ─────────────────────────────────────────────────────────────────
+  function openPreview(att: Attachment) {
+    if (att.file_type !== 'image') return;
+    setPreviewAtt(att);
+    setShowPreview(true);
   }
 
   const filtered = activeTab === 'all'
     ? attachments
     : attachments.filter(a => a.category === activeTab);
+
+  const imageCount = attachments.filter(a => a.file_type === 'image').length;
 
   if (loading) {
     return (
@@ -206,184 +414,53 @@ export default function PatientAttachmentsScreen() {
 
       <HeroHeader
         title={patientName}
-        subtitle="Prílohy pacienta"
-        icon="attach-outline"
+        subtitle={`${attachments.length} príloh`}
+        icon="images-outline"
         onBack={() => router.back()}
         rightAction={
-          <TouchableOpacity style={styles.addBtn} onPress={openPicker} activeOpacity={0.85}>
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={styles.addBtnText}>Pridať</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {imageCount >= 2 && (
+              <TouchableOpacity
+                style={[styles.compareBtn, compareMode && styles.compareBtnActive]}
+                onPress={toggleCompareMode}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="git-compare-outline" size={16} color="#fff" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.addBtn} onPress={openPicker} activeOpacity={0.85}>
+              <Ionicons name="add" size={18} color="#fff" />
+              <Text style={styles.addBtnText}>Pridať</Text>
+            </TouchableOpacity>
+          </View>
         }
       />
 
-      {/* ── Kategórie ── */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}
-        style={styles.tabsBar} contentContainerStyle={styles.tabsContent}>
-        {ALL_CATS.map(c => {
-          const cnt = c.key === 'all' ? attachments.length : attachments.filter(a => a.category === c.key).length;
-          const active = activeTab === c.key;
-          return (
-            <TouchableOpacity key={c.key} style={[styles.tab, active && styles.tabActive]}
-              onPress={() => setActiveTab(c.key)} activeOpacity={0.8}>
-              <Text style={styles.tabIcon}>{c.icon}</Text>
-              <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{c.label}</Text>
-              {cnt > 0 && (
-                <View style={[styles.tabBadge, active && styles.tabBadgeActive]}>
-                  <Text style={[styles.tabBadgeText, active && { color: '#fff' }]}>{cnt}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      {/* ── Upload form ── */}
-      {showForm && (
-        <View style={[styles.formCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-          {pendingUri && (
-            <Image source={{ uri: pendingUri }} style={styles.previewImg} resizeMode="cover" />
-          )}
-          <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={formName} onChangeText={setFormName}
-            placeholder="Názov prílohy *" placeholderTextColor={dark ? '#666' : '#bbb'} />
-
-          {/* Kategória */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
-            <View style={{ flexDirection: 'row', gap: 6 }}>
-              {Object.entries(CAT_CFG).map(([key, cfg]) => (
-                <TouchableOpacity key={key} activeOpacity={0.8}
-                  style={[styles.catChip, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, formCategory === key && { backgroundColor: cfg.bg, borderColor: cfg.color }]}
-                  onPress={() => setFormCategory(key)}>
-                  <Text style={styles.catChipIcon}>{cfg.icon}</Text>
-                  <Text style={[styles.catChipLabel, formCategory === key && { color: cfg.color, fontWeight: '700' }]}>
-                    {cfg.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
-
-          <TextInput style={[styles.formInput, { minHeight: 54, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
-            value={formNotes} onChangeText={setFormNotes}
-            placeholder="Poznámka (nepovinné)" placeholderTextColor={dark ? '#666' : '#bbb'} multiline />
-
-          <View style={styles.formActions}>
-            <TouchableOpacity style={[styles.formCancel, { borderColor: colors.bg3 }]} onPress={cancelForm} activeOpacity={0.8}>
-              <Text style={[styles.formCancelText, { color: colors.textSecondary }]}>Zrušiť</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.formSave, uploading && { opacity: 0.5 }]}
-              onPress={handleUpload} disabled={uploading} activeOpacity={0.85}>
-              {uploading
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <><Ionicons name="cloud-upload-outline" size={14} color="#fff" />
-                    <Text style={styles.formSaveText}>Nahrať</Text></>}
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-
-      {/* ── Zoznam príloh ── */}
-      <ScrollView style={[styles.scroll, { backgroundColor: colors.bg2 }]} contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing}
-          onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.wal} />}>
-
-        {filtered.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>📂</Text>
-            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Žiadne prílohy</Text>
-            <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Klepni „Pridať" a nahraj RTG, fotku alebo dokument</Text>
-          </View>
-        ) : (
-          filtered.map(att => {
-            const cat = CAT_CFG[att.category] ?? CAT_CFG.general;
-            const d   = new Date(att.created_at);
-            const kb  = att.size_bytes ? `${Math.round(att.size_bytes / 1024)} KB` : null;
+      {/* ── Tabs + view toggle ── */}
+      <View style={styles.controlsRow}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}
+          style={{ flex: 1 }} contentContainerStyle={styles.tabsContent}>
+          {ALL_CATS.map(c => {
+            const cnt = c.key === 'all' ? attachments.length : attachments.filter(a => a.category === c.key).length;
+            const active = activeTab === c.key;
             return (
-              <View key={att.id} style={[styles.attCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
-                {att.file_type === 'image' ? (
-                  <Image source={{ uri: att.file_url }} style={styles.attThumb} resizeMode="cover" />
-                ) : (
-                  <View style={[styles.attThumb, { backgroundColor: cat.bg, alignItems: 'center', justifyContent: 'center' }]}>
-                    <Text style={{ fontSize: 26 }}>{cat.icon}</Text>
+              <TouchableOpacity key={c.key} style={[styles.tab, active && styles.tabActive]}
+                onPress={() => setActiveTab(c.key)} activeOpacity={0.8}>
+                <Text style={styles.tabIcon}>{c.icon}</Text>
+                <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{c.label}</Text>
+                {cnt > 0 && (
+                  <View style={[styles.tabBadge, active && styles.tabBadgeActive]}>
+                    <Text style={[styles.tabBadgeText, active && { color: '#fff' }]}>{cnt}</Text>
                   </View>
                 )}
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.attName, { color: colors.textPrimary }]} numberOfLines={1}>{att.name}</Text>
-                  <View style={styles.attMetaRow}>
-                    <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
-                      <Text style={[styles.catBadgeText, { color: cat.color }]}>{cat.icon} {cat.label}</Text>
-                    </View>
-                    <Text style={[styles.attDate, { color: colors.textSecondary }]}>
-                      {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </Text>
-                    {kb && <Text style={styles.attSize}>{kb}</Text>}
-                  </View>
-                  {att.notes ? (
-                    <Text style={styles.attNotes} numberOfLines={2}>{att.notes}</Text>
-                  ) : null}
-                </View>
-                <TouchableOpacity onPress={() => handleDelete(att)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ paddingLeft: 4 }}>
-                  <Ionicons name="trash-outline" size={18} color="#E74C3C" />
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             );
-          })
-        )}
-        <View style={{ height: 100 }} />
-      </ScrollView>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: COLORS.esp },
-  scroll: { flex: 1, backgroundColor: COLORS.bg2 },
-  content:{ padding: SPACING.xl, paddingTop: 12 },
-  center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
-
-  header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
-  addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
-  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
-
-  tabsBar:     { maxHeight: 48, backgroundColor: COLORS.esp },
-  tabsContent: { paddingHorizontal: SPACING.xl, paddingBottom: 8, gap: 6, alignItems: 'center' },
-  tab:         { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 11, paddingVertical: 5, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' },
-  tabActive:   { backgroundColor: COLORS.wal },
-  tabIcon:     { fontSize: 12 },
-  tabLabel:    { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
-  tabLabelActive: { color: '#fff' },
-  tabBadge:    { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1 },
-  tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
-  tabBadgeText:{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
-
-  formCard:    { backgroundColor: COLORS.cream, margin: SPACING.xl, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
-  previewImg:  { width: '100%', height: 130, borderRadius: 10, marginBottom: 10 },
-  formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 8 },
-  catChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream },
-  catChipIcon: { fontSize: 13 },
-  catChipLabel:{ fontSize: 11, color: COLORS.wal },
-  formActions: { flexDirection: 'row', gap: 8, marginTop: 4 },
-  formCancel:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3 },
-  formCancelText: { fontSize: 13, fontWeight: '600', color: COLORS.wal },
-  formSave:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.wal },
-  formSaveText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
-
-  empty:      { alignItems: 'center', paddingVertical: 60 },
-  emptyIcon:  { fontSize: 46, marginBottom: 12 },
-  emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
-  emptySub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
-
-  attCard:     { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 12, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3 },
-  attThumb:    { width: 66, height: 66, borderRadius: 8, backgroundColor: COLORS.bg3 },
-  attName:     { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
-  attMetaRow:  { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3 },
-  catBadge:    { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
-  catBadgeText:{ fontSize: 9, fontWeight: '700' },
-  attDate:     { fontSize: 10, color: COLORS.wal },
-  attSize:     { fontSize: 10, color: '#bbb' },
-  attNotes:    { fontSize: 10, color: '#888', fontStyle: 'italic', lineHeight: 14 } });
+          })}
+        </ScrollView>
+        {/* View toggle */}
+        <View style={styles.viewToggle}>
+          <TouchableOpacity
+            style={[styles.viewBtn, viewMode === 'grid' && styles.viewBtnActive]}
+            onPress={() => setViewMode('grid')} activeOpacity={0.8}
+          >
+            <Ionicons name

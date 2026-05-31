@@ -460,7 +460,7 @@ export default function PatientHome() {
               { icon: 'calendar', label: 'Rezervovať', route: '/(patient)/book-appointment', gold: true },
               { icon: 'time-outline', label: 'Záznamy', route: '/(patient)/appointments', gold: false },
               { icon: 'chatbubble-outline', label: 'Správy', route: '/(patient)/messages', gold: false },
-              { icon: 'person-outline', label: 'Doktor', route: '/(patient)/moj-zubar', gold: false },
+              { icon: 'images-outline', label: 'Fotky', route: '/(patient)/my-photos', gold: false },
             ] as { icon: any; label: string; route: any; gold: boolean }[]).map((item) => (
               <TouchableOpacity
                 key={item.label}
@@ -1103,3 +1103,4 @@ const styles = StyleSheet.create({
   ratingBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
   ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
 });
+ 
