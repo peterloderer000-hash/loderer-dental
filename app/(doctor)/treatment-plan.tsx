@@ -284,7 +284,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
 
 const mStyles = StyleSheet.create({
   overlay:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:        { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
+  sheet:        { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
   handle:       { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   title:        { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 18 },
   label:        { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 10 },
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   emptyBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 22, paddingVertical: 13 },
   emptyBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
 
-  planCard:     { backgroundColor: '#fff', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  planCard:     { backgroundColor: COLORS.cream, borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   planHeader:   { padding: 16, flexDirection: 'row', alignItems: 'flex-start' },
   planTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' },
   planTitle:    { fontSize: 16, fontWeight: '700', color: COLORS.esp },

@@ -710,10 +710,10 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
 
   // Patient search
-  patientSearchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
+  patientSearchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
   patientInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: COLORS.esp },
 
-  dropdown: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 10, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 6 },
+  dropdown: { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 10, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 6 },
   dropdownEmpty: { padding: 14, fontSize: 13, color: COLORS.wal, textAlign: 'center', fontStyle: 'italic' },
   dropdownItem: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },
   dropdownAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
 
   // Times
   timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
-  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 0, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 0, borderRadius: 10, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
@@ -742,11 +742,11 @@ const styles = StyleSheet.create({
   slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
 
   // Service picker
-  servicePickerBtn:         { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 12, marginBottom: 4 },
+  servicePickerBtn:         { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 12, marginBottom: 4 },
   servicePickerName:        { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   servicePickerMeta:        { fontSize: 10, color: COLORS.wal, marginTop: 1 },
   servicePickerPlaceholder: { flex: 1, fontSize: 14, color: '#bbb' },
-  serviceDropdown:          { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 8, overflow: 'hidden', elevation: 4 },
+  serviceDropdown:          { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 8, overflow: 'hidden', elevation: 4 },
   serviceDropdownCat:       { fontSize: 9, fontWeight: '800', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, paddingHorizontal: 12, paddingTop: 12, paddingBottom: 4, backgroundColor: COLORS.bg2 },
   serviceDropdownItem:      { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },
   serviceDropdownName:      { fontSize: 13, fontWeight: '600', color: COLORS.esp },
@@ -754,15 +754,15 @@ const styles = StyleSheet.create({
 
   // Duration picker
   durationRow:            { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  durationChip:           { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  durationChip:           { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   durationChipActive:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   durationChipText:       { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   durationChipTextActive: { color: COLORS.cream },
-  durationCustomRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
+  durationCustomRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
   durationInput:          { flex: 1, paddingVertical: 11, fontSize: 13, color: COLORS.esp },
 
   // Notes
-  notesCard:  { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 16 },
+  notesCard:  { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 16 },
   notesInput: { fontSize: 13, color: COLORS.esp, minHeight: 72, lineHeight: 20 },
 
   // Summary
@@ -776,12 +776,12 @@ const styles = StyleSheet.create({
 
   // Opakovanie
   repeatRow:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  repeatChip:          { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  repeatChip:          { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   repeatChipActive:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   repeatChipText:      { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   repeatChipTextActive:{ color: COLORS.cream },
   repeatCountLabel:    { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
-  repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
+  repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
   repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F4ECE4', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   repeatPreviewText:   { fontSize: 11, color: COLORS.wal, flex: 1, fontStyle: 'italic' },
 

@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
 
   // Kategória
   categoryBlock:  { marginBottom: 8 },
-  catHeader:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  catHeader:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.cream, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   catHeaderOpen:  { borderColor: COLORS.wal, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, borderBottomWidth: 0 },
   catLabel:       { fontSize: 12, fontWeight: '700', color: COLORS.esp },
   catLabelOpen:   { color: COLORS.wal },
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   catBadgeText:   { fontSize: 9, fontWeight: '800', color: '#fff' },
 
   // Služba
-  svcRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1, borderColor: COLORS.wal, borderTopWidth: 0, marginTop: 0 },
+  svcRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.cream, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1, borderColor: COLORS.wal, borderTopWidth: 0, marginTop: 0 },
   svcEmoji: { fontSize: 20, width: 28, textAlign: 'center' },
   svcName:  { fontSize: 12, fontWeight: '600', color: COLORS.esp, marginBottom: 2 },
   svcMeta:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   qtyCount:   { fontSize: 13, fontWeight: '800', color: COLORS.esp, minWidth: 16, textAlign: 'center' },
 
   // Súhrnný panel
-  summaryPanel: { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 12 },
+  summaryPanel: { backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 12 },
   emptyBasket:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   emptyText:    { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
 

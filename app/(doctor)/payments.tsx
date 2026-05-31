@@ -466,13 +466,13 @@ const s = StyleSheet.create({
   rangeText:    { fontSize: 12, color: COLORS.cream, fontWeight: '600' },
   rangeTextActive: { color: COLORS.esp },
 
-  summaryRow:  { flexDirection: 'row', backgroundColor: '#fff', marginHorizontal: 14, marginTop: 12, borderRadius: 14, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 14, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   summaryCard: { flex: 1, paddingVertical: 12, paddingHorizontal: 10, alignItems: 'center' },
   summaryLbl:  { fontSize: 10, color: '#888', marginBottom: 2 },
   summaryAmt:  { fontSize: 16, fontWeight: '700' },
 
   filterRow:     { flexDirection: 'row', gap: 6, paddingHorizontal: 14, paddingTop: 10, paddingBottom: 4, flexWrap: 'wrap' },
-  filterChip:    { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  filterChip:    { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterText:    { fontSize: 12, color: COLORS.wal, fontWeight: '600' },
   filterTextActive: { color: '#fff' },
@@ -488,7 +488,7 @@ const s = StyleSheet.create({
   emptyBtnText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
 
   card: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 10,
     elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3
   },
   cardTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
@@ -517,7 +517,7 @@ const s = StyleSheet.create({
 // ─── Modal styles ─────────────────────────────────────────────────────────────
 const m = StyleSheet.create({
   overlay:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:     { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%', paddingHorizontal: 20 },
+  sheet:     { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '92%', paddingHorizontal: 20 },
   handle:    { width: 40, height: 4, backgroundColor: COLORS.bg3, borderRadius: 2, alignSelf: 'center', marginTop: 10, marginBottom: 4 },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14 },
   sheetTitle:  { fontSize: 18, fontWeight: '700', color: COLORS.esp },
@@ -526,7 +526,7 @@ const m = StyleSheet.create({
   inputWrap:{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4, borderWidth: 1.5, borderColor: COLORS.bg3 },
   input:    { flex: 1, fontSize: 15, color: COLORS.esp, paddingVertical: 10 },
 
-  dropdown:     { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 4, marginTop: 4, marginBottom: 4 },
+  dropdown:     { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 4, marginTop: 4, marginBottom: 4 },
   dropdownItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   dropdownText: { fontSize: 14, color: COLORS.esp },
 

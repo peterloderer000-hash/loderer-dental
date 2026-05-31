@@ -169,7 +169,7 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
   body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl, gap: 14 },
-  card:     { backgroundColor: '#fff', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:     { backgroundColor: COLORS.cream, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   cardSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 18, lineHeight: 18 },
 
@@ -193,5 +193,5 @@ const s = StyleSheet.create({
 
   hintCard: {
     flexDirection: 'row', gap: 10, alignItems: 'flex-start',
-    backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+    backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   hintText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 } });

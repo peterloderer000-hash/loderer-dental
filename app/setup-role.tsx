@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   heroSub:   { fontSize: 13, color: COLORS.sand, letterSpacing: 0.4 },
 
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cream,
     borderTopLeftRadius: 28, borderTopRightRadius: 28,
     marginTop: -20, padding: 28, paddingTop: 32,
     flex: 1, minHeight: 340,

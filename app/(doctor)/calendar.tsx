@@ -505,7 +505,7 @@ export default function DoctorCalendar() {
                       {a.service && (
                         <View style={styles.apptSvcRow}>
                           <Text style={{ fontSize: 11 }}>{a.service.emoji ?? '🦷'}</Text>
-                          <Text style={styles.apptSvcName} numberOfLines={1}>{a.service.name}</Text>
+                          <Text style={styles.apptSvcName} numberOfLines={1}>{a.service?.name}</Text>
                           {dur > 0 && <Text style={styles.apptDur}>· {dur} min</Text>}
                         </View>
                       )}
@@ -584,7 +584,7 @@ export default function DoctorCalendar() {
                     {a.service && (
                       <View style={styles.apptSvcRow}>
                         <Text style={{ fontSize: 11 }}>{a.service.emoji ?? '🦷'}</Text>
-                        <Text style={styles.apptSvcName} numberOfLines={1}>{a.service.name}</Text>
+                        <Text style={styles.apptSvcName} numberOfLines={1}>{a.service?.name}</Text>
                         {dur > 0 && <Text style={styles.apptDur}>· {dur} min</Text>}
                       </View>
                     )}
@@ -687,7 +687,7 @@ export default function DoctorCalendar() {
                   </View>
                   {height > 54 && a.service && (
                     <Text style={[styles.tlSvc, { color }]} numberOfLines={1}>
-                      {a.service.emoji ?? '🦷'} {a.service.name}
+                      {a.service.emoji ?? '🦷'} {a.service?.name}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -817,7 +817,7 @@ const styles = StyleSheet.create({
   weekLabel: { flex: 1, textAlign: 'center', fontSize: 13, fontWeight: '600', color: COLORS.esp },
 
   // Week grid
-  weekGrid:          { flexDirection: 'row', backgroundColor: '#fff', paddingVertical: 10, paddingHorizontal: 4, borderBottomWidth: 1, borderColor: COLORS.bg3 },
+  weekGrid:          { flexDirection: 'row', backgroundColor: COLORS.cream, paddingVertical: 10, paddingHorizontal: 4, borderBottomWidth: 1, borderColor: COLORS.bg3 },
   dayCell:           { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 6, borderRadius: 10 },
   dayCellSel:        { backgroundColor: COLORS.esp },
   dayCellToday:      { backgroundColor: '#F4ECE4' },
@@ -840,11 +840,11 @@ const styles = StyleSheet.create({
   dayHeaderRight:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
   exportBtn:     { width: 34, height: 34, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.bg3 },
   viewToggle:    { flexDirection: 'row', gap: 6 },
-  toggleBtn:     { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  toggleBtn:     { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   toggleBtnActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.wal },
 
   // List view
-  apptRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', marginHorizontal: SPACING.xl, marginTop: 8, padding: 12, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.bg3, borderLeftWidth: 4, elevation: 1 },
+  apptRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, marginTop: 8, padding: 12, borderRadius: RADII.md, borderWidth: 1, borderColor: COLORS.bg3, borderLeftWidth: 4, elevation: 1 },
   apptTimeCol:   { width: 54, alignItems: 'flex-end' },
   apptTimeStart: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   apptTimeEnd:   { fontSize: 11, color: COLORS.wal, marginTop: 2 },
@@ -917,7 +917,7 @@ const styles = StyleSheet.create({
 
   // Modal
   modalOverlay:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  modalSheet:     { backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 24, paddingBottom: 36 },
+  modalSheet:     { backgroundColor: COLORS.cream, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 24, paddingBottom: 36 },
   modalHandle:    { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   modalTitle:     { fontSize: 18, fontWeight: '800', color: COLORS.esp, marginBottom: 4 },
   modalDate:      { fontSize: 12, color: COLORS.wal, marginBottom: 20, textTransform: 'capitalize' },

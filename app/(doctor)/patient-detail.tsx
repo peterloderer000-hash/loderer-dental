@@ -1254,7 +1254,7 @@ export default function PatientDetailScreen() {
                     </View>
                   </View>
                   {a.service?.price_min != null && (
-                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textSecondary }}>{a.service.price_min} €</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textSecondary }}>{a.service?.price_min} €</Text>
                   )}
                 </View>
               );
@@ -1419,7 +1419,7 @@ const styles = StyleSheet.create({
   scoreChipLabel: { fontSize: 7, fontWeight: '600', textTransform: 'uppercase' },
 
   // Info karta
-  infoCard:    { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
+  infoCard:    { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
   avatarWrap:  { alignItems: 'center', gap: 6 },
   avatar:      { width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.sand, overflow: 'hidden' },
   avatarText:  { fontSize: 22, fontWeight: '700', color: '#fff' },
@@ -1449,17 +1449,17 @@ const styles = StyleSheet.create({
 
   // Akcie
   actionsRow:       { flexDirection: 'row', gap: 8 },
-  actionBtn:        { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#fff', borderRadius: 14, paddingVertical: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  actionBtn:        { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.cream, borderRadius: 14, paddingVertical: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   actionBtnPrimary: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   actionBtnText:    { fontSize: 11, fontWeight: '700', color: COLORS.wal, textAlign: 'center' },
-  actionBtnSm:      { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: '#fff', borderRadius: 12, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.bg3 },
+  actionBtnSm:      { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: COLORS.cream, borderRadius: 12, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   actionBtnSmText:  { fontSize: 10, fontWeight: '600', color: COLORS.wal, textAlign: 'center' },
   // Plán liečby
   planBtn:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EAFAF1', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, marginBottom: 14, borderWidth: 1.5, borderColor: '#A9DFBF' },
   planBtnText:      { fontSize: 13, fontWeight: '700', color: '#1E8449' },
 
   // Karta
-  card:           { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:           { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle:      { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
   cardTitleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   scoreCircleMini:{ width: 42, height: 42, borderRadius: 21, borderWidth: 3, alignItems: 'center', justifyContent: 'center' },
@@ -1542,7 +1542,7 @@ const styles = StyleSheet.create({
   critBox:         { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, padding: 12, marginBottom: 12 },
   critHeader:      { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: '#F5B7B1' },
   critTitle:       { fontSize: 10, fontWeight: '800', color: '#C0392B', letterSpacing: 1.5, flex: 1 },
-  critBlood:       { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 2 },
+  critBlood:       { backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 2 },
   critBloodText:   { fontSize: 11, fontWeight: '800', color: '#C0392B' },
   critLine:        { fontSize: 13, color: '#6A1A12', lineHeight: 18, marginTop: 3 },
   critStrong:      { fontWeight: '800' },
@@ -1578,7 +1578,7 @@ const styles = StyleSheet.create({
 
   // Notifikačný modal
   notifOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  notifSheet:         { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
+  notifSheet:         { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
   notifHandle:        { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   notifTitle:         { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   notifSub:           { fontSize: 12, color: COLORS.wal, marginBottom: 16 },

@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
 
-  summaryCard: { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  summaryCard: { backgroundColor: COLORS.cream, margin: SPACING.xl, marginBottom: 0, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   summaryRow:  { flexDirection: 'row', gap: 10, marginBottom: 14 },
   summaryBox:  { flex: 1, borderRadius: 12, borderWidth: 1.5, padding: 12, alignItems: 'center' },
   summaryIcon: { fontSize: 22, marginBottom: 4 },
@@ -390,13 +390,13 @@ const styles = StyleSheet.create({
 
   tabsScroll:  { maxHeight: 46, marginTop: 12, marginBottom: 0 },
   tabsContent: { paddingHorizontal: SPACING.xl, gap: 8, alignItems: 'center' },
-  periodTab:      { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
+  periodTab:      { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream },
   periodTabActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   periodTabText:     { fontSize: 11, fontWeight: '600', color: COLORS.wal },
   periodTabTextActive:{ color: '#fff' },
 
   payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 10 },
-  payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff', alignItems: 'center' },
+  payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream, alignItems: 'center' },
   payFilterText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
 
   fab:       { position: 'absolute', bottom: 90, right: 20, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 24, paddingVertical: 12, paddingHorizontal: 18, elevation: 6 },
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 13, color: COLORS.wal },
 
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SPACING.xl, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
+  row:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 11, paddingHorizontal: SPACING.xl, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: COLORS.cream },
   dateBox:    { width: 36, alignItems: 'center' },
   dateDay:    { fontSize: 17, fontWeight: '800', color: COLORS.esp, lineHeight: 20 },
   dateMon:    { fontSize: 9,  fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },

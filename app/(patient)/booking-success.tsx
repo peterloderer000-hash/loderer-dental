@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   serviceName: { fontSize: 16, fontWeight: '600', color: COLORS.wal },
 
   // Detail karta
-  card: { width: '100%', backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
+  card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
   row:  { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   rowIcon:  { width: 32, height: 32, borderRadius: 8, backgroundColor: '#F4ECE4', alignItems: 'center', justifyContent: 'center' },
   rowLabel: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
@@ -206,10 +206,10 @@ const styles = StyleSheet.create({
   infoText: { flex: 1, fontSize: 12, color: '#7D6608', lineHeight: 18 },
 
   // Buttons
-  btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },
+  btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 14, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },
   btnShareText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal },
   actions:        { flexDirection: 'row', gap: 10, width: '100%' },
-  btnSecondary:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.sand },
+  btnSecondary:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand },
   btnSecondaryText:{ fontSize: 13, fontWeight: '700', color: COLORS.wal },
   btnPrimary:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.esp },
   btnPrimaryText: { fontSize: 13, fontWeight: '700', color: '#fff' },

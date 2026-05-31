@@ -107,7 +107,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onCancel, on
         {item.service && (
           <View style={styles.infoItem}>
             <Text style={{ fontSize: 13 }}>{item.service.emoji ?? '🦷'}</Text>
-            <Text style={styles.infoText}>{item.service.name}</Text>
+            <Text style={styles.infoText}>{item.service?.name}</Text>
           </View>
         )}
         <View style={styles.infoItem}>
@@ -265,7 +265,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
   const slots = useMemo(() => {
     if (!appointment?.service || !selectedDayHours) return [];
     return generateTimeSlotsForDay(
-      appointment.service.duration_minutes,
+      appointment.service?.duration_minutes ?? 30,
       selectedDayHours.open_time,
       selectedDayHours.close_time,
     );
@@ -420,7 +420,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
 
 const rs = StyleSheet.create({
   overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40, maxHeight: '85%' },
+  sheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40, maxHeight: '85%' },
   handle:      { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   sheetHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 20 },
   sheetTitle:  { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 3 },
@@ -540,7 +540,7 @@ function RatingModal({ appointment, onClose, onDone }: {
 
 const rStyles = StyleSheet.create({
   overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 44 },
+  sheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 44 },
   handle:      { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   title:       { fontSize: 22, fontWeight: '800', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
   subtitle:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 24 },
@@ -693,7 +693,7 @@ function AppointmentDetailSheet({ appointment, onClose }: {
 
 const dsStyles = StyleSheet.create({
   overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:      { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 40 },
+  sheet:      { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 40 },
   handle:     { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   statusChip: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 4, marginBottom: 10 },
   statusText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -984,7 +984,7 @@ export default function AppointmentsScreen() {
                     await supabase.from('notifications').insert({
                       user_id:        item.doctor_id,
                       title:          '🟢 Pacient je v čakárni',
-                      body:           `${item.patient?.full_name ?? 'Pacient'} prišiel na termín${item.service ? ` — ${item.service.name}` : ''}.`,
+                      body:           `${item.patient?.full_name ?? 'Pacient'} prišiel na termín${item.service ? ` — ${item.service?.name}` : ''}.`,
                       type:           'info',
                       appointment_id: item.id,
                     }).then(({ error }) => { if (error) console.warn('Notif error:', error.message); });
@@ -1034,7 +1034,7 @@ const styles = StyleSheet.create({
   wlBadge:         { backgroundColor: '#17A589', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 1 },
   wlBadgeText:     { fontSize: 9, fontWeight: '800', color: '#fff' },
   wlScroll:        { paddingHorizontal: SPACING.xl, gap: 8 },
-  wlCard:          { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1.5, borderColor: '#A2D9CE', paddingHorizontal: 12, paddingVertical: 9, maxWidth: 260 },
+  wlCard:          { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 10, borderWidth: 1.5, borderColor: '#A2D9CE', paddingHorizontal: 12, paddingVertical: 9, maxWidth: 260 },
   wlEmoji:         { fontSize: 18 },
   wlService:       { fontSize: 13, fontWeight: '700', color: '#0E6655', marginBottom: 2 },
   wlDate:          { fontSize: 11, color: '#17A589' },
@@ -1054,7 +1054,7 @@ const styles = StyleSheet.create({
   monthCountText: { fontSize: 11, fontWeight: '700', color: COLORS.wal },
 
   // Card
-  card: { backgroundColor: '#fff', borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginBottom: 10, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3 },
+  card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginBottom: 10, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3 },
   cardMissed: { borderColor: '#F9E79F', backgroundColor: '#FEFDF0' },
 
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 },

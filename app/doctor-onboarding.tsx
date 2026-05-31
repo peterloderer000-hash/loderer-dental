@@ -402,7 +402,7 @@ const main = StyleSheet.create({
   safe: { flex: 1, backgroundColor: COLORS.bg2 },
 
   progress: {
-    backgroundColor: '#fff', paddingHorizontal: SPACING.xl,
+    backgroundColor: COLORS.cream, paddingHorizontal: SPACING.xl,
     paddingTop: 16, paddingBottom: 14,
     borderBottomWidth: 1, borderBottomColor: COLORS.bg3,
     gap: 12,
@@ -440,7 +440,7 @@ const step = StyleSheet.create({
   infoCards: { gap: 10, marginBottom: 28 },
   infoCard: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
+    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
   },
   infoCardIcon: {
@@ -460,13 +460,13 @@ const step = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: '#fff',
+    borderRadius: 12, backgroundColor: COLORS.cream,
     paddingHorizontal: 12,
   },
   input: { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
   textArea: {
     borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12,
-    backgroundColor: '#fff', padding: 12, fontSize: 14, color: COLORS.esp,
+    backgroundColor: COLORS.cream, padding: 12, fontSize: 14, color: COLORS.esp,
     height: 90, textAlignVertical: 'top',
   },
 
@@ -483,7 +483,7 @@ const step = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 15,
     borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3,
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cream,
   },
   btnSecondaryText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
 
@@ -503,7 +503,7 @@ const step = StyleSheet.create({
 const hrs = StyleSheet.create({
   row: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 12, padding: 12,
+    backgroundColor: COLORS.cream, borderRadius: 12, padding: 12,
     marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3,
   },
   dayBtn: {

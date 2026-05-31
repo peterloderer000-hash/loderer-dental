@@ -453,12 +453,12 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 10, marginTop: 4 },
 
   audienceGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  audienceCard: { width: '47%', padding: 12, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3, gap: 6 },
+  audienceCard: { width: '47%', padding: 12, borderRadius: 14, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3, gap: 6 },
   audienceIcon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   audienceLabel:{ fontSize: 12, fontWeight: '700', color: COLORS.esp },
   audienceDesc: { fontSize: 11, color: COLORS.wal, lineHeight: 14 },
 
-  customSection:{ backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 20, overflow: 'hidden' },
+  customSection:{ backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 20, overflow: 'hidden' },
   searchRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   searchInput:  { flex: 1, fontSize: 13, color: COLORS.esp },
   selBadge:     { backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 1 },
@@ -471,15 +471,15 @@ const styles = StyleSheet.create({
   ptPhone:      { fontSize: 11, color: COLORS.wal, marginTop: 1 },
 
   templatesRow: { gap: 8, paddingBottom: 14, paddingTop: 2 },
-  templateChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  templateChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateEmoji:{ fontSize: 14 },
   templateLabel:{ fontSize: 12, fontWeight: '600', color: COLORS.esp },
 
-  input:        { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, marginBottom: 4 },
+  input:        { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, marginBottom: 4 },
   bodyInput:    { minHeight: 100, textAlignVertical: 'top' },
   charCount:    { fontSize: 11, color: COLORS.wal, textAlign: 'right', marginBottom: 18 },
 
-  previewBox:   { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1, borderColor: COLORS.bg3, padding: 14, marginBottom: 20 },
+  previewBox:   { backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1, borderColor: COLORS.bg3, padding: 14, marginBottom: 20 },
   previewLabel: { fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, marginBottom: 10 },
   previewCard:  { backgroundColor: '#F8F8F8', borderRadius: 12, padding: 12, gap: 3 },
   previewHeader:{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 4 },
@@ -492,11 +492,11 @@ const styles = StyleSheet.create({
   schedToggleText:   { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   schedRow:          { flexDirection: 'row', marginBottom: 14 },
   schedLabel:        { fontSize: 9, fontWeight: '700', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 },
-  schedInput:        { backgroundColor: '#fff', borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, fontSize: 15, color: COLORS.esp, fontWeight: '600' },
+  schedInput:        { backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, fontSize: 15, color: COLORS.esp, fontWeight: '600' },
   sendBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: COLORS.wal, borderRadius: 16, paddingVertical: 16, marginTop: 4 },
   sendBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
 
-  recipientSummary:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 12 },
+  recipientSummary:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 12 },
   recipientSummaryText:  { fontSize: 13, color: COLORS.wal },
   recipientSummaryCount: { fontWeight: '800', color: COLORS.esp, fontSize: 14 },
 });

@@ -361,10 +361,10 @@ const styles = StyleSheet.create({
   tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
   tabBadgeText:{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
 
-  formCard:    { backgroundColor: '#fff', margin: SPACING.xl, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  formCard:    { backgroundColor: COLORS.cream, margin: SPACING.xl, marginBottom: 0, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   previewImg:  { width: '100%', height: 130, borderRadius: 10, marginBottom: 10 },
   formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9, fontSize: 13, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 8 },
-  catChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff' },
+  catChip:     { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream },
   catChipIcon: { fontSize: 13 },
   catChipLabel:{ fontSize: 11, color: COLORS.wal },
   formActions: { flexDirection: 'row', gap: 8, marginTop: 4 },
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
 
-  attCard:     { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 12, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3 },
+  attCard:     { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 12, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3 },
   attThumb:    { width: 66, height: 66, borderRadius: 8, backgroundColor: COLORS.bg3 },
   attName:     { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   attMetaRow:  { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3 },

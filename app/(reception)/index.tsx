@@ -382,7 +382,7 @@ const s = StyleSheet.create({
   kioskSheet:    { borderRadius: 20, padding: 24, alignItems: 'center', width: '100%' },
   kioskTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 8 },
   kioskSub:      { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
-  kioskQrWrap:   { backgroundColor: '#fff', borderRadius: 16, padding: 12, marginBottom: 12 },
+  kioskQrWrap:   { backgroundColor: COLORS.cream, borderRadius: 16, padding: 12, marginBottom: 12 },
   kioskQr:       { width: 240, height: 240 },
   kioskDate:     { fontSize: 12, marginBottom: 20 },
   kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 14 },

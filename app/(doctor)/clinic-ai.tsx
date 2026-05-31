@@ -163,7 +163,7 @@ const bbl = StyleSheet.create({
   avatarEmoji:{ fontSize: 16 },
   bubble:     { maxWidth: '78%', borderRadius: 16, padding: 12 },
   bubbleUser: { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
-  bubbleAI:   { backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
+  bubbleAI:   { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
   textUser:   { fontSize: 14, color: '#fff', lineHeight: 20 },
   textAI:     { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   time:       { fontSize: 9, color: '#999', marginTop: 4, textAlign: 'right' }
@@ -323,17 +323,17 @@ const s = StyleSheet.create({
   aiBadgeText:{ fontSize: 10, fontWeight: '700', color: COLORS.cream, letterSpacing: 1 },
 
   thinkingRow:    { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  thinkingBubble: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 16, borderBottomLeftRadius: 4, padding: 12, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  thinkingBubble: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 16, borderBottomLeftRadius: 4, padding: 12, borderWidth: 1.5, borderColor: COLORS.bg3 },
   thinkingText:   { fontSize: 13, color: COLORS.wal, fontStyle: 'italic' },
 
-  suggestScroll: { maxHeight: 44, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3 },
+  suggestScroll: { maxHeight: 44, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   suggestRow:    { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
   suggestChip:   { backgroundColor: COLORS.bg2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.bg3 },
   suggestText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
 
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 10,
-    padding: 12, backgroundColor: '#fff',
+    padding: 12, backgroundColor: COLORS.cream,
     borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {

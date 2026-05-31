@@ -286,7 +286,7 @@ function AddRxModal({
 // ─── Modál štýly ──────────────────────────────────────────────────────────────
 const ms = StyleSheet.create({
   overlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:         { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
+  sheet:         { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 36 },
   handle:        { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   title:         { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 16 },
   label:         { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 12 },
@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
   // Taby
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cream,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.bg3
   },
@@ -739,7 +739,7 @@ const styles = StyleSheet.create({
 
   // Karta
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cream,
     borderRadius: RADII.md,
     borderWidth: 1,
     borderColor: COLORS.bg3,

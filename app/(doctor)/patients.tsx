@@ -498,12 +498,12 @@ const styles = StyleSheet.create({
   countLabel: { fontSize: 10, color: COLORS.cream, letterSpacing: 1, textTransform: 'uppercase' },
 
   // Search bar
-  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: SPACING.xl, marginTop: 14, marginBottom: 4, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, marginTop: 14, marginBottom: 4, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   searchIcon:  { flexShrink: 0 },
   searchInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: COLORS.esp },
   sortBtn:        { width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   sortBtnActive:  { backgroundColor: COLORS.wal },
-  sortPanel:      { backgroundColor: '#fff', marginHorizontal: SPACING.xl, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
+  sortPanel:      { backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
   sortOption:     { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   sortOptionActive:{ backgroundColor: '#F4ECE4' },
   sortOptionText: { fontSize: 13, color: COLORS.esp, fontWeight: '500' },
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
 
   // Filter chips
   filterRow:              { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 4, flexWrap: 'wrap' },
-  filterChip:             { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  filterChip:             { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive:       { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterChipText:         { fontSize: 11, fontWeight: '600', color: COLORS.wal },
   filterChipTextActive:   { color: '#fff' },
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   resultLabel: { fontSize: 11, color: COLORS.wal, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 4, fontStyle: 'italic' },
 
   // Patient card
-  card: { backgroundColor: '#fff', borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
+  card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
 
   avatar:     { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
   wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.xl, marginBottom: 10 },
   wlDot:           { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D4AC0D' },
   wlSectionTitle:  { fontSize: 9, fontWeight: '800', color: '#7D6608', letterSpacing: 1.5 },
-  wlCard:          { width: 190, backgroundColor: '#fff', borderRadius: 12, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', elevation: 2 },
+  wlCard:          { width: 190, backgroundColor: COLORS.cream, borderRadius: 12, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', elevation: 2 },
   wlCardTop:       { marginBottom: 6 },
   wlPatient:       { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   wlService:       { fontSize: 11, color: COLORS.wal, marginBottom: 3 },

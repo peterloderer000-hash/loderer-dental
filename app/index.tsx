@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   heroSub:   { fontSize: 13, color: COLORS.sand, letterSpacing: 0.5 },
 
   // Form card
-  formCard: { backgroundColor: '#fff', borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -20, padding: 28, paddingTop: 32, flex: 1, minHeight: 420 },
+  formCard: { backgroundColor: COLORS.cream, borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -20, padding: 28, paddingTop: 32, flex: 1, minHeight: 420 },
   formTitle: { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 22, textAlign: 'center' },
 
   label: { fontSize: 10, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8, marginTop: 4 },

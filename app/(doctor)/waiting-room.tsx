@@ -300,7 +300,7 @@ const s = StyleSheet.create({
   sectionLabel:  { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase' },
 
   card: {
-    backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 16, padding: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
     gap: 12 },
@@ -333,7 +333,7 @@ const s = StyleSheet.create({
   footerText: { fontSize: 10, color: COLORS.wal },
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalCard:    { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 12 },
+  modalCard:    { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 12 },
   modalTitle:   { fontSize: 20, fontWeight: '800', color: COLORS.esp, textAlign: 'center' },
   modalSub:     { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 4 },
   chairBtn: {
