@@ -10,6 +10,7 @@ import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Patient = {
@@ -100,7 +101,8 @@ export default function ReceptionPatients() {
             keyExtractor={p => p.id}
             contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
             ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-            renderItem={({ item }) => (
+            renderItem={({ item, index: _aidx }) => (
+              <AnimatedListItem index={_aidx}>
               <TouchableOpacity
                 style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, SHADOWS.card]}
                 onPress={() => router.push(`/(doctor)/patient-detail?id=${item.id}`)}
@@ -133,6 +135,7 @@ export default function ReceptionPatients() {
 
                 <Ionicons name="chevron-forward" size={16} color={COLORS.sand} />
               </TouchableOpacity>
+              </AnimatedListItem>
             )}
           />
         )}

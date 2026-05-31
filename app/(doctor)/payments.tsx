@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
 import { COLORS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type DateRange    = 'today' | 'week' | 'month';
@@ -399,7 +400,8 @@ export default function PaymentsScreen() {
               </TouchableOpacity>
             </View>
           )}
-          renderItem={({ item: p }) => (
+          renderItem={({ item: p, index: _aidx }) => (
+              <AnimatedListItem index={_aidx}>
             <View style={[s.card, { backgroundColor: colors.cardBg }]}>
               <View style={s.cardTop}>
                 <View style={{ flex: 1 }}>
@@ -428,6 +430,7 @@ export default function PaymentsScreen() {
                 </TouchableOpacity>
               )}
             </View>
+              </AnimatedListItem>
           )}
         />
       )}

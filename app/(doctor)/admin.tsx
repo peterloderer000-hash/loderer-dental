@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -366,9 +367,10 @@ export default function AdminScreen() {
                   </TouchableOpacity>
                 </View>
               }
-              renderItem={({ item: m }) => {
+              renderItem={({ item: m, index: _aidx }) => {
                 const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
                 return (
+                  <AnimatedListItem index={_aidx}>
                   <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.memberAvatar}>
                       <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
@@ -395,6 +397,7 @@ export default function AdminScreen() {
                       </TouchableOpacity>
                     )}
                   </View>
+                  </AnimatedListItem>
                 );
               }}
             />
