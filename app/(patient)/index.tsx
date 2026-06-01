@@ -1103,3 +1103,4 @@ const styles = StyleSheet.create({
   ratingBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
   ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
 });
+ 

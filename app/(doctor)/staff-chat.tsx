@@ -285,7 +285,7 @@ export default function StaffChatScreen() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setMyId(user.id);
-    });
+    }).catch(console.error);
   }, []);
 
   // Load staff list
@@ -294,7 +294,8 @@ export default function StaffChatScreen() {
       .select('id, full_name, role')
       .in('role', ['doctor', 'reception', 'hygienist', 'owner'])
       .order('full_name')
-      .then(({ data }) => setStaff((data ?? []) as StaffMember[]));
+      .then(({ data }) => setStaff((data ?? []) as StaffMember[]))
+      .catch(console.error);
   }, []);
 
   // Load broadcast

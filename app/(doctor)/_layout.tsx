@@ -13,8 +13,9 @@ export default function DoctorLayout() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
       supabase.from('profiles').select('role').eq('id', user.id).single()
-        .then(({ data }) => { if (data?.role) setRole(data.role); });
-    });
+        .then(({ data }) => { if (data?.role) setRole(data.role); })
+        .catch(console.error);
+    }).catch(console.error);
   }, []);
 
   const isHygienist = role === 'hygienist';

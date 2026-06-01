@@ -284,7 +284,11 @@ export default function MyPhotosScreen() {
 
       const { error: dbErr } = await supabase.from('patient_attachments').insert({
         patient_id: user.id,
+<<<<<<< HEAD
         doctor_id:  user.id,
+=======
+        doctor_id:  null,
+>>>>>>> d5b372463f948e3ab9bbb58892f8e3e30c6bbb44
         name:       formName.trim(),
         file_url:   publicUrl,
         file_type:  'image',
@@ -677,7 +681,11 @@ const styles = StyleSheet.create({
 
   attCard:       { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 12, padding: 10, marginBottom: 8, borderWidth: 1 },
   attCardSelected: { borderColor: COLORS.gold, borderWidth: 2 },
+<<<<<<< HEAD
   attThumb:      { width: 66, height: 66, borderRadius: 8, backgroundColor: COLORS.cream },
+=======
+  attThumb:      { width: 66, height: 66, borderRadius: 8, backgroundColor: '#eee' },
+>>>>>>> d5b372463f948e3ab9bbb58892f8e3e30c6bbb44
   attName:       { fontSize: 13, fontWeight: '700', marginBottom: 4 },
   attMetaRow:    { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3 },
   catBadge:      { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },

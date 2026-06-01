@@ -37,7 +37,8 @@ export default function ReceptionPatients() {
       .then(({ data }) => {
         setPatients((data as Patient[]) ?? []);
         setLoading(false);
-      });
+      })
+      .catch((err) => { console.error(err); setLoading(false); });
   }, []);
 
   const filtered = useMemo(() => {
