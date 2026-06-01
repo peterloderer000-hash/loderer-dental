@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
 
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  card: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   sectionEmoji:  { fontSize: 18 },

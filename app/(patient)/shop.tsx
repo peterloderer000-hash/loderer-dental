@@ -61,7 +61,7 @@ export default function ShopScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.circle, { width: 200, height: 200, right: -60, top: -60, opacity: 0.06 }]} />

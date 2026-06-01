@@ -1024,7 +1024,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
   // Step bar
-  stepBar:      { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  stepBar:      { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   stepItem:     { alignItems: 'center', gap: 4 },
   stepDot:      { width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   stepDotActive:{ backgroundColor: COLORS.wal, borderColor: COLORS.wal },
@@ -1036,7 +1036,7 @@ const styles = StyleSheet.create({
   stepLineDone: { backgroundColor: '#1E8449' },
 
   // Search
-  searchBar:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
+  searchBar:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
   searchInput:     { flex: 1, paddingVertical: 11, fontSize: 13, color: COLORS.esp },
   searchEmpty:     { alignItems: 'center', paddingVertical: 30 },
   searchEmptyText: { fontSize: 13, color: COLORS.wal, fontStyle: 'italic', textAlign: 'center' },
@@ -1047,7 +1047,7 @@ const styles = StyleSheet.create({
   categoryLabel:{ fontSize: 11, letterSpacing: 1.5, color: COLORS.esp, fontWeight: '800', textTransform: 'uppercase', marginBottom: 10, marginTop: 16, paddingLeft: 4, borderLeftWidth: 3, borderLeftColor: COLORS.wal, paddingVertical: 2 },
 
   // Doctor card (Step 0)
-  doctorCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
+  doctorCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
   doctorCardSel: { borderColor: COLORS.gold, backgroundColor: '#FFFDF7' },
   doctorAvatar:  { width: 56, height: 56, borderRadius: 28, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.sand },
   doctorInitials:{ fontSize: 18, fontWeight: '700', color: COLORS.cream, fontFamily: 'PlayfairDisplay_700Bold' },
@@ -1056,7 +1056,7 @@ const styles = StyleSheet.create({
   doctorAvail:   { fontSize: 11, color: COLORS.gold, fontWeight: '600' },
 
   // Service card
-  serviceCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
+  serviceCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
   serviceCardSel: { borderColor: '#1E8449', backgroundColor: '#EAFAF1' },
   serviceEmoji:   { width: 52, height: 52, borderRadius: 14, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   serviceEmojiSel:{ backgroundColor: '#D5F5E3' },
@@ -1068,7 +1068,7 @@ const styles = StyleSheet.create({
   metaText:       { fontSize: 11, fontWeight: '600', color: COLORS.wal },
 
   // Selected chip
-  selectedServiceChip: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.sand, padding: 12, marginBottom: 18 },
+  selectedServiceChip: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.sand, padding: 12, marginBottom: 18 },
   chipEmoji: { fontSize: 26 },
   chipName:  { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   chipDur:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
@@ -1080,7 +1080,7 @@ const styles = StyleSheet.create({
 
   // Slots
   slotsGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  slotCell:       { width: '22%', alignItems: 'center', paddingVertical: 12, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  slotCell:       { width: '22%', alignItems: 'center', paddingVertical: 12, borderRadius: 10, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   slotCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   slotCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.55 },
   slotStart:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
@@ -1091,7 +1091,7 @@ const styles = StyleSheet.create({
   slotTakenLabel: { fontSize: 12, color: '#bbb', marginTop: 1 },
 
   // Summary
-  summaryCard:    { backgroundColor: '#fff', borderRadius: 16, borderWidth: 1.5, borderColor: COLORS.sand, padding: 16, marginBottom: 20 },
+  summaryCard:    { backgroundColor: COLORS.cream, borderRadius: 16, borderWidth: 1.5, borderColor: COLORS.sand, padding: 16, marginBottom: 20 },
   summaryHeader:  { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   summaryEmoji:   { fontSize: 36 },
   summaryService: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 3 },
@@ -1101,7 +1101,7 @@ const styles = StyleSheet.create({
   summaryRowText: { flex: 1, fontSize: 13, color: COLORS.esp, lineHeight: 19 },
 
   // Urgent toggle
-  urgentCard:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 14 },
+  urgentCard:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 14 },
   urgentCardActive:   { borderColor: '#E74C3C', backgroundColor: '#FEF9F9' },
   urgentLeft:         { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   urgentEmoji:        { fontSize: 26 },
@@ -1110,11 +1110,11 @@ const styles = StyleSheet.create({
   urgentSub:          { fontSize: 12, color: COLORS.wal },
   urgentToggle:       { width: 44, height: 26, borderRadius: 13, backgroundColor: COLORS.bg3, justifyContent: 'center', paddingHorizontal: 3 },
   urgentToggleActive: { backgroundColor: '#E74C3C' },
-  urgentThumb:        { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', elevation: 2 },
+  urgentThumb:        { width: 20, height: 20, borderRadius: 10, backgroundColor: COLORS.cream, elevation: 2 },
   urgentThumbActive:  { alignSelf: 'flex-end' },
 
   // Notes
-  notesCard:  { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 20 },
+  notesCard:  { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, padding: 12, marginBottom: 20 },
   notesInput: { fontSize: 13, color: COLORS.esp, minHeight: 72, lineHeight: 20 },
 
   // Waiting list
@@ -1154,4 +1154,11 @@ const styles = StyleSheet.create({
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
   successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 16 },
   successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+  successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 16, borderWidth: 1.5, marginTop: 10 },
+  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: '#C9A84C' },
+  successBtnSecondary:    { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 14, paddingVertical: 14, borderWidth: 1, marginTop: 8 },
+  successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
+  recentChip:             { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, borderWidth: 1.5 },
+  recentChipName:         { fontSize: 13, fontWeight: '700' },
+  recentChipMeta:         { fontSize: 11, marginTop: 1 },
 });

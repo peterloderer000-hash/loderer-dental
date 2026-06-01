@@ -6,10 +6,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Patient = {
@@ -54,35 +55,34 @@ export default function ReceptionPatients() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-      {/* Hero header */}
-      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-        <Text style={s.heroLabel}>RECEPCIA</Text>
-        <Text style={s.heroTitle}>Pacienti</Text>
-        <Text style={s.heroSub}>{patients.length} registrovaných</Text>
-
-        {/* Search bar inside hero */}
-        <View style={[s.searchWrap, { backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.12)' }]}>
-          <Ionicons name="search-outline" size={18} color="rgba(255,255,255,0.6)" />
-          <TextInput
-            style={s.searchInput}
-            placeholder="Hľadať podľa mena, emailu, tel..."
-            placeholderTextColor="rgba(255,255,255,0.45)"
-            value={query}
-            onChangeText={setQuery}
-            returnKeyType="search"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close-circle" size={18} color="rgba(255,255,255,0.5)" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </LinearGradient>
+      <HeroHeader
+        title="Pacienti"
+        subtitle={`${patients.length} registrovaných`}
+        icon="people-outline"
+        bottomElement={
+          <View style={[s.searchWrap, { backgroundColor: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.12)' }]}>
+            <Ionicons name="search-outline" size={18} color="rgba(255,255,255,0.6)" />
+            <TextInput
+              style={s.searchInput}
+              placeholder="Hľadať podľa mena, emailu, tel..."
+              placeholderTextColor="rgba(255,255,255,0.45)"
+              value={query}
+              onChangeText={setQuery}
+              returnKeyType="search"
+              autoCorrect={false}
+            />
+            {query.length > 0 && (
+              <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                <Ionicons name="close-circle" size={18} color="rgba(255,255,255,0.5)" />
+              </TouchableOpacity>
+            )}
+          </View>
+        }
+      />
 
       <View style={[s.body, { backgroundColor: colors.bg2 }]}>
         {loading ? (
-          <View style={{ flex: 1, backgroundColor: COLORS.bg2, padding: 16 }}>
+          <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={5} />
           </View>
         ) : filtered.length === 0 ? (
@@ -101,7 +101,8 @@ export default function ReceptionPatients() {
             keyExtractor={p => p.id}
             contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
             ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-            renderItem={({ item }) => (
+            renderItem={({ item, index: _aidx }) => (
+              <AnimatedListItem index={_aidx}>
               <TouchableOpacity
                 style={[s.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, SHADOWS.card]}
                 onPress={() => router.push(`/(doctor)/patient-detail?id=${item.id}`)}
@@ -111,7 +112,7 @@ export default function ReceptionPatients() {
                 <View style={s.accent} />
 
                 {/* Avatar */}
-                <View style={s.avatarCircle}>
+                <View style={[s.avatarCircle, { backgroundColor: dark ? '#1A120B' : COLORS.esp }]}>
                   <Text style={s.avatarText}>{initials(item.full_name ?? 'P')}</Text>
                 </View>
 
@@ -134,6 +135,7 @@ export default function ReceptionPatients() {
 
                 <Ionicons name="chevron-forward" size={16} color={COLORS.sand} />
               </TouchableOpacity>
+              </AnimatedListItem>
             )}
           />
         )}

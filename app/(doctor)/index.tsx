@@ -51,7 +51,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
   const slots = useMemo(() => {
     if (!appointment?.service || !selectedDayHours) return [];
     return generateTimeSlotsForDay(
-      appointment.service.duration_minutes,
+      appointment.service?.duration_minutes ?? 30,
       selectedDayHours.open_time,
       selectedDayHours.close_time,
     );
@@ -60,7 +60,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
   function isSlotTaken(slotStart: string): boolean {
     if (!appointment?.service) return false;
     const sMin = timeToMinutes(slotStart);
-    const eMin = sMin + appointment.service.duration_minutes;
+    const eMin = sMin + appointment.service?.duration_minutes ?? 30;
     return bookedSlots.some(b => sMin < b.end && eMin > b.start);
   }
 
@@ -208,7 +208,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
 
 const rsStyles = StyleSheet.create({
   overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:      { backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: 40, maxHeight: '82%' },
+  sheet:      { backgroundColor: COLORS.cream, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: 40, maxHeight: '82%' },
   handle:     { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   title:      { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   subtitle:   { fontSize: 12, color: COLORS.wal, marginBottom: 18 },
@@ -221,7 +221,7 @@ const rsStyles = StyleSheet.create({
   dateHours:   { fontSize: 6, color: COLORS.wal, marginTop: 3, textAlign: 'center' },
   dateSelTxt:  { color: COLORS.cream },
   slotsGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 18 },
-  slot:        { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  slot:        { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   slotSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   slotTaken:   { backgroundColor: '#f5f5f5', borderColor: '#e8e8e8', opacity: 0.5 },
   slotText:    { fontSize: 13, fontWeight: '700', color: COLORS.esp },
@@ -299,7 +299,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
           {item.family_member_name ? (
             <Text style={styles.familyTag}>👶 Pre: {item.family_member_name}</Text>
           ) : item.patient?.phone_number ? (
-            <Text style={styles.patientPhone}>{item.patient.phone_number}</Text>
+            <Text style={styles.patientPhone}>{item.patient?.phone_number}</Text>
           ) : null}
         </View>
         <StatusBadge status={item.status} />
@@ -308,7 +308,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
       {item.service && (
         <View style={styles.notesRow}>
           <Text style={{ fontSize: 13 }}>{item.service.emoji ?? '🦷'}</Text>
-          <Text style={[styles.notesText, adyn.sub]}>{item.service.name}</Text>
+          <Text style={[styles.notesText, adyn.sub]}>{item.service?.name}</Text>
         </View>
       )}
       {item.notes ? (
@@ -503,11 +503,11 @@ const aStyles = StyleSheet.create({
   infoBox:  { backgroundColor: COLORS.bg2, borderRadius: 10, padding: 12, marginBottom: 14, gap: 4 },
   infoRow:  { fontSize: 13, color: COLORS.esp, fontWeight: '500', lineHeight: 20 },
   chipRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  chip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  chip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   chipActive:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   chipText:      { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   chipTextActive:{ color: COLORS.cream },
-  customRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
+  customRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
   customInput: { flex: 1, paddingVertical: 10, fontSize: 13, color: COLORS.esp },
   btnRow:    { flexDirection: 'row', gap: 10 },
   btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
@@ -629,7 +629,7 @@ const cmStyles = StyleSheet.create({
   careFilledDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2ECC71' },
   careBox:       { backgroundColor: '#EBF5FB', borderRadius: 10, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#AED6F1' },
   templatesRow:  { gap: 8, paddingBottom: 4 },
-  templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#AED6F1' },
+  templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#AED6F1' },
   templateLabel: { fontSize: 11, fontWeight: '700', color: '#1A5276' }
 });
 
@@ -1598,7 +1598,7 @@ const styles = StyleSheet.create({
 
   // ── Pending section ───────────────────────────────────────────────────────────
   pendingSection:     { backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingTop: 10, paddingBottom: 12 },
-  pendingCard:        { width: 200, backgroundColor: '#fff', borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', ...SHADOWS.sm },
+  pendingCard:        { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', ...SHADOWS.sm },
   pendingCardTop:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   pendingPatient:     { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
   pendingBadge:       { backgroundColor: '#D4AC0D', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
@@ -1612,7 +1612,7 @@ const styles = StyleSheet.create({
 
   // ── Arrived / Čakáreň ────────────────────────────────────────────────────────
   arrivedSection:   { backgroundColor: '#E8F8F5', borderBottomWidth: 1, borderBottomColor: '#A2D9CE', paddingTop: 10, paddingBottom: 12 },
-  arrivedCard:      { width: 200, backgroundColor: '#fff', borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#A2D9CE', ...SHADOWS.sm },
+  arrivedCard:      { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#A2D9CE', ...SHADOWS.sm },
   arrivedCardTop:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   arrivedPatient:   { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
   arrivedWaitBadge: { backgroundColor: '#17A589', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
@@ -1628,7 +1628,7 @@ const styles = StyleSheet.create({
 
   // ── Birthdays ────────────────────────────────────────────────────────────────
   bdSection:  { backgroundColor: '#F5EEF8', borderBottomWidth: 1, borderBottomColor: '#D7BDE2', paddingTop: 8, paddingBottom: 10 },
-  bdCard:     { width: 150, backgroundColor: '#fff', borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#D7BDE2', alignItems: 'center' },
+  bdCard:     { width: 150, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#D7BDE2', alignItems: 'center' },
   bdEmoji:    { fontSize: 24, marginBottom: 4 },
   bdName:     { fontSize: 12, fontWeight: '700', color: COLORS.esp, textAlign: 'center', marginBottom: 3 },
   bdDays:     { fontSize: 11, fontWeight: '600', color: '#7D3C98', marginBottom: 8 },
@@ -1641,7 +1641,7 @@ const styles = StyleSheet.create({
 
   // ── Modals ────────────────────────────────────────────────────────────────────
   overlay:          { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:            { backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 22, paddingBottom: 40 },
+  sheet:            { backgroundColor: COLORS.cream, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 22, paddingBottom: 40 },
   sheetHandle:      { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   sheetTitle:       { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   sheetSub:         { fontSize: 13, color: COLORS.wal, marginBottom: 18 },

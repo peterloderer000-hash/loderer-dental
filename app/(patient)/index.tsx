@@ -97,7 +97,7 @@ const OpeningHoursCompact = React.memo(function OpeningHoursCompact() {
 });
 
 const ohS = StyleSheet.create({
-  card:       { backgroundColor: '#fff', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 14, overflow: 'hidden', ...SHADOWS.sm },
+  card:       { backgroundColor: COLORS.cream, borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 14, overflow: 'hidden', ...SHADOWS.sm },
   banner:     { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12 },
   dot:        { width: 8, height: 8, borderRadius: 4 },
   bannerText: { fontSize: 13, fontFamily: 'DMSans_500Medium' },
@@ -258,7 +258,7 @@ export default function PatientHome() {
         .order('arrived_at');
       if (cancelled || !data) return;
       const queue   = data as any[];
-      const myIdx   = queue.findIndex(a => a.id === arrivedAppt.id);
+      const myIdx   = queue.findIndex(a => a.id === arrivedAppt?.id);
       setQueuePosition(myIdx >= 0 ? myIdx + 1 : null);
       setQueueTotal(queue.length);
     }
@@ -405,7 +405,7 @@ export default function PatientHome() {
               </View>
               {nextAppointment.service && (
                 <View style={[styles.apptService, { backgroundColor: colors.bg2 }]}>
-                  <Text style={[styles.apptServiceName, { color: colors.textPrimary }]}>{nextAppointment.service.name}</Text>
+                  <Text style={[styles.apptServiceName, { color: colors.textPrimary }]}>{nextAppointment.service?.name}</Text>
                 </View>
               )}
               <View style={styles.apptActions}>
@@ -460,7 +460,7 @@ export default function PatientHome() {
               { icon: 'calendar', label: 'Rezervovať', route: '/(patient)/book-appointment', gold: true },
               { icon: 'time-outline', label: 'Záznamy', route: '/(patient)/appointments', gold: false },
               { icon: 'chatbubble-outline', label: 'Správy', route: '/(patient)/messages', gold: false },
-              { icon: 'person-outline', label: 'Doktor', route: '/(patient)/moj-zubar', gold: false },
+              { icon: 'images-outline', label: 'Fotky', route: '/(patient)/my-photos', gold: false },
             ] as { icon: any; label: string; route: any; gold: boolean }[]).map((item) => (
               <TouchableOpacity
                 key={item.label}
@@ -1090,7 +1090,7 @@ const styles = StyleSheet.create({
 
   // Rating modal
   ratingOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  ratingSheet:       { backgroundColor: '#fff', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
+  ratingSheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
   ratingHandle:      { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   ratingTitle:       { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
   ratingSubtitle:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20, fontFamily: 'DMSans_400Regular' },

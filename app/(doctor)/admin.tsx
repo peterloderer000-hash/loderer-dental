@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -366,9 +367,10 @@ export default function AdminScreen() {
                   </TouchableOpacity>
                 </View>
               }
-              renderItem={({ item: m }) => {
+              renderItem={({ item: m, index: _aidx }) => {
                 const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
                 return (
+                  <AnimatedListItem index={_aidx}>
                   <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
                     <View style={s.memberAvatar}>
                       <Text style={s.memberAvatarText}>{initials(m.full_name)}</Text>
@@ -395,6 +397,7 @@ export default function AdminScreen() {
                       </TouchableOpacity>
                     )}
                   </View>
+                  </AnimatedListItem>
                 );
               }}
             />
@@ -589,7 +592,7 @@ const s = StyleSheet.create({
   inviteBtnText: { fontSize: 12, fontWeight: '600', color: COLORS.cream },
 
   tabRow: {
-    flexDirection: 'row', backgroundColor: '#fff',
+    flexDirection: 'row', backgroundColor: COLORS.cream,
     borderBottomWidth: 1, borderBottomColor: COLORS.bg3
   },
   tabBtn: {
@@ -604,7 +607,7 @@ const s = StyleSheet.create({
 
   memberCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', borderRadius: 14, padding: 14,
+    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14,
     marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   memberAvatar: {
@@ -624,7 +627,7 @@ const s = StyleSheet.create({
   },
 
   clinicCard: {
-    backgroundColor: '#fff', borderRadius: 16, padding: 20,
+    backgroundColor: COLORS.cream, borderRadius: 16, padding: 20,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 2
   },
   clinicHeader: { alignItems: 'center', marginBottom: 20, gap: 10 },
@@ -646,7 +649,7 @@ const s = StyleSheet.create({
   input: { flex: 1, paddingVertical: 12, fontSize: 14, color: COLORS.esp },
   cancelBtn: {
     flex: 1, paddingVertical: 14, borderRadius: 12,
-    borderWidth: 1.5, borderColor: COLORS.bg3, alignItems: 'center', backgroundColor: '#fff'
+    borderWidth: 1.5, borderColor: COLORS.bg3, alignItems: 'center', backgroundColor: COLORS.cream
   },
   cancelBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   saveBtn: {
@@ -658,7 +661,7 @@ const s = StyleSheet.create({
   statsSection: { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, marginBottom: 12 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   statCard: {
-    width: '47%', backgroundColor: '#fff', borderRadius: 14,
+    width: '47%', backgroundColor: COLORS.cream, borderRadius: 14,
     padding: 16, alignItems: 'center', gap: 6,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
@@ -692,7 +695,7 @@ const s = StyleSheet.create({
 const im = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
-    backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 120
   },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 16 },

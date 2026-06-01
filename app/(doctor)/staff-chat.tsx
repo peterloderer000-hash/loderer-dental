@@ -11,6 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -589,7 +590,7 @@ const s = StyleSheet.create({
 
   threadRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#fff', marginHorizontal: SPACING.xl,
+    backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl,
     marginBottom: 8, borderRadius: 14, padding: 14,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
@@ -628,7 +629,7 @@ const cv = StyleSheet.create({
   inputBar: {
     flexDirection: 'row', alignItems: 'flex-end', gap: 8,
     paddingHorizontal: 12, paddingVertical: 10,
-    backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3
+    backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {
     flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20,
@@ -657,7 +658,7 @@ const bubble = StyleSheet.create({
     elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2
   },
   boxMe:    { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
-  boxOther: { backgroundColor: '#fff', borderBottomLeftRadius: 4 },
+  boxOther: { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4 },
   senderName: { fontSize: 11, fontWeight: '700', color: COLORS.wal, marginBottom: 3 },
   text:   { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   textMe: { color: '#fff' },
@@ -670,7 +671,7 @@ const bubble = StyleSheet.create({
 const nm = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
-    backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 32
   },
   handle: {

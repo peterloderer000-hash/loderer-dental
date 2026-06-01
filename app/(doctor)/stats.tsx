@@ -1080,7 +1080,7 @@ const styles = StyleSheet.create({
   todayCountSub:  { fontSize: 9, color: COLORS.cream, fontWeight: '500' },
 
   // Najbližší termín
-  upcomingCard:    { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  upcomingCard:    { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, marginBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   upcomingDot:     { width: 10, height: 10, borderRadius: 5, backgroundColor: '#2ECC71' },
   upcomingLabel:   { fontSize: 8, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 3 },
   upcomingTime:    { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
@@ -1096,7 +1096,7 @@ const styles = StyleSheet.create({
 
   // Trend
   trendRow:         { flexDirection: 'row', gap: 10, marginBottom: 14 },
-  trendCard:        { backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  trendCard:        { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   trendCardLabel:   { fontSize: 9, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   trendCardContent: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   trendCardNum:     { fontSize: 26, fontWeight: '800', color: COLORS.esp },
@@ -1104,7 +1104,7 @@ const styles = StyleSheet.create({
   trendText:        { fontSize: 11, fontWeight: '700' },
 
   // Karta
-  card:      { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:      { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
 
   // Týždenný graf

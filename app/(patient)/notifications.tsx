@@ -120,7 +120,7 @@ export default function NotificationsScreen() {
   const read   = filtered.filter(n =>  n.read);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       {/* Hero */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={s.heroRow}>

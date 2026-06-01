@@ -38,10 +38,8 @@ export function useDentalChart(patientId: string) {
         .eq('patient_id', patientId);
 
       if (result.error?.message?.includes('photo_url')) {
-        result = await supabase
-          .from('dental_charts')
-          .select('tooth_number, status, notes')
-          .eq('patient_id', patientId);
+        result = (await supabase.from('dental_charts').select('tooth_number, status, notes').eq('patient_id', patientId)) as any;
+
       }
 
       if (!cancelled && result.data) {

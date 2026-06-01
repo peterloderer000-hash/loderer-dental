@@ -12,6 +12,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 // ─── Typy ─────────────────────────────────────────────────────────────────────
@@ -249,11 +250,12 @@ export default function RecallScreen() {
   }
 
   // ── Karta pacienta ──────────────────────────────────────────────────────────
-  function renderItem({ item }: { item: RecallPatient }) {
+  function renderItem({ item, index: _aidx }: { item: RecallPatient; index: number }) {
     const urg   = getUrgency(item.monthsAbsent, dark);
     const isSel = selected.has(item.id);
 
     return (
+      <AnimatedListItem index={_aidx}>
       <TouchableOpacity
         style={[styles.card, { backgroundColor: colors.cardBg, borderColor: isSel ? COLORS.wal : colors.bg3 },
           isSel && { borderWidth: 2 }]}
@@ -321,6 +323,7 @@ export default function RecallScreen() {
           </View>
         </View>
       </TouchableOpacity>
+      </AnimatedListItem>
     );
   }
 

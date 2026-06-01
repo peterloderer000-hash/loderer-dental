@@ -363,7 +363,7 @@ const s = StyleSheet.create({
   headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
   row: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 10,
+    backgroundColor: COLORS.cream, padding: 14, borderRadius: 12, marginBottom: 10,
     borderWidth: 1, borderColor: COLORS.bg3 },
   dayText:   { width: 30, fontSize: 15, fontWeight: '700', color: COLORS.esp },
   timeRow:   { flexDirection: 'row', alignItems: 'center' },

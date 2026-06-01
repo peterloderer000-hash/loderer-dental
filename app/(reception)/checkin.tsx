@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS, SPACING } from '../../styles/theme';
@@ -236,37 +236,37 @@ export default function ReceptionCheckin() {
         </View>
       </Modal>
 
-      {/* Hero */}
-      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-        <Text style={s.heroLabel}>RECEPCIA</Text>
-        <Text style={s.heroTitle}>Check-in</Text>
-
-        {/* Live badges */}
-        <View style={s.heroBadges}>
-          <Badge count={waiting.length}  label="Čaká"    color="#F0C78A" textColor="#7D5A0A" />
-          <Badge count={inChair.length}  label="V kresle" color="#D2B4DE" textColor="#5B2C6F" />
-          <Badge count={upcoming.length} label="Príde"    color={COLORS.sand} textColor={COLORS.esp} />
-        </View>
-
-        {/* Search */}
-        <View style={[s.searchWrap, { backgroundColor: 'rgba(255,255,255,0.10)' }]}>
-          <Ionicons name="search-outline" size={16} color="rgba(255,255,255,0.55)" />
-          <TextInput
-            style={s.searchInput}
-            placeholder="Hľadať pacienta..."
-            placeholderTextColor="rgba(255,255,255,0.4)"
-            value={query}
-            onChangeText={setQuery}
-            returnKeyType="search"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close-circle" size={16} color="rgba(255,255,255,0.5)" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </LinearGradient>
+      <HeroHeader
+        title="Check-in"
+        subtitle="Recepcia"
+        icon="people-outline"
+        bottomElement={
+          <>
+            <View style={s.heroBadges}>
+              <Badge count={waiting.length}  label="Čaká"    color="#F0C78A" textColor="#7D5A0A" />
+              <Badge count={inChair.length}  label="V kresle" color="#D2B4DE" textColor="#5B2C6F" />
+              <Badge count={upcoming.length} label="Príde"    color={COLORS.sand} textColor={COLORS.esp} />
+            </View>
+            <View style={[s.searchWrap, { backgroundColor: 'rgba(255,255,255,0.10)' }]}>
+              <Ionicons name="search-outline" size={16} color="rgba(255,255,255,0.55)" />
+              <TextInput
+                style={s.searchInput}
+                placeholder="Hľadať pacienta..."
+                placeholderTextColor="rgba(255,255,255,0.4)"
+                value={query}
+                onChangeText={setQuery}
+                returnKeyType="search"
+                autoCorrect={false}
+              />
+              {query.length > 0 && (
+                <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Ionicons name="close-circle" size={16} color="rgba(255,255,255,0.5)" />
+                </TouchableOpacity>
+              )}
+            </View>
+          </>
+        }
+      />
 
       {loading ? (
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>

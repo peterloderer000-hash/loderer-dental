@@ -84,7 +84,7 @@ export default function PreQuestionnaireScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       <HeroHeader
         title="Krátky dotazník"
         subtitle="Pred termínom"

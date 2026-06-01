@@ -320,7 +320,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
 
 const mStyles = StyleSheet.create({
   overlay:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  sheet:     { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44, maxHeight: '92%' },
+  sheet:     { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44, maxHeight: '92%' },
   handle:    { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   title:     { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 18 },
   label:     { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
@@ -515,12 +515,12 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
 
   quickGrid:  { gap: 8, marginBottom: 8 },
-  quickCard:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, elevation: 1 },
+  quickCard:  { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, elevation: 1 },
   quickIcon:  { fontSize: 22 },
   quickLabel: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   quickSub:   { fontSize: 11, color: COLORS.wal, marginTop: 2 },
 
-  customBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, borderStyle: 'dashed', paddingVertical: 12, marginTop: 6 },
+  customBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, borderStyle: 'dashed', paddingVertical: 12, marginTop: 6 },
   customBtnText: { fontSize: 13, fontWeight: '600', color: COLORS.wal },
 
   dayHeader:    { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: 4 },

@@ -268,7 +268,7 @@ export default function ChatScreen() {
   const totalTopics = TOPIC_GROUPS.reduce((sum, g) => sum + g.questions.length, 0);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
+    <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
       {/* ── Hero header ── */}
       <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
         <View style={[s.heroCircle, { width: 160, height: 160, right: -30, top: -50 }]} />

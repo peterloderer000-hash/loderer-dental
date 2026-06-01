@@ -61,7 +61,7 @@ function PatientCard({ appt, onAction, tick, isLoading, isDoctor }: {
         </Text>
       )}
       {appt.patient?.phone_number && (
-        <Text style={[pc.phone, { color: colors.textSecondary }]}>{appt.patient.phone_number}</Text>
+        <Text style={[pc.phone, { color: colors.textSecondary }]}>{appt.patient?.phone_number}</Text>
       )}
 
       {/* Time metrics */}
@@ -161,7 +161,7 @@ function ActionButtons({ status, onAction, isDoctor }: {
 
 const pc = StyleSheet.create({
   card: {
-    backgroundColor: '#fff', borderRadius: 20, padding: 20,
+    backgroundColor: COLORS.cream, borderRadius: 20, padding: 20,
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8
   },
@@ -395,7 +395,7 @@ const s = StyleSheet.create({
 
   waitCard: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8,
+    backgroundColor: COLORS.cream, borderRadius: 12, padding: 12, marginBottom: 8,
     borderWidth: 1.5, borderColor: COLORS.bg3
   },
   waitStatusDot: { width: 10, height: 10, borderRadius: 5 },

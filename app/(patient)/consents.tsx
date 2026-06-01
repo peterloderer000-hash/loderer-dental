@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, marginTop: 4 },
   sectionTitle:  { fontSize: 9, letterSpacing: 2, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase' },
 
-  card:        { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:        { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   cardPending: { borderColor: '#F9E79F', borderWidth: 1.5 },
   cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
   cardIcon:    { fontSize: 22, marginTop: 2 },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
 
   overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44 },
+  sheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44 },
   sheetHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   sheetTitle:  { fontSize: 20, fontWeight: '800', color: COLORS.esp, marginBottom: 4 },
   sheetSubtitle: { fontSize: 13, color: COLORS.wal, marginBottom: 14 },

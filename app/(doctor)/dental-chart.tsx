@@ -648,7 +648,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
 
   // ── Legenda ──
-  legendCard:  { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  legendCard:  { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   legendTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
   legendGrid:  { flexDirection: 'row', flexWrap: 'wrap' },
   legendItem:  { width: '50%', flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingRight: 8 },
@@ -656,7 +656,7 @@ const styles = StyleSheet.create({
   legendText:  { fontSize: 11, color: COLORS.esp, fontWeight: '500', flex: 1 },
 
   // ── Schéma ──
-  chartCard:     { backgroundColor: '#fff', borderRadius: 14, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  chartCard:     { backgroundColor: COLORS.cream, borderRadius: 14, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   quadHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   quadHeaderLeft:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
   quadHeaderRight: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -675,7 +675,7 @@ const styles = StyleSheet.create({
   dot:      { width: 4, height: 4, borderRadius: 2 },
 
   // ── Štatistiky ──
-  statsCard:  { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  statsCard:  { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   statsTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
   statsEmpty: { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
   statsGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
 
   // ── Modal ──
   overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:      { backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: 40 },
+  sheet:      { backgroundColor: COLORS.cream, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: 20, paddingBottom: 40 },
   handle:     { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   sheetHead:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   sheetTitle: { fontSize: 20, fontWeight: '700', color: COLORS.esp },
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   // Foto
   photoWrap:      { position: 'relative', marginBottom: 10, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: COLORS.bg3 },
   photoPreview:   { width: '100%', height: 160, borderRadius: 10 },
-  photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: '#fff', borderRadius: 11 },
+  photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.cream, borderRadius: 11 },
   photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
   photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#F4ECE4', borderWidth: 1.5, borderColor: COLORS.sand },
   photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal }

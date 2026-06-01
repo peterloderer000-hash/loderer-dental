@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   sectionTitle:  { flex: 1, fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase' },
   sectionCount:  { fontSize: 11, fontWeight: '700', color: COLORS.wal, backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
 
-  resultRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: '#fff' },
+  resultRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: COLORS.cream },
   resultIcon:     { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   resultInitials: { fontSize: 14, fontWeight: '700', color: COLORS.cream },
   resultTitle:    { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },

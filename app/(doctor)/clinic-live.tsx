@@ -438,7 +438,7 @@ const s = StyleSheet.create({
 
   // Cards
   card: {
-    backgroundColor: '#fff', borderRadius: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3, overflow: 'hidden',
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4
   },
@@ -481,7 +481,7 @@ const s = StyleSheet.create({
   roomRow: {},
   roomBtn: {
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-    borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#fff'
+    borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream
   },
   roomBtnActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   roomBtnText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },

@@ -158,7 +158,7 @@ export default function WaitlistScreen() {
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.patientName, { color: colors.textPrimary }]}>{item.patient?.full_name ?? 'Pacient'}</Text>
                       {item.patient?.phone_number && (
-                        <Text style={[styles.patientPhone, { color: colors.textSecondary }]}>{item.patient.phone_number}</Text>
+                        <Text style={[styles.patientPhone, { color: colors.textSecondary }]}>{item.patient?.phone_number}</Text>
                       )}
                     </View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -192,7 +192,7 @@ export default function WaitlistScreen() {
                     {item.service && (
                       <View style={[styles.detailChip, { backgroundColor: colors.bg2, borderColor: colors.bg3 }]}>
                         <Text style={styles.detailChipEmoji}>{item.service.emoji ?? '🦷'}</Text>
-                        <Text style={[styles.detailChipText, { color: colors.textPrimary }]}>{item.service.name}</Text>
+                        <Text style={[styles.detailChipText, { color: colors.textPrimary }]}>{item.service?.name}</Text>
                       </View>
                     )}
                     {prefDate && (
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   infoBanner:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8, backgroundColor: '#EBF5FB', borderRadius: 10, padding: 10, borderWidth: 1, borderColor: '#AED6F1', marginBottom: 14 },
   infoBannerText: { flex: 1, fontSize: 11, color: '#1A5276', lineHeight: 16 },
 
-  card:       { backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  card:       { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
   avatar:     { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },

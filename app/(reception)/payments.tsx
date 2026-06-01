@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import * as Haptics from 'expo-haptics';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
@@ -124,31 +125,31 @@ export default function ReceptionPayments() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-      {/* Hero */}
-      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-        <Text style={s.heroLabel}>RECEPCIA · DNES</Text>
-        <Text style={s.heroTitle}>Platby</Text>
-
-        {/* Summary row */}
-        <View style={s.summaryRow}>
-          <SummaryChip
-            label="Nezaplatené"
-            value={fmtPrice(totalPending)}
-            color="#F0C78A"
-            textColor="#7D5A0A"
-          />
-          <SummaryChip
-            label="Prijaté"
-            value={fmtPrice(totalPaid)}
-            color="#A8D5C0"
-            textColor="#1E6045"
-          />
-        </View>
-      </LinearGradient>
+      <HeroHeader
+        title="Platby"
+        subtitle="Recepcia · Dnes"
+        icon="card-outline"
+        bottomElement={
+          <View style={s.summaryRow}>
+            <SummaryChip
+              label="Nezaplatené"
+              value={fmtPrice(totalPending)}
+              color="#F0C78A"
+              textColor="#7D5A0A"
+            />
+            <SummaryChip
+              label="Prijaté"
+              value={fmtPrice(totalPaid)}
+              color="#A8D5C0"
+              textColor="#1E6045"
+            />
+          </View>
+        }
+      />
 
       {/* Method breakdown */}
       {totalPaid > 0 && (
-        <View style={[s.methodRow, { backgroundColor: COLORS.esp }]}>
+        <View style={[s.methodRow, { backgroundColor: dark ? '#1A120B' : COLORS.esp }]}>
           {methodBreakdown.cash > 0 && (
             <View style={s.methodChip}>
               <Ionicons name="cash-outline" size={12} color="#A8D5C0" />
@@ -187,7 +188,7 @@ export default function ReceptionPayments() {
       />
 
       {/* Filter tabs */}
-      <View style={[s.filterRow, { backgroundColor: COLORS.esp }]}>
+      <View style={[s.filterRow, { backgroundColor: dark ? '#1A120B' : COLORS.esp }]}>
         {FILTER_TABS.map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -281,8 +282,7 @@ export default function ReceptionPayments() {
 
                     {!isPaid && apt.clinic_status !== 'cancelled' && (
                       <TouchableOpacity
-                    
-    style={pc.payBtn}
+                        style={pc.payBtn}
                         onPress={() => setPayModal(apt)}
                         activeOpacity={0.8}
                         disabled={isLoading}

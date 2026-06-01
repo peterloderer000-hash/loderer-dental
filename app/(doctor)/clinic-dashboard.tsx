@@ -297,7 +297,7 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: 11, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 },
 
   utilizationCard: {
-    backgroundColor: '#fff', borderRadius: 14, padding: 16,
+    backgroundColor: COLORS.cream, borderRadius: 14, padding: 16,
     borderWidth: 1.5, borderColor: COLORS.bg3
   },
   utilizationTop:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
@@ -306,7 +306,7 @@ const s = StyleSheet.create({
 
   statsGrid: { flexDirection: 'row', gap: 10, marginBottom: 10 },
 
-  timingCard: { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timingCard: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
 
-  apptCard: { backgroundColor: '#fff', borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 }
+  apptCard: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 }
 });

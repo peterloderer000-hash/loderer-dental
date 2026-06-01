@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { useClinic } from '../../hooks/useClinic';
 import { computeDayMetrics, fmtTime, fmtMins } from '../../utils/clinicMetrics';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
@@ -91,30 +91,24 @@ export default function ReceptionHome() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.esp }} edges={['top']}>
-      {/* Hero */}
-      <LinearGradient colors={GRADIENTS.hero as [string, string, ...string[]]} style={s.hero}>
-        {/* Decorative circles */}
-        <View style={[s.circle, { width: 160, height: 160, right: -40, top: -60, opacity: 0.06 }]} />
-        <View style={[s.circle, { width: 100, height: 100, right: 60, top: 10, opacity: 0.04 }]} />
-
-        <View style={s.heroRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={s.heroSub}>{greeting}</Text>
-            <Text style={s.heroTitle}>Recepcia</Text>
-          </View>
+      <HeroHeader
+        greeting={greeting}
+        title="Recepcia"
+        icon="desktop-outline"
+        rightAction={
           <TouchableOpacity onPress={clinic.refetch} style={s.refreshBtn} activeOpacity={0.8}>
             <Ionicons name="refresh" size={18} color={COLORS.sand} />
           </TouchableOpacity>
-        </View>
-
-        {/* Stat pills */}
-        <View style={s.statRow}>
-          <StatPill value={metrics.totalToday}     label="Dnes"      color={COLORS.sand} />
-          <StatPill value={metrics.waitingNow}     label="Čaká"      color="#F0C78A" urgent={metrics.waitingNow > 0} />
-          <StatPill value={metrics.inChairNow}     label="V kresle"  color="#D2B4DE" />
-          <StatPill value={metrics.completedToday} label="Hotovo"    color="#A8D5C0" />
-        </View>
-      </LinearGradient>
+        }
+        bottomElement={
+          <View style={s.statRow}>
+            <StatPill value={metrics.totalToday}     label="Dnes"      color={COLORS.sand} />
+            <StatPill value={metrics.waitingNow}     label="Čaká"      color="#F0C78A" urgent={metrics.waitingNow > 0} />
+            <StatPill value={metrics.inChairNow}     label="V kresle"  color="#D2B4DE" />
+            <StatPill value={metrics.completedToday} label="Hotovo"    color="#A8D5C0" />
+          </View>
+        }
+      />
 
       {clinic.loading ? (
         <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
@@ -137,7 +131,7 @@ export default function ReceptionHome() {
                   <Image source={{ uri: qrUrl }} style={s.kioskQr} resizeMode="contain" />
                 </View>
                 <Text style={[s.kioskDate, { color: colors.textSecondary }]}>Platný: {today}</Text>
-                <TouchableOpacity style={[s.kioskClose, { backgroundColor: COLORS.esp }]} onPress={() => setShowKiosk(false)} activeOpacity={0.85}>
+                <TouchableOpacity style={[s.kioskClose, { backgroundColor: dark ? '#1A120B' : COLORS.esp }]} onPress={() => setShowKiosk(false)} activeOpacity={0.85}>
                   <Text style={s.kioskCloseText}>Zavrieť</Text>
                 </TouchableOpacity>
               </View>
@@ -186,7 +180,7 @@ export default function ReceptionHome() {
                     <View style={s.tlBarWrap}>
                       <View style={[s.tlBarBg, { width: `${pct}%`, backgroundColor: dark ? '#1A5276' : '#EBF5FB' }]} />
                       <View style={[s.tlBarFg, { width: `${compPct * pct / 100}%`, backgroundColor: dark ? '#2E7D5E' : '#A8D5C0' }]} />
-                      {isNow && <View style={s.tlNowDot} />}
+                      {isNow && <View style={[s.tlNowDot, { borderColor: colors.cardBg }]} />}
                     </View>
                     <Text style={[s.tlCount, { color: slot.count > 0 ? colors.textPrimary : colors.bg3 }]}>
                       {slot.count}
@@ -260,7 +254,7 @@ export default function ReceptionHome() {
                   const isLast = idx === inWaiting.length - 1;
                   return (
                     <View key={a.id} style={[s.listRow, isLast && { borderBottomWidth: 0 }, { borderBottomColor: colors.bg3 }]}>
-                      <View style={[s.numBadge, mins !== null && mins > 15 && { backgroundColor: COLORS.error }]}>
+                      <View style={[s.numBadge, { backgroundColor: dark ? '#1A120B' : COLORS.esp }, mins !== null && mins > 15 && { backgroundColor: COLORS.error }]}>
                         <Text style={s.numText}>{idx + 1}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
@@ -388,7 +382,7 @@ const s = StyleSheet.create({
   kioskSheet:    { borderRadius: 20, padding: 24, alignItems: 'center', width: '100%' },
   kioskTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 8 },
   kioskSub:      { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
-  kioskQrWrap:   { backgroundColor: '#fff', borderRadius: 16, padding: 12, marginBottom: 12 },
+  kioskQrWrap:   { backgroundColor: COLORS.cream, borderRadius: 16, padding: 12, marginBottom: 12 },
   kioskQr:       { width: 240, height: 240 },
   kioskDate:     { fontSize: 12, marginBottom: 20 },
   kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 14 },

@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
 
   templateSection:     { marginBottom: 14 },
   templateSectionTitle:{ fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
-  templateChip:        { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 10, padding: 12, marginBottom: 6, borderWidth: 1, borderColor: COLORS.bg3 },
+  templateChip:        { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.cream, borderRadius: 10, padding: 12, marginBottom: 6, borderWidth: 1, borderColor: COLORS.bg3 },
   templateChipText:    { flex: 1, fontSize: 12, fontWeight: '600', color: COLORS.esp },
 
   empty:      { alignItems: 'center', paddingVertical: 40 },
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 12, color: COLORS.wal, textAlign: 'center', lineHeight: 18 },
 
-  formCard:    { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
+  formCard:    { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   formCardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 },
   formTitle:   { flex: 1, fontSize: 14, fontWeight: '700', color: COLORS.esp, lineHeight: 20 },
   formPreview: { fontSize: 11, color: '#888', lineHeight: 16, marginBottom: 10, fontStyle: 'italic' },
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   formActionSend: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   formActionText: { fontSize: 11, fontWeight: '700', color: COLORS.wal },
 
-  consentRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3 },
+  consentRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3 },
   statusDot:     { width: 44, height: 44, borderRadius: 22, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   consentPatient:{ fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   consentForm:   { fontSize: 10, color: COLORS.wal, marginBottom: 2 },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   statusBadgeText:{ fontSize: 9, fontWeight: '700' },
 
   overlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  sheet:       { backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44 },
+  sheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 44 },
   sheetHandle: { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   sheetTitle:  { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 16 },
   formLabel:   { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },

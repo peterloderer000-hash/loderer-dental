@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, SPACING, RADII } from '../../styles/theme';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
+import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
 
 type Message = {
@@ -385,7 +386,7 @@ const styles = StyleSheet.create({
   headerSub2: { fontSize: 11, color: COLORS.sand },
 
   // Conversations list
-  convRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  convRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   convAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   convTopRow:    { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
   convName:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
@@ -401,7 +402,7 @@ const styles = StyleSheet.create({
 
   // Chat
   listContent:     { padding: 14, paddingBottom: 10, flexGrow: 1 },
-  bubble:          { maxWidth: '80%', borderRadius: 16, padding: 12, marginBottom: 8, backgroundColor: '#fff', borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
+  bubble:          { maxWidth: '80%', borderRadius: 16, padding: 12, marginBottom: 8, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
   bubbleMine:      { backgroundColor: COLORS.esp, borderColor: COLORS.esp, alignSelf: 'flex-end' },
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
@@ -409,13 +410,13 @@ const styles = StyleSheet.create({
   bubbleTime:      { fontSize: 10, color: '#bbb', marginTop: 4, textAlign: 'right' },
   bubbleTimeMine:  { color: COLORS.sand },
 
-  inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 12, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3 },
+  inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 12, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
   sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
   templateBtn:     { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateBtnActive: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
-  templatesWrap:   { backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingVertical: 10 },
+  templatesWrap:   { backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingVertical: 10 },
   templatesScroll: { paddingHorizontal: 12, gap: 8 },
   templateChip:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateIcon:    { fontSize: 14 },

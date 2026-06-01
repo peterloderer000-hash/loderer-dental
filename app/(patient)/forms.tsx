@@ -94,7 +94,7 @@ export default function FormsHubScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+      <View style={[styles.safe, { backgroundColor: colors.bg2 }]}>
         <Header dark={dark} colors={colors} router={router} />
         <View style={{ padding: SPACING.lg }}><SkeletonList count={4} /></View>
       </View>
@@ -102,7 +102,7 @@ export default function FormsHubScreen() {
   }
 
   return (
-    <View style={[styles.safe, { backgroundColor: colors.bg2 }]} edges={['top']}>
+    <View style={[styles.safe, { backgroundColor: colors.bg2 }]}>
       <Header dark={dark} colors={colors} router={router} />
 
       <ScrollView
