@@ -443,7 +443,6 @@ export default function PatientAttachmentsScreen() {
           {ALL_CATS.map(c => {
             const cnt = c.key === 'all' ? attachments.length : attachments.filter(a => a.category === c.key).length;
             const active = activeTab === c.key;
-<<<<<<< HEAD
             return (
               <TouchableOpacity key={c.key} style={[styles.tab, active && styles.tabActive]}
                 onPress={() => setActiveTab(c.key)} activeOpacity={0.8}>
@@ -776,26 +775,3 @@ const styles = StyleSheet.create({
   listCheckbox:  { width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
   listCheckboxActive: { backgroundColor: COLORS.gold, borderColor: COLORS.gold },
 });
-=======
-            return (
-              <TouchableOpacity key={c.key} style={[styles.tab, active && styles.tabActive]}
-                onPress={() => setActiveTab(c.key)} activeOpacity={0.8}>
-                <Text style={styles.tabIcon}>{c.icon}</Text>
-                <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{c.label}</Text>
-                {cnt > 0 && (
-                  <View style={[styles.tabBadge, active && styles.tabBadgeActive]}>
-                    <Text style={[styles.tabBadgeText, active && { color: '#fff' }]}>{cnt}</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-        {/* View toggle */}
-        <View style={styles.viewToggle}>
-          <TouchableOpacity
-            style={[styles.viewBtn, viewMode === 'grid' && styles.viewBtnActive]}
-            onPress={() => setViewMode('grid')} activeOpacity={0.8}
-          >
-            <Ionicons name
->>>>>>> d5b372463f948e3ab9bbb58892f8e3e30c6bbb44
