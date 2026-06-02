@@ -83,5 +83,4 @@ export default function PatientLayout() {
       <Tabs.Screen name="reviews"          options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="my-photos"        options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="loyalty"          options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
-      <Tabs.Scree
+      <Tabs.Scr
