@@ -498,6 +498,27 @@ export default function PatientHome() {
           </TouchableOpacity>
         </Reanimated.View>
 
+        {/* ── LOYALTY BANNER ── */}
+        <Reanimated.View entering={FadeInUp.delay(320).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 14 }}>
+          <TouchableOpacity
+            style={[styles.twinBanner]}
+            onPress={() => router.push('/(patient)/loyalty')}
+            activeOpacity={0.9}
+          >
+            <LinearGradient colors={dark ? ['#1A1209', '#2C1F14'] : ['#C9A84C', '#B8941F']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <View style={styles.twinLeft}>
+                <Text style={styles.twinEmoji}>🏆</Text>
+                <View>
+                  <Text style={styles.twinLabel}>VERNOSTNÝ PROGRAM</Text>
+                  <Text style={[styles.twinTitle, { color: dark ? COLORS.cream : '#fff' }]}>Zbieraj body za návštevy</Text>
+                  <Text style={[styles.twinSub, { color: dark ? 'rgba(201,168,76,0.7)' : 'rgba(255,255,255,0.8)' }]}>Odmeny, zľavy a VIP ošetrenie</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={dark ? 'rgba(201,168,76,0.7)' : 'rgba(255,255,255,0.7)'} />
+            </LinearGradient>
+          </TouchableOpacity>
+        </Reanimated.View>
+
         {/* ── POST-VISIT KARTA ── */}
         {postVisitAppt && (
           <Reanimated.View entering={FadeInUp.delay(290).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 12 }}>
