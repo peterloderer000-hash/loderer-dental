@@ -233,6 +233,7 @@ export default function PatientHome() {
       (a.care_instructions || a.doctor_notes)
     ) ?? null;
     const arrived = appointments.find(a => a.status === 'arrived' && isToday(a.appointment_date)) ?? null;
+    const todayScheduled = appointments.find(a => a.status === 'scheduled' && isToday(a.appointment_date)) ?? null;
     return {
       nextAppointment:    next,
       daysUntilNext:      days,
@@ -240,6 +241,7 @@ export default function PatientHome() {
       recentAppointments:  appointments.filter(a => a.status === 'completed').slice(0, 4),
       postVisitAppt:      postVisit,
       arrivedAppt:        arrived,
+      todayScheduled,
     };
   }, [appointments]);
 
@@ -367,6 +369,28 @@ export default function PatientHome() {
           </Reanimated.View>
         )}
 
+        {/* ── QR CHECK-IN BANNER ── */}
+        {todayScheduled && !arrivedAppt && (
+          <Reanimated.View entering={FadeInUp.delay(120).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginTop: -16, marginBottom: 8 }}>
+            <TouchableOpacity
+              style={[styles.queueCard, { backgroundColor: dark ? '#1A1209' : '#FFF8E1', borderColor: dark ? COLORS.gold + '44' : '#F9E79F' }]}
+              onPress={() => router.push('/(patient)/qr-checkin')}
+              activeOpacity={0.9}
+            >
+              <View style={styles.queueLeft}>
+                <Text style={styles.queueEmoji}>📱</Text>
+                <View>
+                  <Text style={[styles.queueTitle, { color: dark ? COLORS.gold : '#7D6608' }]}>QR Check-in</Text>
+                  <Text style={[styles.queueSub, { color: dark ? COLORS.sand : '#9A7D0A' }]}>
+                    Naskenujte kód v čakárni
+                  </Text>
+                </View>
+              </View>
+              <Ionicons name="qr-code-outline" size={24} color={dark ? COLORS.gold : '#C9A84C'} />
+            </TouchableOpacity>
+          </Reanimated.View>
+        )}
+
         {/* ── NEXT APPOINTMENT CARD (overlap) ── */}
         <Reanimated.View entering={FadeInUp.delay(150).duration(500)} style={styles.apptCardWrap}>
           {apptLoading ? (
@@ -459,7 +483,7 @@ export default function PatientHome() {
             {([
               { icon: 'calendar', label: 'Rezervovať', route: '/(patient)/book-appointment', gold: true },
               { icon: 'time-outline', label: 'Záznamy', route: '/(patient)/appointments', gold: false },
-              { icon: 'chatbubble-outline', label: 'Správy', route: '/(patient)/messages', gold: false },
+              { icon: 'storefront-outline', label: 'Shop', route: '/(patient)/shop', gold: false },
               { icon: 'images-outline', label: 'Fotky', route: '/(patient)/my-photos', gold: false },
             ] as { icon: any; label: string; route: any; gold: boolean }[]).map((item) => (
               <TouchableOpacity
