@@ -295,7 +295,7 @@ export default function DoctorMessagesScreen() {
         </TouchableOpacity>
       </View>
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 80}>
         {chatLoading ? (
           <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={4} />

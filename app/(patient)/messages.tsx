@@ -161,7 +161,7 @@ export default function PatientMessagesScreen() {
         onBack={() => router.back()}
       />
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={0}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 80}>
         {loading ? (
           <View style={{ flex: 1, backgroundColor: colors.bg2, padding: 16 }}>
             <SkeletonList count={4} />

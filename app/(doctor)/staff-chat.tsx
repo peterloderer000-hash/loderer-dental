@@ -9,7 +9,8 @@ import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../supabase';
-import { COLORS, SPACING, RADII } from '../../styles/theme';
+import { COLORS, SPACING, RADII, SHADOWS } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
 import { SkeletonList } from '../../components/Skeleton';
 import { AnimatedListItem } from '../../components/ui/AnimatedListItem';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -154,8 +155,8 @@ function ChatView({
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 80}
     >
       <FlatList
         ref={flatRef}

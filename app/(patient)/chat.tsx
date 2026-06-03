@@ -311,7 +311,7 @@ export default function ChatScreen() {
         </ScrollView>
       </LinearGradient>
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 80}>
         {/* ── Messages ── */}
         <ScrollView
           ref={scrollRef}
