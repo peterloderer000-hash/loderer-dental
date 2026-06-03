@@ -1111,7 +1111,7 @@ const styles = StyleSheet.create({
 
   // Rating modal
   ratingOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  ratingSheet:       { backgroundColor: COLORS.cream, borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
+  ratingSheet:       { backgroundColor: '#fff', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
   ratingHandle:      { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   ratingTitle:       { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
   ratingSubtitle:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20, fontFamily: 'DMSans_400Regular' },
@@ -1121,7 +1121,6 @@ const styles = StyleSheet.create({
   ratingActions:     { flexDirection: 'row', gap: 10 },
   ratingBtnSkip:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   ratingBtnSkipText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
-  ratingBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
+  ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
   ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
 });
- 
