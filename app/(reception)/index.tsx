@@ -237,6 +237,13 @@ export default function ReceptionHome() {
                 color="#1A5276"
                 onPress={() => router.push('/(reception)/reports' as any)}
               />
+              <QuickAction
+                icon="cart-outline"
+                label="Shop objednávky"
+                sub="Objednávky z e-shopu"
+                color="#C9A84C"
+                onPress={() => router.push('/(reception)/shop-orders' as any)}
+              />
             </View>
           </View>
 

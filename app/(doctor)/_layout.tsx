@@ -111,6 +111,8 @@ export default function DoctorLayout() {
       <Tabs.Screen name="clinic-ai"           options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="billing"             options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="doctor-onboarding"   options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="owner-dashboard"     options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="pdf-exports"         options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

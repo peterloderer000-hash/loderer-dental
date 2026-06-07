@@ -1121,6 +1121,8 @@ export default function DoctorHome() {
           { label: 'Broadcast', icon: 'megaphone-outline'        as const, route: '/(doctor)/broadcast'     as const, color: '#D35400', bg: '#FEF0E7' },
           ...(wlCount > 0     ? [{ label: 'Čakacia l.', icon: 'list-outline' as const,     route: '/(doctor)/waitlist' as const, color: '#0E6655', bg: '#E8F8F5', badge: wlCount }]     : []),
           ...(recallCount > 0 ? [{ label: 'Recall',     icon: 'refresh-outline' as const,  route: '/(doctor)/recall'   as const, color: '#922B21', bg: '#FDEDEC', badge: recallCount }] : []),
+          { label: 'Owner',     icon: 'bar-chart-outline'      as const, route: '/(doctor)/owner-dashboard' as const, color: '#1B4F72', bg: '#EBF5FB' },
+          { label: 'PDF Export',icon: 'document-outline'       as const, route: '/(doctor)/pdf-exports'     as const, color: '#6C3483', bg: '#F4ECF7' },
         ] as { label: string; icon: any; route: any; color: string; bg: string; badge?: number }[]).map((chip) => (
           <TouchableOpacity
             key={chip.label}

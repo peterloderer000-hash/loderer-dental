@@ -87,7 +87,15 @@ export default function LoyaltyScreen() {
 
       const entries = (data ?? []) as PointEntry[];
       setHistory(entries);
-      setTotalPoints(entries.reduce((sum, e) => sum + e.points, 0));
+
+      // Preferuj profiles.loyalty_total_points (aktualizované triggerom), fallback na súčet
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('loyalty_total_points')
+        .eq('id', user.id)
+        .single();
+      const dbTotal = profileData?.loyalty_total_points;
+      setTotalPoints(dbTotal ?? entries.reduce((sum, e) => sum + e.points, 0));
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -80,6 +80,7 @@ export default function ReceptionLayout() {
       <Tabs.Screen name="clinic-live" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="clinic-room" options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="reports" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="shop-orders" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }
