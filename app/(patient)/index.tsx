@@ -501,6 +501,30 @@ export default function PatientHome() {
           </View>
         </Reanimated.View>
 
+        {/* ── NEW FEATURES ROW ── */}
+        <Reanimated.View entering={FadeInUp.delay(305).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 14 }}>
+          <View style={styles.quickRow}>
+            {([
+              { icon: 'sparkles-outline', label: 'Smile Design', route: '/(patient)/smile-design', color: '#F1C40F' },
+              { icon: 'grid-outline', label: 'Zubná mapa', route: '/(patient)/dental-map', color: '#3498DB' },
+              { icon: 'timer-outline', label: 'Čistenie', route: '/(patient)/brushing-challenge', color: '#2ECC71' },
+              { icon: 'people-outline', label: 'Rodina', route: '/(patient)/family-dashboard', color: '#9B59B6' },
+            ] as { icon: any; label: string; route: any; color: string }[]).map((item) => (
+              <TouchableOpacity
+                key={item.label}
+                style={[styles.quickBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
+                onPress={() => router.push(item.route)}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.quickIconWrap, { backgroundColor: item.color + '15' }]}>
+                  <Ionicons name={item.icon} size={28} color={item.color} />
+                </View>
+                <Text style={[styles.quickBtnLabel, { color: colors.textSecondary }]}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Reanimated.View>
+
         {/* ── DENTAL TWIN BANNER ── */}
         <Reanimated.View entering={FadeInUp.delay(310).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 14 }}>
           <TouchableOpacity

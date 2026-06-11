@@ -1121,6 +1121,12 @@ export default function DoctorHome() {
           ...(recallCount > 0 ? [{ label: 'Recall',     icon: 'refresh-outline' as const,  route: '/(doctor)/recall'   as const, color: '#922B21', bg: '#FDEDEC', badge: recallCount }] : []),
           { label: 'Owner',     icon: 'bar-chart-outline'      as const, route: '/(doctor)/owner-dashboard' as const, color: '#1B4F72', bg: '#EBF5FB' },
           { label: 'PDF Export',icon: 'document-outline'       as const, route: '/(doctor)/pdf-exports'     as const, color: '#6C3483', bg: '#F4ECF7' },
+          { label: 'Faktúry',  icon: 'receipt-outline'        as const, route: '/(doctor)/auto-invoices'   as const, color: '#1E8449', bg: '#E8F8F5' },
+          { label: 'Waitlist',  icon: 'hourglass-outline'     as const, route: '/(doctor)/smart-waitlist'  as const, color: '#D35400', bg: '#FEF0E7' },
+          { label: 'Video',     icon: 'videocam-outline'      as const, route: '/(doctor)/video-consult'   as const, color: '#2E86C1', bg: '#EBF5FB' },
+          { label: 'SMS',       icon: 'chatbox-outline'       as const, route: '/(doctor)/sms-reminders'   as const, color: '#6C3483', bg: '#F4ECF7' },
+          { label: 'Sklad',     icon: 'cube-outline'          as const, route: '/(doctor)/inventory'       as const, color: '#784212', bg: '#FDEBD0' },
+          { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#C9A84C', bg: '#FEF9E7' },
         ] as { label: string; icon: any; route: any; color: string; bg: string; badge?: number }[]).map((chip) => (
           <TouchableOpacity
             key={chip.label}

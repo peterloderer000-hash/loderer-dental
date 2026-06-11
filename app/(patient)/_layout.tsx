@@ -84,6 +84,14 @@ export default function PatientLayout() {
       <Tabs.Screen name="my-photos"        options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="loyalty"          options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="qr-checkin"      options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="brushing-challenge" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="family-dashboard"   options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="dental-passport-qr" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="insurance-calc"     options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="satisfaction"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="smile-design"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="dental-map"         options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="online-payment"     options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="components/UpcomingAppointmentCard" options={{ href: null }} />
       <Tabs.Screen name="components/QuickActionsGrid"        options={{ href: null }} />
     </Tabs>

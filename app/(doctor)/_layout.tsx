@@ -113,6 +113,15 @@ export default function DoctorLayout() {
       <Tabs.Screen name="doctor-onboarding"   options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="owner-dashboard"     options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="pdf-exports"         options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="xray-analysis"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="risk-prediction"     options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="before-after"        options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="inventory"           options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="satisfaction-surveys" options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="smart-waitlist"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="video-consult"        options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="auto-invoices"       options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="sms-reminders"       options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }

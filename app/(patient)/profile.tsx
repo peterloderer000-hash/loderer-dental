@@ -422,6 +422,8 @@ export default function ProfileScreen() {
                 { icon: 'people-outline'        as const, label: t('profile.quickAccess.family'),    sub: t('profile.quickAccess.familySub'), route: '/(patient)/family',           bg: COLORS.infoBg,     color: COLORS.info    },
                 { icon: 'document-text-outline' as const, label: t('profile.quickAccess.consents'),  sub: t('profile.quickAccess.consentsSub'), route: '/(patient)/consents',       bg: '#F5EEF8',         color: '#7D3C98' },
                 { icon: 'list-outline'          as const, label: t('profile.quickAccess.plan'),      sub: t('profile.quickAccess.planSub'),  route: '/(patient)/treatment-plan',   bg: COLORS.successBg,  color: COLORS.success },
+                { icon: 'qr-code-outline'       as const, label: 'Dentálny pas',                     sub: 'QR kód pre iného zubára',           route: '/(patient)/dental-passport-qr', bg: '#EBF5FB',       color: '#2980B9' },
+                { icon: 'calculator-outline'    as const, label: 'Odhad poistenia',                  sub: 'Kalkulačka krytia poisťovňou',      route: '/(patient)/insurance-calc',     bg: '#FEF9E7',       color: '#F39C12' },
               ].map((item, idx, arr) => (
                 <TouchableOpacity
                   key={item.label}
