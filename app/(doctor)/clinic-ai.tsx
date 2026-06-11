@@ -9,7 +9,6 @@ import {
   StyleSheet, Text, TextInput, TouchableOpacity, View,
   ActivityIndicator
 } from 'react-native';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useClinic } from '../../hooks/useClinic';

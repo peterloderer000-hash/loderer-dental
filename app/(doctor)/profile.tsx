@@ -5,11 +5,10 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+// navigation removed — using expo-router instead
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
@@ -21,7 +20,6 @@ const AVATAR_BUCKET = 'avatars';
 
 export default function DoctorProfile() {
   const router     = useRouter();
-  const navigation = useNavigation();
   const { colors, dark, toggle: toggleTheme } = useAppTheme();
 
   const [fullName,      setFullName]      = useState('');
@@ -168,8 +166,7 @@ export default function DoctorProfile() {
   async function handleSignOut() {
     await clearAllCache();
     await supabase.auth.signOut();
-    const parent = navigation.getParent() ?? navigation;
-    parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+    if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
   }
 
   const initials = fullName.trim().split(' ').filter(Boolean)

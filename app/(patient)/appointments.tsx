@@ -287,7 +287,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
         });
         if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
         setOpeningHoursMap(map);
-      });
+      }).catch(() => {});
   }, [visible, appointment]);
 
   // Načítaj obsadené sloty pre vybraný deň (okrem aktuálneho termínu)
@@ -312,7 +312,7 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
           const s = d.getHours() * 60 + d.getMinutes();
           return { start: s, end: s + ((a.service as any)?.duration_minutes ?? 30) };
         }));
-      });
+      }).catch(() => {});
     return () => { cancelled = true; };
   }, [selDate, appointment]);
 
@@ -786,7 +786,7 @@ export default function AppointmentsScreen() {
       if (!user) return;
       supabase.from('profiles').select('full_name').eq('id', user.id).single()
         .then(({ data }) => { if (data?.full_name) setPatientName(data.full_name); });
-    });
+    }).catch(() => {});
   }, []);
 
   async function handleExport() {

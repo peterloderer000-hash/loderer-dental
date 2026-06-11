@@ -4,7 +4,6 @@ import {
   RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
@@ -362,7 +361,7 @@ export default function PrescriptionsScreen() {
           clinicAddress: prof.clinic_address ?? null
         });
       }
-    });
+    }).catch(() => {});
     load();
   }, [load]);
 
@@ -568,8 +567,8 @@ export default function PrescriptionsScreen() {
   return (
     <View style={styles.safeArea}>
       <HeroHeader
-        title={patientName ?? 'Pacient'}
-        subtitle="Recepty & Diagnózy"
+        title="Recepty & Diagnózy"
+        subtitle={patientName ?? 'Pacient'}
         icon="medkit-outline"
         onBack={() => router.back()}
         rightAction={

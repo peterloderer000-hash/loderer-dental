@@ -221,7 +221,7 @@ export default function PatientHome() {
   const [queuePosition, setQueuePosition] = useState<number | null>(null);
   const [queueTotal,    setQueueTotal]    = useState<number>(0);
 
-  const { nextAppointment, pendingAppointments, recentAppointments, daysUntilNext, postVisitAppt, arrivedAppt } = useMemo(() => {
+  const { nextAppointment, pendingAppointments, recentAppointments, daysUntilNext, postVisitAppt, arrivedAppt, todayScheduled } = useMemo(() => {
     const next = appointments.find(a => a.status === 'scheduled' && new Date(a.appointment_date) > new Date());
     const days = next
       ? Math.ceil((new Date(next.appointment_date).getTime() - Date.now()) / 86400000)

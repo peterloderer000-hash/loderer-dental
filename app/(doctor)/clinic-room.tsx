@@ -8,7 +8,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useClinic, type ClinicAppointment, type ClinicRoom } from '../../hooks/useClinic';

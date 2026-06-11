@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+// navigation removed — using expo-router instead
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
@@ -91,7 +91,6 @@ type ApptStats = { total: number; completed: number; upcoming: number; lastVisit
 
 export default function ProfileScreen() {
   const router     = useRouter();
-  const navigation = useNavigation();
   const { colors, dark, toggle: toggleTheme } = useAppTheme();
   const { t, i18n: i18nInst } = useTranslation();
   const [lang, setLang] = useState<'sk' | 'en'>(
@@ -204,8 +203,7 @@ export default function ProfileScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     await clearAllCache();
     await supabase.auth.signOut();
-    const parent = navigation.getParent() ?? navigation;
-    parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+    if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
   }
 
   async function handleLanguage(l: 'sk' | 'en') {

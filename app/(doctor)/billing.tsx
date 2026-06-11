@@ -6,7 +6,6 @@ import React, { useState, useCallback, useMemo } from 'react';
 import {
   Alert, Modal, RefreshControl, ScrollView, TextInput,
   StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';

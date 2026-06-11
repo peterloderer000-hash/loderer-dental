@@ -7,7 +7,6 @@ import {
   ActivityIndicator, Alert, Modal, RefreshControl,
   ScrollView, StyleSheet, Text, TextInput,
   TouchableOpacity, View } from 'react-native';
-import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';

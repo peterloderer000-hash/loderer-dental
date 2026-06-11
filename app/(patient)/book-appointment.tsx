@@ -304,7 +304,7 @@ export default function BookAppointmentScreen() {
         return { start: sMin, end: sMin + dur };
       });
       setBookedSlots([...apptSlots, ...blockSlots]);
-    });
+    }).catch(() => {});
   }, [selectedDate, doctorId]);
 
   /** Vráti true ak nový slot [slotStart, slotStart+dur) koliduje s existujúcim termínom */
@@ -413,7 +413,7 @@ export default function BookAppointmentScreen() {
         title:    isUrgent ? '🚨 URGENTNÁ žiadosť o termín' : '📋 Nová žiadosť o termín',
         body:     `${selectedService.name}${familySuffix} · ${dt.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })} o ${selectedTime}${isUrgent ? ' — URGENTNÉ!' : ''}`,
         type:     isUrgent ? 'warning' : 'info',
-      }).then(({ error }) => { if (error) console.warn('Booking notif error:', error.message); });
+      }).then(({ error }) => { if (error) console.warn('Booking notif error:', error.message); }).catch(() => {});
 
       // Naplánuj lokálnu pripomienku 1 hodinu pred termínom
       scheduleAppointmentReminder(dt, doctorName || 'doktor', selectedService.name).catch(() => {});

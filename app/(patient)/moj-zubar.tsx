@@ -180,7 +180,7 @@ export default function MojZubarScreen() {
           <View style={qa.row}>
             {displayDoctor.phone_number && (
               <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
-                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`)} activeOpacity={0.8}>
+                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`).catch(() => {})} activeOpacity={0.8}>
                 <View style={[qa.icon, { backgroundColor: COLORS.successBg }]}>
                   <Ionicons name="call" size={20} color={COLORS.success} />
                 </View>
@@ -189,7 +189,7 @@ export default function MojZubarScreen() {
             )}
             {displayDoctor.clinic_address && (
               <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
-                onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(displayDoctor.clinic_address!)}`)} activeOpacity={0.8}>
+                onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(displayDoctor.clinic_address!)}`).catch(() => {})} activeOpacity={0.8}>
                 <View style={[qa.icon, { backgroundColor: '#F5EEF8' }]}>
                   <Ionicons name="navigate" size={20} color="#7D3C98" />
                 </View>
@@ -197,7 +197,7 @@ export default function MojZubarScreen() {
               </TouchableOpacity>
             )}
             <TouchableOpacity style={[qa.btn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}
-              onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent((displayDoctor.clinic_address ?? displayDoctor.clinic_name ?? 'Loderer Dental') + ' parkovanie')}`)} activeOpacity={0.8}>
+              onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent((displayDoctor.clinic_address ?? displayDoctor.clinic_name ?? 'Loderer Dental') + ' parkovanie')}`).catch(() => {})} activeOpacity={0.8}>
               <View style={[qa.icon, { backgroundColor: COLORS.warningBg }]}>
                 <Ionicons name="car" size={20} color={COLORS.warning} />
               </View>
@@ -213,7 +213,7 @@ export default function MojZubarScreen() {
               iconColor={COLORS.success}
               label="Telefón"
               value={displayDoctor.phone_number ?? 'Neuvedené'}
-              onPress={displayDoctor.phone_number ? () => Linking.openURL(`tel:${displayDoctor.phone_number}`) : undefined}
+              onPress={displayDoctor.phone_number ? () => Linking.openURL(`tel:${displayDoctor.phone_number}`).catch(() => {}) : undefined}
               colors={colors}
             />
           </SectionCard>
@@ -238,7 +238,7 @@ export default function MojZubarScreen() {
                   iconColor="#7D3C98"
                   label="Adresa"
                   value={displayDoctor.clinic_address}
-                  onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(displayDoctor.clinic_address!)}`)}
+                  onPress={() => Linking.openURL(`https://maps.google.com/?q=${encodeURIComponent(displayDoctor.clinic_address!)}`).catch(() => {})}
                   colors={colors}
                   separator={!!displayDoctor.clinic_name}
                 />
@@ -266,7 +266,7 @@ export default function MojZubarScreen() {
             {displayDoctor.phone_number && (
               <TouchableOpacity
                 style={[urg.callBtn, { backgroundColor: '#FDEDEC', borderColor: '#F1948A' }]}
-                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`)}
+                onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`).catch(() => {})}
                 activeOpacity={0.8}
               >
                 <Ionicons name="call" size={16} color="#E74C3C" />

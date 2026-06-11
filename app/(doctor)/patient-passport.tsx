@@ -1,6 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
@@ -73,14 +72,14 @@ export default function PatientPassport() {
   useEffect(() => {
     if (!patientId) { setLoading(false); return; }
     supabase.from('health_passports').select('*').eq('patient_id', patientId).maybeSingle()
-      .then(({ data }) => { setPassport(data ?? null); setLoading(false); });
+      .then(({ data }) => { setPassport(data ?? null); setLoading(false); }).catch(() => { setLoading(false); });
   }, [patientId]);
 
   return (
     <View style={[styles.safe, { backgroundColor: colors.esp }]}>
       <HeroHeader
-        title={patientName ?? 'Pacient'}
-        subtitle="Zdravotný dotazník"
+        title="Zdravotný dotazník"
+        subtitle={patientName ?? 'Pacient'}
         icon="fitness-outline"
         onBack={() => router.back()}
       />

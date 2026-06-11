@@ -3,7 +3,6 @@ import {
   View, Text, TextInput, Switch, TouchableOpacity,
   ScrollView, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import {} from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../supabase';
@@ -69,7 +68,7 @@ export default function OpeningHoursScreen() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setDoctorId(user.id);
-    });
+    }).catch(() => {});
     load();
     loadExceptions();
   }, []);

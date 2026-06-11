@@ -44,7 +44,7 @@ function HeroHeader({ greeting, title, subtitle, icon, onBack, rightElement, rig
           </View>
         ) : null}
         <View style={{ flex: 1 }}>
-          <Text style={s.greeting} numberOfLines={3}>{heading}</Text>
+          <Text style={s.greeting} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.6}>{heading}</Text>
           {subtitle ? <Text style={s.subtitle}>{subtitle}</Text> : null}
         </View>
         {right ? <View style={s.rightEl}>{right}</View> : null}

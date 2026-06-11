@@ -3,7 +3,6 @@ import {
   ActivityIndicator, Alert, Linking, RefreshControl, ScrollView,
   StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import {} from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -178,7 +177,7 @@ export default function WaitlistScreen() {
                       {item.patient?.phone_number && (
                         <TouchableOpacity
                           style={styles.callBtn}
-                          onPress={() => Linking.openURL(`tel:${item.patient!.phone_number}`)}
+                          onPress={() => Linking.openURL(`tel:${item.patient!.phone_number}`).catch(() => {})}
                           activeOpacity={0.75}
                         >
                           <Ionicons name="call" size={14} color="#fff" />

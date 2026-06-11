@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import { SkeletonList } from '../../components/Skeleton';
 import { EmptyNotifications } from '../../components/EmptyState';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';

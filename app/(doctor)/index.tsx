@@ -4,9 +4,8 @@ import {
   RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../../supabase';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -78,7 +77,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
         });
         if (map.size === 0) for (let d = 1; d <= 5; d++) map.set(d, { open_time: '08:00', close_time: '17:00' });
         setOpeningHoursMap(map);
-      });
+      }).catch(() => {});
   }, [visible, doctorId]);
 
   useEffect(() => {
@@ -102,7 +101,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
         });
         setBookedSlots(bs);
         setLoadingSlots(false);
-      });
+      }).catch(() => {});
   }, [selDate, appointment, doctorId]);
 
   async function handleConfirm() {
@@ -659,7 +658,7 @@ export default function DoctorHome() {
   const [sendingReminders, setSendingReminders] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(getOnboardingKey('doctor')).then(v => { if (!v) setShowTour(true); });
+    AsyncStorage.getItem(getOnboardingKey('doctor')).then(v => { if (!v) setShowTour(true); }).catch(() => {});
   }, []);
 
   const onRefresh = useCallback(async () => {
@@ -673,8 +672,7 @@ export default function DoctorHome() {
       { text: 'Nie', style: 'cancel' },
       { text: 'Áno', style: 'destructive', onPress: async () => {
         await supabase.auth.signOut();
-        const parent = navigation.getParent() ?? navigation;
-        parent.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+        if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
       }},
     ]);
   }
@@ -755,7 +753,7 @@ export default function DoctorHome() {
       loadRecallCount();
       loadConsentCount(user.id);
       loadBirthdays();
-    });
+    }).catch(() => {});
   }, [loadMsgCount, loadWlCount, loadRecallCount, loadBirthdays]);
 
   useFocusEffect(useCallback(() => {
@@ -840,7 +838,7 @@ export default function DoctorHome() {
         body:           `Váš termín${saved.service ? ` (${saved.service.name})` : ''} bol potvrdený na ${dateStr} o ${timeStr}. Tešíme sa na vás!`,
         type:           'success',
         appointment_id: saved.id
-      }).then(({ error }) => { if (error) console.warn('Approve notif error:', error.message); });
+      }).then(({ error }) => { if (error) console.warn('Approve notif error:', error.message); }).catch(() => {});
     }
     setApproveSaving(false);
     setApprovingAppt(null);
@@ -865,7 +863,7 @@ export default function DoctorHome() {
             body:           `Vaša žiadosť o termín${saved.service ? ` (${saved.service.name})` : ''} nebola schválená. Skúste iný termín alebo nás kontaktujte.`,
             type:           'warning',
             appointment_id: saved.id
-          }).then(({ error }) => { if (error) console.warn('Reject notif error:', error.message); });
+          }).then(({ error }) => { if (error) console.warn('Reject notif error:', error.message); }).catch(() => {});
         }
       },
     ]);

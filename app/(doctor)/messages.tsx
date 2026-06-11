@@ -3,7 +3,6 @@ import {
   ActivityIndicator, FlatList, KeyboardAvoidingView, Platform,
   RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -226,7 +225,7 @@ export default function DoctorMessagesScreen() {
                 refreshing={refreshing}
                 onRefresh={() => {
                   setRefreshing(true);
-                  loadConversations(myId).then(() => setRefreshing(false));
+                  loadConversations(myId).then(() => setRefreshing(false)).catch(() => setRefreshing(false));
                 }}
                 tintColor={COLORS.wal}
                 colors={[COLORS.wal]}

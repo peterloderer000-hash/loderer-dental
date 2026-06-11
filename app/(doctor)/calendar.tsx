@@ -3,7 +3,6 @@ import {
   ActivityIndicator, Alert, Modal, RefreshControl, ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -110,7 +109,7 @@ export default function DoctorCalendar() {
       setDoctorId(user.id);
       supabase.from('profiles').select('full_name').eq('id', user.id).single()
         .then(({ data }) => { if (data?.full_name) setDoctorName(data.full_name); });
-    });
+    }).catch(() => {});
   }, []);
 
   // ── Načítaj ordinačné hodiny raz ──────────────────────────────────────────
@@ -133,7 +132,7 @@ export default function DoctorCalendar() {
           });
           setOhMap(map);
         });
-    });
+    }).catch(() => {});
     return () => { cancelled = true; };
   }, []);
 

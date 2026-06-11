@@ -413,8 +413,8 @@ export default function PatientAttachmentsScreen() {
     <View style={styles.safe}>
 
       <HeroHeader
-        title={patientName}
-        subtitle={`${attachments.length} príloh`}
+        title="Fotogaléria"
+        subtitle={`${patientName} · ${attachments.length} príloh`}
         icon="images-outline"
         onBack={() => router.back()}
         rightAction={

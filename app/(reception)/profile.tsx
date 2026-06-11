@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Alert, ScrollView, StyleSheet,
+  Alert, Platform, ScrollView, StyleSheet,
   Switch, Text, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO } from '../../styles/theme';
@@ -23,7 +23,7 @@ const PERMISSIONS = [
 ];
 
 export default function ReceptionProfile() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { colors, dark, toggle: toggleTheme } = useAppTheme();
   const [fullName, setFullName] = useState('');
   const [email,    setEmail]    = useState('');
@@ -52,7 +52,7 @@ export default function ReceptionProfile() {
         text: 'Odhlásiť', style: 'destructive',
         onPress: async () => {
           await supabase.auth.signOut();
-          navigation.dispatch(CommonActions.reset({ index: 0, routes: [{ name: 'index' }] }));
+          if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
         },
       },
     ]);

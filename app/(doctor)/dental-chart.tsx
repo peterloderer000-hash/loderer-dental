@@ -6,7 +6,6 @@ import {
 import Svg, { Rect, Text as SvgText, G } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../supabase';
@@ -329,7 +328,7 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
       .then(({ data }) => {
         setHistory((data ?? []) as HistoryRecord[]);
         setLoadingH(false);
-      });
+      }).catch(() => { setLoadingH(false); });
   }, [visible, patientId, tooth]);
 
   const st = record ? getStatus(record.status) : null;
@@ -487,8 +486,8 @@ export default function DentalChart() {
   return (
     <View style={styles.safe}>
       <HeroHeader
-        title={patientName ?? 'Pacient'}
-        subtitle="Zubná karta"
+        title="Zubná karta"
+        subtitle={patientName ?? 'Pacient'}
         icon="grid-outline"
         onBack={() => router.back()}
       />

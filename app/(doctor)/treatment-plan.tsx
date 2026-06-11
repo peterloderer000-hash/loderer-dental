@@ -3,7 +3,6 @@ import {
   ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
   ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
-import { } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -66,6 +65,17 @@ function fmtEur(n: number | null) {
 }
 
 // ─── Modál: nový/edit plán ────────────────────────────────────────────────────
+const PLAN_TEMPLATES = [
+  { title: 'Komplexný liečebný plán', notes: 'Celkové ošetrenie s postupnými fázami.' },
+  { title: 'Protetický plán',         notes: 'Korunky, mostíky, implantáty.' },
+  { title: 'Endodontické ošetrenie',  notes: 'Liečba koreňových kanálikov.' },
+  { title: 'Parodontologická liečba', notes: 'Ošetrenie ďasien a parodontu.' },
+  { title: 'Estetický plán',          notes: 'Bielenie, veneery, estetické úpravy.' },
+  { title: 'Chirurgický plán',        notes: 'Extrakcie, implantácie, chirurgia.' },
+  { title: 'Detský liečebný plán',    notes: 'Preventíva a liečba mliečneho chrupu.' },
+  { title: 'Ortodontický plán',       notes: 'Rovnátka, alignery, korekcia zhryzu.' },
+];
+
 function PlanModal({ visible, initial, onClose, onSave }: {
   visible: boolean;
   initial: { title: string; notes: string } | null;
@@ -79,7 +89,7 @@ function PlanModal({ visible, initial, onClose, onSave }: {
 
   useEffect(() => {
     if (visible) {
-      setTitle(initial?.title ?? 'Liečebný plán');
+      setTitle(initial?.title ?? '');
       setNotes(initial?.notes ?? '');
     }
   }, [visible, initial]);
@@ -91,14 +101,41 @@ function PlanModal({ visible, initial, onClose, onSave }: {
     setSaving(false);
   }
 
+  function applyTemplate(t: typeof PLAN_TEMPLATES[0]) {
+    setTitle(t.title);
+    setNotes(t.notes);
+  }
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <View style={mStyles.overlay}>
-          <TouchableOpacity style={{ flex: 0.35 }} activeOpacity={1} onPress={onClose} />
+          <TouchableOpacity style={{ flex: 0.15 }} activeOpacity={1} onPress={onClose} />
           <View style={[mStyles.sheet, { backgroundColor: colors.cardBg }]}>
             <View style={[mStyles.handle, { backgroundColor: colors.bg3 }]} />
             <Text style={[mStyles.title, { color: colors.textPrimary }]}>{initial ? 'Upraviť plán' : 'Nový plán'}</Text>
+
+            {/* Šablóny — len pri vytváraní nového */}
+            {!initial && (
+              <>
+                <Text style={[mStyles.label, { color: colors.textSecondary }]}>ŠABLÓNY</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12, maxHeight: 36 }}
+                  contentContainerStyle={{ gap: 8, paddingRight: 4 }}>
+                  {PLAN_TEMPLATES.map((t) => (
+                    <TouchableOpacity key={t.title}
+                      style={[mStyles.templateChip, {
+                        backgroundColor: title === t.title ? COLORS.wal : colors.bg2,
+                        borderColor: title === t.title ? COLORS.wal : colors.bg3,
+                      }]}
+                      onPress={() => applyTemplate(t)} activeOpacity={0.8}>
+                      <Text style={[mStyles.templateText, {
+                        color: title === t.title ? '#fff' : colors.textPrimary,
+                      }]}>{t.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            )}
 
             <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV PLÁNU</Text>
             <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={title} onChangeText={setTitle}
@@ -300,7 +337,9 @@ const mStyles = StyleSheet.create({
   svcChip:      { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 20, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
   svcChipEmoji: { fontSize: 14 },
   svcChipText:  { fontSize: 12, fontWeight: '600' },
-  svcChipPrice: { fontSize: 11, fontWeight: '500', opacity: 0.75 }
+  svcChipPrice: { fontSize: 11, fontWeight: '500', opacity: 0.75 },
+  templateChip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 18, borderWidth: 1.5 },
+  templateText: { fontSize: 12, fontWeight: '600' },
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -354,7 +393,7 @@ export default function TreatmentPlanScreen() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
       setDoctorId(user.id);
-    });
+    }).catch(() => {});
     load();
   }, [load]);
 
@@ -512,8 +551,8 @@ export default function TreatmentPlanScreen() {
   return (
     <View style={styles.safe}>
       <HeroHeader
-        title={patientName ?? 'Pacient'}
-        subtitle="Liečebný plán"
+        title="Liečebný plán"
+        subtitle={patientName ?? 'Pacient'}
         icon="clipboard-outline"
         onBack={() => router.back()}
         rightAction={
