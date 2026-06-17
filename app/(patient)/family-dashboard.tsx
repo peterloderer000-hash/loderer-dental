@@ -19,7 +19,7 @@ import { useAppTheme } from '../../context/ThemeContext';
 
 type FamilyMember = {
   id: string;
-  member_id: string;
+  member_patient_id: string;
   name: string;
   relationship: string;
   nextAppointment: string | null;
@@ -44,32 +44,32 @@ export default function FamilyDashboard() {
 
       // Get family group
       const { data: group } = await supabase.from('family_groups')
-        .select('id').eq('owner_id', user.id).maybeSingle();
+        .select('id').eq('parent_id', user.id).maybeSingle();
 
       if (!group) { setMembers([]); setLoading(false); return; }
 
       const { data: mbrs } = await supabase.from('family_members')
-        .select('id, member_id, relationship')
-        .eq('family_group_id', group.id);
+        .select('id, patient_id, relationship')
+        .eq('group_id', group.id);
 
       if (!mbrs || mbrs.length === 0) { setMembers([]); setLoading(false); return; }
 
       const enriched: FamilyMember[] = [];
       for (const m of mbrs) {
         const [profRes, apptRes, brushRes, scoreRes] = await Promise.all([
-          supabase.from('profiles').select('full_name').eq('id', m.member_id).single(),
-          supabase.from('appointments').select('date').eq('patient_id', m.member_id)
+          supabase.from('profiles').select('full_name').eq('id', m.patient_id).single(),
+          supabase.from('appointments').select('date').eq('patient_id', m.patient_id)
             .gte('date', new Date().toISOString().split('T')[0])
             .order('date', { ascending: true }).limit(1),
-          supabase.from('brushing_logs').select('id').eq('patient_id', m.member_id)
+          supabase.from('brushing_logs').select('id').eq('patient_id', m.patient_id)
             .gte('created_at', new Date(Date.now() - 7 * 86400000).toISOString()),
           supabase.from('risk_predictions').select('overall_risk')
-            .eq('patient_id', m.member_id).order('created_at', { ascending: false }).limit(1),
+            .eq('patient_id', m.patient_id).order('created_at', { ascending: false }).limit(1),
         ]);
 
         enriched.push({
           id: m.id,
-          member_id: m.member_id,
+          member_patient_id: m.patient_id,
           name: profRes.data?.full_name ?? 'Člen',
           relationship: m.relationship,
           nextAppointment: apptRes.data?.[0]?.date ?? null,
@@ -99,11 +99,11 @@ export default function FamilyDashboard() {
 
       // Find or create family group
       let { data: group } = await supabase.from('family_groups')
-        .select('id').eq('owner_id', user.id).maybeSingle();
+        .select('id').eq('parent_id', user.id).maybeSingle();
 
       if (!group) {
         const { data: ng } = await supabase.from('family_groups')
-          .insert({ owner_id: user.id, name: 'Moja rodina' }).select('id').single();
+          .insert({ parent_id: user.id, name: 'Moja rodina' }).select('id').single();
         group = ng;
       }
 
@@ -118,8 +118,8 @@ export default function FamilyDashboard() {
       }
 
       await supabase.from('family_members').insert({
-        family_group_id: group!.id,
-        member_id: memberProfile.id,
+        group_id: group!.id,
+        patient_id: memberProfile.id,
         relationship: addRelation,
       });
 

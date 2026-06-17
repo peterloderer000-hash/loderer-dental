@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   ActivityIndicator, Alert, Dimensions, KeyboardAvoidingView,
   Platform, ScrollView, StyleSheet, Text, TextInput,
@@ -31,21 +31,38 @@ export default function AuthScreen() {
   const [loading, setLoading]   = useState(true);
   const [showPass, setShowPass] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [showRetry, setShowRetry] = useState(false);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Ak loading trvá dlhšie ako 12 sekúnd, zobraz retry tlačidlo
+  useEffect(() => {
+    if (loading) {
+      loadingTimer.current = setTimeout(() => setShowRetry(true), 12000);
+    } else {
+      setShowRetry(false);
+      if (loadingTimer.current) clearTimeout(loadingTimer.current);
+    }
+    return () => { if (loadingTimer.current) clearTimeout(loadingTimer.current); };
+  }, [loading]);
 
   useEffect(() => {
     async function init() {
-      // Skontroluj či bol onboarding zobrazený
-      const seen = await AsyncStorage.getItem(ONBOARDING_KEY);
-      if (!seen) {
-        router.replace('/onboarding');
-        return;
-      }
-      // Bežná kontrola session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        try { await getRoleAndNavigate(session.user.id, router); }
-        catch { setLoading(false); }
-      } else {
+      try {
+        // Skontroluj či bol onboarding zobrazený
+        const seen = await AsyncStorage.getItem(ONBOARDING_KEY);
+        if (!seen) {
+          router.replace('/onboarding');
+          return;
+        }
+        // Bežná kontrola session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await getRoleAndNavigate(session.user.id, router);
+        } else {
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('Init auth error:', e);
         setLoading(false);
       }
     }
@@ -55,32 +72,67 @@ export default function AuthScreen() {
   async function handleSignIn() {
     if (!email || !password) { Alert.alert('Chyba', 'Vyplňte email aj heslo.'); return; }
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) { Alert.alert('Chyba prihlásenia', error.message); setLoading(false); return; }
-    await getRoleAndNavigate(data.user.id, router);
-    setLoading(false);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        // Preložíme bežné Supabase chybové hlášky do slovenčiny
+        let msg = error.message;
+        if (msg === 'Invalid login credentials') msg = 'Nesprávny email alebo heslo.';
+        else if (msg === 'Email not confirmed') msg = 'Email nebol potvrdený. Skontrolujte svoju emailovú schránku.';
+        else if (msg.includes('rate limit')) msg = 'Príliš veľa pokusov. Skúste to neskôr.';
+        Alert.alert('Chyba prihlásenia', msg);
+        setLoading(false);
+        return;
+      }
+      await getRoleAndNavigate(data.user.id, router);
+    } catch (e: any) {
+      console.error('Sign in error:', e);
+      Alert.alert(
+        'Chyba pripojenia',
+        'Nepodarilo sa pripojiť k serveru. Skontrolujte internetové pripojenie a skúste znova.',
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSignUp() {
     if (!email || !password) { Alert.alert('Chyba', 'Vyplňte email aj heslo.'); return; }
     if (password.length < 6) { Alert.alert('Chyba', 'Heslo musí mať aspoň 6 znakov.'); return; }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
-    setLoading(false);
-    if (error) { Alert.alert('Chyba registrácie', error.message); return; }
-    router.replace('/setup-role');
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) { Alert.alert('Chyba registrácie', error.message); return; }
+      router.replace('/setup-role');
+    } catch (e: any) {
+      console.error('Sign up error:', e);
+      Alert.alert('Chyba pripojenia', 'Nepodarilo sa pripojiť k serveru. Skúste to znova.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleResetPassword() {
     if (!email.trim()) { Alert.alert('Chyba', 'Zadajte váš email.'); return; }
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
-    setLoading(false);
-    if (error) { Alert.alert('Chyba', error.message); return; }
-    setResetSent(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
+      if (error) { Alert.alert('Chyba', error.message); return; }
+      setResetSent(true);
+    } catch (e: any) {
+      console.error('Reset password error:', e);
+      Alert.alert('Chyba pripojenia', 'Nepodarilo sa pripojiť k serveru. Skúste to znova.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   function backToLogin() { setMode('login'); setResetSent(false); }
+
+  function handleRetry() {
+    setLoading(false);
+    setShowRetry(false);
+  }
 
   if (loading) {
     return (
@@ -91,6 +143,15 @@ export default function AuthScreen() {
         <Text style={styles.splashTitle}>Loderer Dental</Text>
         <Text style={styles.splashSub}>Vaša zubná ambulancia</Text>
         <ActivityIndicator color={COLORS.sand} size="large" style={{ marginTop: 48 }} />
+        {showRetry && (
+          <View style={styles.retryWrap}>
+            <Text style={styles.retryText}>Pripojenie trvá dlhšie ako zvyčajne...</Text>
+            <TouchableOpacity style={styles.retryBtn} onPress={handleRetry} activeOpacity={0.85}>
+              <Ionicons name="refresh-outline" size={16} color="#fff" />
+              <Text style={styles.retryBtnText}>Skúsiť znova</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   }
@@ -284,4 +345,10 @@ const styles = StyleSheet.create({
   successBox:   { alignItems: 'center', paddingVertical: 16, gap: 12 },
   successTitle: { fontSize: 20, fontWeight: '700', color: '#1E8449' },
   successSub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20, marginBottom: 8 },
+
+  // Retry
+  retryWrap:    { alignItems: 'center', marginTop: 32, gap: 14 },
+  retryText:    { color: COLORS.sand, fontSize: 13, textAlign: 'center', opacity: 0.8 },
+  retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20 },
+  retryBtnText: { color: '#fff', fontSize: 13, fontWeight: '600' },
 });
