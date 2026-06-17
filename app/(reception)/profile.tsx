@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO } from '../../styles/theme';
@@ -52,13 +53,18 @@ export default function ReceptionProfile() {
   }, []);
 
   async function handleLogout() {
+    try { await clearAllCache(); } catch (_) {}
+    // Rovnaký signOut ako doctor/patient (bez scope: 'local')
+    try { await supabase.auth.signOut(); } catch (_) {}
+    // Manuálne vymaž Supabase auth dáta z AsyncStorage ako failsafe
     try {
-      await clearAllCache();
-    } catch (_) { /* ignore cache errors */ }
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (_) { /* ignore signout errors */ }
-    // Vždy naviguj na login, aj keby signOut zlyhalo
+      const allKeys = await AsyncStorage.getAllKeys();
+      const authKeys = allKeys.filter(k =>
+        k.includes('supabase') || k.includes('sb-') || k.includes('auth-token')
+      );
+      if (authKeys.length > 0) await AsyncStorage.multiRemove(authKeys);
+    } catch (_) {}
+    // Vždy naviguj na login
     if (Platform.OS === 'web') {
       window.location.href = '/';
     } else {
