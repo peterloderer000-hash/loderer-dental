@@ -21,7 +21,7 @@
     },
     "preview": {
       "distribution": "internal",
-      "channel": "preview",
+      "channel": "production",
       "android": {
         "buildType": "apk"
       },
@@ -30,7 +30,7 @@
         "credentialsSource": "remote"
       },
       "env": {
-        "APP_ENV": "preview"
+        "APP_ENV": "production"
       }
     },
     "production": {
