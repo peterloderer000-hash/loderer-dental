@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Updates from 'expo-updates';
 import HeroHeader from '../../components/ui/HeroHeader';
 import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO } from '../../styles/theme';
@@ -53,22 +54,22 @@ export default function ReceptionProfile() {
   }, []);
 
   async function handleLogout() {
+    // 1. Vymaž app cache
     try { await clearAllCache(); } catch (_) {}
-    // Rovnaký signOut ako doctor/patient (bez scope: 'local')
+    // 2. Supabase signOut
     try { await supabase.auth.signOut(); } catch (_) {}
-    // Manuálne vymaž Supabase auth dáta z AsyncStorage ako failsafe
-    try {
-      const allKeys = await AsyncStorage.getAllKeys();
-      const authKeys = allKeys.filter(k =>
-        k.includes('supabase') || k.includes('sb-') || k.includes('auth-token')
-      );
-      if (authKeys.length > 0) await AsyncStorage.multiRemove(authKeys);
-    } catch (_) {}
-    // Vždy naviguj na login
+    // 3. NUKLEÁRNA MOŽNOSŤ: vymaž CELÝ AsyncStorage (vrátane Supabase session)
+    try { await AsyncStorage.clear(); } catch (_) {}
+    // 4. Navigácia
     if (Platform.OS === 'web') {
       window.location.href = '/';
     } else {
-      router.replace('/');
+      // Skús reloadnúť celú appku — najspoľahlivejší spôsob
+      try {
+        await Updates.reloadAsync();
+      } catch (_) {
+        router.replace('/');
+      }
     }
   }
 
@@ -185,7 +186,7 @@ export default function ReceptionProfile() {
             <Text style={s.logoutText}>Odhlásiť sa</Text>
           </TouchableOpacity>
 
-          <Text style={[s.version, { color: colors.textSecondary }]}>Loderer Dental · Recepcia · v1.0</Text>
+          <Text style={[s.version, { color: colors.textSecondary }]}>Loderer Dental · Recepcia · v1.2</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
