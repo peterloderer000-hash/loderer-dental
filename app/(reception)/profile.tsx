@@ -11,6 +11,7 @@ import { supabase } from '../../supabase';
 import { COLORS, RADII, SHADOWS, TYPO } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { useAppTheme } from '../../context/ThemeContext';
+import { clearAllCache } from '../../utils/offlineCache';
 
 const PERMISSIONS = [
   { label: 'Live prehľad termínov', allowed: true  },
@@ -31,31 +32,38 @@ export default function ReceptionProfile() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
-      setEmail(user.email ?? '');
-      const { data } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .maybeSingle();
-      setFullName(data?.full_name ?? '');
-      setLoading(false);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { setLoading(false); return; }
+        setEmail(user.email ?? '');
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .maybeSingle();
+        setFullName(data?.full_name ?? '');
+      } catch (e) {
+        console.error('Reception profile load error:', e);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
 
-  function handleLogout() {
-    Alert.alert('Odhlásiť sa', 'Naozaj sa chcete odhlásiť?', [
-      { text: 'Zrušiť', style: 'cancel' },
-      {
-        text: 'Odhlásiť', style: 'destructive',
-        onPress: async () => {
-          await supabase.auth.signOut();
-          if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
-        },
-      },
-    ]);
+  async function handleLogout() {
+    try {
+      await clearAllCache();
+    } catch (_) { /* ignore cache errors */ }
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (_) { /* ignore signout errors */ }
+    // Vždy naviguj na login, aj keby signOut zlyhalo
+    if (Platform.OS === 'web') {
+      window.location.href = '/';
+    } else {
+      router.replace('/');
+    }
   }
 
   const initials = fullName.trim().split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '🏥';
