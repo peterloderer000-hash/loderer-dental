@@ -18,6 +18,8 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { pluralizeAppointments } from '../../utils/pluralize';
 import { useAppTheme } from '../../context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Updates from 'expo-updates';
 import { clearAllCache } from '../../utils/offlineCache';
 import { setAppLanguage } from '../../i18n';
 
@@ -201,9 +203,14 @@ export default function ProfileScreen() {
 
   async function handleSignOut() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    await clearAllCache();
-    await supabase.auth.signOut();
-    if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
+    try { await clearAllCache(); } catch (_) {}
+    try { await supabase.auth.signOut(); } catch (_) {}
+    try { await AsyncStorage.clear(); } catch (_) {}
+    if (Platform.OS === 'web') {
+      window.location.href = '/';
+    } else {
+      try { await Updates.reloadAsync(); } catch (_) { router.replace('/'); }
+    }
   }
 
   async function handleLanguage(l: 'sk' | 'en') {

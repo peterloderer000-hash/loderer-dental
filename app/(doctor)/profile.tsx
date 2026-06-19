@@ -14,6 +14,8 @@ import { COLORS, RADII, SHADOWS, TYPO, GRADIENTS } from '../../styles/theme';
 import { SkeletonList } from '../../components/Skeleton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../context/ThemeContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Updates from 'expo-updates';
 import { clearAllCache } from '../../utils/offlineCache';
 
 const AVATAR_BUCKET = 'avatars';
@@ -164,9 +166,14 @@ export default function DoctorProfile() {
 
   // ── Odhlásiť ─────────────────────────────────────────────────────────────
   async function handleSignOut() {
-    await clearAllCache();
-    await supabase.auth.signOut();
-    if (Platform.OS === 'web') { window.location.href = '/'; } else { router.replace('/'); }
+    try { await clearAllCache(); } catch (_) {}
+    try { await supabase.auth.signOut(); } catch (_) {}
+    try { await AsyncStorage.clear(); } catch (_) {}
+    if (Platform.OS === 'web') {
+      window.location.href = '/';
+    } else {
+      try { await Updates.reloadAsync(); } catch (_) { router.replace('/'); }
+    }
   }
 
   const initials = fullName.trim().split(' ').filter(Boolean)
