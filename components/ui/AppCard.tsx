@@ -56,7 +56,7 @@ export default React.memo(AppCard);
 
 const s = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFDF9',
+    backgroundColor: '#FAFAF8',
     borderRadius: RADII.lg,
     borderWidth: 1,
     borderColor: COLORS.bg3,

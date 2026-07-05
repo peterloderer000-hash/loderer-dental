@@ -12,9 +12,9 @@ import type { Appointment } from '../hooks/useAppointments';
 
 // ─── Farby ───────────────────────────────────────────────────────────────────
 const C = {
-  esp:   '#2C1F14',
+  esp:   '#111827',
   wal:   '#6B4F35',
-  sand:  '#C4A882',
+  sand:  '#BBACA0',
   cream: '#E8D5B0',
   bg:    '#FAF7F2',
 };
@@ -666,7 +666,7 @@ export type TreatmentPlanExport = {
 };
 
 const PLAN_STATUS_SK: Record<string, { label: string; color: string; bg: string }> = {
-  active:    { label: 'Aktívny',  color: C.wal,    bg: '#F4ECE4' },
+  active:    { label: 'Aktívny',  color: C.wal,    bg: '#E2DDD6' },
   completed: { label: 'Hotový',   color: '#1E8449', bg: '#EAFAF1' },
   cancelled: { label: 'Zrušený',  color: '#922B21', bg: '#FDEDEC' },
 };

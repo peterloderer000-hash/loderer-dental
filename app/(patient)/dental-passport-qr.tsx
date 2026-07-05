@@ -142,7 +142,7 @@ export default function DentalPassportQR() {
             {row.map((filled, c) => (
               <View key={c} style={{
                 width: cellSize, height: cellSize,
-                backgroundColor: filled ? '#2C1F14' : '#fff',
+                backgroundColor: filled ? '#111827' : '#fff',
               }} />
             ))}
           </View>

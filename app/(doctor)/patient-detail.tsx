@@ -1296,7 +1296,7 @@ export default function PatientDetailScreen() {
               { label: 'Anamnéza',    icon: 'document-text-outline', color: '#1A5276', path: '/(doctor)/patient-passport' },
               { label: 'Recepty',     icon: 'medical-outline', color: '#1E8449', path: '/(doctor)/prescriptions' },
               { label: 'Prílohy',     icon: 'attach-outline', color: '#784212', path: '/(doctor)/patient-attachments' },
-              { label: 'AI RTG',      icon: 'scan-outline', color: '#C9A84C', path: '/(doctor)/xray-analysis' },
+              { label: 'AI RTG',      icon: 'scan-outline', color: '#3A4256', path: '/(doctor)/xray-analysis' },
               { label: 'AI Riziká',   icon: 'analytics-outline', color: '#8E44AD', path: '/(doctor)/risk-prediction' },
               { label: 'Before/After',icon: 'images-outline', color: '#1E8449', path: '/(doctor)/before-after' },
               { label: 'Súhlasy',     icon: 'checkmark-circle-outline', color: '#7D3C98', path: '/(doctor)/consent-forms' },

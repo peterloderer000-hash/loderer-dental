@@ -30,8 +30,8 @@ const VARIANT_GRADIENTS: Record<Variant, string[]> = {
 };
 
 const VARIANT_TEXT: Record<Variant, string> = {
-  gold:    '#1A110A',
-  hero:    '#FAF6F0',
+  gold:    '#0A0F1A',
+  hero:    '#F8F6F2',
   ghost:   COLORS.cream,
   success: '#fff',
   danger:  '#fff',

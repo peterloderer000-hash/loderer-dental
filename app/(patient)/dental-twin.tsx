@@ -98,9 +98,9 @@ const STATUS_VISUALS: Record<string, StatusVisual> = {
   watch:          { color: '#F39C12', bg: '#2D1500', icon: 'eye-outline',       label: 'Sledovanie' },
   caries_initial: { color: '#E67E22', bg: '#3D2000', icon: 'alert-outline',     label: 'Počiatočný kaz' },
   caries_deep:    { color: '#E74C3C', bg: '#4A1010', icon: 'alert-circle',      label: 'Hlboký kaz' },
-  filling:        { color: '#C9A84C', bg: '#2D2000', icon: 'shield-checkmark',  label: 'Plomba' },
-  inlay:          { color: '#C9A84C', bg: '#2D2000', icon: 'diamond-outline',   label: 'Inlay' },
-  crown:          { color: '#B8973A', bg: '#2D1A00', icon: 'ribbon-outline',    label: 'Korunka' },
+  filling:        { color: '#3A4256', bg: '#2D2000', icon: 'shield-checkmark',  label: 'Plomba' },
+  inlay:          { color: '#3A4256', bg: '#2D2000', icon: 'diamond-outline',   label: 'Inlay' },
+  crown:          { color: '#2D3544', bg: '#2D1A00', icon: 'ribbon-outline',    label: 'Korunka' },
   endo:           { color: '#E74C3C', bg: '#4A1010', icon: 'medical-outline',   label: 'Endodoncia' },
   implant:        { color: '#9B59B6', bg: '#2A1236', icon: 'hardware-chip',     label: 'Implantát' },
   extracted:      { color: '#95A5A6', bg: '#1A1F20', icon: 'close-circle',      label: 'Extrahovaný' },
@@ -124,7 +124,7 @@ function ConsentModal({ visible, onAccept }: { visible: boolean; onAccept: () =>
             </View>
           </View>
           <Text style={[cs.title, { color: colors.textPrimary }]}>Dental Score™</Text>
-          <Text style={[cs.subtitle, { color: '#C9A84C' }]}>Digitálny dvojník tvojho chrupu</Text>
+          <Text style={[cs.subtitle, { color: '#3A4256' }]}>Digitálny dvojník tvojho chrupu</Text>
 
           <View style={[cs.infoBox, { backgroundColor: dark ? '#1A1209' : '#F5F0EA', borderColor: colors.bg3 }]}>
             <Text style={[cs.infoText, { color: colors.textPrimary }]}>
@@ -147,7 +147,7 @@ function ConsentModal({ visible, onAccept }: { visible: boolean; onAccept: () =>
           </View>
 
           <TouchableOpacity style={cs.btn} onPress={onAccept} activeOpacity={0.88}>
-            <LinearGradient colors={['#B8973A', '#C9A84C']} style={cs.btnGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#2D3544', '#3A4256']} style={cs.btnGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <Text style={cs.btnTxt}>Rozumiem, zobraziť skóre</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -194,7 +194,7 @@ const RiskPanel = React.memo(({
     <View style={s.riskCard}>
       <TouchableOpacity style={s.riskHeader} onPress={() => setOpen(v => !v)} activeOpacity={0.8}>
         <View style={s.riskIconWrap}>
-          <Ionicons name="fitness-outline" size={16} color="#C9A84C" />
+          <Ionicons name="fitness-outline" size={16} color="#3A4256" />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={s.riskHeaderTxt}>Rizikové faktory</Text>
@@ -248,7 +248,7 @@ const RiskPanel = React.memo(({
                 activeOpacity={0.75}
               >
                 <Text style={{ fontSize: 20 }}>{opt.emoji}</Text>
-                <Text style={[s.hygieneLbl, risk.hygiene === opt.value && { color: '#C9A84C' }]}>
+                <Text style={[s.hygieneLbl, risk.hygiene === opt.value && { color: '#3A4256' }]}>
                   {opt.label}
                 </Text>
               </TouchableOpacity>
@@ -462,8 +462,8 @@ const LEGEND_ITEMS: { status: string; label: string; color: string }[] = [
   { status: 'watch',          label: 'Sledovanie',   color: '#F39C12' },
   { status: 'caries_initial', label: 'Kaz',          color: '#E67E22' },
   { status: 'caries_deep',    label: 'Hlboký kaz',   color: '#E74C3C' },
-  { status: 'filling',        label: 'Plomba',       color: '#C9A84C' },
-  { status: 'crown',          label: 'Korunka',      color: '#B8973A' },
+  { status: 'filling',        label: 'Plomba',       color: '#3A4256' },
+  { status: 'crown',          label: 'Korunka',      color: '#2D3544' },
   { status: 'endo',           label: 'Endo',         color: '#E74C3C' },
   { status: 'implant',        label: 'Implantát',    color: '#9B59B6' },
   { status: 'extracted',      label: 'Extrahovaný',  color: '#95A5A6' },
@@ -555,7 +555,7 @@ const InsightsSection = React.memo(({
   return (
     <View style={s.insightsWrap}>
       <View style={s.insightsHeader}>
-        <Ionicons name="bulb-outline" size={14} color="#C9A84C" />
+        <Ionicons name="bulb-outline" size={14} color="#3A4256" />
         <Text style={s.insightsTitle}>Odporúčania</Text>
       </View>
       {insights.slice(0, 3).map((ins, i) => (
@@ -584,12 +584,12 @@ const YearCard = React.memo(({
       style={[
         s.yearCard,
         active && { borderColor: color, backgroundColor: `${color}15` },
-        isToday && !active && { borderColor: '#C9A84C40' },
+        isToday && !active && { borderColor: '#3A425640' },
       ]}
       onPress={onPress}
       activeOpacity={0.8}
     >
-      {isToday && <View style={[s.yearTodayDot, { backgroundColor: '#C9A84C' }]} />}
+      {isToday && <View style={[s.yearTodayDot, { backgroundColor: '#3A4256' }]} />}
       <Text style={[s.yearCardLabel, active ? { color } : undefined]}>
         {year === 0 ? 'DNES' : `+${year}R`}
       </Text>
@@ -614,8 +614,8 @@ const PastVisitCard = React.memo(({
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Ionicons name="time-outline" size={11} color={active ? '#C9A84C' : '#555'} />
-      <Text style={[s.pastCardLabel, active && { color: '#C9A84C' }]}>{label}</Text>
+      <Ionicons name="time-outline" size={11} color={active ? '#3A4256' : '#555'} />
+      <Text style={[s.pastCardLabel, active && { color: '#3A4256' }]}>{label}</Text>
     </TouchableOpacity>
   );
 });
@@ -769,7 +769,7 @@ function ToothModal({
 
           {/* CTA tlačidlo */}
           <TouchableOpacity style={s.modalCTA} onPress={onBook} activeOpacity={0.88}>
-            <LinearGradient colors={['#B8973A', '#C9A84C']} style={s.modalCTAGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#2D3544', '#3A4256']} style={s.modalCTAGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <Ionicons name="calendar-outline" size={16} color="#1A1209" />
               <Text style={s.modalCTATxt}>Rezervovať prehliadku</Text>
             </LinearGradient>
@@ -923,7 +923,7 @@ export default function DentalTwinScreen() {
     return (
       <View style={[s.safe, { backgroundColor: '#0A0806', alignItems: 'center', justifyContent: 'center' }]}>
         <View style={s.loadingCircle}>
-          <ActivityIndicator color="#C9A84C" size="large" />
+          <ActivityIndicator color="#3A4256" size="large" />
         </View>
         <Text style={s.loadingTitle}>Analyzujem tvoj chrup...</Text>
         <Text style={s.loadingSub}>Pripravujem 5-ročnú predikciu</Text>
@@ -942,7 +942,7 @@ export default function DentalTwinScreen() {
         {/* ── Header ── */}
         <View style={s.header}>
           <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.8}>
-            <Ionicons name="chevron-back" size={20} color="#C9A84C" />
+            <Ionicons name="chevron-back" size={20} color="#3A4256" />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={s.headerSub}>DENTAL SCORE™</Text>
@@ -956,7 +956,7 @@ export default function DentalTwinScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(true); }} tintColor="#C9A84C" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(true); }} tintColor="#3A4256" />}
         >
 
           {/* ── Score Ring + Stats ── */}
@@ -976,7 +976,7 @@ export default function DentalTwinScreen() {
               { val: stats.healthy, lbl: 'Zdravých',  color: '#2ECC71', icon: 'checkmark-circle' as const },
               { val: stats.issues,  lbl: 'Problémov', color: '#E74C3C', icon: 'alert-circle' as const },
               { val: stats.watch,   lbl: 'Sledovanie', color: '#F39C12', icon: 'eye' as const },
-              { val: stats.treated, lbl: 'Ošetrených', color: '#C9A84C', icon: 'shield-checkmark' as const },
+              { val: stats.treated, lbl: 'Ošetrených', color: '#3A4256', icon: 'shield-checkmark' as const },
             ].map(({ val, lbl, color, icon }) => (
               <View key={lbl} style={s.statPill}>
                 <Ionicons name={icon} size={13} color={color} />
@@ -1009,7 +1009,7 @@ export default function DentalTwinScreen() {
           {/* ── Timeline: minulosť + predikcia ── */}
           <View style={s.section}>
             <View style={s.sectionHeaderRow}>
-              <Ionicons name="time-outline" size={14} color="#C9A84C" />
+              <Ionicons name="time-outline" size={14} color="#3A4256" />
               <Text style={s.sectionLabel}>ČASOVÁ OS</Text>
             </View>
             <ScrollView
@@ -1136,7 +1136,7 @@ export default function DentalTwinScreen() {
           {hasCostData && (
             <View style={s.section}>
               <View style={s.sectionHeaderRow}>
-                <Ionicons name="bar-chart-outline" size={14} color="#C9A84C" />
+                <Ionicons name="bar-chart-outline" size={14} color="#3A4256" />
                 <Text style={s.sectionLabel}>5-ROČNÉ POROVNANIE</Text>
               </View>
               <View style={s.compareCard}>
@@ -1186,7 +1186,7 @@ export default function DentalTwinScreen() {
             onPress={() => router.push('/(patient)/book-appointment')}
             activeOpacity={0.88}
           >
-            <LinearGradient colors={['#B8973A', '#C9A84C']} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#2D3544', '#3A4256']} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <Ionicons name="calendar" size={17} color="#1A1209" />
               <Text style={s.ctaTxt}>Rezervovať preventívnu prehliadku</Text>
             </LinearGradient>
@@ -1219,14 +1219,14 @@ const s = StyleSheet.create({
 
   // Loading
   loadingCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(201,168,76,0.06)', alignItems: 'center', justifyContent: 'center', marginBottom: 16, borderWidth: 1, borderColor: 'rgba(201,168,76,0.1)' },
-  loadingTitle: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#C9A84C', letterSpacing: 0.5 },
+  loadingTitle: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 0.5 },
   loadingSub: { fontSize: 11, fontFamily: 'DMSans_400Regular', color: '#555', marginTop: 4 },
 
   // Header
   header:         { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, gap: 12 },
   backBtn:        { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(201,168,76,0.12)' },
-  headerSub:      { fontSize: 9, letterSpacing: 2.5, color: '#C9A84C', fontFamily: 'DMSans_500Medium' },
-  headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0', marginTop: 1 },
+  headerSub:      { fontSize: 9, letterSpacing: 2.5, color: '#3A4256', fontFamily: 'DMSans_500Medium' },
+  headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2', marginTop: 1 },
   headerScorePill:{ borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1 },
   headerScoreVal: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold' },
 
@@ -1250,15 +1250,15 @@ const s = StyleSheet.create({
   // Insights
   insightsWrap:   { marginHorizontal: 16, marginBottom: 16, backgroundColor: '#110E09', borderRadius: 16, borderWidth: 1, borderColor: '#1E1610', padding: 14 },
   insightsHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
-  insightsTitle:  { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#C9A84C', letterSpacing: 0.5 },
+  insightsTitle:  { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 0.5 },
   insightRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
   insightIcon:    { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  insightText:    { flex: 1, fontSize: 12, fontFamily: 'DMSans_400Regular', color: '#C4A882', lineHeight: 18 },
+  insightText:    { flex: 1, fontSize: 12, fontFamily: 'DMSans_400Regular', color: '#BBACA0', lineHeight: 18 },
 
   // Dental Arch
   archContainer: { marginHorizontal: 16, marginBottom: 8, backgroundColor: '#0D0B08', borderRadius: 20, borderWidth: 1, borderColor: '#1E1610', padding: 16, paddingBottom: 12 },
   archLabelRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
-  archLabelDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#C9A84C' },
+  archLabelDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#3A4256' },
   archLabel:     { flex: 1, fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.5 },
   archPredBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   archPredTxt:   { fontSize: 9, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
@@ -1293,18 +1293,18 @@ const s = StyleSheet.create({
 
   // Past visit cards
   pastCard:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 12, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
-  pastCardActive: { borderColor: '#C9A84C', backgroundColor: '#2D1800' },
+  pastCardActive: { borderColor: '#3A4256', backgroundColor: '#2D1800' },
   pastCardLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
   timelineSep:    { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 2 },
   timelineLine:   { width: 10, height: 1, backgroundColor: '#2A1F14' },
-  timelineDotGold:{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#C9A84C' },
+  timelineDotGold:{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#3A4256' },
 
   // Counter panel
   counterPanel:       { marginHorizontal: 16, marginTop: 12, borderRadius: 16, borderWidth: 1, borderColor: '#1E1610', backgroundColor: '#0D0B08', overflow: 'hidden' },
   counterTitle:       { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.3, padding: 14, paddingBottom: 10 },
   counterRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1E1610' },
   counterEmoji:       { fontSize: 18, width: 26, textAlign: 'center' },
-  counterLabel:       { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  counterLabel:       { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   counterTeeth:       { fontSize: 10, color: '#555', marginTop: 1, fontFamily: 'DMSans_400Regular' },
   counterCost:        { fontSize: 12, color: '#E74C3C', fontFamily: 'DMSans_500Medium' },
   counterDivider:     { height: 1, backgroundColor: '#1E1610', marginHorizontal: 14, marginVertical: 4 },
@@ -1372,23 +1372,23 @@ const s = StyleSheet.create({
   riskCard:       { backgroundColor: '#0D0B08', borderRadius: 16, borderWidth: 1, borderColor: '#1E1610' },
   riskHeader:     { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14 },
   riskIconWrap:   { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center' },
-  riskHeaderTxt:  { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  riskHeaderTxt:  { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   riskHeaderSub:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#666', marginTop: 1 },
   riskSummary:    { flexDirection: 'row', gap: 4 },
   riskChip:       { fontSize: 14 },
   riskBody:       { paddingHorizontal: 14, paddingBottom: 14 },
   riskRow:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1E1610' },
   riskEmoji:      { fontSize: 20, width: 28, textAlign: 'center' },
-  riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   riskHint:       { fontSize: 10, color: '#555', marginTop: 1, fontFamily: 'DMSans_400Regular' },
   riskDisclaimer: { fontSize: 9, color: '#444', marginTop: 12, lineHeight: 14, fontFamily: 'DMSans_400Regular' },
   riskDivider:    { height: 1, backgroundColor: '#1E1610', marginVertical: 8 },
-  hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#FAF6F0', marginBottom: 8 },
+  hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#F8F6F2', marginBottom: 8 },
   toggle:         { width: 42, height: 24, borderRadius: 12, justifyContent: 'center', paddingHorizontal: 2 },
   thumb:          { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', alignSelf: 'flex-start' },
   thumbOn:        { alignSelf: 'flex-end' },
   hygieneRow:     { flexDirection: 'row', gap: 8, marginBottom: 8 },
   hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 12, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', gap: 4 },
-  hygieneBtnActive: { borderColor: '#C9A84C', backgroundColor: '#2D2000' },
+  hygieneBtnActive: { borderColor: '#3A4256', backgroundColor: '#2D2000' },
   hygieneLbl:     { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
 });

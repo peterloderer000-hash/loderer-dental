@@ -37,7 +37,7 @@ const TOOTH = `
 // ── Build SVG string ─────────────────────────────────────────────────────────
 function buildSVG({ size = 1024, transparentBg = false }) {
   const bg = transparentBg ? '' : `
-    <rect width="1024" height="1024" rx="220" fill="#2C1F14"/>
+    <rect width="1024" height="1024" rx="220" fill="#111827"/>
     <radialGradient id="vg" cx="50%" cy="40%" r="55%">
       <stop offset="0%" stop-color="#3D2C1E"/>
       <stop offset="100%" stop-color="#1A110A"/>
@@ -61,11 +61,11 @@ function buildSVG({ size = 1024, transparentBg = false }) {
   ${bg}
 
   <!-- Decorative gold lines -->
-  <rect x="332" y="158" width="360" height="3" rx="1.5" fill="#C9A84C" opacity="0.7"/>
-  <rect x="332" y="863" width="360" height="3" rx="1.5" fill="#C9A84C" opacity="0.7"/>
+  <rect x="332" y="158" width="360" height="3" rx="1.5" fill="#3A4256" opacity="0.7"/>
+  <rect x="332" y="863" width="360" height="3" rx="1.5" fill="#3A4256" opacity="0.7"/>
 
   <!-- Tooth — filled gold with glow -->
-  <path fill="#C9A84C" d="${TOOTH}" filter="url(#glow)"/>
+  <path fill="#3A4256" d="${TOOTH}" filter="url(#glow)"/>
 
   <!-- Tooth shine highlight -->
   <path fill="#E8D5B0" opacity="0.18" d="
@@ -81,14 +81,14 @@ function buildSVG({ size = 1024, transparentBg = false }) {
     font-family="Georgia, 'Times New Roman', serif"
     font-size="62" font-weight="700"
     letter-spacing="14" text-anchor="middle"
-    fill="#C9A84C" opacity="0.95">LODERER</text>
+    fill="#3A4256" opacity="0.95">LODERER</text>
 
   <!-- DENTAL -->
   <text x="512" y="856"
     font-family="Georgia, 'Times New Roman', serif"
     font-size="34" font-weight="400"
     letter-spacing="18" text-anchor="middle"
-    fill="#C4A882" opacity="0.75">DENTAL</text>
+    fill="#BBACA0" opacity="0.75">DENTAL</text>
 </svg>`;
 }
 

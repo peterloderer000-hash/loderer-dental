@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 14 },
 
   patientOption:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  patientOptionActive:{ backgroundColor: '#F4ECE4', borderRadius: 8, paddingHorizontal: 8, borderBottomWidth: 0, marginBottom: 1 },
+  patientOptionActive:{ backgroundColor: '#E2DDD6', borderRadius: 8, paddingHorizontal: 8, borderBottomWidth: 0, marginBottom: 1 },
   patientDot:        { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   patientOptionText: { fontSize: 14, color: COLORS.wal },
 

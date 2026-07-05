@@ -1042,7 +1042,7 @@ const styles = StyleSheet.create({
   // Filters
   filterScroll:  { flexShrink: 0, flexGrow: 0 },
   filterContent: { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
-  filterTab:     { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FFFDF9' },
+  filterTab:     { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
   filterTabText: { fontSize: 13, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
   filterTabTextActive: { color: '#fff', fontFamily: 'DMSans_500Medium', fontSize: 13 },
 
@@ -1074,7 +1074,7 @@ const styles = StyleSheet.create({
   infoText:   { fontSize: 13, color: COLORS.wal, flex: 1 },
 
   actionsRow:       { flexDirection: 'row', gap: 8, marginTop: 10 },
-  rescheduleBtn:    { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 8, backgroundColor: '#F4ECE4', borderWidth: 1, borderColor: COLORS.sand },
+  rescheduleBtn:    { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 8, backgroundColor: '#E2DDD6', borderWidth: 1, borderColor: COLORS.sand },
   rescheduleBtnText:{ fontSize: 13, fontWeight: '600', color: COLORS.wal },
   cancelBtn:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 8, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
   cancelBtnText:    { fontSize: 13, fontWeight: '600', color: '#922B21' },

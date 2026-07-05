@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
   repeatChipTextActive:{ color: COLORS.cream },
   repeatCountLabel:    { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
   repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
-  repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#F4ECE4', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E2DDD6', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   repeatPreviewText:   { fontSize: 11, color: COLORS.wal, flex: 1, fontStyle: 'italic' },
 
   // Recent patients

@@ -45,7 +45,7 @@ function fmtDate(s: string) {
 
 const SEV_CFG: Record<Severity, { label: string; color: string; bg: string; darkBg: string; icon: keyof typeof Ionicons.glyphMap }> = {
   mild:     { label: 'Mierna',  color: '#2E7D5E', bg: '#EAFAF1', darkBg: '#0D3B1F', icon: 'shield-checkmark-outline' },
-  moderate: { label: 'Stredná', color: '#C9A84C', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'alert-circle-outline' },
+  moderate: { label: 'Stredná', color: '#3A4256', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'alert-circle-outline' },
   severe:   { label: 'Ťažká',   color: '#C0392B', bg: '#FDEDEC', darkBg: '#3A0E0E', icon: 'warning-outline' },
 };
 

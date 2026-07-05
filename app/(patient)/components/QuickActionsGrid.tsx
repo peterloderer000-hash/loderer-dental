@@ -8,7 +8,7 @@ import { useAppTheme } from '../../../context/ThemeContext';
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
 const ACTIONS: { label: string; icon: IoniconsName; route: string; color: string; bg: string; darkBg: string }[] = [
-  { label: 'Rezervovať', icon: 'calendar-outline',    route: '/(patient)/book-appointment', color: COLORS.esp, bg: '#FAF7F2', darkBg: '#3D2E22' },
+  { label: 'Rezervovať', icon: 'calendar-outline',    route: '/(patient)/book-appointment', color: COLORS.esp, bg: '#FAF7F2', darkBg: '#1E2535' },
   { label: 'Termíny',    icon: 'list-outline',        route: '/(patient)/appointments',     color: '#1A5276',  bg: '#EBF5FB', darkBg: '#0D2233' },
   { label: 'Kalkulačka', icon: 'calculator-outline',  route: '/(patient)/calculator',       color: '#7D6608',  bg: '#FEF9E7', darkBg: '#2D2200' },
   { label: 'Zdravie',    icon: 'clipboard-outline',   route: '/(patient)/health-passport',  color: '#17A589',  bg: '#E8F8F5', darkBg: '#0D3B1F' },

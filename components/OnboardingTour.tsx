@@ -26,7 +26,7 @@ const DOCTOR_SLIDES: Slide[] = [
   { icon: 'calendar', title: 'Správa termínov', description: 'Prehľadný kalendár s farebnými slotmi, rýchle pridanie termínov a realtime notifikácie.', color: '#1A5276' },
   { icon: 'people', title: 'Pacienti na dosah', description: 'Kompletná karta pacienta — história, diagnózy, dentálny graf, liečebné plány a fotodokumentácia.', color: '#1E8449' },
   { icon: 'bar-chart', title: 'Štatistiky & KPI', description: 'Sledujte výkon kliniky — tržby, vyťaženosť, hodnotenia a trendy v reálnom čase.', color: '#6C3483' },
-  { icon: 'search', title: 'Globálne vyhľadávanie', description: 'Nájdite pacienta, termín, diagnózu alebo službu z jedného miesta.', color: '#C9A84C' },
+  { icon: 'search', title: 'Globálne vyhľadávanie', description: 'Nájdite pacienta, termín, diagnózu alebo službu z jedného miesta.', color: '#3A4256' },
   { icon: 'document-text', title: 'PDF & Reporty', description: 'Generujte faktúry, mesačné reporty a liečebné plány jedným kliknutím.', color: '#922B21' },
 ];
 
@@ -34,7 +34,7 @@ const PATIENT_SLIDES: Slide[] = [
   { icon: 'calendar', title: 'Rezervácia online', description: 'Vyberte si termín, službu a lekára pohodlne z mobilu — 24/7.', color: '#1A5276' },
   { icon: 'heart', title: 'Zdravotný prehľad', description: 'Vaše dentálne skóre, história návštev a odporúčania na jednom mieste.', color: '#1E8449' },
   { icon: 'notifications', title: 'Pripomienky', description: 'Nikdy nezabudnete na termín — notifikácie vás upozornia včas.', color: '#6C3483' },
-  { icon: 'document', title: 'Formuláre digitálne', description: 'Súhlasy a dotazníky vyplníte online ešte pred návštevou.', color: '#C9A84C' },
+  { icon: 'document', title: 'Formuláre digitálne', description: 'Súhlasy a dotazníky vyplníte online ešte pred návštevou.', color: '#3A4256' },
   { icon: 'star', title: 'Hodnotenia', description: 'Ohodnoťte návštevu a pomôžte nám zlepšovať služby.', color: '#922B21' },
 ];
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   slide: { width, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40, paddingTop: 80 },
   iconCircle: { width: 120, height: 120, borderRadius: 60, alignItems: 'center', justifyContent: 'center', marginBottom: 32 },
-  title: { ...TYPO.h1, color: '#FAF6F0', textAlign: 'center', marginBottom: 16 },
+  title: { ...TYPO.h1, color: '#F8F6F2', textAlign: 'center', marginBottom: 16 },
   desc: { ...TYPO.body, color: COLORS.sand, textAlign: 'center', lineHeight: 22, fontSize: 15 },
   dots: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 32 },
   dot: { height: 8, borderRadius: 4, backgroundColor: COLORS.gold },

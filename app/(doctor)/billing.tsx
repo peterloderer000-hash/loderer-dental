@@ -335,7 +335,7 @@ export default function BillingScreen() {
                   style={[styles.planMonthBtn, { borderColor: colors.bg3, backgroundColor: planMonths === n ? COLORS.esp : colors.bg2 }]}
                   onPress={() => setPlanMonths(n)} activeOpacity={0.8}
                 >
-                  <Text style={[styles.planMonthText, { color: planMonths === n ? '#FAF6F0' : colors.textSecondary }]}>{n}x</Text>
+                  <Text style={[styles.planMonthText, { color: planMonths === n ? '#F8F6F2' : colors.textSecondary }]}>{n}x</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
   planResultAmt:  { fontSize: 28, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 4 },
   planResultSub:  { fontSize: 12 },
   planClose:      { paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
-  planCloseText:  { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  planCloseText:  { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   empty:      { alignItems: 'center', paddingVertical: 50 },
   emptyIcon:  { fontSize: 44, marginBottom: 12 },
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },

@@ -28,7 +28,7 @@ const SIZES: Record<Size, { dim: number; stroke: number; fontSize: number }> = {
 };
 
 function ProgressRing({
-  value, max = 100, size = 'md', color = '#C9A84C', trackColor = 'rgba(201,168,76,0.15)',
+  value, max = 100, size = 'md', color = '#3A4256', trackColor = 'rgba(201,168,76,0.15)',
   label, sublabel, valueColor, labelColor, style,
 }: Props) {
   const { dim, stroke, fontSize } = SIZES[size];
@@ -55,8 +55,8 @@ function ProgressRing({
       <Svg width={dim} height={dim} style={styles.svg}>
         <Defs>
           <LinearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor="#D4B85E" />
-            <Stop offset="1" stopColor="#B8973A" />
+            <Stop offset="0" stopColor="#4A5568" />
+            <Stop offset="1" stopColor="#2D3544" />
           </LinearGradient>
         </Defs>
         {/* Track */}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontFamily: 'PlayfairDisplay_700Bold',
-    color: '#2C1F14',
+    color: '#111827',
     lineHeight: 34,
   },
   label: {
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   sublabel: {
     ...TYPO.overline,
-    color: '#C4A882',
+    color: '#BBACA0',
     fontSize: 8,
     lineHeight: 12,
   },

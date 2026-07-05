@@ -18,7 +18,7 @@ import { useAppTheme } from '../../context/ThemeContext';
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
 
 const AUDIENCE_CFG: { key: Audience; label: string; desc: string; icon: string; color: string; bg: string; darkBg: string }[] = [
-  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#F4ECE4', darkBg: '#3D2E22' },
+  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#E2DDD6', darkBg: '#1E2535' },
   { key: 'upcoming', label: 'Najbližšie termíny',      desc: 'Pacienti s termínom v nasledujúcich 7 dňoch',                icon: 'calendar-outline',      color: '#1A5276',   bg: '#EBF5FB', darkBg: '#0D2233' },
   { key: 'recall',   label: 'Recall — >6 mesiacov',   desc: 'Pacienti, ktorí neboli na kontrole viac ako 6 mesiacov',     icon: 'time-outline',          color: '#922B21',   bg: '#FDEDEC', darkBg: '#4A1010' },
   { key: 'custom',   label: 'Vybraní pacienti',        desc: 'Vyberte konkrétnych pacientov zo zoznamu',                   icon: 'checkmark-circle-outline', color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F' },
@@ -281,7 +281,7 @@ export default function BroadcastScreen() {
                   return (
                     <TouchableOpacity
                       key={p.id}
-                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && [styles.ptRowSel, { backgroundColor: dark ? '#3D2E22' : '#F4ECE4' }]]}
+                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && [styles.ptRowSel, { backgroundColor: dark ? '#1E2535' : '#E2DDD6' }]]}
                       onPress={() => togglePatient(p.id)}
                       activeOpacity={0.8}
                     >
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
   selBadge:     { backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 1 },
   selBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
   ptRow:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  ptRowSel:     { backgroundColor: '#F4ECE4' },
+  ptRowSel:     { backgroundColor: '#E2DDD6' },
   ptAvatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   ptAvatarText: { fontSize: 13, fontWeight: '700', color: COLORS.wal },
   ptName:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },

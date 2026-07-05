@@ -386,7 +386,7 @@ export default function PatientHome() {
                   </Text>
                 </View>
               </View>
-              <Ionicons name="qr-code-outline" size={24} color={dark ? COLORS.gold : '#C9A84C'} />
+              <Ionicons name="qr-code-outline" size={24} color={dark ? COLORS.gold : '#3A4256'} />
             </TouchableOpacity>
           </Reanimated.View>
         )}
@@ -493,7 +493,7 @@ export default function PatientHome() {
                 activeOpacity={0.8}
               >
                 <View style={[styles.quickIconWrap, item.gold && styles.quickIconWrapGold, !item.gold && { backgroundColor: colors.bg2 }]}>
-                  <Ionicons name={item.icon} size={28} color={item.gold ? '#1A110A' : COLORS.gold} />
+                  <Ionicons name={item.icon} size={28} color={item.gold ? '#0A0F1A' : COLORS.gold} />
                 </View>
                 <Text style={[styles.quickBtnLabel, item.gold && styles.quickBtnLabelGold, !item.gold && { color: colors.textSecondary }]}>{item.label}</Text>
               </TouchableOpacity>
@@ -532,7 +532,7 @@ export default function PatientHome() {
             onPress={() => router.push('/(patient)/dental-twin')}
             activeOpacity={0.9}
           >
-            <LinearGradient colors={['#1A1209', '#2C1F14']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#1A1209', '#111827']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <View style={styles.twinLeft}>
                 <Text style={styles.twinEmoji}>🦷</Text>
                 <View>
@@ -553,7 +553,7 @@ export default function PatientHome() {
             onPress={() => router.push('/(patient)/loyalty')}
             activeOpacity={0.9}
           >
-            <LinearGradient colors={dark ? ['#1A1209', '#2C1F14'] : ['#C9A84C', '#B8941F']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={dark ? ['#1A1209', '#111827'] : ['#3A4256', '#B8941F']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <View style={styles.twinLeft}>
                 <Text style={styles.twinEmoji}>🏆</Text>
                 <View>
@@ -652,7 +652,7 @@ export default function PatientHome() {
                     color={scoreColor}
                     trackColor="rgba(255,255,255,0.1)"
                     label="/100"
-                    valueColor="#FAF6F0"
+                    valueColor="#F8F6F2"
                     labelColor="rgba(250,246,240,0.6)"
                     style={{ opacity: dentalScore == null ? 0.4 : 1 }}
                   />
@@ -776,7 +776,7 @@ const styles = StyleSheet.create({
   decCircle: {
     position: 'absolute',
     borderRadius: 9999,
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#3A4256',
   },
   heroHeader: {
     flexDirection: 'row',
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
   },
   name: {
     ...TYPO.hero,
-    color: '#FAF6F0',
+    color: '#F8F6F2',
     marginBottom: 6,
   },
   heroDate: {
@@ -857,7 +857,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   apptCard: {
-    backgroundColor: '#FFFDF9',
+    backgroundColor: '#FAFAF8',
     borderRadius: RADII.xl,
     padding: SPACING.lg,
     borderWidth: 1, borderColor: COLORS.bg3,
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
   twinLeft:   { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
   twinEmoji:  { fontSize: 32 },
   twinLabel:  { fontSize: 9, letterSpacing: 2, color: 'rgba(201,168,76,0.7)', fontFamily: 'DMSans_500Medium', marginBottom: 2 },
-  twinTitle:  { fontSize: 15, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0', marginBottom: 2 },
+  twinTitle:  { fontSize: 15, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2', marginBottom: 2 },
   twinSub:    { fontSize: 11, color: 'rgba(196,168,130,0.6)', fontFamily: 'DMSans_400Regular' },
   urgentBtn:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 14, borderWidth: 1.5, padding: 14, marginBottom: 10 },
   urgentIconWrap: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
@@ -960,7 +960,7 @@ const styles = StyleSheet.create({
   apptBtnPrimaryText: {
     fontFamily: 'DMSans_500Medium',
     fontSize: 13,
-    color: '#1A110A',
+    color: '#0A0F1A',
   },
   apptCardEmpty: {
     borderRadius: RADII.xl,
@@ -1002,7 +1002,7 @@ const styles = StyleSheet.create({
   quickBtn: {
     flex: 1, alignItems: 'center', paddingVertical: SPACING.md,
     borderRadius: RADII.lg,
-    backgroundColor: '#FFFDF9',
+    backgroundColor: '#FAFAF8',
     borderWidth: 1, borderColor: COLORS.bg3,
     ...SHADOWS.card,
     gap: 6,
@@ -1023,7 +1023,7 @@ const styles = StyleSheet.create({
     ...TYPO.caption, fontSize: 10, color: COLORS.wal, textAlign: 'center',
   },
   quickBtnLabelGold: {
-    color: '#1A110A',
+    color: '#0A0F1A',
   },
 
   // Score
@@ -1047,7 +1047,7 @@ const styles = StyleSheet.create({
   },
   scoreTitle: {
     fontFamily: 'PlayfairDisplay_700Bold',
-    fontSize: 18, color: '#FAF6F0',
+    fontSize: 18, color: '#F8F6F2',
     lineHeight: 24, marginBottom: SPACING.sm,
   },
   scoreSub: {
@@ -1063,7 +1063,7 @@ const styles = StyleSheet.create({
   },
   scoreBtnText: {
     fontFamily: 'DMSans_500Medium',
-    fontSize: 12, color: '#1A110A',
+    fontSize: 12, color: '#0A0F1A',
   },
 
   // Section headers
@@ -1101,7 +1101,7 @@ const styles = StyleSheet.create({
   },
   timelineCard: {
     flex: 1,
-    backgroundColor: '#FFFDF9',
+    backgroundColor: '#FAFAF8',
     borderRadius: RADII.lg,
     padding: SPACING.md,
     marginBottom: SPACING.sm,

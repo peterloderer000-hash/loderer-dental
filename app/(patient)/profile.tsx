@@ -457,10 +457,10 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-              <Text style={{ fontSize: 11, color: '#C4A882', fontFamily: 'DMSans_400Regular' }}>
+              <Text style={{ fontSize: 11, color: '#BBACA0', fontFamily: 'DMSans_400Regular' }}>
                 Loderer Dental v{Constants.expoConfig?.version ?? '1.0.0'}
               </Text>
-              <Text style={{ fontSize: 10, color: '#C4A882', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
+              <Text style={{ fontSize: 10, color: '#BBACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
                 Build: 2026-05-02 • OTA aktívne
               </Text>
             </View>
@@ -507,7 +507,7 @@ const s = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, alignItems: 'center', overflow: 'hidden' },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
 
   avatarWrap: { position: 'relative', marginBottom: 12 },
   avatar: { width: 88, height: 88, borderRadius: 44, backgroundColor: COLORS.wal, borderWidth: 3, borderColor: COLORS.sand },
@@ -518,7 +518,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: '#fff',
   },
-  heroName: { ...TYPO.h2, color: '#FAF6F0', marginBottom: 6 },
+  heroName: { ...TYPO.h2, color: '#F8F6F2', marginBottom: 6 },
   roleBadge: { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   roleText:  { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.sand },
   statRow: { flexDirection: 'row', alignItems: 'center', width: '100%', backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: RADII.md, paddingVertical: 12, paddingHorizontal: 8 },
@@ -559,7 +559,7 @@ const s = StyleSheet.create({
 });
 
 const sp = StyleSheet.create({
-  value: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#FAF6F0', lineHeight: 26 },
+  value: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F8F6F2', lineHeight: 26 },
   label: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.8, textTransform: 'uppercase', marginTop: 2 },
 });
 

@@ -659,5 +659,5 @@ const qrS = StyleSheet.create({
   cardTitle:  { fontSize: 14, fontFamily: 'DMSans_500Medium', marginBottom: 6 },
   cardRow:    { fontSize: 13, lineHeight: 20 },
   closeBtn:   { width: '100%', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
-  closeBtnText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  closeBtnText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
 });

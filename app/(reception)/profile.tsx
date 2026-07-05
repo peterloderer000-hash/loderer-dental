@@ -197,13 +197,13 @@ const s = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 28, alignItems: 'center', overflow: 'hidden', gap: 6 },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
 
   avatarWrap: { marginBottom: 10 },
   avatar: { width: 84, height: 84, borderRadius: 42, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: COLORS.sand },
   avatarInitials: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 28, color: COLORS.cream },
 
-  heroName:  { ...TYPO.h2, color: '#FAF6F0', marginBottom: 4 },
+  heroName:  { ...TYPO.h2, color: '#F8F6F2', marginBottom: 4 },
   roleBadge: { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 6, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   roleText:  { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.sand },
   heroEmail: { fontFamily: 'DMSans_400Regular', fontSize: 11, color: 'rgba(196,168,130,0.6)' },

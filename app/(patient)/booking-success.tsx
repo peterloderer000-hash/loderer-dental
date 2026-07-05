@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   // Detail karta
   card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
   row:  { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  rowIcon:  { width: 32, height: 32, borderRadius: 8, backgroundColor: '#F4ECE4', alignItems: 'center', justifyContent: 'center' },
+  rowIcon:  { width: 32, height: 32, borderRadius: 8, backgroundColor: '#E2DDD6', alignItems: 'center', justifyContent: 'center' },
   rowLabel: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
   rowValue: { fontSize: 14, fontWeight: '600', color: COLORS.esp, lineHeight: 19 },
 

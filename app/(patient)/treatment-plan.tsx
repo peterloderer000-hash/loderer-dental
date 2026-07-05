@@ -39,7 +39,7 @@ type Plan = {
 // ─── Konfig stavov ────────────────────────────────────────────────────────────
 const ITEM_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', icon: 'time-outline'             as const },
-  scheduled: { label: 'Naplánované', color: '#C9A84C', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'calendar-outline'         as const },
+  scheduled: { label: 'Naplánované', color: '#3A4256', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'calendar-outline'         as const },
   completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EAFAF1', darkBg: '#0D3B1F', icon: 'checkmark-circle-outline' as const },
   skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#1A1C1D', icon: 'remove-circle-outline'    as const },
 };
@@ -373,7 +373,7 @@ export default function PatientTreatmentPlanScreen() {
           )}
 
           {/* Info box */}
-          <View style={[st.infoBox, { backgroundColor: dark ? '#1E1610' : '#F4ECE4', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
+          <View style={[st.infoBox, { backgroundColor: dark ? '#1E1610' : '#E2DDD6', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
             <Ionicons name="information-circle-outline" size={16} color={COLORS.gold} />
             <Text style={[st.infoText, { color: dark ? COLORS.sand : COLORS.wal }]}>
               Liečebný plán vytvára váš zubný lekár. Pre zmeny alebo otázky kontaktujte ordináciu.

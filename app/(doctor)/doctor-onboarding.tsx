@@ -107,7 +107,7 @@ export default function DoctorOnboardingScreen() {
                   key={i}
                   style={[s.input, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
                   placeholder={f.placeholder}
-                  placeholderTextColor={dark ? '#666' : '#C4A882'}
+                  placeholderTextColor={dark ? '#666' : '#BBACA0'}
                   value={f.value}
                   onChangeText={f.set}
                   keyboardType={f.keyboard}
@@ -115,7 +115,7 @@ export default function DoctorOnboardingScreen() {
               ))}
             </View>
             <TouchableOpacity style={[s.btn, loading && { opacity: 0.6 }]} onPress={handleSaveStep2} disabled={loading} activeOpacity={0.85}>
-              {loading ? <ActivityIndicator color="#2C1F14" /> : <Text style={s.btnText}>Pokračovať</Text>}
+              {loading ? <ActivityIndicator color="#111827" /> : <Text style={s.btnText}>Pokračovať</Text>}
             </TouchableOpacity>
           </View>
 
@@ -150,26 +150,26 @@ export default function DoctorOnboardingScreen() {
 }
 
 const s = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: '#FAF6F0' },
+  container:   { flex: 1, backgroundColor: '#F8F6F2' },
   header:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
   headerSide:  { width: 40 },
   backBtn:     { padding: 8, marginLeft: -8 },
-  stepText:    { fontSize: 15, fontWeight: '700', color: '#2C1F14' },
-  progressBg:  { height: 4, backgroundColor: '#F4EDE4' },
-  progressFill:{ height: 4, backgroundColor: '#C9A84C' },
+  stepText:    { fontSize: 15, fontWeight: '700', color: '#111827' },
+  progressBg:  { height: 4, backgroundColor: '#E2DDD6' },
+  progressFill:{ height: 4, backgroundColor: '#3A4256' },
   sliderWrap:  { flex: 1, overflow: 'hidden' },
   slider:      { flex: 1, flexDirection: 'row', width: width * 3 },
   slide:       { width, flex: 1, padding: 24, justifyContent: 'space-between' },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emoji:       { fontSize: 80, marginBottom: 24 },
-  title:       { fontSize: 26, fontWeight: '800', color: '#2C1F14', textAlign: 'center', marginBottom: 12 },
-  subtitle:    { fontSize: 16, color: '#6B4F3A', textAlign: 'center' },
-  stepTitle:   { fontSize: 22, fontWeight: '800', color: '#2C1F14', marginBottom: 24 },
-  input:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#C4A882', borderRadius: 10, padding: 16, fontSize: 16, color: '#2C1F14', marginBottom: 14 },
+  title:       { fontSize: 26, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 12 },
+  subtitle:    { fontSize: 16, color: '#3A4256', textAlign: 'center' },
+  stepTitle:   { fontSize: 22, fontWeight: '800', color: '#111827', marginBottom: 24 },
+  input:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#BBACA0', borderRadius: 10, padding: 16, fontSize: 16, color: '#111827', marginBottom: 14 },
   bullets:     { marginTop: 28, width: '100%', paddingHorizontal: 8 },
   bulletRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 14 },
-  bulletDot:   { fontSize: 20, color: '#C9A84C', marginRight: 12, lineHeight: 24 },
-  bulletText:  { fontSize: 15, color: '#6B4F3A', lineHeight: 24, flex: 1 },
-  btn:         { backgroundColor: '#C9A84C', paddingVertical: 16, borderRadius: 10, alignItems: 'center', marginBottom: 16 },
-  btnText:     { color: '#2C1F14', fontSize: 17, fontWeight: '800' }
+  bulletDot:   { fontSize: 20, color: '#3A4256', marginRight: 12, lineHeight: 24 },
+  bulletText:  { fontSize: 15, color: '#3A4256', lineHeight: 24, flex: 1 },
+  btn:         { backgroundColor: '#3A4256', paddingVertical: 16, borderRadius: 10, alignItems: 'center', marginBottom: 16 },
+  btnText:     { color: '#111827', fontSize: 17, fontWeight: '800' }
 });

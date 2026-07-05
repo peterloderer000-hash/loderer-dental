@@ -119,7 +119,7 @@ function RevenueBarChart({ data }: { data: { label: string; revenue: number; isC
             <View style={[revenueBarStyles.track, { backgroundColor: colors.bg3 }]}>
               <View style={[
                 revenueBarStyles.fill,
-                { width: `${Math.max(pct, d.revenue > 0 ? 4 : 0)}%`, backgroundColor: d.isCurrent ? COLORS.wal : '#C4A882' },
+                { width: `${Math.max(pct, d.revenue > 0 ? 4 : 0)}%`, backgroundColor: d.isCurrent ? COLORS.wal : '#BBACA0' },
               ]}>
                 {d.revenue > 0 && pct >= 15 && (
                   <Text style={revenueBarStyles.fillLabel}>
@@ -151,7 +151,7 @@ function ServiceBreakdown({ services, total }: {
   total: number;
 }) {
   const { colors } = useAppTheme();
-  const palette = ['#2C1F14', '#6B4F35', '#C4A882', '#1A5276', '#1E8449', '#7D3C98'];
+  const palette = ['#111827', '#6B4F35', '#BBACA0', '#1A5276', '#1E8449', '#7D3C98'];
   return (
     <View style={{ gap: 8 }}>
       {services.slice(0, 6).map((svc, i) => {
@@ -338,7 +338,7 @@ export default function StatsScreen() {
         });
         const chairs = (chairsData ?? []).map((c: any) => ({
           name: c.name,
-          color: c.color ?? '#C9A84C',
+          color: c.color ?? '#3A4256',
           count: chairCounts[c.id] ?? 0
         }));
 

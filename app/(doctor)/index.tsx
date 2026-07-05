@@ -372,7 +372,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
           </TouchableOpacity>
         )}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={[styles.btnChart, db('#F4ECE4', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnChart, db('#E2DDD6', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
             <Ionicons name="clipboard-outline" size={15} color={COLORS.wal} />
             <Text style={styles.btnChartText}>Zubná karta</Text>
           </TouchableOpacity>
@@ -1126,7 +1126,7 @@ export default function DoctorHome() {
           { label: 'Video',     icon: 'videocam-outline'      as const, route: '/(doctor)/video-consult'   as const, color: '#2E86C1', bg: '#EBF5FB' },
           { label: 'SMS',       icon: 'chatbox-outline'       as const, route: '/(doctor)/sms-reminders'   as const, color: '#6C3483', bg: '#F4ECF7' },
           { label: 'Sklad',     icon: 'cube-outline'          as const, route: '/(doctor)/inventory'       as const, color: '#784212', bg: '#FDEBD0' },
-          { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#C9A84C', bg: '#FEF9E7' },
+          { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#3A4256', bg: '#FEF9E7' },
         ] as { label: string; icon: any; route: any; color: string; bg: string; badge?: number }[]).map((chip) => (
           <TouchableOpacity
             key={chip.label}
@@ -1546,7 +1546,7 @@ const styles = StyleSheet.create({
   dateLabel:  { ...TYPO.overline, color: COLORS.esp },
 
   // ── Appointment card ─────────────────────────────────────────────────────────
-  card:        { backgroundColor: '#FFFDF9', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 10, paddingLeft: 18, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, ...SHADOWS.card, overflow: 'hidden' },
+  card:        { backgroundColor: '#FAFAF8', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 10, paddingLeft: 18, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, ...SHADOWS.card, overflow: 'hidden' },
   cardUrgent:  { borderColor: COLORS.error, borderWidth: 1.5 },
   accentBar:   { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, borderTopLeftRadius: RADII.lg, borderBottomLeftRadius: RADII.lg },
   urgentBanner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FDEDEC', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 8 },
@@ -1572,7 +1572,7 @@ const styles = StyleSheet.create({
   btnCompleteText: { fontSize: 12, fontWeight: '600', color: '#1E8449' },
   btnCancel:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
   btnCancelText:   { fontSize: 12, fontWeight: '600', color: '#922B21' },
-  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#F4ECE4', borderWidth: 1, borderColor: COLORS.sand },
+  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#E2DDD6', borderWidth: 1, borderColor: COLORS.sand },
   btnChartText:    { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },

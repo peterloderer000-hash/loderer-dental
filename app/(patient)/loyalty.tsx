@@ -31,7 +31,7 @@ type PointEntry = {
 const TIERS = [
   { key: 'bronze',   label: 'Bronze',   icon: '🥉', min: 0,    color: '#CD7F32', bg: '#FFF3E0', next: 200 },
   { key: 'silver',   label: 'Silver',   icon: '🥈', min: 200,  color: '#A0A0A0', bg: '#F5F5F5', next: 500 },
-  { key: 'gold',     label: 'Gold',     icon: '🥇', min: 500,  color: '#C9A84C', bg: '#FFF8E1', next: 1000 },
+  { key: 'gold',     label: 'Gold',     icon: '🥇', min: 500,  color: '#3A4256', bg: '#FFF8E1', next: 1000 },
   { key: 'platinum', label: 'Platinum', icon: '💎', min: 1000, color: '#7B68EE', bg: '#EDE7F6', next: null },
 ];
 
@@ -136,7 +136,7 @@ export default function LoyaltyScreen() {
         {/* ── TIER CARD ── */}
         <Animated.View entering={FadeInDown.delay(100).duration(500)}>
           <LinearGradient
-            colors={dark ? ['#1A120B', '#2C1F14'] : [tier.bg, '#fff']}
+            colors={dark ? ['#1A120B', '#111827'] : [tier.bg, '#fff']}
             style={[s.tierCard, SHADOWS.card]}
           >
             <View style={s.tierTop}>

@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
   sortBtnActive:  { backgroundColor: COLORS.wal },
   sortPanel:      { backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, borderRadius: 12, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
   sortOption:     { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  sortOptionActive:{ backgroundColor: '#F4ECE4' },
+  sortOptionActive:{ backgroundColor: '#E2DDD6' },
   sortOptionText: { fontSize: 13, color: COLORS.esp, fontWeight: '500' },
   sortOptionTextActive: { fontWeight: '700', color: COLORS.wal },
 
@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   passportBadgeText:    { fontSize: 9, fontWeight: '700', color: COLORS.esp, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   actions:         { flexDirection: 'row', gap: 8 },
-  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 10, backgroundColor: '#F4ECE4', borderWidth: 1, borderColor: COLORS.sand },
+  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 10, backgroundColor: '#E2DDD6', borderWidth: 1, borderColor: COLORS.sand },
   btnChartText:    { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 10, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },

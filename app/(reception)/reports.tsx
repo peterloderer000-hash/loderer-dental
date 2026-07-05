@@ -371,7 +371,7 @@ function RecallSection({ colors, dark }: { colors: any; dark: boolean }) {
 const s = StyleSheet.create({
   hero:      { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, gap: 2 },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle: { ...TYPO.h1, color: '#FAF6F0' },
+  heroTitle: { ...TYPO.h1, color: '#F8F6F2' },
   backBtn:   { position: 'absolute', left: 16, top: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.10)', alignItems: 'center', justifyContent: 'center' },
 
   tabRow: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 14, paddingTop: 4, gap: 8 },

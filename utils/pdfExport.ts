@@ -7,17 +7,17 @@ import { supabase } from '../supabase';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const CSS_BASE = `
-  body { font-family: 'Helvetica Neue', sans-serif; color: #2C1F14; margin: 0; padding: 30px; font-size: 12px; line-height: 1.5; }
-  h1 { font-size: 20px; color: #2C1F14; margin-bottom: 4px; }
-  h2 { font-size: 15px; color: #6B4F3A; margin-top: 20px; margin-bottom: 8px; border-bottom: 1px solid #E8E0D5; padding-bottom: 4px; }
-  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #C9A84C; padding-bottom: 12px; }
-  .clinic-name { font-size: 18px; font-weight: 700; color: #2C1F14; }
-  .clinic-info { font-size: 10px; color: #6B4F3A; }
-  .date { font-size: 10px; color: #6B4F3A; text-align: right; }
+  body { font-family: 'Helvetica Neue', sans-serif; color: #111827; margin: 0; padding: 30px; font-size: 12px; line-height: 1.5; }
+  h1 { font-size: 20px; color: #111827; margin-bottom: 4px; }
+  h2 { font-size: 15px; color: #3A4256; margin-top: 20px; margin-bottom: 8px; border-bottom: 1px solid #E8E0D5; padding-bottom: 4px; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 2px solid #3A4256; padding-bottom: 12px; }
+  .clinic-name { font-size: 18px; font-weight: 700; color: #111827; }
+  .clinic-info { font-size: 10px; color: #3A4256; }
+  .date { font-size: 10px; color: #3A4256; text-align: right; }
   table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  th { background: #F5F0EA; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6B4F3A; padding: 8px; text-align: left; border-bottom: 1px solid #E8E0D5; }
+  th { background: #F5F0EA; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #3A4256; padding: 8px; text-align: left; border-bottom: 1px solid #E8E0D5; }
   td { padding: 8px; border-bottom: 1px solid #F5F0EA; font-size: 11px; }
-  .total-row td { font-weight: 700; border-top: 2px solid #C9A84C; }
+  .total-row td { font-weight: 700; border-top: 2px solid #3A4256; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; }
   .badge-success { background: #D5F5E3; color: #1E8449; }
   .badge-warning { background: #FEF9E7; color: #7D6608; }
@@ -165,8 +165,8 @@ export async function generateMonthlyReportPdf(doctorId: string, year: number, m
     <html><head><style>${CSS_BASE}
       .kpi-grid { display: flex; gap: 12px; margin-bottom: 16px; }
       .kpi-box { flex: 1; background: #F5F0EA; border-radius: 8px; padding: 12px; text-align: center; }
-      .kpi-val { font-size: 20px; font-weight: 800; color: #2C1F14; }
-      .kpi-label { font-size: 9px; color: #6B4F3A; text-transform: uppercase; letter-spacing: 0.5px; }
+      .kpi-val { font-size: 20px; font-weight: 800; color: #111827; }
+      .kpi-label { font-size: 9px; color: #3A4256; text-transform: uppercase; letter-spacing: 0.5px; }
     </style></head><body>
       ${headerHtml(clinic, 'MESAČNÝ REPORT', monthLabel)}
       
@@ -230,7 +230,7 @@ export async function generateTreatmentPlanPdf(planId: string): Promise<void> {
     return `<tr>
       <td>${idx + 1}</td>
       <td>${item.tooth_number ?? '—'}</td>
-      <td><strong>${item.title}</strong>${item.description ? `<br/><span style="color:#6B4F3A;font-size:10px">${item.description}</span>` : ''}</td>
+      <td><strong>${item.title}</strong>${item.description ? `<br/><span style="color:#3A4256;font-size:10px">${item.description}</span>` : ''}</td>
       <td><span class="badge ${statusBadge}">${statusLabel}</span></td>
       <td style="text-align:right">${item.estimated_cost ? `${item.estimated_cost.toFixed(2)} €` : '—'}</td>
     </tr>`;
@@ -241,7 +241,7 @@ export async function generateTreatmentPlanPdf(planId: string): Promise<void> {
       ${headerHtml(clinic, 'LIEČEBNÝ PLÁN', dateStr)}
       <h1>${plan.title}</h1>
       <p>Pacient: <strong>${(plan.patient as any)?.full_name ?? '—'}</strong></p>
-      ${plan.notes ? `<p style="color:#6B4F3A;font-style:italic">${plan.notes}</p>` : ''}
+      ${plan.notes ? `<p style="color:#3A4256;font-style:italic">${plan.notes}</p>` : ''}
       
       <h2>Položky plánu</h2>
       <table>

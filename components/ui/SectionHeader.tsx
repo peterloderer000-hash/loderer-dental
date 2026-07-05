@@ -33,5 +33,5 @@ const s = StyleSheet.create({
   leftAccent:{ width: 3, height: 18, borderRadius: RADII.pill, backgroundColor: COLORS.gold },
   title:     { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, lineHeight: 26, color: COLORS.esp },
   subtitle:  { ...TYPO.bodySm, color: COLORS.wal, marginTop: 2 },
-  action:    { fontSize: 14, color: '#C9A84C', fontWeight: '600' },
+  action:    { fontSize: 14, color: '#3A4256', fontWeight: '600' },
 });

@@ -36,7 +36,7 @@ const REL_CFG: Record<string, { icon: keyof typeof Ionicons.glyphMap; color: str
   'manžel/ka': { icon: 'heart-outline',  color: '#7D3C98', bg: '#F5EEF8', darkBg: '#2A1040' },
   'rodič':     { icon: 'people-outline', color: '#784212', bg: '#FEF9E7', darkBg: '#2D2000' },
   'súrodenec': { icon: 'person-outline', color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F' },
-  'iné':       { icon: 'person-outline', color: COLORS.wal, bg: '#F4ECE4', darkBg: '#1E1610' },
+  'iné':       { icon: 'person-outline', color: COLORS.wal, bg: '#E2DDD6', darkBg: '#1E1610' },
 };
 
 function calcAge(dob: string | null): number | null {
@@ -98,7 +98,7 @@ const MemberCard = React.memo(function MemberCard({
       </View>
 
       {/* Book button */}
-      <TouchableOpacity style={[st.bookBtn, { borderColor: dark ? '#2A1F15' : COLORS.sand, backgroundColor: dark ? '#1E1610' : '#F4ECE4' }]} onPress={onBook} activeOpacity={0.85}>
+      <TouchableOpacity style={[st.bookBtn, { borderColor: dark ? '#2A1F15' : COLORS.sand, backgroundColor: dark ? '#1E1610' : '#E2DDD6' }]} onPress={onBook} activeOpacity={0.85}>
         <Ionicons name="calendar-outline" size={14} color={COLORS.gold} />
         <Text style={[st.bookBtnText, { color: dark ? COLORS.sand : COLORS.wal }]}>Rezervovať termín</Text>
         <Ionicons name="chevron-forward" size={13} color={COLORS.sand} style={{ marginLeft: 'auto' }} />
@@ -236,7 +236,7 @@ export default function FamilyScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={COLORS.gold} />}
       >
         {/* Info banner */}
-        <View style={[st.infoBanner, { backgroundColor: dark ? '#1E1610' : '#F4ECE4', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
+        <View style={[st.infoBanner, { backgroundColor: dark ? '#1E1610' : '#E2DDD6', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
           <Ionicons name="information-circle-outline" size={15} color={COLORS.gold} />
           <Text style={[st.infoBannerText, { color: dark ? COLORS.sand : COLORS.wal }]}>
             Pridaj rodinných príslušníkov a rezervuj im termíny bez nutnosti vytvárať samostatné účty.

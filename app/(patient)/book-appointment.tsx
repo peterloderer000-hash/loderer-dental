@@ -1155,7 +1155,7 @@ const styles = StyleSheet.create({
   successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 14, paddingVertical: 16 },
   successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
   successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 14, paddingVertical: 16, borderWidth: 1.5, marginTop: 10 },
-  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: '#C9A84C' },
+  successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: '#3A4256' },
   successBtnSecondary:    { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 14, paddingVertical: 14, borderWidth: 1, marginTop: 8 },
   successBtnSecondaryText:{ fontSize: 14, fontWeight: '600' },
   recentChip:             { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 14, borderWidth: 1.5 },

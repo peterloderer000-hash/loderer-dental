@@ -167,7 +167,7 @@ function ScoreRing({ score, size = 180 }: { score: number; size?: number }) {
       }} />
       {/* Center text */}
       <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: size * 0.22, color: '#FAF6F0', lineHeight: size * 0.26 }}>
+        <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: size * 0.22, color: '#F8F6F2', lineHeight: size * 0.26 }}>
           {display}
         </Text>
         <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: size * 0.08, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.5 }}>
@@ -571,9 +571,9 @@ const ach = StyleSheet.create({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 14, paddingBottom: 32, overflow: 'hidden' },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 4 },
-  heroTitle: { ...TYPO.h1, color: '#FAF6F0', marginBottom: 24 },
+  heroTitle: { ...TYPO.h1, color: '#F8F6F2', marginBottom: 24 },
 
   ringWrap:     { alignItems: 'center', gap: 16 },
   ringMeta:     { alignItems: 'center', gap: 8 },
@@ -583,18 +583,18 @@ const s = StyleSheet.create({
 
   noDataHero:  { alignItems: 'center', gap: 10, paddingBottom: 8 },
   noDataEmoji: { fontSize: 52 },
-  noDataTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#FAF6F0', textAlign: 'center' },
+  noDataTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#F8F6F2', textAlign: 'center' },
   noDataSub:   { fontFamily: 'DMSans_400Regular', fontSize: 13, color: 'rgba(196,168,130,0.75)', textAlign: 'center', lineHeight: 20 },
 
   subRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 },
 
-  noDataCard: { margin: 16, borderRadius: RADII.lg, backgroundColor: '#FFFDF9', padding: 20, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3, gap: 10 },
+  noDataCard: { margin: 16, borderRadius: RADII.lg, backgroundColor: '#FAFAF8', padding: 20, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3, gap: 10 },
   noDataCardTitle: { ...TYPO.h2 },
   noDataCardSub:   { ...TYPO.body },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  card:      { backgroundColor: '#FFFDF9', borderRadius: RADII.lg, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, ...SHADOWS.sm },
+  card:      { backgroundColor: '#FAFAF8', borderRadius: RADII.lg, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, ...SHADOWS.sm },
   cardTitle: { ...TYPO.label, marginBottom: 14 },
 
   legend:     { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'flex-end' },

@@ -2,7 +2,7 @@ import * as Calendar from 'expo-calendar';
 import { Alert, Platform } from 'react-native';
 
 const CALENDAR_NAME = 'Loderer Dental';
-const CALENDAR_COLOR = '#C9A84C';
+const CALENDAR_COLOR = '#3A4256';
 
 export interface CalendarEventParams {
   title: string;

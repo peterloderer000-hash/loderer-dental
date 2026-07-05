@@ -50,7 +50,7 @@ const ITEM_STATUS_CFG = {
 const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
 
 const PLAN_STATUS_CFG = {
-  active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#F4ECE4' },
+  active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#E2DDD6' },
   completed: { label: 'Hotový',   color: '#1E8449',   bg: '#EAFAF1' },
   cancelled: { label: 'Zrušený',  color: '#922B21',   bg: '#FDEDEC' }
 };
@@ -241,7 +241,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
                       <TouchableOpacity key={svc.id}
                         style={[mStyles.svcChip, {
                           backgroundColor: itemTitle === svc.name
-                            ? (dark ? COLORS.wal + '33' : '#F4ECE4')
+                            ? (dark ? COLORS.wal + '33' : '#E2DDD6')
                             : colors.bg2,
                           borderColor: itemTitle === svc.name ? COLORS.wal : colors.bg3
                         }]}

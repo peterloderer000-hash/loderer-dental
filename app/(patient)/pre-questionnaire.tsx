@@ -189,7 +189,7 @@ export default function PreQuestionnaireScreen() {
 const s = StyleSheet.create({
   header:       { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
   headerLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: COLORS.sand, letterSpacing: 1.5 },
-  headerTitle:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#FAF6F0' },
+  headerTitle:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2' },
   infoCard:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderWidth: 1, borderRadius: RADII.lg, padding: 14, marginBottom: 14 },
   infoTitle:    { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 3 },
   infoSub:      { fontSize: 12, lineHeight: 18 },
@@ -204,5 +204,5 @@ const s = StyleSheet.create({
   painLabelText:{ fontSize: 11 },
   footer:       { borderTopWidth: 1, padding: 16, paddingBottom: 34 },
   submitBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: COLORS.esp, borderRadius: RADII.lg, paddingVertical: 16 },
-  submitText:   { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#FAF6F0' },
+  submitText:   { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
 });

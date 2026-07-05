@@ -367,7 +367,7 @@ export default function AdminScreen() {
                 </View>
               }
               renderItem={({ item: m, index: _aidx }) => {
-                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
+                const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#1E2535', text: COLORS.wal, darkText: COLORS.sand };
                 return (
                   <AnimatedListItem index={_aidx}>
                   <View style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -516,7 +516,7 @@ export default function AdminScreen() {
                   <Text style={[s.statsSection, { marginTop: 24, color: colors.textSecondary }]}>ŠTATISTIKY TÍMU</Text>
                   {team.filter(m => teamStats.has(m.id)).map(m => {
                     const ts = teamStats.get(m.id)!;
-                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#3D2E22', text: COLORS.wal, darkText: COLORS.sand };
+                    const rc = ROLE_COLORS[m.role] ?? { bg: COLORS.bg3, darkBg: '#1E2535', text: COLORS.wal, darkText: COLORS.sand };
                     return (
                       <View key={m.id} style={[s.memberCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3, marginBottom: 12 }]}>
                         <View style={s.memberAvatar}>

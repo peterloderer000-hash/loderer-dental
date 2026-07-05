@@ -377,7 +377,7 @@ export default function DoctorProfile() {
               <TouchableOpacity key={item.label}
                 style={[styles.navRow, { borderBottomColor: colors.bg3 }, idx === arr.length - 1 && { borderBottomWidth: 0 }]}
                 onPress={() => router.push(item.route as any)} activeOpacity={0.8}>
-                <View style={[styles.navIcon, { backgroundColor: dark ? colors.bg3 : '#F4ECE4' }]}>
+                <View style={[styles.navIcon, { backgroundColor: dark ? colors.bg3 : '#E2DDD6' }]}>
                   <Ionicons name={item.icon} size={18} color={colors.wal} />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -411,10 +411,10 @@ export default function DoctorProfile() {
           </TouchableOpacity>
 
           <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-            <Text style={{ fontSize: 11, color: '#C4A882', fontFamily: 'DMSans_400Regular' }}>
+            <Text style={{ fontSize: 11, color: '#BBACA0', fontFamily: 'DMSans_400Regular' }}>
               Loderer Dental v{Constants.expoConfig?.version ?? '1.0.0'}
             </Text>
-            <Text style={{ fontSize: 10, color: '#C4A882', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
+            <Text style={{ fontSize: 10, color: '#BBACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
               Build: 2026-05-02 • OTA aktívne
             </Text>
           </View>
@@ -429,7 +429,7 @@ export default function DoctorProfile() {
 function HeroStat({ value, label }: { value: number; label: string }) {
   return (
     <View style={{ alignItems: 'center', flex: 1 }}>
-      <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#FAF6F0', lineHeight: 26 }}>{value}</Text>
+      <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F8F6F2', lineHeight: 26 }}>{value}</Text>
       <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: 9, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.8, textTransform: 'uppercase', marginTop: 2 }}>{label}</Text>
     </View>
   );
@@ -443,9 +443,9 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero:       { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, alignItems: 'center', overflow: 'hidden', gap: 6 },
-  heroCircle: { position: 'absolute', borderRadius: 999, backgroundColor: '#FAF6F0', opacity: 0.05 },
+  heroCircle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2', opacity: 0.05 },
   heroLabel:  { ...TYPO.overline, color: COLORS.sand, marginBottom: 8 },
-  heroName:   { ...TYPO.h2, color: '#FAF6F0', marginBottom: 4 },
+  heroName:   { ...TYPO.h2, color: '#F8F6F2', marginBottom: 4 },
   heroSpec:   { ...TYPO.body, color: 'rgba(196,168,130,0.75)', marginBottom: 6 },
 
   // ── Avatar ──

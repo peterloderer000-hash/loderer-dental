@@ -28,15 +28,15 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
 
   function toothColor(n: number): string {
     const r = chart[n];
-    if (!r) return dark ? '#3D2E22' : '#F0EBE5';
+    if (!r) return dark ? '#1E2535' : '#F0EBE5';
     const cfg = STATUS_LIST.find(s => s.key === r.status);
-    return cfg?.bg ?? (dark ? '#3D2E22' : '#F0EBE5');
+    return cfg?.bg ?? (dark ? '#1E2535' : '#F0EBE5');
   }
   function toothBorder(n: number): string {
     const r = chart[n];
-    if (!r) return dark ? '#4E3C2E' : '#D5C9C0';
+    if (!r) return dark ? '#2A3347' : '#D5C9C0';
     const cfg = STATUS_LIST.find(s => s.key === r.status);
-    return cfg?.color ?? (dark ? '#4E3C2E' : '#C4A882');
+    return cfg?.color ?? (dark ? '#2A3347' : '#BBACA0');
   }
 
   const svgH = toothH * 2 + 16 + 20; // 2 rows + gap + label space
@@ -45,7 +45,7 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
     <TouchableOpacity activeOpacity={1}>
       <Svg width={W} height={svgH} style={{ alignSelf: 'center' }}>
         {/* HORNÁ ČEĽUSŤ (1-16) */}
-        <SvgText x={W / 2} y={11} textAnchor="middle" fontSize={8} fill={dark ? '#C4A882' : '#6B4F3A'} fontFamily="DMSans_500Medium">
+        <SvgText x={W / 2} y={11} textAnchor="middle" fontSize={8} fill={dark ? '#BBACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
           HORNÁ ČEĽUSŤ
         </SvgText>
         {Array.from({ length: 16 }, (_, i) => {
@@ -55,14 +55,14 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
           return (
             <G key={n} onPress={() => onPress(n)}>
               <Rect x={x} y={y} width={toothW} height={toothH} rx={3} fill={toothColor(n)} stroke={toothBorder(n)} strokeWidth={1} />
-              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#C4A882' : '#6B4F3A'}>
+              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#BBACA0' : '#3A4256'}>
                 {n}
               </SvgText>
             </G>
           );
         })}
         {/* DOLNÁ ČEĽUSŤ (17-32) */}
-        <SvgText x={W / 2} y={14 + toothH + 8 + 8} textAnchor="middle" fontSize={8} fill={dark ? '#C4A882' : '#6B4F3A'} fontFamily="DMSans_500Medium">
+        <SvgText x={W / 2} y={14 + toothH + 8 + 8} textAnchor="middle" fontSize={8} fill={dark ? '#BBACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
           DOLNÁ ČEĽUSŤ
         </SvgText>
         {Array.from({ length: 16 }, (_, i) => {
@@ -72,7 +72,7 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
           return (
             <G key={n} onPress={() => onPress(n)}>
               <Rect x={x} y={y} width={toothW} height={toothH} rx={3} fill={toothColor(n)} stroke={toothBorder(n)} strokeWidth={1} />
-              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#C4A882' : '#6B4F3A'}>
+              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#BBACA0' : '#3A4256'}>
                 {n}
               </SvgText>
             </G>
@@ -705,6 +705,6 @@ const styles = StyleSheet.create({
   photoPreview:   { width: '100%', height: 160, borderRadius: 10 },
   photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.cream, borderRadius: 11 },
   photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
-  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#F4ECE4', borderWidth: 1.5, borderColor: COLORS.sand },
+  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#E2DDD6', borderWidth: 1.5, borderColor: COLORS.sand },
   photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal }
 });

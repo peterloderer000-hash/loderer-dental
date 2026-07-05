@@ -476,14 +476,14 @@ function AptRow({ apt, colors, dark, updating, onAdvance, onNoShow }: {
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 24, gap: 2 },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle: { ...TYPO.h1, color: '#FAF6F0', marginBottom: 12 },
+  heroTitle: { ...TYPO.h1, color: '#F8F6F2', marginBottom: 12 },
   heroBadges: { flexDirection: 'row', gap: 8, marginBottom: 14 },
   searchWrap: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     borderRadius: RADII.md, paddingHorizontal: 12, paddingVertical: 10,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
   },
-  searchInput: { flex: 1, ...TYPO.body, color: '#FAF6F0', padding: 0 },
+  searchInput: { flex: 1, ...TYPO.body, color: '#F8F6F2', padding: 0 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   empty:  { alignItems: 'center', paddingVertical: 48, gap: 10 },
   emptyTitle: { ...TYPO.h2, textAlign: 'center' },

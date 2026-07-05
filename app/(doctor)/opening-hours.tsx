@@ -238,7 +238,7 @@ export default function OpeningHoursScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 28, marginBottom: 10 }}>
           <Text style={[s.sectionTitle, { color: colors.textPrimary }]}>Výnimky</Text>
           <TouchableOpacity
-            style={[s.addExBtn, { backgroundColor: dark ? COLORS.wal + '22' : '#F4ECE4', borderColor: dark ? COLORS.wal + '55' : COLORS.sand }]}
+            style={[s.addExBtn, { backgroundColor: dark ? COLORS.wal + '22' : '#E2DDD6', borderColor: dark ? COLORS.wal + '55' : COLORS.sand }]}
             onPress={() => setShowExForm(v => !v)}
             activeOpacity={0.8}
           >
