@@ -1,14 +1,14 @@
 export const COLORS = {
-  // Brand — Modern Minimal palette
-  esp:       '#111827',
+  // Brand — DentiClinic cool palette
+  esp:       '#121417',
   wal:       '#3A4256',
-  sand:      '#BBACA0',
-  cream:     '#F8F6F2',
-  ivory:     '#F8F6F2',  // alias for cream
-  bg2:       '#E2DDD6',
-  bg3:       '#D5CEC6',
+  sand:      '#B8ACA0',
+  cream:     '#F5F6F8',
+  ivory:     '#F5F6F8',  // alias for cream
+  bg2:       '#EAECEE',
+  bg3:       '#D0D4DC',
   gold:      '#3A4256',
-  goldLight: '#D5CEC6',
+  goldLight: '#D0D4DC',
   goldDark:  '#2D3544',
 
   // Functional
@@ -23,12 +23,12 @@ export const COLORS = {
 
   // Dark mode palette
   dark: {
-    bg:     '#111827',
-    card:   '#1E2535',
-    card2:  '#2A3347',
+    bg:     '#121417',
+    card:   '#1A1D24',
+    card2:  '#252830',
     border: '#3A4256',
-    text:   '#F8F6F2',
-    textSub:'#BBACA0',
+    text:   '#F5F6F8',
+    textSub:'#B8ACA0',
   },
 };
 
@@ -45,27 +45,27 @@ export const FONTS = {
 };
 
 export const SHADOWS = {
-  sm:   { shadowColor: '#1A2030', shadowOffset: { width: 0, height: 2  }, shadowOpacity: 0.08, shadowRadius: 8,  elevation: 2 },
-  md:   { shadowColor: '#1A2030', shadowOffset: { width: 0, height: 4  }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 4 },
-  lg:   { shadowColor: '#1A2030', shadowOffset: { width: 0, height: 8  }, shadowOpacity: 0.14, shadowRadius: 24, elevation: 8 },
-  xl:   { shadowColor: '#1A2030', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.16, shadowRadius: 40, elevation: 16 },
+  sm:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 2  }, shadowOpacity: 0.08, shadowRadius: 8,  elevation: 2 },
+  md:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 4  }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 4 },
+  lg:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 8  }, shadowOpacity: 0.14, shadowRadius: 24, elevation: 8 },
+  xl:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.16, shadowRadius: 40, elevation: 16 },
   gold: { shadowColor: '#3A4256', shadowOffset: { width: 0, height: 6  }, shadowOpacity: 0.30, shadowRadius: 20, elevation: 8 },
-  card: { shadowColor: '#2A3347', shadowOffset: { width: 0, height: 3  }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3 },
+  card: { shadowColor: '#252830', shadowOffset: { width: 0, height: 3  }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3 },
 };
 
 export const RADII = { xs: 6, sm: 10, md: 14, lg: 20, xl: 28, full: 9999, pill: 9999 };
 
 export const GRADIENTS = {
-  hero:     ['#1E2535', '#111827', '#0A0F1A'] as string[],
-  cream:    ['#F8F6F2', '#E2DDD6', '#D5CEC6'] as string[],
+  hero:     ['#1A1D24', '#121417', '#0A0C10'] as string[],
+  cream:    ['#F5F6F8', '#EAECEE', '#D0D4DC'] as string[],
   gold:     ['#4A5568', '#3A4256', '#2D3544'] as string[],
-  goldSoft: ['#E8E5E0', '#D5CEC6', '#BBACA0'] as string[],
+  goldSoft: ['#E4E6EA', '#D0D4DC', '#B8ACA0'] as string[],
   success:  ['#52C896', '#1FA774'] as string[],
   warning:  ['#F4C95D', '#E5B043'] as string[],
   danger:   ['#E88379', '#D55A4D'] as string[],
   glass:    ['rgba(255,255,255,0.8)', 'rgba(255,255,255,0.4)'] as string[],
-  cardCream:['#FFFFFF', '#F8F6F2'] as string[],
-  night:    ['#0A0F1A', '#111827'] as string[],
+  cardCream:['#FFFFFF', '#F5F6F8'] as string[],
+  night:    ['#0A0C10', '#121417'] as string[],
 };
 
 export const SPACING = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 };

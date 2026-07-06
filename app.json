@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#111827",
+        "backgroundColor": "#121417",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "edgeToEdgeEnabled": true,
@@ -52,7 +52,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 300,
           "resizeMode": "contain",
-          "backgroundColor": "#111827"
+          "backgroundColor": "#121417"
         }
       ],
       "expo-notifications"
