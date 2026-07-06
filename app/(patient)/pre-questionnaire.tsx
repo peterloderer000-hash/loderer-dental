@@ -198,7 +198,7 @@ const s = StyleSheet.create({
   qLabel:       { fontSize: 14, fontFamily: 'DMSans_500Medium', marginBottom: 10, lineHeight: 20 },
   input:        { borderWidth: 1.5, borderRadius: RADII.md, paddingHorizontal: 12, paddingVertical: 10, fontSize: 13, minHeight: 46 },
   painRow:      { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 8 },
-  painBtn:      { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
+  painBtn:      { width: 40, height: 40, borderRadius: 4, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   painNum:      { fontSize: 13, fontFamily: 'DMSans_500Medium' },
   painLabels:   { flexDirection: 'row', justifyContent: 'space-between' },
   painLabelText:{ fontSize: 11 },

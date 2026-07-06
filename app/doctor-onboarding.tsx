@@ -41,7 +41,7 @@ function StepDot({ index, current, total }: { index: number; current: number; to
 
 const sd = StyleSheet.create({
   dot: {
-    width: 28, height: 28, borderRadius: 14,
+    width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: COLORS.bg3,
   },
@@ -422,14 +422,14 @@ const step = StyleSheet.create({
 
   heroBox: {
     alignItems: 'center', backgroundColor: COLORS.esp,
-    borderRadius: 20, padding: 28, marginBottom: 24, overflow: 'hidden',
+    borderRadius: 4, padding: 28, marginBottom: 24, overflow: 'hidden',
   },
   heroBg: {
-    position: 'absolute', width: 200, height: 200, borderRadius: 100,
+    position: 'absolute', width: 200, height: 200, borderRadius: 4,
     backgroundColor: COLORS.wal, opacity: 0.15, top: -60, right: -60,
   },
   heroIcon: {
-    width: 72, height: 72, borderRadius: 22,
+    width: 72, height: 72, borderRadius: 4,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     marginBottom: 16, borderWidth: 2, borderColor: COLORS.sand,
   },
@@ -440,11 +440,11 @@ const step = StyleSheet.create({
   infoCards: { gap: 10, marginBottom: 28 },
   infoCard: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 14,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1,
   },
   infoCardIcon: {
-    width: 42, height: 42, borderRadius: 12,
+    width: 42, height: 42, borderRadius: 2,
     backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center',
   },
   infoCardTitle: { fontSize: 14, fontWeight: '700', color: COLORS.esp },
@@ -460,19 +460,19 @@ const step = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.cream,
+    borderRadius: 2, backgroundColor: COLORS.cream,
     paddingHorizontal: 12,
   },
   input: { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
   textArea: {
-    borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12,
+    borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2,
     backgroundColor: COLORS.cream, padding: 12, fontSize: 14, color: COLORS.esp,
     height: 90, textAlignVertical: 'top',
   },
 
   btnRow: { flexDirection: 'row', gap: 10, marginTop: 24 },
   btn: {
-    backgroundColor: COLORS.esp, borderRadius: 14,
+    backgroundColor: COLORS.esp, borderRadius: 2,
     paddingVertical: 15, alignItems: 'center',
     flexDirection: 'row', justifyContent: 'center', gap: 8,
     elevation: 4, shadowColor: COLORS.esp,
@@ -481,7 +481,7 @@ const step = StyleSheet.create({
   btnText:        { fontSize: 15, fontWeight: '700', color: '#fff' },
   btnSecondary: {
     paddingHorizontal: 16, paddingVertical: 15,
-    borderRadius: 14, borderWidth: 1.5, borderColor: COLORS.bg3,
+    borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3,
     flexDirection: 'row', alignItems: 'center', gap: 6,
     backgroundColor: COLORS.cream,
   },
@@ -491,7 +491,7 @@ const step = StyleSheet.create({
     flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32,
   },
   doneCircle: {
-    width: 100, height: 100, borderRadius: 50,
+    width: 100, height: 100, borderRadius: 20,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     marginBottom: 24, elevation: 8,
     shadowColor: COLORS.wal, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12,
@@ -503,11 +503,11 @@ const step = StyleSheet.create({
 const hrs = StyleSheet.create({
   row: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.cream, borderRadius: 12, padding: 12,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 12,
     marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3,
   },
   dayBtn: {
-    width: 38, height: 38, borderRadius: 10,
+    width: 38, height: 38, borderRadius: 2,
     backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center',
   },
   dayBtnOn: { backgroundColor: COLORS.esp },
@@ -516,7 +516,7 @@ const hrs = StyleSheet.create({
   timeRow: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   timeInput: {
     flex: 1, borderWidth: 1, borderColor: COLORS.bg3,
-    borderRadius: 8, paddingHorizontal: 10, paddingVertical: 7,
+    borderRadius: 2, paddingHorizontal: 10, paddingVertical: 7,
     fontSize: 14, color: COLORS.esp, textAlign: 'center',
     backgroundColor: COLORS.bg2,
   },

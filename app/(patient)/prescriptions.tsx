@@ -324,7 +324,7 @@ const st = StyleSheet.create({
   // Card
   card: { marginHorizontal: SPACING.xl, marginBottom: SPACING.md },
   cardRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  cardIcon: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  cardIcon: { width: 38, height: 38, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   cardTitle: { fontSize: 14, fontWeight: '600', marginBottom: 2 },
   cardDate: { fontSize: 11 },
 

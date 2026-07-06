@@ -212,7 +212,7 @@ const rsStyles = StyleSheet.create({
   title:      { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   subtitle:   { fontSize: 12, color: COLORS.wal, marginBottom: 18 },
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
-  dateCell:    { width: 62, alignItems: 'center', paddingVertical: 9, borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  dateCell:    { width: 62, alignItems: 'center', paddingVertical: 9, borderRadius: 2, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
   dateCellSel: { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   dateName:    { fontSize: 8, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.3 },
   dateNum:     { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginVertical: 1 },
@@ -220,15 +220,15 @@ const rsStyles = StyleSheet.create({
   dateHours:   { fontSize: 6, color: COLORS.wal, marginTop: 3, textAlign: 'center' },
   dateSelTxt:  { color: COLORS.cream },
   slotsGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 18 },
-  slot:        { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 10, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  slot:        { width: '22%', alignItems: 'center', paddingVertical: 10, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   slotSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   slotTaken:   { backgroundColor: '#f5f5f5', borderColor: '#e8e8e8', opacity: 0.5 },
   slotText:    { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   slotTakenLbl:{ fontSize: 9, color: '#bbb' },
   actions:     { flexDirection: 'row', gap: 10 },
-  btnCancel:   { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  btnCancel:   { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
-  btnConfirm:  { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
+  btnConfirm:  { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
   btnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
@@ -499,19 +499,19 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
 }
 
 const aStyles = StyleSheet.create({
-  infoBox:  { backgroundColor: COLORS.bg2, borderRadius: 10, padding: 12, marginBottom: 14, gap: 4 },
+  infoBox:  { backgroundColor: COLORS.bg2, borderRadius: 2, padding: 12, marginBottom: 14, gap: 4 },
   infoRow:  { fontSize: 13, color: COLORS.esp, fontWeight: '500', lineHeight: 20 },
   chipRow:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  chip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  chip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   chipActive:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   chipText:      { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   chipTextActive:{ color: COLORS.cream },
-  customRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 10, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
+  customRow: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
   customInput: { flex: 1, paddingVertical: 10, fontSize: 13, color: COLORS.esp },
   btnRow:    { flexDirection: 'row', gap: 10 },
-  btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
+  btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnRejectText: { fontSize: 13, fontWeight: '700', color: '#922B21' },
-  btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: '#1E8449' },
+  btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: '#1E8449' },
   btnApproveText: { fontSize: 13, fontWeight: '700', color: '#fff' }
 });
 
@@ -626,9 +626,9 @@ const cmStyles = StyleSheet.create({
   careToggle:    { flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 10, marginBottom: 4 },
   careToggleText:{ fontSize: 12, fontWeight: '700', color: '#1A5276', flex: 1 },
   careFilledDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2ECC71' },
-  careBox:       { backgroundColor: '#EBF5FB', borderRadius: 10, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#AED6F1' },
+  careBox:       { backgroundColor: '#EBF5FB', borderRadius: 2, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#AED6F1' },
   templatesRow:  { gap: 8, paddingBottom: 4 },
-  templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#AED6F1' },
+  templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#AED6F1' },
   templateLabel: { fontSize: 11, fontWeight: '700', color: '#1A5276' }
 });
 
@@ -1484,7 +1484,7 @@ const styles = StyleSheet.create({
   },
   heroCircle2: {
     position: 'absolute', bottom: -30, left: -30,
-    width: 120, height: 120, borderRadius: 60,
+    width: 120, height: 120, borderRadius: 4,
     backgroundColor: 'rgba(201,168,76,0.05)'
   },
   heroHeader:  { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
@@ -1498,7 +1498,7 @@ const styles = StyleSheet.create({
   },
   heroBadge: {
     position: 'absolute', top: -2, right: -2,
-    minWidth: 14, height: 14, borderRadius: 7,
+    minWidth: 14, height: 14, borderRadius: 2,
     backgroundColor: '#E74C3C',
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 2,
@@ -1512,7 +1512,7 @@ const styles = StyleSheet.create({
   heroStatLbl:   { fontSize: 9, fontWeight: '600', color: COLORS.sand, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 1 },
   heroStatDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },
   heroUtilBtn:   {
-    width: 32, height: 32, borderRadius: 10,
+    width: 32, height: 32, borderRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center', justifyContent: 'center',
     marginLeft: 6
@@ -1525,7 +1525,7 @@ const styles = StyleSheet.create({
   quickChipLabel:  { fontSize: 11, fontWeight: '600' },
   quickBadge:      {
     position: 'absolute', top: -4, right: -6,
-    minWidth: 14, height: 14, borderRadius: 7,
+    minWidth: 14, height: 14, borderRadius: 2,
     backgroundColor: '#E74C3C',
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 2
@@ -1549,7 +1549,7 @@ const styles = StyleSheet.create({
   card:        { backgroundColor: '#FAFAF8', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 10, paddingLeft: 18, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, ...SHADOWS.card, overflow: 'hidden' },
   cardUrgent:  { borderColor: COLORS.error, borderWidth: 1.5 },
   accentBar:   { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, borderTopLeftRadius: RADII.lg, borderBottomLeftRadius: RADII.lg },
-  urgentBanner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FDEDEC', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 8 },
+  urgentBanner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FDEDEC', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 8 },
   urgentBannerText:{ fontSize: 10, fontWeight: '800', color: '#C0392B', letterSpacing: 1 },
   cardHeader:  { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 },
   timeBox:     { backgroundColor: COLORS.esp, borderRadius: RADII.sm, paddingHorizontal: 10, paddingVertical: 6 },
@@ -1558,12 +1558,12 @@ const styles = StyleSheet.create({
   patientPhone:{ fontSize: 11, color: COLORS.wal },
   familyTag:   { fontSize: 11, color: '#784212', fontWeight: '600' },
 
-  badge:     { borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
+  badge:     { borderRadius: 2, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
   badgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
 
   notesRow:    { flexDirection: 'row', gap: 6, alignItems: 'flex-start', marginTop: 6, marginBottom: 4 },
   notesText:   { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 },
-  ratingRow:   { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 6, marginBottom: 4, backgroundColor: '#FEFCE8', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  ratingRow:   { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 6, marginBottom: 4, backgroundColor: '#FEFCE8', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
   ratingLabel: { fontSize: 11, fontWeight: '600', color: '#9A7D0A', marginLeft: 6 },
 
   actionsGrid:     { gap: 8, marginTop: 10 },
@@ -1591,7 +1591,7 @@ const styles = StyleSheet.create({
   // ── FAB ──────────────────────────────────────────────────────────────────────
   fab: {
     position: 'absolute', bottom: 82, right: 20,
-    width: 56, height: 56, borderRadius: 28,
+    width: 56, height: 56, borderRadius: 6,
     overflow: 'hidden',
     ...SHADOWS.gold
   },
@@ -1607,7 +1607,7 @@ const styles = StyleSheet.create({
   pendingCard:        { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', ...SHADOWS.sm },
   pendingCardTop:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   pendingPatient:     { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  pendingBadge:       { backgroundColor: '#D4AC0D', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  pendingBadge:       { backgroundColor: '#D4AC0D', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   pendingBadgeText:   { fontSize: 8, fontWeight: '800', color: '#fff' },
   pendingService:     { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
   pendingTime:        { fontSize: 11, color: '#7D6608', fontWeight: '500', marginBottom: 8 },
@@ -1621,7 +1621,7 @@ const styles = StyleSheet.create({
   arrivedCard:      { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#A2D9CE', ...SHADOWS.sm },
   arrivedCardTop:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   arrivedPatient:   { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  arrivedWaitBadge: { backgroundColor: '#17A589', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  arrivedWaitBadge: { backgroundColor: '#17A589', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   arrivedWaitText:  { fontSize: 8, fontWeight: '800', color: '#fff' },
   arrivedService:   { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
   arrivedTime:      { fontSize: 10, color: '#0E6655', fontWeight: '500', marginBottom: 8 },

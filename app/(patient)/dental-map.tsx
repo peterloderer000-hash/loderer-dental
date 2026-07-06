@@ -261,7 +261,7 @@ const st = StyleSheet.create({
   legendTitle: { fontSize: 13, fontWeight: '700', marginBottom: 10 },
   legendGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6, width: '45%' },
-  legendDot: { width: 10, height: 10, borderRadius: 5 },
+  legendDot: { width: 10, height: 10, borderRadius: 2 },
   legendText: { fontSize: 11 },
 
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: SPACING.xl },

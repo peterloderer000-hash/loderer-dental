@@ -164,13 +164,13 @@ const cs = StyleSheet.create({
   iconCircle:  { width: 72, height: 72, borderRadius: 36, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(201,168,76,0.15)' },
   title:       { fontSize: 26, fontFamily: 'PlayfairDisplay_700Bold', textAlign: 'center', marginBottom: 4 },
   subtitle:    { fontSize: 13, fontFamily: 'DMSans_500Medium', textAlign: 'center', letterSpacing: 1, marginBottom: 18 },
-  infoBox:     { borderRadius: 12, borderWidth: 1, padding: 14, marginBottom: 12 },
+  infoBox:     { borderRadius: 2, borderWidth: 1, padding: 14, marginBottom: 12 },
   infoText:    { fontSize: 13, lineHeight: 20, fontFamily: 'DMSans_500Medium' },
-  warningBox:  { flexDirection: 'row', gap: 10, alignItems: 'flex-start', borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 12 },
+  warningBox:  { flexDirection: 'row', gap: 10, alignItems: 'flex-start', borderRadius: 2, borderWidth: 1, padding: 12, marginBottom: 12 },
   warningText: { flex: 1, fontSize: 12, lineHeight: 18 },
   noteBox:     { flexDirection: 'row', gap: 8, alignItems: 'flex-start', marginBottom: 20 },
   noteText:    { flex: 1, fontSize: 11, lineHeight: 17 },
-  btn:         { borderRadius: 14, overflow: 'hidden' },
+  btn:         { borderRadius: 2, overflow: 'hidden' },
   btnGrad:     { paddingVertical: 15, alignItems: 'center' },
   btnTxt:      { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
 });
@@ -1227,7 +1227,7 @@ const s = StyleSheet.create({
   backBtn:        { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(201,168,76,0.12)' },
   headerSub:      { fontSize: 9, letterSpacing: 2.5, color: '#3A4256', fontFamily: 'DMSans_500Medium' },
   headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2', marginTop: 1 },
-  headerScorePill:{ borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1 },
+  headerScorePill:{ borderRadius: 2, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1 },
   headerScoreVal: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold' },
 
   // Score section
@@ -1238,29 +1238,29 @@ const s = StyleSheet.create({
   ringCenter:    { position: 'absolute', alignItems: 'center' },
   ringScore:     { fontSize: 42, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 48 },
   ringMax:       { fontSize: 12, color: '#555', fontFamily: 'DMSans_500Medium', marginTop: -4 },
-  ringBadge:     { borderRadius: 10, paddingHorizontal: 12, paddingVertical: 5, marginTop: 4, borderWidth: 1 },
+  ringBadge:     { borderRadius: 2, paddingHorizontal: 12, paddingVertical: 5, marginTop: 4, borderWidth: 1 },
   ringBadgeTxt:  { fontSize: 11, fontFamily: 'DMSans_500Medium', letterSpacing: 1 },
 
   // Stats row
   statsRow:  { flexDirection: 'row', gap: 6, paddingHorizontal: 16, marginTop: 12, marginBottom: 16 },
-  statPill:  { flex: 1, flexDirection: 'column', alignItems: 'center', gap: 3, backgroundColor: '#110E09', borderRadius: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#1E1610' },
+  statPill:  { flex: 1, flexDirection: 'column', alignItems: 'center', gap: 3, backgroundColor: '#110E09', borderRadius: 2, paddingVertical: 10, borderWidth: 1, borderColor: '#1E1610' },
   statNum:   { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold' },
   statLbl:   { fontSize: 7, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, textTransform: 'uppercase', color: '#666' },
 
   // Insights
-  insightsWrap:   { marginHorizontal: 16, marginBottom: 16, backgroundColor: '#110E09', borderRadius: 16, borderWidth: 1, borderColor: '#1E1610', padding: 14 },
+  insightsWrap:   { marginHorizontal: 16, marginBottom: 16, backgroundColor: '#110E09', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 14 },
   insightsHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 },
   insightsTitle:  { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 0.5 },
   insightRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
-  insightIcon:    { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  insightIcon:    { width: 28, height: 28, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   insightText:    { flex: 1, fontSize: 12, fontFamily: 'DMSans_400Regular', color: '#BBACA0', lineHeight: 18 },
 
   // Dental Arch
-  archContainer: { marginHorizontal: 16, marginBottom: 8, backgroundColor: '#0D0B08', borderRadius: 20, borderWidth: 1, borderColor: '#1E1610', padding: 16, paddingBottom: 12 },
+  archContainer: { marginHorizontal: 16, marginBottom: 8, backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 16, paddingBottom: 12 },
   archLabelRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
   archLabelDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#3A4256' },
   archLabel:     { flex: 1, fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.5 },
-  archPredBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  archPredBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   archPredTxt:   { fontSize: 9, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
   archRow:       { position: 'relative', width: '100%' },
   archDivider:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 6, paddingHorizontal: 4 },
@@ -1285,14 +1285,14 @@ const s = StyleSheet.create({
   sectionLabel:     { fontSize: 9, letterSpacing: 2, color: '#8B7355', fontFamily: 'DMSans_500Medium' },
 
   // Year cards
-  yearCard:      { width: 72, borderRadius: 14, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', padding: 10, alignItems: 'center', gap: 3 },
+  yearCard:      { width: 72, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', padding: 10, alignItems: 'center', gap: 3 },
   yearTodayDot:  { width: 5, height: 5, borderRadius: 2.5, position: 'absolute', top: 5, right: 5 },
   yearCardLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: '#666' },
   yearCardIssues:{ fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 24 },
   yearCardSub:   { fontSize: 8, fontFamily: 'DMSans_400Regular', color: '#555' },
 
   // Past visit cards
-  pastCard:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 12, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
+  pastCard:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
   pastCardActive: { borderColor: '#3A4256', backgroundColor: '#2D1800' },
   pastCardLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
   timelineSep:    { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 2 },
@@ -1300,7 +1300,7 @@ const s = StyleSheet.create({
   timelineDotGold:{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#3A4256' },
 
   // Counter panel
-  counterPanel:       { marginHorizontal: 16, marginTop: 12, borderRadius: 16, borderWidth: 1, borderColor: '#1E1610', backgroundColor: '#0D0B08', overflow: 'hidden' },
+  counterPanel:       { marginHorizontal: 16, marginTop: 12, borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', backgroundColor: '#0D0B08', overflow: 'hidden' },
   counterTitle:       { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.3, padding: 14, paddingBottom: 10 },
   counterRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1E1610' },
   counterEmoji:       { fontSize: 18, width: 26, textAlign: 'center' },
@@ -1312,27 +1312,27 @@ const s = StyleSheet.create({
   counterSummaryRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
   counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#888', fontFamily: 'DMSans_500Medium' },
   counterSummaryVal:  { fontSize: 14, fontFamily: 'PlayfairDisplay_700Bold' },
-  counterSavingsRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, backgroundColor: '#0D3B1F', padding: 12, marginTop: 4 },
+  counterSavingsRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, backgroundColor: '#0D3B1F', padding: 12, marginTop: 4 },
   savingsLabel:       { flex: 1, fontSize: 12, color: '#58D68D', fontFamily: 'DMSans_500Medium' },
   savingsVal:         { fontSize: 16, color: '#58D68D', fontFamily: 'PlayfairDisplay_700Bold' },
-  yearOK:             { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 14, padding: 14, backgroundColor: '#0D3B1F' },
+  yearOK:             { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 2, padding: 14, backgroundColor: '#0D3B1F' },
   yearOKText:         { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#58D68D' },
 
   // Compare
-  compareCard:    { marginHorizontal: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: '#0D0B08', borderRadius: 16, borderWidth: 1, borderColor: '#1E1610', padding: 16, gap: 8 },
+  compareCard:    { marginHorizontal: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 16, gap: 8 },
   compareItem:    { flex: 1, alignItems: 'center', gap: 6 },
-  compareIconWrap:{ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  compareIconWrap:{ width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   compareLabel:   { fontSize: 11, color: '#888', fontFamily: 'DMSans_500Medium' },
   compareVal:     { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
   compareSub:     { fontSize: 9, color: '#555', fontFamily: 'DMSans_400Regular', textAlign: 'center' },
   compareVsWrap:  { alignItems: 'center', gap: 4, width: 30 },
   compareVsLine:  { width: 1, height: 14, backgroundColor: '#1E1610' },
   compareVsTxt:   { fontSize: 10, color: '#555', fontFamily: 'DMSans_500Medium' },
-  savingsBanner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 8, backgroundColor: '#0D3B1F', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#27AE6033' },
+  savingsBanner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 8, backgroundColor: '#0D3B1F', borderRadius: 2, padding: 12, borderWidth: 1, borderColor: '#27AE6033' },
   savingsBannerTxt:{ flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#58D68D' },
 
   // CTA
-  ctaWrap: { marginHorizontal: 16, marginTop: 4, borderRadius: 14, overflow: 'hidden' },
+  ctaWrap: { marginHorizontal: 16, marginTop: 4, borderRadius: 2, overflow: 'hidden' },
   ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16 },
   ctaTxt:  { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
 
@@ -1346,32 +1346,32 @@ const s = StyleSheet.create({
   sheetHeaderV2: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
   sheetToothIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   sheetTitle: { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
-  closeBtn:   { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  closeBtn:   { width: 32, height: 32, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
 
-  statusBanner:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 14, borderWidth: 1, padding: 14, marginBottom: 16 },
+  statusBanner:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 2, borderWidth: 1, padding: 14, marginBottom: 16 },
   statusBannerLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: '#8B7355', marginBottom: 2 },
   statusBannerValue: { fontSize: 15, fontFamily: 'DMSans_500Medium' },
 
   modalSectionLabel: { fontSize: 9, letterSpacing: 1.5, fontFamily: 'DMSans_500Medium', marginBottom: 8 },
-  histEmpty: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 10, borderWidth: 1, padding: 12 },
+  histEmpty: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, borderWidth: 1, padding: 12 },
   histRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
-  histDot:   { width: 10, height: 10, borderRadius: 5, marginTop: 3 },
+  histDot:   { width: 10, height: 10, borderRadius: 2, marginTop: 3 },
 
   predRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
-  predYearBadge:{ backgroundColor: '#3A0E0E', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  predYearBadge:{ backgroundColor: '#3A0E0E', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   predYearTxt:  { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
 
-  okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14 },
+  okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, borderWidth: 1, padding: 12, marginBottom: 14 },
 
-  modalCTA:    { borderRadius: 14, overflow: 'hidden', marginTop: 12 },
+  modalCTA:    { borderRadius: 2, overflow: 'hidden', marginTop: 12 },
   modalCTAGrad:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 15 },
   modalCTATxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
   modalDisclaimer: { fontSize: 10, textAlign: 'center', color: '#888', lineHeight: 14, marginTop: 8 },
 
   // Risk panel
-  riskCard:       { backgroundColor: '#0D0B08', borderRadius: 16, borderWidth: 1, borderColor: '#1E1610' },
+  riskCard:       { backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610' },
   riskHeader:     { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14 },
-  riskIconWrap:   { width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center' },
+  riskIconWrap:   { width: 32, height: 32, borderRadius: 4, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center' },
   riskHeaderTxt:  { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   riskHeaderSub:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#666', marginTop: 1 },
   riskSummary:    { flexDirection: 'row', gap: 4 },
@@ -1384,11 +1384,11 @@ const s = StyleSheet.create({
   riskDisclaimer: { fontSize: 9, color: '#444', marginTop: 12, lineHeight: 14, fontFamily: 'DMSans_400Regular' },
   riskDivider:    { height: 1, backgroundColor: '#1E1610', marginVertical: 8 },
   hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#F8F6F2', marginBottom: 8 },
-  toggle:         { width: 42, height: 24, borderRadius: 12, justifyContent: 'center', paddingHorizontal: 2 },
-  thumb:          { width: 20, height: 20, borderRadius: 10, backgroundColor: '#fff', alignSelf: 'flex-start' },
+  toggle:         { width: 42, height: 24, borderRadius: 2, justifyContent: 'center', paddingHorizontal: 2 },
+  thumb:          { width: 20, height: 20, borderRadius: 2, backgroundColor: '#fff', alignSelf: 'flex-start' },
   thumbOn:        { alignSelf: 'flex-end' },
   hygieneRow:     { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 12, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', gap: 4 },
+  hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', gap: 4 },
   hygieneBtnActive: { borderColor: '#3A4256', backgroundColor: '#2D2000' },
   hygieneLbl:     { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
 });

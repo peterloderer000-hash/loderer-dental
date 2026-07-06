@@ -559,7 +559,7 @@ export default function ScoreScreen() {
 // ─── Achievement styles ───────────────────────────────────────────────────────
 const ach = StyleSheet.create({
   grid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  item:     { width: '47%', borderRadius: 12, borderWidth: 1.5, padding: 10, gap: 4, position: 'relative' },
+  item:     { width: '47%', borderRadius: 2, borderWidth: 1.5, padding: 10, gap: 4, position: 'relative' },
   emoji:    { fontSize: 24 },
   title:    { fontSize: 12, fontFamily: 'DMSans_500Medium', lineHeight: 16 },
   desc:     { fontSize: 10, lineHeight: 14 },
@@ -639,7 +639,7 @@ const db = StyleSheet.create({
   track:     { flex: 1, height: 7, borderRadius: 4, overflow: 'hidden' },
   fill:      { height: 7, borderRadius: 4 },
   score:     { fontFamily: 'DMSans_500Medium', fontSize: 12, width: 26, textAlign: 'right' },
-  badge:     { width: 22, height: 22, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
+  badge:     { width: 22, height: 22, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   badgeText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#fff' },
 });
 

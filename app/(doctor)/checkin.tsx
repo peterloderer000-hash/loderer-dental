@@ -168,29 +168,29 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
   body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl, gap: 14 },
-  card:     { backgroundColor: COLORS.cream, borderRadius: 16, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:     { backgroundColor: COLORS.cream, borderRadius: 4, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   cardSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 18, lineHeight: 18 },
 
   inputRow:  { flexDirection: 'row', gap: 10, alignItems: 'center' },
   input:     {
-    flex: 1, height: 52, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12,
+    flex: 1, height: 52, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2,
     paddingHorizontal: 16, fontSize: 22, fontWeight: '800', color: COLORS.esp,
     letterSpacing: 4, backgroundColor: COLORS.bg2, textAlign: 'center' },
-  searchBtn: { width: 52, height: 52, borderRadius: 12, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  searchBtn: { width: 52, height: 52, borderRadius: 2, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
 
-  resultCard:    { marginTop: 16, backgroundColor: '#E8F8F5', borderRadius: 12, padding: 14, borderWidth: 1.5, borderColor: '#A2D9CE' },
+  resultCard:    { marginTop: 16, backgroundColor: '#E8F8F5', borderRadius: 2, padding: 14, borderWidth: 1.5, borderColor: '#A2D9CE' },
   resultTop:     { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  avatarCircle:  { width: 44, height: 44, borderRadius: 22, backgroundColor: '#D5EEF7', alignItems: 'center', justifyContent: 'center' },
+  avatarCircle:  { width: 44, height: 44, borderRadius: 4, backgroundColor: '#D5EEF7', alignItems: 'center', justifyContent: 'center' },
   resultName:    { fontSize: 16, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   resultService: { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
   resultTime:    { fontSize: 12, fontWeight: '600', color: '#0E6655' },
   confirmBtn:    {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: '#0E6655', borderRadius: 12, paddingVertical: 13 },
+    backgroundColor: '#0E6655', borderRadius: 2, paddingVertical: 13 },
   confirmText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
 
   hintCard: {
     flexDirection: 'row', gap: 10, alignItems: 'flex-start',
-    backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   hintText: { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 } });

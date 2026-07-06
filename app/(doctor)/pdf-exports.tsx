@@ -178,10 +178,10 @@ const styles = StyleSheet.create({
   sectionSub:   { fontSize: 12, marginBottom: 12, fontStyle: 'italic' },
 
   btnRow: { flexDirection: 'row', gap: 10, marginBottom: 8 },
-  exportBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5 },
+  exportBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 2, borderWidth: 1.5 },
   exportBtnText: { fontSize: 13, fontWeight: '700' },
 
-  itemRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 12, borderWidth: 1.5, marginBottom: 8 },
+  itemRow: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 2, borderWidth: 1.5, marginBottom: 8 },
   itemName: { fontSize: 14, fontWeight: '700', marginBottom: 2 },
   itemMeta: { fontSize: 11 },
 

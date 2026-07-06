@@ -232,14 +232,14 @@ const styles = StyleSheet.create({
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
 
-  card: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  card: { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   sectionEmoji:  { fontSize: 18 },
   sectionTitle:  { fontSize: 13, fontWeight: '700', color: COLORS.esp, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  tag:     { backgroundColor: COLORS.bg3, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.sand },
+  tag:     { backgroundColor: COLORS.bg3, borderRadius: 4, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.sand },
   tagText: { fontSize: 12, color: COLORS.esp, fontWeight: '500' },
 
   infoRow:   { flexDirection: 'row', gap: 8, marginTop: 8, alignItems: 'flex-start' },
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
 
   // Kritické upozornenia
-  alertBox:    { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, padding: 14, marginBottom: 14 },
+  alertBox:    { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 2, padding: 14, marginBottom: 14 },
   alertHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F5B7B1' },
   alertTitle:  { fontSize: 12, fontWeight: '800', color: '#C0392B', letterSpacing: 1.5 },
   alertRow:    { flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 6 },
@@ -264,5 +264,5 @@ const styles = StyleSheet.create({
   // Blood type
   bloodRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, marginBottom: 2 },
   bloodLbl:    { fontSize: 12, fontWeight: '600', color: COLORS.esp },
-  bloodBadge:  { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
+  bloodBadge:  { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 4, paddingHorizontal: 14, paddingVertical: 4 },
   bloodText:   { fontSize: 14, fontWeight: '800', color: '#C0392B', letterSpacing: 1 } });

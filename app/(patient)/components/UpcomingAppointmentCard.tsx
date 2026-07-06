@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   mainRow:     { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 16 },
 
   // Dátum box
-  dateBox:     { width: 52, height: 60, borderRadius: 12, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.sand },
+  dateBox:     { width: 52, height: 60, borderRadius: 2, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.sand },
   dateDay:     { fontSize: 22, fontWeight: '800', color: '#fff', lineHeight: 26 },
   dateMonth:   { fontSize: 9,  fontWeight: '700', color: COLORS.cream, letterSpacing: 0.5 },
   dateDayName: { fontSize: 8,  color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginTop: 1 },

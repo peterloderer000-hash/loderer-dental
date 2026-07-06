@@ -350,7 +350,7 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
-  countBadge: { backgroundColor: COLORS.gold, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
+  countBadge: { backgroundColor: COLORS.gold, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   countText:  { fontSize: 13, fontWeight: '800', color: COLORS.esp },
 
   sectionLabel: { fontSize: 9, letterSpacing: 2, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
@@ -359,7 +359,7 @@ const s = StyleSheet.create({
   emptyIcon: { fontSize: 48 },
   emptyText: { fontSize: 14, textAlign: 'center' },
 
-  card:        { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, marginBottom: 8, overflow: 'hidden' },
+  card:        { flexDirection: 'row', alignItems: 'center', borderRadius: 2, borderWidth: 1, marginBottom: 8, overflow: 'hidden' },
   cardArchived:{ opacity: 0.7 },
   arrows:      { paddingVertical: 6, paddingHorizontal: 6, gap: 0, alignItems: 'center', justifyContent: 'center' },
   arrowBtn:    { padding: 4 },
@@ -369,12 +369,12 @@ const s = StyleSheet.create({
   cardName:    { fontSize: 14, fontWeight: '700', marginBottom: 2 },
   cardDuration:{ fontSize: 11 },
   cardPrice:   { fontSize: 13, fontWeight: '700', color: COLORS.gold },
-  restoreBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: COLORS.bg3, margin: 10 },
+  restoreBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, margin: 10 },
   restoreBtnText: { fontSize: 11, fontWeight: '600', color: COLORS.wal },
 
   fab: {
     position: 'absolute', bottom: 24, right: 24,
-    width: 56, height: 56, borderRadius: 28,
+    width: 56, height: 56, borderRadius: 6,
     backgroundColor: COLORS.gold, alignItems: 'center', justifyContent: 'center',
     elevation: 6, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6
   },
@@ -389,11 +389,11 @@ const s = StyleSheet.create({
   emojiText:  { fontSize: 20 },
 
   inputLabel: { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 12 },
-  input:      { borderWidth: 1.5, borderRadius: 10, padding: 12, fontSize: 14, marginBottom: 2 },
+  input:      { borderWidth: 1.5, borderRadius: 2, padding: 12, fontSize: 14, marginBottom: 2 },
 
-  saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 12, alignItems: 'center', marginTop: 16 },
+  saveBtn:     { backgroundColor: COLORS.gold, paddingVertical: 14, borderRadius: 2, alignItems: 'center', marginTop: 16 },
   saveBtnText: { color: COLORS.esp, fontSize: 15, fontWeight: '800' },
-  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 12, marginTop: 10 },
+  archiveBtn:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderWidth: 1.5, borderColor: COLORS.bg3, paddingVertical: 12, borderRadius: 2, marginTop: 10 },
   archiveBtnText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
   cancelBtn:   { paddingVertical: 14, alignItems: 'center' },
   cancelBtnText: { fontSize: 14 }

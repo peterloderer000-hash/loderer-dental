@@ -419,7 +419,7 @@ const s = StyleSheet.create({
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
-  liveDot:    { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
+  liveDot:    { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 5 },
   liveDotInner: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#27AE60' },
   liveText:   { fontSize: 10, fontWeight: '700', color: '#27AE60', letterSpacing: 1 },
 
@@ -428,7 +428,7 @@ const s = StyleSheet.create({
   summaryRow:    { paddingHorizontal: 12, paddingBottom: 10, gap: 8, flexDirection: 'row', alignItems: 'center' },
   summaryChip: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 4,
     paddingHorizontal: 10, paddingVertical: 4,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)'
   },
@@ -437,7 +437,7 @@ const s = StyleSheet.create({
 
   // Cards
   card: {
-    backgroundColor: COLORS.cream, borderRadius: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 2, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3, overflow: 'hidden',
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4
   },
@@ -447,7 +447,7 @@ const s = StyleSheet.create({
 
   statusChip: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
-    borderRadius: 10, paddingHorizontal: 7, paddingVertical: 4,
+    borderRadius: 2, paddingHorizontal: 7, paddingVertical: 4,
     borderWidth: 1
   },
   statusEmoji: { fontSize: 11 },
@@ -458,14 +458,14 @@ const s = StyleSheet.create({
 
   timeCol:       { alignItems: 'flex-end', gap: 4 },
   scheduledTime: { fontSize: 14, fontWeight: '700', color: COLORS.esp },
-  roomChip:      { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1 },
+  roomChip:      { borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1 },
   roomChipText:  { fontSize: 10, fontWeight: '600' },
 
   // Metric pills
   metricsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, paddingHorizontal: 12, paddingBottom: 10 },
   pill: {
     flexDirection: 'row', alignItems: 'center', gap: 3,
-    backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4,
+    backgroundColor: COLORS.bg2, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 4,
     borderWidth: 1, borderColor: COLORS.bg3
   },
   pillUrgent: { backgroundColor: '#FDEDEC', borderColor: '#F1948A' },
@@ -479,7 +479,7 @@ const s = StyleSheet.create({
   // Room picker
   roomRow: {},
   roomBtn: {
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 2,
     borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream
   },
   roomBtnActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
@@ -492,7 +492,7 @@ const s = StyleSheet.create({
   loadingRow:   { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 },
   actionBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: 12, paddingVertical: 9, borderRadius: 10,
+    paddingHorizontal: 12, paddingVertical: 9, borderRadius: 2,
     borderWidth: 1.5
   },
   actionBtnText: { fontSize: 13, fontWeight: '700' },

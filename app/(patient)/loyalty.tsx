@@ -284,10 +284,10 @@ const s = StyleSheet.create({
 
   // Rewards
   rewardCard:   { flexDirection: 'row', alignItems: 'center', borderRadius: RADII.lg, borderWidth: 1, padding: 14, marginBottom: 8, gap: 12 },
-  rewardIcon:   { width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  rewardIcon:   { width: 48, height: 48, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   rewardTitle:  { fontSize: 14, fontWeight: '700', marginBottom: 2 },
   rewardDesc:   { fontSize: 11, lineHeight: 15 },
-  rewardBadge:  { borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
+  rewardBadge:  { borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   rewardBadgeText: { fontSize: 11, fontWeight: '800' },
 
   // Empty
@@ -299,7 +299,7 @@ const s = StyleSheet.create({
 
   // History
   historyRow:   { flexDirection: 'row', alignItems: 'center', borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 6, gap: 10 },
-  historyIcon:  { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  historyIcon:  { width: 36, height: 36, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   historyLabel: { fontSize: 13, fontWeight: '600', marginBottom: 2 },
   historyDate:  { fontSize: 10 },
   historyPts:   { fontSize: 15, fontWeight: '800' },

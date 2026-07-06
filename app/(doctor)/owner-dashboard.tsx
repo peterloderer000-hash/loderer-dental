@@ -307,34 +307,34 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
 
   periodRow:   { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  periodChip:  { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5 },
+  periodChip:  { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, borderWidth: 1.5 },
   periodText:  { fontSize: 12, fontWeight: '600' },
   periodLabel: { fontSize: 11, fontStyle: 'italic', marginBottom: 16 },
 
-  revenueCard: { borderRadius: 16, borderWidth: 1.5, padding: 20, marginBottom: 16 },
+  revenueCard: { borderRadius: 4, borderWidth: 1.5, padding: 20, marginBottom: 16 },
   revenueTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   revenueLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
   revenueAmount: { fontSize: 32, fontWeight: '800' },
-  changeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  changeBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 2 },
 
   kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
-  kpiBox:  { width: (SCREEN_W - SPACING.xl * 2 - 10) / 2 - 0.5, borderRadius: 12, borderWidth: 1.5, padding: 14, alignItems: 'center' },
+  kpiBox:  { width: (SCREEN_W - SPACING.xl * 2 - 10) / 2 - 0.5, borderRadius: 2, borderWidth: 1.5, padding: 14, alignItems: 'center' },
   kpiVal:  { fontSize: 22, fontWeight: '800', marginBottom: 4 },
   kpiLabel: { fontSize: 10, fontWeight: '600' },
 
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 10 },
 
-  card: { borderRadius: 14, borderWidth: 1.5, padding: 16, marginBottom: 16 },
+  card: { borderRadius: 2, borderWidth: 1.5, padding: 16, marginBottom: 16 },
 
   payBar:       { flexDirection: 'row', gap: 3, marginBottom: 12, borderRadius: 4, overflow: 'hidden' },
   payLegend:    { gap: 8 },
   payLegendItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  payDot:       { width: 10, height: 10, borderRadius: 5 },
+  payDot:       { width: 10, height: 10, borderRadius: 2 },
   payLegendText: { fontSize: 12, flex: 1 },
   payLegendAmt: { fontSize: 13, fontWeight: '700' },
 
-  docCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 12, borderWidth: 1.5, padding: 14, marginBottom: 8 },
-  docRank: { width: 28, height: 28, borderRadius: 14, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
+  docCard: { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 2, borderWidth: 1.5, padding: 14, marginBottom: 8 },
+  docRank: { width: 28, height: 28, borderRadius: 2, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center' },
   docRankText: { fontSize: 12, fontWeight: '800' },
   docName: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
   docStats: { flexDirection: 'row', gap: 10 },

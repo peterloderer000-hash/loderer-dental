@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
   header:       { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl + 4, paddingTop: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center' },
   headerLabel:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
   headerTitle:  { fontSize: 20, fontWeight: '600', color: '#fff' },
-  todayBtn:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6 },
+  todayBtn:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
   todayBtnText: { fontSize: 11, fontWeight: '700', color: COLORS.cream },
 
   // Week nav
@@ -817,7 +817,7 @@ const styles = StyleSheet.create({
 
   // Week grid
   weekGrid:          { flexDirection: 'row', backgroundColor: COLORS.cream, paddingVertical: 10, paddingHorizontal: 4, borderBottomWidth: 1, borderColor: COLORS.bg3 },
-  dayCell:           { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 6, borderRadius: 10 },
+  dayCell:           { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 6, borderRadius: 2 },
   dayCellSel:        { backgroundColor: COLORS.esp },
   dayCellToday:      { backgroundColor: '#E2DDD6' },
   dayName:           { fontSize: 9, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.4 },
@@ -826,7 +826,7 @@ const styles = StyleSheet.create({
   dayNum:            { fontSize: 16, fontWeight: '700', color: COLORS.esp },
   dayNumSel:         { color: '#fff' },
   dayNumToday:       { color: COLORS.wal },
-  countPill:         { backgroundColor: COLORS.wal, borderRadius: 8, paddingHorizontal: 5, paddingVertical: 1, minWidth: 16, alignItems: 'center' },
+  countPill:         { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 5, paddingVertical: 1, minWidth: 16, alignItems: 'center' },
   countPillSel:      { backgroundColor: COLORS.sand },
   countPillText:     { fontSize: 9, fontWeight: '700', color: '#fff' },
   countPillTextSel:  { color: COLORS.esp },
@@ -837,9 +837,9 @@ const styles = StyleSheet.create({
   dayHeaderText: { fontSize: 13, fontWeight: '700', color: COLORS.esp, textTransform: 'capitalize' },
   dayHeaderSub:  { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   dayHeaderRight:{ flexDirection: 'row', alignItems: 'center', gap: 8 },
-  exportBtn:     { width: 34, height: 34, borderRadius: 10, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.bg3 },
+  exportBtn:     { width: 34, height: 34, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: COLORS.bg3 },
   viewToggle:    { flexDirection: 'row', gap: 6 },
-  toggleBtn:     { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  toggleBtn:     { width: 32, height: 32, borderRadius: 2, alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   toggleBtnActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.wal },
 
   // List view
@@ -854,7 +854,7 @@ const styles = StyleSheet.create({
   apptSvcName:   { fontSize: 12, color: COLORS.wal, fontWeight: '500', flex: 1 },
   apptDur:       { fontSize: 12, color: '#888' },
   apptNotes:     { fontSize: 12, color: COLORS.wal, marginTop: 3 },
-  statusBadge:   { borderRadius: 6, borderWidth: 1, paddingHorizontal: 6, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
+  statusBadge:   { borderRadius: 2, borderWidth: 1, paddingHorizontal: 6, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
   statusText:    { fontSize: 11, fontWeight: '700' },
   urgentBadge:   { backgroundColor: '#FDEDEC', borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
   urgentBadgeText: { fontSize: 10 },
@@ -863,7 +863,7 @@ const styles = StyleSheet.create({
   monthDayNames: { flexDirection: 'row', paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 4 },
   monthDayName:  { flex: 1, textAlign: 'center', fontSize: 10, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
   monthGrid:     { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: SPACING.xl - 4 },
-  monthCell:     { width: '14.28%', alignItems: 'center', paddingVertical: 6, borderRadius: 10, gap: 2 },
+  monthCell:     { width: '14.28%', alignItems: 'center', paddingVertical: 6, borderRadius: 2, gap: 2 },
   monthCellSel:  { backgroundColor: COLORS.esp },
   monthCellToday:{ backgroundColor: '#E2DDD6' },
   monthCellOut:  { opacity: 0.3 },
@@ -889,7 +889,7 @@ const styles = StyleSheet.create({
   tlHour:      { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center' },
   tlHourLabel: { width: 46, fontSize: 11, fontWeight: '600', color: '#888', textAlign: 'right', paddingRight: 6 },
   tlHourLine:  { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
-  tlBlock:     { position: 'absolute', left: 58, right: 0, borderRadius: 8, borderLeftWidth: 3, padding: 6, overflow: 'hidden' },
+  tlBlock:     { position: 'absolute', left: 58, right: 0, borderRadius: 2, borderLeftWidth: 3, padding: 6, overflow: 'hidden' },
   tlTime:      { fontSize: 9, fontWeight: '700' },
   tlName:      { fontSize: 12, fontWeight: '600', marginTop: 1 },
   tlSvc:       { fontSize: 10, marginTop: 1, opacity: 0.85 },
@@ -903,15 +903,15 @@ const styles = StyleSheet.create({
   fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
 
   // Block button in day header
-  blockBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: '#F5EEF8', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#D7BDE2' },
+  blockBtn: { width: 34, height: 34, borderRadius: 2, backgroundColor: '#F5EEF8', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#D7BDE2' },
 
   // Block row in list view
-  blockRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F5EEF8', marginHorizontal: SPACING.xl, marginTop: 8, padding: 10, borderRadius: 10, borderWidth: 1, borderColor: '#D7BDE2', borderLeftWidth: 3, borderLeftColor: '#7D3C98' },
+  blockRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#F5EEF8', marginHorizontal: SPACING.xl, marginTop: 8, padding: 10, borderRadius: 2, borderWidth: 1, borderColor: '#D7BDE2', borderLeftWidth: 3, borderLeftColor: '#7D3C98' },
   blockTime:   { fontSize: 12, fontWeight: '700', color: '#7D3C98' },
   blockReason: { fontSize: 11, color: '#A569BD', marginTop: 1 },
 
   // Block in timeline
-  tlBlockBusy:     { position: 'absolute', left: 58, right: 0, borderRadius: 6, borderLeftWidth: 3, borderLeftColor: '#7D3C98', backgroundColor: '#F5EEF855', padding: 4, flexDirection: 'row', alignItems: 'center', gap: 4, overflow: 'hidden' },
+  tlBlockBusy:     { position: 'absolute', left: 58, right: 0, borderRadius: 2, borderLeftWidth: 3, borderLeftColor: '#7D3C98', backgroundColor: '#F5EEF855', padding: 4, flexDirection: 'row', alignItems: 'center', gap: 4, overflow: 'hidden' },
   tlBlockBusyText: { fontSize: 10, color: '#7D3C98', fontWeight: '600', flex: 1 },
 
   // Modal
@@ -922,11 +922,11 @@ const styles = StyleSheet.create({
   modalDate:      { fontSize: 12, color: COLORS.wal, marginBottom: 20, textTransform: 'capitalize' },
   timeRow:        { flexDirection: 'row', gap: 12, alignItems: 'flex-end', marginBottom: 14 },
   timeLabel:      { fontSize: 11, fontWeight: '600', color: COLORS.wal, marginBottom: 6 },
-  timeInput:      { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 16, fontWeight: '700', color: COLORS.esp, backgroundColor: COLORS.bg2, textAlign: 'center' },
+  timeInput:      { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 10, fontSize: 16, fontWeight: '700', color: COLORS.esp, backgroundColor: COLORS.bg2, textAlign: 'center' },
   presetsRow:     { gap: 8, marginBottom: 16 },
-  presetChip:     { backgroundColor: COLORS.bg3, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: COLORS.bg3 },
+  presetChip:     { backgroundColor: COLORS.bg3, borderRadius: 4, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: COLORS.bg3 },
   presetChipText: { fontSize: 12, fontWeight: '600', color: COLORS.esp },
-  reasonInput:    { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 20, marginTop: 6 },
-  blockSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#7D3C98', borderRadius: 14, paddingVertical: 14 },
+  reasonInput:    { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 20, marginTop: 6 },
+  blockSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#7D3C98', borderRadius: 2, paddingVertical: 14 },
   blockSaveBtnText: { fontSize: 15, fontWeight: '800', color: '#fff' }
 });

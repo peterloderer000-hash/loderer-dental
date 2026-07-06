@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   avatarText:       { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 30, color: COLORS.cream },
   cameraBtn:        {
     position: 'absolute', bottom: 0, right: -4,
-    width: 28, height: 28, borderRadius: 14,
+    width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.esp,
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: '#fff'

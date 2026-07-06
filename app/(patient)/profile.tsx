@@ -514,7 +514,7 @@ const s = StyleSheet.create({
   avatarInitials: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 30, color: COLORS.cream },
   cameraBtn: {
     position: 'absolute', bottom: 0, right: -4,
-    width: 28, height: 28, borderRadius: 14,
+    width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: '#fff',
   },
@@ -609,7 +609,7 @@ const ls = StyleSheet.create({
 
 const docS = StyleSheet.create({
   row:  { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 11 },
-  icon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  icon: { width: 36, height: 36, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   name: { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 1 },
   date: { fontSize: 11, fontFamily: 'DMSans_400Regular' },
 });

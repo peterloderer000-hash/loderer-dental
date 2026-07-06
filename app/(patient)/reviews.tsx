@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   reviewDate:    { fontSize: 11 },
   reviewText:    { fontSize: 12, fontStyle: 'italic', marginTop: 6, lineHeight: 18 },
 
-  rateBtn:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6 },
+  rateBtn:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
   rateBtnText:   { fontSize: 11, fontWeight: '700', color: '#F39C12' },
 
   // Modal
@@ -325,10 +325,10 @@ const styles = StyleSheet.create({
   modalTitle:         { fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 4 },
   modalSub:           { fontSize: 13, textAlign: 'center', marginBottom: 20 },
   ratingLabel:        { fontSize: 15, fontWeight: '600', color: '#F39C12', textAlign: 'center', marginBottom: 16 },
-  reviewInput:        { borderWidth: 1.5, borderRadius: 12, padding: 12, fontSize: 13, minHeight: 76, marginBottom: 20 },
+  reviewInput:        { borderWidth: 1.5, borderRadius: 2, padding: 12, fontSize: 13, minHeight: 76, marginBottom: 20 },
   modalActions:       { flexDirection: 'row', gap: 10 },
-  modalBtnSkip:       { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5 },
+  modalBtnSkip:       { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5 },
   modalBtnSkipText:   { fontSize: 14, fontWeight: '600' },
-  modalBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
+  modalBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
   modalBtnSubmitText: { fontSize: 14, fontWeight: '600', color: '#fff' },
 });

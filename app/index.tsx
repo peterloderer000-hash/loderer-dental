@@ -295,14 +295,14 @@ const styles = StyleSheet.create({
 
   // Splash / loading
   splash:      { flex: 1, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
-  splashLogo:  { width: 100, height: 100, borderRadius: 28, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 20, borderWidth: 3, borderColor: COLORS.sand },
+  splashLogo:  { width: 100, height: 100, borderRadius: 6, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 20, borderWidth: 3, borderColor: COLORS.sand },
   splashEmoji: { fontSize: 52 },
   splashTitle: { fontSize: 26, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
   splashSub:   { fontSize: 13, color: COLORS.sand, marginTop: 6 },
 
   // Hero section
   hero: { backgroundColor: COLORS.esp, paddingTop: 72, paddingBottom: 48, alignItems: 'center', overflow: 'hidden' },
-  heroDeco1: { position: 'absolute', width: 280, height: 280, borderRadius: 140, backgroundColor: COLORS.wal, opacity: 0.15, top: -100, right: -80 },
+  heroDeco1: { position: 'absolute', width: 280, height: 280, borderRadius: 4, backgroundColor: COLORS.wal, opacity: 0.15, top: -100, right: -80 },
   heroDeco2: { position: 'absolute', width: 180, height: 180, borderRadius: 90, backgroundColor: COLORS.sand, opacity: 0.08, bottom: -60, left: -40 },
   logoWrap:  { width: 90, height: 90, borderRadius: 26, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 18, borderWidth: 3, borderColor: COLORS.sand, elevation: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   logoEmoji: { fontSize: 48 },
@@ -315,19 +315,19 @@ const styles = StyleSheet.create({
 
   label: { fontSize: 10, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8, marginTop: 4 },
 
-  inputWrap: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 12, backgroundColor: COLORS.bg2, marginBottom: 16, paddingHorizontal: 12 },
+  inputWrap: { flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, backgroundColor: COLORS.bg2, marginBottom: 16, paddingHorizontal: 12 },
   inputIcon: { marginRight: 8 },
   input:     { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
   eyeBtn:    { padding: 6 },
 
-  btnPrimary:     { backgroundColor: COLORS.esp, borderRadius: 14, paddingVertical: 15, alignItems: 'center', marginTop: 8, elevation: 4, flexDirection: 'row', justifyContent: 'center', gap: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
+  btnPrimary:     { backgroundColor: COLORS.esp, borderRadius: 2, paddingVertical: 15, alignItems: 'center', marginTop: 8, elevation: 4, flexDirection: 'row', justifyContent: 'center', gap: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   btnPrimaryText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 
   divider:     { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 18 },
   dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
   dividerText: { fontSize: 12, color: '#bbb', fontWeight: '500' },
 
-  btnSecondary:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 14, paddingVertical: 13, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, backgroundColor: COLORS.bg2 },
+  btnSecondary:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingVertical: 13, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, backgroundColor: COLORS.bg2 },
   btnSecondaryText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },
 
   footer: { textAlign: 'center', fontSize: 10, color: COLORS.sand, marginTop: 24, paddingHorizontal: 20, opacity: 0.7 },
@@ -349,6 +349,6 @@ const styles = StyleSheet.create({
   // Retry
   retryWrap:    { alignItems: 'center', marginTop: 32, gap: 14 },
   retryText:    { color: COLORS.sand, fontSize: 13, textAlign: 'center', opacity: 0.8 },
-  retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20 },
+  retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 4 },
   retryBtnText: { color: '#fff', fontSize: 13, fontWeight: '600' },
 });

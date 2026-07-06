@@ -224,7 +224,7 @@ export default function ShopOrdersScreen() {
 
 const s = StyleSheet.create({
   filterRow:  { flexDirection: 'row', paddingHorizontal: SPACING.xl, paddingBottom: 12, gap: 8 },
-  filterBtn:  { flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
+  filterBtn:  { flex: 1, paddingVertical: 8, borderRadius: 2, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
   filterBtnActive: { backgroundColor: COLORS.wal },
   filterText: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
   filterTextActive: { color: '#fff' },
@@ -238,7 +238,7 @@ const s = StyleSheet.create({
   patientName: { fontSize: 15, fontWeight: '700' },
   cardDate:   { fontSize: 11, marginTop: 2 },
 
-  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 5 },
   statusText:  { fontSize: 11, fontWeight: '700' },
 
   itemsBox:   { marginHorizontal: 14, borderRadius: RADII.md, padding: 10, marginBottom: 10 },

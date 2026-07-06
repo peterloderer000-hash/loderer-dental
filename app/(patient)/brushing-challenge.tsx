@@ -362,7 +362,7 @@ const st = StyleSheet.create({
   todaySlotText: { flex: 1, fontSize: 14, fontWeight: '600' },
 
   timerCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xl, alignItems: 'center', marginBottom: SPACING.lg },
-  timerCircle: { width: 160, height: 160, borderRadius: 80, borderWidth: 4, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  timerCircle: { width: 160, height: 160, borderRadius: 4, borderWidth: 4, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
   timerNum: { fontSize: 36, fontWeight: '800', fontVariant: ['tabular-nums'] },
   quadrantText: { fontSize: 12, fontWeight: '600', marginTop: 4 },
 
@@ -385,7 +385,7 @@ const st = StyleSheet.create({
   weekTitle: { fontSize: 14, fontWeight: '700', marginBottom: 12 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-around' },
   weekDay: { alignItems: 'center', gap: 6 },
-  weekDot: { width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  weekDot: { width: 28, height: 28, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
   weekDayText: { fontSize: 10, fontWeight: '600' },
 
   tipsCard: { borderRadius: RADII.lg, borderWidth: 1, padding: 16 },

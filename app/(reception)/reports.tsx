@@ -388,9 +388,9 @@ const s = StyleSheet.create({
   chartCard: { borderRadius: RADII.lg, borderWidth: 1, padding: 12 },
   chartRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 3 },
   chartDate: { width: 50, fontSize: 10, fontFamily: 'DMSans_500Medium', textAlign: 'right' },
-  chartBarWrap: { flex: 1, height: 14, borderRadius: 7, overflow: 'hidden', position: 'relative' as const },
-  chartBarBg:   { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
-  chartBarFg:   { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
+  chartBarWrap: { flex: 1, height: 14, borderRadius: 2, overflow: 'hidden', position: 'relative' as const },
+  chartBarBg:   { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
+  chartBarFg:   { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
   chartCount:   { width: 20, fontSize: 11, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
 
   svcRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 4 },
@@ -404,7 +404,7 @@ const s = StyleSheet.create({
 
   recallCard:  { borderRadius: RADII.lg, borderWidth: 1, padding: 16, gap: 12 },
   recallRow:   { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  recallIcon:  { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  recallIcon:  { width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   recallValue: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18 },
   recallSub:   { fontFamily: 'DMSans_500Medium', fontSize: 11, marginTop: 2 },
   recallBarBg: { height: 8, borderRadius: 4, overflow: 'hidden' },

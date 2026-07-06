@@ -160,13 +160,13 @@ function ActionButtons({ status, onAction, isDoctor }: {
 
 const pc = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.cream, borderRadius: 20, padding: 20,
+    backgroundColor: COLORS.cream, borderRadius: 4, padding: 20,
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8
   },
   statusBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start',
-    borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 12, borderWidth: 1
+    borderRadius: 2, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 12, borderWidth: 1
   },
   statusEmoji: { fontSize: 14 },
   statusLabel: { fontSize: 12, fontWeight: '700' },
@@ -175,13 +175,13 @@ const pc = StyleSheet.create({
   phone:       { fontSize: 12, color: '#999', marginBottom: 12 },
 
   timerRow:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginVertical: 14 },
-  timerCell:     { alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 10, padding: 10, minWidth: 72, gap: 2, borderWidth: 1, borderColor: COLORS.bg3 },
+  timerCell:     { alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 2, padding: 10, minWidth: 72, gap: 2, borderWidth: 1, borderColor: COLORS.bg3 },
   timerCellUrgent: { backgroundColor: '#FDEDEC', borderColor: '#F1948A' },
   timerLabel:    { fontSize: 9, color: COLORS.wal, letterSpacing: 0.5, fontWeight: '600' },
   timerValue:    { fontSize: 14, fontWeight: '800', color: COLORS.esp },
 
   btnGrid:    { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 },
-  btn:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 12, borderRadius: 14, borderWidth: 1.5, flex: 1, minWidth: 120 },
+  btn:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 12, borderRadius: 2, borderWidth: 1.5, flex: 1, minWidth: 120 },
   btnBig:     { flex: 2, paddingVertical: 16 },
   btnText:    { fontSize: 14, fontWeight: '700' },
   btnTextBig: { fontSize: 16 },
@@ -380,7 +380,7 @@ const s = StyleSheet.create({
 
   roomScroll:  { maxHeight: 46, backgroundColor: COLORS.esp },
   roomRow:     { paddingHorizontal: 12, paddingBottom: 10, gap: 8, flexDirection: 'row', alignItems: 'center' },
-  roomTab:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)', backgroundColor: 'rgba(255,255,255,0.1)' },
+  roomTab:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 6, borderRadius: 4, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)', backgroundColor: 'rgba(255,255,255,0.1)' },
   roomDot:     { width: 8, height: 8, borderRadius: 4 },
   roomTabText: { fontSize: 13, fontWeight: '600', color: COLORS.cream },
 
@@ -394,12 +394,12 @@ const s = StyleSheet.create({
 
   waitCard: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.cream, borderRadius: 12, padding: 12, marginBottom: 8,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 12, marginBottom: 8,
     borderWidth: 1.5, borderColor: COLORS.bg3
   },
-  waitStatusDot: { width: 10, height: 10, borderRadius: 5 },
+  waitStatusDot: { width: 10, height: 10, borderRadius: 2 },
   waitName:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   waitService:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
-  assignBtn:     { backgroundColor: COLORS.esp, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7 },
+  assignBtn:     { backgroundColor: COLORS.esp, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 7 },
   assignBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' }
 });

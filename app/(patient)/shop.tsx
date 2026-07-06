@@ -319,8 +319,8 @@ const s = StyleSheet.create({
   catEmoji:   { fontSize: 14 },
   catLabel:   { fontSize: 12, fontWeight: '600', letterSpacing: 0.3 },
 
-  cartBtn:    { position: 'relative', width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
-  cartBadge:  { position: 'absolute', top: -4, right: -4, backgroundColor: '#E74C3C', borderRadius: 10, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+  cartBtn:    { position: 'relative', width: 38, height: 38, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
+  cartBadge:  { position: 'absolute', top: -4, right: -4, backgroundColor: '#E74C3C', borderRadius: 2, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
   cartBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
 
   grid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -349,7 +349,7 @@ const s = StyleSheet.create({
   floatingBtn: { borderRadius: RADII.lg, overflow: 'hidden' },
   floatingGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 14 },
   floatingLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  floatingBadge: { backgroundColor: COLORS.gold, width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  floatingBadge: { backgroundColor: COLORS.gold, width: 24, height: 24, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   floatingBadgeText: { fontSize: 12, fontWeight: '800', color: '#fff' },
   floatingLabel: { fontSize: 14, fontWeight: '700', color: '#fff' },
   floatingPrice: { fontSize: 16, fontWeight: '800', color: COLORS.gold },
@@ -367,7 +367,7 @@ const s = StyleSheet.create({
   cartItemName:  { fontSize: 13, fontWeight: '600' },
   cartItemPrice: { fontSize: 11, marginTop: 2 },
   cartQtyRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cartQtyBtn:  { width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center' },
+  cartQtyBtn:  { width: 26, height: 26, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   cartQtyText: { fontSize: 14, fontWeight: '700' },
   cartItemTotal: { fontSize: 14, fontWeight: '800', minWidth: 60, textAlign: 'right' },
 

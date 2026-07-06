@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
 
   // Bubbles
-  bubble:          { maxWidth: '80%', borderRadius: 16, padding: 12, marginBottom: 8, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
+  bubble:          { maxWidth: '80%', borderRadius: 4, padding: 12, marginBottom: 8, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
   bubbleMine:      { backgroundColor: COLORS.esp, borderColor: COLORS.esp, alignSelf: 'flex-end' },
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
@@ -259,9 +259,9 @@ const styles = StyleSheet.create({
 
   // Input
   inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 12, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
-  input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
+  input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
   photoBtn:        { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
-  bubblePhoto:     { width: 200, height: 150, borderRadius: 10, marginBottom: 4 },
-  sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  bubblePhoto:     { width: 200, height: 150, borderRadius: 2, marginBottom: 4 },
+  sendBtn:         { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
 });

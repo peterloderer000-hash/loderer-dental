@@ -463,18 +463,18 @@ const s = StyleSheet.create({
   headerTitle:{ fontSize: 20, fontWeight: '700', color: '#fff' },
 
   rangeRow:     { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: COLORS.esp, paddingBottom: 14 },
-  rangeChip:    { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
+  rangeChip:    { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
   rangeChipActive: { backgroundColor: COLORS.sand },
   rangeText:    { fontSize: 12, color: COLORS.cream, fontWeight: '600' },
   rangeTextActive: { color: COLORS.esp },
 
-  summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 14, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 2, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   summaryCard: { flex: 1, paddingVertical: 12, paddingHorizontal: 10, alignItems: 'center' },
   summaryLbl:  { fontSize: 10, color: '#888', marginBottom: 2 },
   summaryAmt:  { fontSize: 16, fontWeight: '700' },
 
   filterRow:     { flexDirection: 'row', gap: 6, paddingHorizontal: 14, paddingTop: 10, paddingBottom: 4, flexWrap: 'wrap' },
-  filterChip:    { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  filterChip:    { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterText:    { fontSize: 12, color: COLORS.wal, fontWeight: '600' },
   filterTextActive: { color: '#fff' },
@@ -486,11 +486,11 @@ const s = StyleSheet.create({
   emptyIcon:   { fontSize: 48, marginBottom: 4 },
   emptyTitle:  { fontSize: 17, fontWeight: '700', color: COLORS.esp },
   emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
-  emptyBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 18, paddingVertical: 10, marginTop: 8 },
+  emptyBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 18, paddingVertical: 10, marginTop: 8 },
   emptyBtnText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
 
   card: {
-    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 10,
     elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3
   },
   cardTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
@@ -499,18 +499,18 @@ const s = StyleSheet.create({
   metaText:    { fontSize: 11, color: '#888' },
   metaDot:     { fontSize: 11, color: '#ccc' },
   amount:      { fontSize: 17, fontWeight: '700', color: COLORS.esp },
-  statusBadge: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
+  statusBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
   statusText:  { fontSize: 10, fontWeight: '700', letterSpacing: 0.3 },
   notes:       { fontSize: 12, color: '#888', marginTop: 8, fontStyle: 'italic' },
   payBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 9, marginTop: 10
+    gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 9, marginTop: 10
   },
   payBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   fab: {
     position: 'absolute', right: 20, bottom: 28,
-    width: 56, height: 56, borderRadius: 28,
+    width: 56, height: 56, borderRadius: 6,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8
   }
@@ -525,22 +525,22 @@ const m = StyleSheet.create({
   sheetTitle:  { fontSize: 18, fontWeight: '700', color: COLORS.esp },
 
   label:    { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 1.5, marginTop: 14, marginBottom: 6 },
-  inputWrap:{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  inputWrap:{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 4, borderWidth: 1.5, borderColor: COLORS.bg3 },
   input:    { flex: 1, fontSize: 15, color: COLORS.esp, paddingVertical: 10 },
 
-  dropdown:     { backgroundColor: COLORS.cream, borderRadius: 12, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 4, marginTop: 4, marginBottom: 4 },
+  dropdown:     { backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 4, marginTop: 4, marginBottom: 4 },
   dropdownItem: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 11, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   dropdownText: { fontSize: 14, color: COLORS.esp },
 
   methodRow:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  methodBtn:       { flex: 1, minWidth: '45%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 12, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  methodBtn:       { flex: 1, minWidth: '45%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
   methodBtnActive: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   methodLabel:     { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   methodLabelActive:{ color: '#fff' },
 
   btns:          { flexDirection: 'row', gap: 10, marginTop: 20 },
-  btnSecondary:  { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  btnSecondary:  { flex: 1, paddingVertical: 13, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnSecondaryText: { fontSize: 13, fontWeight: '600', color: COLORS.esp },
-  btnPrimary:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: COLORS.wal },
+  btnPrimary:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: COLORS.wal },
   btnPrimaryText:{ fontSize: 13, fontWeight: '700', color: '#fff' }
 });

@@ -386,13 +386,13 @@ const styles = StyleSheet.create({
 
   // Conversations list
   convRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, padding: 14, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  convAvatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
+  convAvatar: { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   convTopRow:    { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
   convName:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   convTime:      { fontSize: 11, color: COLORS.wal },
   convBottomRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   convLast:      { flex: 1, fontSize: 12, color: COLORS.wal },
-  unreadBadge:   { backgroundColor: COLORS.wal, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 2 },
+  unreadBadge:   { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 2 },
   unreadText:    { fontSize: 10, fontWeight: '800', color: '#fff' },
 
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
 
   // Chat
   listContent:     { padding: 14, paddingBottom: 10, flexGrow: 1 },
-  bubble:          { maxWidth: '80%', borderRadius: 16, padding: 12, marginBottom: 8, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
+  bubble:          { maxWidth: '80%', borderRadius: 4, padding: 12, marginBottom: 8, backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, alignSelf: 'flex-start' },
   bubbleMine:      { backgroundColor: COLORS.esp, borderColor: COLORS.esp, alignSelf: 'flex-end' },
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
@@ -410,14 +410,14 @@ const styles = StyleSheet.create({
   bubbleTimeMine:  { color: COLORS.sand },
 
   inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 12, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
-  input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
-  sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
+  input:           { flex: 1, backgroundColor: COLORS.bg2, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: COLORS.esp, maxHeight: 100, borderWidth: 1, borderColor: COLORS.bg3 },
+  sendBtn:         { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { opacity: 0.4 },
-  templateBtn:     { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  templateBtn:     { width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateBtnActive: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   templatesWrap:   { backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingVertical: 10 },
   templatesScroll: { paddingHorizontal: 12, gap: 8 },
-  templateChip:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  templateChip:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 4, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.bg3 },
   templateIcon:    { fontSize: 14 },
   templateLabel:   { fontSize: 12, fontWeight: '700', color: COLORS.esp }
 });

@@ -557,6 +557,6 @@ const cp = StyleSheet.create({
   title:     { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, textAlign: 'center', marginBottom: 4 },
   sub:       { fontFamily: 'DMSans_500Medium', fontSize: 13, textAlign: 'center', marginBottom: 0 },
   chairBtn:  { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: RADII.lg, borderWidth: 1.5, paddingHorizontal: 16, paddingVertical: 14 },
-  chairDot:  { width: 14, height: 14, borderRadius: 7 },
+  chairDot:  { width: 14, height: 14, borderRadius: 2 },
   chairName: { flex: 1, fontFamily: 'DMSans_500Medium', fontSize: 15 },
 });

@@ -196,7 +196,7 @@ const s = StyleSheet.create({
   backLink:  { fontSize: 13, fontWeight: '600' },
 
   overlay:   { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-  closeBtn:  { position: 'absolute', top: 54, left: 20, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
+  closeBtn:  { position: 'absolute', top: 54, left: 20, width: 40, height: 40, borderRadius: 4, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center', zIndex: 10 },
 
   scanFrame: { width: FRAME, height: FRAME, position: 'relative' },
   corner:    { position: 'absolute', width: CORNER, height: CORNER, borderColor: COLORS.gold },

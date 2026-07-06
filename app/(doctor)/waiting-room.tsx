@@ -291,7 +291,7 @@ const s = StyleSheet.create({
   iconBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  timeBadge:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
+  timeBadge:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   timeText:    { fontSize: 11, color: COLORS.sand, fontWeight: '500' },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8, marginTop: 4 },
@@ -299,7 +299,7 @@ const s = StyleSheet.create({
   sectionLabel:  { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase' },
 
   card: {
-    backgroundColor: COLORS.cream, borderRadius: 16, padding: 14, marginBottom: 10,
+    backgroundColor: COLORS.cream, borderRadius: 4, padding: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
     gap: 12 },
@@ -307,7 +307,7 @@ const s = StyleSheet.create({
   cardInProgress: { borderColor: '#A9DFBF', backgroundColor: '#F0FAF4' },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 14 },
 
-  numBadge: { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  numBadge: { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   numText:  { fontSize: 20, fontWeight: '900', color: '#fff' },
 
   name:     { fontSize: 16, fontWeight: '800', color: COLORS.esp, marginBottom: 2 },
@@ -321,7 +321,7 @@ const s = StyleSheet.create({
   waitNum:   { fontSize: 26, fontWeight: '900', color: '#0E6655', lineHeight: 30 },
   waitLabel: { fontSize: 10, fontWeight: '700', color: '#0E6655', textTransform: 'uppercase' },
 
-  actionBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 10, paddingVertical: 11 },
+  actionBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 2, paddingVertical: 11 },
   actionBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   emptyIcon:  { fontSize: 56, marginBottom: 16 },
@@ -337,8 +337,8 @@ const s = StyleSheet.create({
   modalSub:     { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 4 },
   chairBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderWidth: 2, borderRadius: 14, paddingVertical: 16, paddingHorizontal: 20 },
-  chairDot:     { width: 16, height: 16, borderRadius: 8 },
+    borderWidth: 2, borderRadius: 2, paddingVertical: 16, paddingHorizontal: 20 },
+  chairDot:     { width: 16, height: 16, borderRadius: 2 },
   chairBtnText: { fontSize: 17, fontWeight: '700', flex: 1 },
   cancelBtn:    { paddingVertical: 14, alignItems: 'center', marginTop: 4 },
   cancelBtnText:{ fontSize: 15, color: COLORS.wal, fontWeight: '600' } });

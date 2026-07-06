@@ -457,7 +457,7 @@ const s = StyleSheet.create({
   generateBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
 
   overallCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xl, alignItems: 'center', marginBottom: SPACING.lg },
-  overallCircle: { width: 100, height: 100, borderRadius: 50, borderWidth: 4, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  overallCircle: { width: 100, height: 100, borderRadius: 20, borderWidth: 4, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
   overallNum: { fontSize: 32, fontWeight: '800' },
   overallPct: { fontSize: 12 },
   overallLabel: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
@@ -467,7 +467,7 @@ const s = StyleSheet.create({
 
   gaugesRow: { flexDirection: 'row', gap: 10, marginBottom: SPACING.xl },
   gaugeCard: { flex: 1, borderRadius: RADII.md, borderWidth: 1, padding: 12, alignItems: 'center' },
-  gaugeCircle: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
+  gaugeCircle: { width: 44, height: 44, borderRadius: 4, borderWidth: 2, justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
   gaugeLabel: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   gaugeScore: { fontSize: 20, fontWeight: '800', marginBottom: 6 },
   gaugeBar: { width: '100%', height: 4, borderRadius: 2, overflow: 'hidden', marginBottom: 4 },
@@ -477,14 +477,14 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: 14, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12, marginTop: 8 },
 
   factorRow: { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: RADII.sm, borderWidth: 1, marginBottom: 6 },
-  factorIcon: { width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  factorIcon: { width: 28, height: 28, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
   factorText: { flex: 1, fontSize: 13, lineHeight: 17 },
   weightBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADII.pill },
   weightText: { fontSize: 11, fontWeight: '700' },
 
   recCard: { borderRadius: RADII.md, borderWidth: 1, padding: 14, marginBottom: 10 },
   recHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 },
-  recIconBox: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  recIconBox: { width: 40, height: 40, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
   recMeta: { flex: 1 },
   recTitle: { fontSize: 14, fontWeight: '700', marginBottom: 4 },
   recPriority: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: RADII.pill, alignSelf: 'flex-start' },

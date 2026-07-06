@@ -289,14 +289,14 @@ const ms = StyleSheet.create({
   handle:        { width: 38, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 18 },
   title:         { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 16 },
   label:         { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 12 },
-  input:         { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2 },
+  input:         { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2 },
   chipRow:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  chip:          { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 20, borderWidth: 1.5 },
+  chip:          { paddingHorizontal: 16, paddingVertical: 9, borderRadius: 4, borderWidth: 1.5 },
   chipText:      { fontSize: 13, fontWeight: '600' },
   btnRow:        { flexDirection: 'row', gap: 10 },
-  btnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  btnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
-  btnSave:       { flex: 2, paddingVertical: 14, borderRadius: 12, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
+  btnSave:       { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
   btnSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
@@ -686,7 +686,7 @@ const styles = StyleSheet.create({
   addBtn: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 4,
     backgroundColor: COLORS.wal,
     alignItems: 'center',
     justifyContent: 'center'
@@ -756,7 +756,7 @@ const styles = StyleSheet.create({
   // Diagnóza
   icdChip: {
     backgroundColor: '#EBF5FB',
-    borderRadius: 6,
+    borderRadius: 2,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderWidth: 1,
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
     color: '#1A5276'
   },
   severityBadge: {
-    borderRadius: 6,
+    borderRadius: 2,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderWidth: 1
@@ -800,7 +800,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   activeBadge: {
-    borderRadius: 6,
+    borderRadius: 2,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderWidth: 1

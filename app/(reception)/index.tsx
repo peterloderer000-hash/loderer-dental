@@ -386,13 +386,13 @@ const s = StyleSheet.create({
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  kioskSheet:    { borderRadius: 20, padding: 24, alignItems: 'center', width: '100%' },
+  kioskSheet:    { borderRadius: 4, padding: 24, alignItems: 'center', width: '100%' },
   kioskTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', marginBottom: 8 },
   kioskSub:      { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
-  kioskQrWrap:   { backgroundColor: COLORS.cream, borderRadius: 16, padding: 12, marginBottom: 12 },
+  kioskQrWrap:   { backgroundColor: COLORS.cream, borderRadius: 4, padding: 12, marginBottom: 12 },
   kioskQr:       { width: 240, height: 240 },
   kioskDate:     { fontSize: 12, marginBottom: 20 },
-  kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 14 },
+  kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 2 },
   kioskCloseText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   urgentBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
@@ -412,9 +412,9 @@ const s = StyleSheet.create({
   timelineCard: { borderRadius: RADII.lg, borderWidth: 1, padding: 12 },
   tlRow:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 3 },
   tlHour:       { width: 38, fontSize: 10, fontFamily: 'DMSans_500Medium', textAlign: 'right' },
-  tlBarWrap:    { flex: 1, height: 14, borderRadius: 7, overflow: 'hidden', position: 'relative' as const },
-  tlBarBg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
-  tlBarFg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 7 },
+  tlBarWrap:    { flex: 1, height: 14, borderRadius: 2, overflow: 'hidden', position: 'relative' as const },
+  tlBarBg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
+  tlBarFg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
   tlNowDot:     { position: 'absolute' as const, right: -3, top: 3, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold, borderWidth: 1.5, borderColor: '#fff' },
   tlCount:      { width: 20, fontSize: 11, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
 
@@ -424,7 +424,7 @@ const s = StyleSheet.create({
   listSub:   { ...TYPO.bodySm, marginTop: 2 },
   listTime:  { ...TYPO.bodyMed },
 
-  numBadge: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  numBadge: { width: 32, height: 32, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   numText:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 14, color: '#fff' },
 
   waitBadge: { alignItems: 'center', minWidth: 44 },

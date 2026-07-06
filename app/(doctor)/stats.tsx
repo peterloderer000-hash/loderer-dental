@@ -139,8 +139,8 @@ function RevenueBarChart({ data }: { data: { label: string; revenue: number; isC
 }
 const revenueBarStyles = StyleSheet.create({
   label:     { width: 28, fontSize: 9, color: COLORS.wal },
-  track:     { flex: 1, height: 22, borderRadius: 5, overflow: 'hidden' },
-  fill:      { height: 22, borderRadius: 5, justifyContent: 'center', paddingLeft: 6 },
+  track:     { flex: 1, height: 22, borderRadius: 2, overflow: 'hidden' },
+  fill:      { height: 22, borderRadius: 2, justifyContent: 'center', paddingLeft: 6 },
   fillLabel: { fontSize: 9, color: '#fff', fontWeight: '700' },
   value:     { fontSize: 9, color: COLORS.wal, width: 38, textAlign: 'right' }
 });
@@ -172,8 +172,8 @@ function ServiceBreakdown({ services, total }: {
 }
 const svcBreakdownStyles = StyleSheet.create({
   name:  { width: 100, fontSize: 11, fontWeight: '500' },
-  track: { flex: 1, height: 10, borderRadius: 5, overflow: 'hidden' },
-  fill:  { height: 10, borderRadius: 5 },
+  track: { flex: 1, height: 10, borderRadius: 2, overflow: 'hidden' },
+  fill:  { height: 10, borderRadius: 2 },
   pct:   { fontSize: 10, fontWeight: '700', color: COLORS.wal, width: 30, textAlign: 'right' }
 });
 
@@ -263,7 +263,7 @@ const hm = StyleSheet.create({
   row:      { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   dayLabel: { width: 24, fontSize: 10, fontFamily: 'DMSans_500Medium' },
   hourLabel:{ flex: 1, textAlign: 'center', fontSize: 9 },
-  cell:     { flex: 1, height: 28, borderRadius: 5, marginHorizontal: 2, alignItems: 'center', justifyContent: 'center' },
+  cell:     { flex: 1, height: 28, borderRadius: 2, marginHorizontal: 2, alignItems: 'center', justifyContent: 'center' },
   cellNum:  { fontSize: 9, fontFamily: 'DMSans_500Medium' },
   legend:   { fontSize: 9, textAlign: 'center', marginTop: 6, fontStyle: 'italic' }
 });
@@ -1065,29 +1065,29 @@ const styles = StyleSheet.create({
   header:        { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 20, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   headerSub:     { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   headerTitle:   { fontSize: 22, fontWeight: '700', color: '#fff' },
-  headerDate:    { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
+  headerDate:    { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 5 },
   headerDateText:{ fontSize: 10, color: COLORS.sand, fontWeight: '500' },
 
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8, marginTop: 4 },
 
   // Dnes banner
-  todayBanner:    { backgroundColor: COLORS.esp, borderRadius: 14, padding: 16, marginBottom: 10, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: COLORS.wal },
+  todayBanner:    { backgroundColor: COLORS.esp, borderRadius: 2, padding: 16, marginBottom: 10, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: COLORS.wal },
   todayLabel:     { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
   todayDate:      { fontSize: 14, fontWeight: '600', color: COLORS.cream },
-  todayCount:     { alignItems: 'center', backgroundColor: COLORS.wal, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8 },
+  todayCount:     { alignItems: 'center', backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 8 },
   todayCountNum:  { fontSize: 28, fontWeight: '800', color: '#fff', lineHeight: 32 },
   todayCountSub:  { fontSize: 9, color: COLORS.cream, fontWeight: '500' },
 
   // Najbližší termín
-  upcomingCard:    { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, marginBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: COLORS.bg3 },
-  upcomingDot:     { width: 10, height: 10, borderRadius: 5, backgroundColor: '#2ECC71' },
+  upcomingCard:    { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  upcomingDot:     { width: 10, height: 10, borderRadius: 2, backgroundColor: '#2ECC71' },
   upcomingLabel:   { fontSize: 8, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 3 },
   upcomingTime:    { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   upcomingService: { fontSize: 11, color: COLORS.wal },
 
   // Metriky grid
   metricsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 10 },
-  statCard:    { width: '47%', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: COLORS.bg3, alignItems: 'center' },
+  statCard:    { width: '47%', borderRadius: 2, padding: 12, borderWidth: 1, borderColor: COLORS.bg3, alignItems: 'center' },
   statEmoji:   { fontSize: 22, marginBottom: 4 },
   statValue:   { fontSize: 24, fontWeight: '800', lineHeight: 28, color: COLORS.esp },
   statLabel:   { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, color: COLORS.wal, marginTop: 2, textAlign: 'center' },
@@ -1095,15 +1095,15 @@ const styles = StyleSheet.create({
 
   // Trend
   trendRow:         { flexDirection: 'row', gap: 10, marginBottom: 14 },
-  trendCard:        { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  trendCard:        { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   trendCardLabel:   { fontSize: 9, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   trendCardContent: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   trendCardNum:     { fontSize: 26, fontWeight: '800', color: COLORS.esp },
-  trendChip:        { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3 },
+  trendChip:        { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 3 },
   trendText:        { fontSize: 11, fontWeight: '700' },
 
   // Karta
-  card:      { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:      { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
 
   // Týždenný graf
@@ -1148,7 +1148,7 @@ const styles = StyleSheet.create({
 
   // Top služby
   svcRow:      { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  svcRank:     { width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
+  svcRank:     { width: 22, height: 22, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   svcRankText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
   svcEmoji:    { fontSize: 16 },
   svcName:     { width: 110, fontSize: 11, fontWeight: '600', color: COLORS.esp },
@@ -1156,7 +1156,7 @@ const styles = StyleSheet.create({
 
   // Retencia
   retentionGrid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 },
-  retentionItem:       { flex: 1, minWidth: '45%', borderRadius: 10, padding: 12, alignItems: 'center' },
+  retentionItem:       { flex: 1, minWidth: '45%', borderRadius: 2, padding: 12, alignItems: 'center' },
   retentionNum:        { fontSize: 22, fontWeight: '800', lineHeight: 26 },
   retentionLabel:      { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2, textAlign: 'center' },
   retentionBarRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -1172,29 +1172,29 @@ const styles = StyleSheet.create({
   summaryValue: { fontSize: 14, fontWeight: '800', color: COLORS.esp },
 
   // KPI boxy
-  kpiBox:          { flex: 1, borderRadius: 12, padding: 12, alignItems: 'center', gap: 4 },
+  kpiBox:          { flex: 1, borderRadius: 2, padding: 12, alignItems: 'center', gap: 4 },
   kpiNum:          { fontSize: 22, fontWeight: '800', lineHeight: 26 },
   kpiLabel:        { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, color: COLORS.wal, textAlign: 'center' },
-  kpiTodayRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg3, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 10 },
-  kpiTodayBadge:   { backgroundColor: COLORS.wal, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 },
+  kpiTodayRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg3, borderRadius: 2, paddingVertical: 8, paddingHorizontal: 12, marginBottom: 10 },
+  kpiTodayBadge:   { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 2 },
   kpiTodayBadgeText:{ fontSize: 8, fontWeight: '800', color: '#fff', letterSpacing: 1 },
   kpiTodayStat:    { fontSize: 11, color: COLORS.wal },
-  chairDot:        { width: 10, height: 10, borderRadius: 5 },
+  chairDot:        { width: 10, height: 10, borderRadius: 2 },
   chairName:       { width: 72, fontSize: 11, fontWeight: '600', color: COLORS.esp },
   chairCount:      { fontSize: 12, fontWeight: '800', color: COLORS.wal, width: 28, textAlign: 'right' },
 
   // Mesačné fakturácie
   invoiceCardHeader:     { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 12 },
-  monthPicker:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.bg2, borderRadius: 10, paddingVertical: 8, paddingHorizontal: 4, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
-  monthArrow:            { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
+  monthPicker:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.bg2, borderRadius: 2, paddingVertical: 8, paddingHorizontal: 4, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  monthArrow:            { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 2 },
   monthPickerLabel:      { fontSize: 15, fontWeight: '700', color: COLORS.esp },
-  invoiceSummary:        { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAFAF1', borderRadius: 10, padding: 12, marginBottom: 14, borderWidth: 1, borderColor: '#A9DFBF' },
+  invoiceSummary:        { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EAFAF1', borderRadius: 2, padding: 12, marginBottom: 14, borderWidth: 1, borderColor: '#A9DFBF' },
   invoiceSummaryItem:    { flex: 1, alignItems: 'center' },
   invoiceSummaryNum:     { fontSize: 22, fontWeight: '800', color: COLORS.esp, lineHeight: 26 },
   invoiceSummaryLabel:   { fontSize: 9, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 2 },
   invoiceSummaryDivider: { width: 1, height: 36, backgroundColor: '#A9DFBF', marginHorizontal: 8 },
   invoiceRow:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  invoiceDateBox:        { width: 36, alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 8, paddingVertical: 4 },
+  invoiceDateBox:        { width: 36, alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 2, paddingVertical: 4 },
   invoiceDateDay:        { fontSize: 16, fontWeight: '800', color: COLORS.esp, lineHeight: 20 },
   invoiceDateMon:        { fontSize: 8, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },
   invoicePatient:        { fontSize: 12, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
@@ -1203,6 +1203,6 @@ const styles = StyleSheet.create({
   invoiceEmpty:          { alignItems: 'center', paddingVertical: 24, gap: 8 },
   invoiceEmptyIcon:      { fontSize: 32 },
   invoiceEmptyText:      { fontSize: 12, color: COLORS.wal, textAlign: 'center', fontStyle: 'italic' },
-  invoiceExportBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1A5276', borderRadius: 10, paddingVertical: 13, marginTop: 14 },
+  invoiceExportBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1A5276', borderRadius: 2, paddingVertical: 13, marginTop: 14 },
   invoiceExportBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' }
 });

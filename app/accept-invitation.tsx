@@ -209,11 +209,11 @@ const styles = StyleSheet.create({
     alignItems: 'center', overflow: 'hidden',
   },
   heroDeco1: {
-    position: 'absolute', width: 260, height: 260, borderRadius: 130,
+    position: 'absolute', width: 260, height: 260, borderRadius: 20,
     backgroundColor: COLORS.wal, opacity: 0.15, top: -90, right: -70,
   },
   heroDeco2: {
-    position: 'absolute', width: 160, height: 160, borderRadius: 80,
+    position: 'absolute', width: 160, height: 160, borderRadius: 4,
     backgroundColor: COLORS.sand, opacity: 0.08, bottom: -50, left: -30,
   },
   backBtn: {
@@ -247,14 +247,14 @@ const styles = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.bg2,
+    borderRadius: 2, backgroundColor: COLORS.bg2,
     marginBottom: 8, paddingHorizontal: 12,
   },
   inputIcon: { marginRight: 8 },
   input:     { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
 
   btnConfirm: {
-    backgroundColor: COLORS.esp, borderRadius: 14,
+    backgroundColor: COLORS.esp, borderRadius: 2,
     paddingVertical: 15, alignItems: 'center', marginTop: 20,
     flexDirection: 'row', justifyContent: 'center', gap: 8,
     elevation: 4, shadowColor: COLORS.esp,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
 
   roleBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#EAF7EF', borderRadius: 12,
+    backgroundColor: '#EAF7EF', borderRadius: 2,
     padding: 14, borderWidth: 1, borderColor: '#A8D9B8',
   },
   roleBannerIcon:  { width: 36, height: 36, borderRadius: 18, backgroundColor: '#D4EFDF', alignItems: 'center', justifyContent: 'center' },

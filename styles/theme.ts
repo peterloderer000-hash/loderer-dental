@@ -33,7 +33,7 @@ export const COLORS = {
 };
 
 export const SIZES = {
-  radius:  12,
+  radius:  4,
   padding: 16,
 };
 
@@ -45,15 +45,15 @@ export const FONTS = {
 };
 
 export const SHADOWS = {
-  sm:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 2  }, shadowOpacity: 0.08, shadowRadius: 8,  elevation: 2 },
-  md:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 4  }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 4 },
-  lg:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 8  }, shadowOpacity: 0.14, shadowRadius: 24, elevation: 8 },
-  xl:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.16, shadowRadius: 40, elevation: 16 },
-  gold: { shadowColor: '#3A4256', shadowOffset: { width: 0, height: 6  }, shadowOpacity: 0.30, shadowRadius: 20, elevation: 8 },
-  card: { shadowColor: '#252830', shadowOffset: { width: 0, height: 3  }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 3 },
+  sm:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 1  }, shadowOpacity: 0.04, shadowRadius: 4,  elevation: 1 },
+  md:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 2  }, shadowOpacity: 0.06, shadowRadius: 8,  elevation: 2 },
+  lg:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 4  }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 4 },
+  xl:   { shadowColor: '#121417', shadowOffset: { width: 0, height: 8  }, shadowOpacity: 0.10, shadowRadius: 20, elevation: 6 },
+  gold: { shadowColor: '#3A4256', shadowOffset: { width: 0, height: 3  }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  card: { shadowColor: '#252830', shadowOffset: { width: 0, height: 1  }, shadowOpacity: 0.04, shadowRadius: 6,  elevation: 1 },
 };
 
-export const RADII = { xs: 6, sm: 10, md: 14, lg: 20, xl: 28, full: 9999, pill: 9999 };
+export const RADII = { xs: 2, sm: 4, md: 6, lg: 8, xl: 10, full: 9999, pill: 9999 };
 
 export const GRADIENTS = {
   hero:     ['#1A1D24', '#121417', '#0A0C10'] as string[],
@@ -71,21 +71,19 @@ export const GRADIENTS = {
 export const SPACING = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 };
 
 export const TYPO = {
-  // Playfair — editorial headings
-  hero:       { fontFamily: 'PlayfairDisplay_700Bold',        fontSize: 32, lineHeight: 40, letterSpacing: -0.5 },
-  heroItalic: { fontFamily: 'PlayfairDisplay_700Bold_Italic', fontSize: 28, lineHeight: 36, letterSpacing: -0.3 },
-  h1:         { fontFamily: 'PlayfairDisplay_700Bold',        fontSize: 24, lineHeight: 30 },
-  h1Dark:     { fontFamily: 'PlayfairDisplay_700Bold',        fontSize: 24, lineHeight: 30 },
-  h2:         { fontFamily: 'PlayfairDisplay_700Bold',        fontSize: 20, lineHeight: 26 },
+  // Playfair — editorial italic headings (DentiClinic style)
+  hero:       { fontFamily: 'PlayfairDisplay_700Bold_Italic',  fontSize: 32, lineHeight: 40, letterSpacing: -0.5 },
+  heroItalic: { fontFamily: 'PlayfairDisplay_700Bold_Italic',  fontSize: 28, lineHeight: 36, letterSpacing: -0.3 },
+  h1:         { fontFamily: 'PlayfairDisplay_700Bold_Italic',  fontSize: 24, lineHeight: 30, letterSpacing: -0.3 },
+  h1Dark:     { fontFamily: 'PlayfairDisplay_700Bold_Italic',  fontSize: 24, lineHeight: 30, letterSpacing: -0.3 },
+  h2:         { fontFamily: 'PlayfairDisplay_700Bold_Italic',  fontSize: 20, lineHeight: 26, letterSpacing: -0.2 },
 
-  // DM Sans — UI text
-  label:    { fontFamily: 'DMSans_500Medium', fontSize: 11, lineHeight: 14, letterSpacing: 1.5, textTransform: 'uppercase' as const },
+  // DM Sans — UI text with editorial tracking
+  label:    { fontFamily: 'DMSans_500Medium', fontSize: 10, lineHeight: 13, letterSpacing: 2.5, textTransform: 'uppercase' as const },
   bodyLg:   { fontFamily: 'DMSans_400Regular', fontSize: 16, lineHeight: 24 },
   body:     { fontFamily: 'DMSans_400Regular', fontSize: 14, lineHeight: 21 },
   bodySm:   { fontFamily: 'DMSans_400Regular', fontSize: 12, lineHeight: 18 },
   bodyMed:      { fontFamily: 'DMSans_500Medium',  fontSize: 14, lineHeight: 21 },
   bodyMedium:   { fontFamily: 'DMSans_500Medium',  fontSize: 14, lineHeight: 20 },
-  btnText:  { fontFamily: 'DMSans_500Medium',  fontSize: 15, lineHeight: 20, letterSpacing: 0.3 },
-  caption:  { fontFamily: 'DMSans_500Medium',  fontSize: 11, lineHeight: 14, letterSpacing: 0.5 },
-  overline: { fontFamily: 'DMSans_500Medium',  fontSize: 10, lineHeight: 12, letterSpacing: 1.5, textTransform: 'uppercase' as const },
-};
+  btnText:  { fontFamily: 'DMSans_500Medium',  fontSize: 13, lineHeight: 18, letterSpacing: 1.5, textTransform: 'uppercase' as const },
+  caption:  { fontFamily: 'DMSans_500Medium',  fontSize: 10, lineHeight: 13, letterSpac

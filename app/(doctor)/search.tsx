@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
 
   header:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, backgroundColor: COLORS.esp },
   backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
+  searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
   searchInput:{ flex: 1, fontSize: 14, color: '#fff', paddingVertical: 0 },
 
   hint:      { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl, gap: 8 },
@@ -378,10 +378,10 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingHorizontal: SPACING.xl, paddingVertical: 8, backgroundColor: COLORS.bg3, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   sectionIcon:   { fontSize: 14 },
   sectionTitle:  { flex: 1, fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase' },
-  sectionCount:  { fontSize: 11, fontWeight: '700', color: COLORS.wal, backgroundColor: COLORS.bg2, borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 },
+  sectionCount:  { fontSize: 11, fontWeight: '700', color: COLORS.wal, backgroundColor: COLORS.bg2, borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
 
   resultRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3, backgroundColor: COLORS.cream },
-  resultIcon:     { width: 40, height: 40, borderRadius: 20, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  resultIcon:     { width: 40, height: 40, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   resultInitials: { fontSize: 14, fontWeight: '700', color: COLORS.cream },
   resultTitle:    { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   resultSub:      { fontSize: 11, color: COLORS.wal },

@@ -175,11 +175,11 @@ const st = StyleSheet.create({
   insurerText: { fontWeight: '700', fontSize: 14 },
 
   treatRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12, paddingHorizontal: 4 },
-  checkBox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  checkBox: { width: 22, height: 22, borderRadius: 2, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   treatName: { fontSize: 13, fontWeight: '600' },
   treatMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   treatPrice: { fontSize: 12 },
-  coverBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 50 },
+  coverBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
   coverText: { fontSize: 10, fontWeight: '700' },
 
   resultCard: { borderRadius: RADII.lg, borderWidth: 2, padding: SPACING.lg, marginBottom: SPACING.lg },

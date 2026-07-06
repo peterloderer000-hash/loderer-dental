@@ -437,7 +437,7 @@ const pc = StyleSheet.create({
 
 const pm = StyleSheet.create({
   overlay:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  sheet:        { borderRadius: 20, padding: 24, width: '100%', maxWidth: 400, gap: 16 },
+  sheet:        { borderRadius: 4, padding: 24, width: '100%', maxWidth: 400, gap: 16 },
   title:        { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', textAlign: 'center' },
   infoRow:      { borderRadius: RADII.md, padding: 14, gap: 4, borderWidth: 1 },
   infoName:     { fontFamily: 'DMSans_500Medium', fontSize: 15 },

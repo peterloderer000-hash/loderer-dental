@@ -433,7 +433,7 @@ const s = StyleSheet.create({
   hero:         { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, overflow: 'hidden' },
   heroCircle:   { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2', opacity: 0.05 },
   heroRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
-  botAvatarHero:{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' },
+  botAvatarHero:{ width: 44, height: 44, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' },
   heroTitle:    { ...TYPO.bodyMed, color: '#F8F6F2', fontSize: 16 },
   onlineBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
   onlineDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' },
@@ -454,7 +454,7 @@ const s = StyleSheet.create({
   msgRowUser:      { flexDirection: 'row-reverse' },
 
   botAvatar: {
-    width: 28, height: 28, borderRadius: 14,
+    width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: COLORS.wal,
   },
@@ -487,6 +487,6 @@ const s = StyleSheet.create({
   // Input bar
   inputBar: { flexDirection: 'row', alignItems: 'flex-end', gap: 10, padding: 12, borderTopWidth: 1 },
   input:    { flex: 1, borderWidth: 1, borderRadius: RADII.pill, paddingHorizontal: 16, paddingVertical: 10, fontFamily: 'DMSans_400Regular', fontSize: 13, maxHeight: 100 },
-  sendBtn:  { width: 44, height: 44, borderRadius: 22, overflow: 'hidden' },
+  sendBtn:  { width: 44, height: 44, borderRadius: 4, overflow: 'hidden' },
   sendGrad: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

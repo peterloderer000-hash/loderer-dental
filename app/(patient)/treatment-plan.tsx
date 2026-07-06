@@ -397,7 +397,7 @@ const st = StyleSheet.create({
 
   // PlanCard
   planHeader:    { padding: SPACING.lg, flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  planStatusDot: { width: 10, height: 10, borderRadius: 5, marginTop: 6 },
+  planStatusDot: { width: 10, height: 10, borderRadius: 2, marginTop: 6 },
   planTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 3 },
   planTitle:     { fontSize: 16, fontWeight: '700' },
   planBadge:     { borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 3 },
@@ -420,7 +420,7 @@ const st = StyleSheet.create({
   timeline:        { paddingHorizontal: SPACING.lg, paddingTop: 4 },
   timelineItem:    { flexDirection: 'row', marginBottom: 2 },
   timelineLeft:    { width: 32, alignItems: 'center' },
-  timelineDot:     { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', zIndex: 1 },
+  timelineDot:     { width: 26, height: 26, borderRadius: 2, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', zIndex: 1 },
   timelineLine:    { width: 1.5, flex: 1, marginVertical: 2 },
   timelineContent: { flex: 1, paddingLeft: 10, paddingBottom: 14 },
 
@@ -443,15 +443,15 @@ const st = StyleSheet.create({
 
   // Actions
   actionsRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 16, paddingVertical: 12, flexWrap: 'wrap' },
-  approvedBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1.5 },
+  approvedBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 4, borderWidth: 1.5 },
   approvedText:  { fontSize: 13, fontWeight: '600' },
-  approveBtn:    { flex: 1, borderRadius: 20, overflow: 'hidden' },
-  approveBtnGrad:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 13, borderRadius: 20 },
+  approveBtn:    { flex: 1, borderRadius: 4, overflow: 'hidden' },
+  approveBtnGrad:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 13, borderRadius: 4 },
   approveBtnText:{ fontSize: 14, fontWeight: '700', color: '#1A1209' },
-  bookBtn:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1.5 },
+  bookBtn:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 14, borderRadius: 4, borderWidth: 1.5 },
   bookBtnText:   { fontSize: 13, fontWeight: '600' },
 
   // Info box
-  infoBox:  { flexDirection: 'row', gap: 10, padding: 16, borderRadius: 28, borderWidth: 1, marginHorizontal: 24, marginTop: 12 },
+  infoBox:  { flexDirection: 'row', gap: 10, padding: 16, borderRadius: 6, borderWidth: 1, marginHorizontal: 24, marginTop: 12 },
   infoText: { flex: 1, fontSize: 13, lineHeight: 18 },
 });

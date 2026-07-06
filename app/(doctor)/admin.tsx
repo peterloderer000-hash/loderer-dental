@@ -585,7 +585,7 @@ const s = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
   inviteBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 2,
     paddingHorizontal: 12, paddingVertical: 8
   },
   inviteBtnText: { fontSize: 12, fontWeight: '600', color: COLORS.cream },
@@ -606,7 +606,7 @@ const s = StyleSheet.create({
 
   memberCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.cream, borderRadius: 14, padding: 14,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 14,
     marginBottom: 8, borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   memberAvatar: {
@@ -616,17 +616,17 @@ const s = StyleSheet.create({
   memberAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
   memberTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 3 },
   memberName: { fontSize: 14, fontWeight: '700', color: COLORS.esp, flex: 1 },
-  roleBadge: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
+  roleBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
   roleBadgeText: { fontSize: 10, fontWeight: '700' },
   memberSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
   memberPhone: { fontSize: 12, color: '#888' },
   removeBtn: {
-    width: 34, height: 34, borderRadius: 10,
+    width: 34, height: 34, borderRadius: 2,
     backgroundColor: '#FDF2F2', alignItems: 'center', justifyContent: 'center'
   },
 
   clinicCard: {
-    backgroundColor: COLORS.cream, borderRadius: 16, padding: 20,
+    backgroundColor: COLORS.cream, borderRadius: 4, padding: 20,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 2
   },
   clinicHeader: { alignItems: 'center', marginBottom: 20, gap: 10 },
@@ -643,16 +643,16 @@ const s = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12
+    borderRadius: 2, backgroundColor: COLORS.bg2, paddingHorizontal: 12
   },
   input: { flex: 1, paddingVertical: 12, fontSize: 14, color: COLORS.esp },
   cancelBtn: {
-    flex: 1, paddingVertical: 14, borderRadius: 12,
+    flex: 1, paddingVertical: 14, borderRadius: 2,
     borderWidth: 1.5, borderColor: COLORS.bg3, alignItems: 'center', backgroundColor: COLORS.cream
   },
   cancelBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   saveBtn: {
-    flex: 2, paddingVertical: 14, borderRadius: 12,
+    flex: 2, paddingVertical: 14, borderRadius: 2,
     backgroundColor: COLORS.esp, alignItems: 'center'
   },
   saveBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
@@ -660,7 +660,7 @@ const s = StyleSheet.create({
   statsSection: { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, marginBottom: 12 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   statCard: {
-    width: '47%', backgroundColor: COLORS.cream, borderRadius: 14,
+    width: '47%', backgroundColor: COLORS.cream, borderRadius: 2,
     padding: 16, alignItems: 'center', gap: 6,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
@@ -669,14 +669,14 @@ const s = StyleSheet.create({
 
   payCards: { gap: 10 },
   payCard: {
-    backgroundColor: '#EBF5FB', borderRadius: 14, padding: 18,
+    backgroundColor: '#EBF5FB', borderRadius: 2, padding: 18,
     borderWidth: 1, borderColor: '#AED6F1'
   },
   payCardLabel: { fontSize: 12, fontWeight: '600', color: '#1A5276', marginBottom: 6 },
   payCardValue: { fontSize: 28, fontWeight: '800', color: '#1A5276' },
 
   teamStatsRow: { flexDirection: 'row', gap: 6, marginTop: 10, flexWrap: 'wrap' },
-  tsStat:       { flex: 1, minWidth: 64, borderRadius: 10, padding: 8, alignItems: 'center' },
+  tsStat:       { flex: 1, minWidth: 64, borderRadius: 2, padding: 8, alignItems: 'center' },
   tsNum:        { fontSize: 18, fontWeight: '800', lineHeight: 22 },
   tsLabel:      { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, marginTop: 2, textAlign: 'center' },
 
@@ -684,7 +684,7 @@ const s = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.esp },
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
   emptyCta: {
-    backgroundColor: COLORS.esp, borderRadius: 12,
+    backgroundColor: COLORS.esp, borderRadius: 2,
     paddingHorizontal: 20, paddingVertical: 12, marginTop: 6
   },
   emptyCtaText: { fontSize: 14, fontWeight: '700', color: '#fff' }
@@ -704,19 +704,19 @@ const im = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 12, backgroundColor: COLORS.bg2, paddingHorizontal: 12, marginBottom: 4
+    borderRadius: 2, backgroundColor: COLORS.bg2, paddingHorizontal: 12, marginBottom: 4
   },
   input: { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
   roleRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
   roleBtn: {
-    flex: 1, paddingVertical: 10, borderRadius: 10,
+    flex: 1, paddingVertical: 10, borderRadius: 2,
     backgroundColor: COLORS.bg3, alignItems: 'center'
   },
   roleBtnActive:     { backgroundColor: COLORS.esp },
   roleBtnText:       { fontSize: 13, fontWeight: '600', color: COLORS.wal },
   roleBtnTextActive: { color: '#fff' },
   sendBtn: {
-    backgroundColor: COLORS.esp, borderRadius: 14, paddingVertical: 15,
+    backgroundColor: COLORS.esp, borderRadius: 2, paddingVertical: 15,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8
   },
   sendBtnDisabled: { opacity: 0.35 },

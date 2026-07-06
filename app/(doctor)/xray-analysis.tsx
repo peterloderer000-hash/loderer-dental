@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
 
   // Heatmap dots
   heatmapDot: {
-    position: 'absolute', borderRadius: 6, borderWidth: 2,
+    position: 'absolute', borderRadius: 2, borderWidth: 2,
     justifyContent: 'center', alignItems: 'center', zIndex: 10,
   },
   heatmapDotSelected: { borderWidth: 3 },
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: '700', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 },
   findingCard: { borderRadius: RADII.md, borderWidth: 1, padding: 14, marginBottom: 10 },
   findingHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  findingBadge: { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  findingBadge: { width: 44, height: 44, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
   findingMeta: { flex: 1 },
   findingTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
   findingType: { fontSize: 14, fontWeight: '700' },
@@ -625,10 +625,10 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 13 },
   historyCard: { borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 8 },
   historyRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  historyThumb: { width: 48, height: 48, borderRadius: 8, backgroundColor: '#000' },
+  historyThumb: { width: 48, height: 48, borderRadius: 2, backgroundColor: '#000' },
   historyMeta: { flex: 1 },
   historyDate: { fontSize: 13, fontWeight: '600' },
   historyFindings: { fontSize: 11 },
-  historyScore: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
+  historyScore: { width: 40, height: 40, borderRadius: 4, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
   historyScoreNum: { fontSize: 14, fontWeight: '800' },
 });

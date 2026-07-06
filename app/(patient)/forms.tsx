@@ -275,9 +275,9 @@ const styles = StyleSheet.create({
   subLabel:        { fontSize: 12, fontWeight: '700', marginBottom: 8, marginTop: 4 },
 
   formCard:        { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: RADII.lg, borderWidth: 1.5, padding: 14, marginBottom: 10, ...SHADOWS.sm },
-  formIcon:        { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  formIcon:        { width: 44, height: 44, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   formTitle:       { fontSize: 14, fontWeight: '700', marginBottom: 2 },
   formSub:         { fontSize: 12 },
-  formStatus:      { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
+  formStatus:      { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   formStatusText:  { fontSize: 10, fontWeight: '700' },
 });

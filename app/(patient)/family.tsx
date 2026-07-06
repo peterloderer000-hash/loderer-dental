@@ -404,7 +404,7 @@ const st = StyleSheet.create({
   // Card
   card:        { marginHorizontal: SPACING.xl, marginBottom: SPACING.md },
   cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 12 },
-  avatar:      { width: 48, height: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  avatar:      { width: 48, height: 48, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   memberName:  { fontSize: 15, fontWeight: '700', marginBottom: 4 },
   metaRow:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   relBadge:    { borderRadius: RADII.sm, paddingHorizontal: 8, paddingVertical: 3 },
@@ -412,10 +412,10 @@ const st = StyleSheet.create({
   ageText:     { fontSize: 12 },
   memberNotes: { fontSize: 12, fontStyle: 'italic', lineHeight: 16 },
   cardActions: { flexDirection: 'column', gap: 8 },
-  actionIcon:  { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  actionIcon:  { width: 32, height: 32, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
 
   // Book button
-  bookBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1 },
+  bookBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1 },
   bookBtnText: { fontSize: 13, fontWeight: '600', flex: 1 },
 
   // Modal
@@ -424,13 +424,13 @@ const st = StyleSheet.create({
   sheetHandle:    { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   sheetTitle:     { fontSize: 18, fontWeight: '700', marginBottom: 18 },
   formLabel:      { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
-  formInput:      { borderWidth: 1.5, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, marginBottom: 14 },
-  relChip:        { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, borderWidth: 1.5, flexShrink: 0 },
+  formInput:      { borderWidth: 1.5, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, marginBottom: 14 },
+  relChip:        { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 4, borderWidth: 1.5, flexShrink: 0 },
   relChipLabel:   { fontSize: 13, fontWeight: '500', flexShrink: 0 },
   modalActions:   { flexDirection: 'row', gap: 10, marginTop: 6 },
-  modalCancel:    { flex: 1, paddingVertical: 13, borderRadius: 20, alignItems: 'center', borderWidth: 1.5 },
+  modalCancel:    { flex: 1, paddingVertical: 13, borderRadius: 4, alignItems: 'center', borderWidth: 1.5 },
   modalCancelText:{ fontSize: 14, fontWeight: '600' },
-  modalSave:      { flex: 2, borderRadius: 20, overflow: 'hidden' },
-  modalSaveGrad:  { paddingVertical: 13, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  modalSave:      { flex: 2, borderRadius: 4, overflow: 'hidden' },
+  modalSaveGrad:  { paddingVertical: 13, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   modalSaveText:  { fontSize: 14, fontWeight: '700', color: '#1A1209' },
 });

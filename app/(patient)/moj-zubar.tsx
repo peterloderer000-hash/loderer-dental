@@ -388,7 +388,7 @@ const s = StyleSheet.create({
   avatarWrap:      { position: 'relative', marginBottom: 14 },
   avatar:          { width: 96, height: 96, borderRadius: 48, borderWidth: 3, borderColor: COLORS.sand, backgroundColor: COLORS.wal },
   avatarInitials:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 32, color: COLORS.cream },
-  verifiedBadge:   { position: 'absolute', bottom: 0, right: 0, backgroundColor: COLORS.esp, borderRadius: 12, padding: 1 },
+  verifiedBadge:   { position: 'absolute', bottom: 0, right: 0, backgroundColor: COLORS.esp, borderRadius: 2, padding: 1 },
 
   doctorName: { ...TYPO.h1, color: '#F8F6F2', textAlign: 'center' },
   doctorSpec: { ...TYPO.body, color: 'rgba(196,168,130,0.75)', textAlign: 'center', marginBottom: 8 },
@@ -438,7 +438,7 @@ const abt = StyleSheet.create({
 const qa = StyleSheet.create({
   row:   { flexDirection: 'row', gap: 10 },
   btn:   { flex: 1, alignItems: 'center', gap: 8, paddingVertical: 14, borderRadius: RADII.lg, borderWidth: 1, ...SHADOWS.sm },
-  icon:  { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  icon:  { width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   label: { fontFamily: 'DMSans_500Medium', fontSize: 12 },
 });
 

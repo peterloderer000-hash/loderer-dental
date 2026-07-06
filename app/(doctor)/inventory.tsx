@@ -383,7 +383,7 @@ const st = StyleSheet.create({
   searchRow: { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginBottom: 12 },
   searchBox: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, borderRadius: RADII.pill, borderWidth: 1, height: 40 },
   searchInput: { flex: 1, fontSize: 14 },
-  addBtn: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+  addBtn: { width: 40, height: 40, borderRadius: 4, justifyContent: 'center', alignItems: 'center' },
 
   catScroll: { marginBottom: 12 },
   catChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADII.pill, borderWidth: 1 },
@@ -394,13 +394,13 @@ const st = StyleSheet.create({
 
   itemCard: { borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 8 },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  stockBadge: { width: 48, height: 48, borderRadius: 12, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center' },
+  stockBadge: { width: 48, height: 48, borderRadius: 2, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center' },
   stockNum: { fontSize: 16, fontWeight: '800' },
   stockUnit: { fontSize: 9, fontWeight: '600' },
   itemMeta: { flex: 1 },
   itemName: { fontSize: 14, fontWeight: '600' },
   itemSub: { fontSize: 11, marginTop: 2 },
-  lowBadge: { width: 24, height: 24, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  lowBadge: { width: 24, height: 24, borderRadius: 2, justifyContent: 'center', alignItems: 'center' },
 
   emptyCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xl, alignItems: 'center', gap: 8 },
   emptyText: { fontSize: 13 },

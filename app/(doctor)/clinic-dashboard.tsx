@@ -34,8 +34,8 @@ function StatCard({ label, value, sub, icon, color, bg }: {
 }
 
 const sc = StyleSheet.create({
-  card:    { flex: 1, minWidth: 140, borderRadius: 14, padding: 14, gap: 4, borderWidth: 1.5, alignItems: 'flex-start' },
-  iconWrap:{ width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  card:    { flex: 1, minWidth: 140, borderRadius: 2, padding: 14, gap: 4, borderWidth: 1.5, alignItems: 'flex-start' },
+  iconWrap:{ width: 32, height: 32, borderRadius: 2, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   value:   { fontSize: 28, fontWeight: '900', lineHeight: 32 },
   label:   { fontSize: 11, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
   sub:     { fontSize: 10, color: '#999', marginTop: 1 }
@@ -85,7 +85,7 @@ const ar = StyleSheet.create({
   name:        { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   service:     { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   time:        { fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  statusBadge: { borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1 },
+  statusBadge: { borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1 },
   statusText:  { fontSize: 9, fontWeight: '700' }
 });
 
@@ -287,7 +287,7 @@ const s = StyleSheet.create({
   navRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   navBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7,
-    backgroundColor: COLORS.cream, borderRadius: 12, paddingVertical: 11,
+    backgroundColor: COLORS.cream, borderRadius: 2, paddingVertical: 11,
     borderWidth: 1, borderColor: COLORS.sand
   },
   navBtnText: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
@@ -296,7 +296,7 @@ const s = StyleSheet.create({
   sectionTitle: { fontSize: 11, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 },
 
   utilizationCard: {
-    backgroundColor: COLORS.cream, borderRadius: 14, padding: 16,
+    backgroundColor: COLORS.cream, borderRadius: 2, padding: 16,
     borderWidth: 1.5, borderColor: COLORS.bg3
   },
   utilizationTop:  { flexDirection: 'row', alignItems: 'center', gap: 14 },
@@ -305,7 +305,7 @@ const s = StyleSheet.create({
 
   statsGrid: { flexDirection: 'row', gap: 10, marginBottom: 10 },
 
-  timingCard: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  timingCard: { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 },
 
-  apptCard: { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 }
+  apptCard: { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, borderWidth: 1.5, borderColor: COLORS.bg3 }
 });

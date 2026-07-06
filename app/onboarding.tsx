@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     position:     'absolute',
     width:        220,
     height:       220,
-    borderRadius: 110,
+    borderRadius: 20,
     opacity:      0.06,
     bottom:       -70,
     left:         -60,

@@ -204,7 +204,7 @@ const st = StyleSheet.create({
   todayBadge: { position: 'absolute', top: -1, right: 16, backgroundColor: COLORS.gold, paddingHorizontal: 10, paddingVertical: 3, borderBottomLeftRadius: 6, borderBottomRightRadius: 6 },
   todayText: { color: '#fff', fontSize: 9, fontWeight: '800' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatarCircle: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  avatarCircle: { width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   cardName: { fontSize: 15, fontWeight: '700' },
   cardReason: { fontSize: 12, marginTop: 2 },
   cardMeta: { flexDirection: 'row', gap: 16, marginTop: 14, paddingTop: 10, borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.05)' },

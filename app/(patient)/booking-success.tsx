@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
 
   // Icon
   iconWrap:   { alignItems: 'center', marginBottom: 20 },
-  iconCircle: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#D4AC0D', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#1E8449', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
+  iconCircle: { width: 100, height: 100, borderRadius: 20, backgroundColor: '#D4AC0D', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#1E8449', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
   confetti:   { fontSize: 32, position: 'absolute', bottom: -8, right: -8 },
 
   // Text
@@ -191,26 +191,26 @@ const styles = StyleSheet.create({
   serviceName: { fontSize: 16, fontWeight: '600', color: COLORS.wal },
 
   // Detail karta
-  card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
+  card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 4, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
   row:  { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  rowIcon:  { width: 32, height: 32, borderRadius: 8, backgroundColor: '#E2DDD6', alignItems: 'center', justifyContent: 'center' },
+  rowIcon:  { width: 32, height: 32, borderRadius: 2, backgroundColor: '#E2DDD6', alignItems: 'center', justifyContent: 'center' },
   rowLabel: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
   rowValue: { fontSize: 14, fontWeight: '600', color: COLORS.esp, lineHeight: 19 },
 
   // Urgent
-  urgentBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF0EF', borderRadius: 12, padding: 12, width: '100%', marginBottom: 10, borderWidth: 1, borderColor: '#F1948A' },
+  urgentBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF0EF', borderRadius: 2, padding: 12, width: '100%', marginBottom: 10, borderWidth: 1, borderColor: '#F1948A' },
   urgentText: { flex: 1, fontSize: 12, color: '#C0392B', fontWeight: '600', lineHeight: 18 },
 
   // Info
-  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF9E7', borderRadius: 12, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#F9E79F' },
+  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF9E7', borderRadius: 2, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#F9E79F' },
   infoText: { flex: 1, fontSize: 12, color: '#7D6608', lineHeight: 18 },
 
   // Buttons
-  btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 14, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },
+  btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },
   btnShareText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal },
   actions:        { flexDirection: 'row', gap: 10, width: '100%' },
-  btnSecondary:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand },
+  btnSecondary:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand },
   btnSecondaryText:{ fontSize: 13, fontWeight: '700', color: COLORS.wal },
-  btnPrimary:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 14, backgroundColor: COLORS.esp },
+  btnPrimary:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.esp },
   btnPrimaryText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 });

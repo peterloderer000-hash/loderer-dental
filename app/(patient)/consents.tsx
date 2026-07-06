@@ -280,23 +280,23 @@ const styles = StyleSheet.create({
   backBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:    { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:  { fontSize: 18, fontWeight: '700', color: '#fff' },
-  pendingBadge: { backgroundColor: '#E67E22', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 },
+  pendingBadge: { backgroundColor: '#E67E22', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   pendingBadgeText: { fontSize: 11, fontWeight: '800', color: '#fff' },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, marginTop: 4 },
   sectionTitle:  { fontSize: 9, letterSpacing: 2, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase' },
 
-  card:        { backgroundColor: COLORS.cream, borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:        { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   cardPending: { borderColor: '#F9E79F', borderWidth: 1.5 },
   cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
   cardIcon:    { fontSize: 22, marginTop: 2 },
   cardTitle:   { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 3, lineHeight: 20 },
   cardDate:    { fontSize: 11, color: COLORS.wal },
   signedName:  { fontSize: 11, color: '#1E8449', marginTop: 2, fontStyle: 'italic' },
-  statusBadge: { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start' },
+  statusBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start' },
   statusBadgeText: { fontSize: 9, fontWeight: '700' },
 
-  signBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 10, paddingVertical: 11 },
+  signBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 11 },
   signBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
 
   empty:      { alignItems: 'center', paddingVertical: 60 },
@@ -310,20 +310,20 @@ const styles = StyleSheet.create({
   sheetTitle:  { fontSize: 20, fontWeight: '800', color: COLORS.esp, marginBottom: 4 },
   sheetSubtitle: { fontSize: 13, color: COLORS.wal, marginBottom: 14 },
 
-  consentTextBox: { maxHeight: 200, backgroundColor: COLORS.bg2, borderRadius: 10, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: COLORS.bg3 },
+  consentTextBox: { maxHeight: 200, backgroundColor: COLORS.bg2, borderRadius: 2, padding: 12, marginBottom: 16, borderWidth: 1, borderColor: COLORS.bg3 },
   consentText:    { fontSize: 13, color: COLORS.esp, lineHeight: 21 },
 
   checkRow:      { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 14 },
-  checkbox:      { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
+  checkbox:      { width: 22, height: 22, borderRadius: 2, borderWidth: 2, borderColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
   checkboxChecked:{ backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   checkLabel:    { flex: 1, fontSize: 13, color: COLORS.esp, lineHeight: 20 },
 
   signLabel: { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 },
-  signInput: { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 11, fontSize: 15, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 16 },
+  signInput: { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 11, fontSize: 15, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 16 },
 
   sheetActions: { flexDirection: 'row', gap: 10 },
-  declineBtn:   { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: '#F1948A', backgroundColor: '#FDEDEC' },
+  declineBtn:   { flex: 1, paddingVertical: 13, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: '#F1948A', backgroundColor: '#FDEDEC' },
   declineBtnText:{ fontSize: 13, fontWeight: '600', color: '#922B21' },
-  confirmBtn:   { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 12, backgroundColor: COLORS.wal },
+  confirmBtn:   { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: COLORS.wal },
   confirmBtnText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
 });

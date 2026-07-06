@@ -434,16 +434,16 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
 }
 
 const dStyles = StyleSheet.create({
-  statusPill:    { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  statusPill:    { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', borderRadius: 4, paddingHorizontal: 10, paddingVertical: 4 },
   statusDot:     { width: 7, height: 7, borderRadius: 4 },
   statusPillText:{ fontSize: 12, fontWeight: '700' },
   emptyText:     { fontSize: 12, fontStyle: 'italic', marginBottom: 14 },
-  historyRow:    { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 10, borderRadius: 10, borderWidth: 1 },
+  historyRow:    { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 10, borderRadius: 2, borderWidth: 1 },
   histDot:       { width: 8, height: 8, borderRadius: 4, marginTop: 3, flexShrink: 0 },
   histStatus:    { fontSize: 13, fontWeight: '700', marginBottom: 2 },
   histNote:      { fontSize: 12, lineHeight: 17 },
   histDate:      { fontSize: 10, fontWeight: '600', marginTop: 2, flexShrink: 0 },
-  btn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 12, paddingVertical: 14 },
+  btn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 2, paddingVertical: 14 },
   btnTextWhite:  { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
 
   // ── Legenda ──
-  legendCard:  { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  legendCard:  { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   legendTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
   legendGrid:  { flexDirection: 'row', flexWrap: 'wrap' },
   legendItem:  { width: '50%', flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingRight: 8 },
@@ -655,7 +655,7 @@ const styles = StyleSheet.create({
   legendText:  { fontSize: 11, color: COLORS.esp, fontWeight: '500', flex: 1 },
 
   // ── Schéma ──
-  chartCard:     { backgroundColor: COLORS.cream, borderRadius: 14, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  chartCard:     { backgroundColor: COLORS.cream, borderRadius: 2, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   quadHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
   quadHeaderLeft:  { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
   quadHeaderRight: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
@@ -669,16 +669,16 @@ const styles = StyleSheet.create({
 
   chartHint: { fontSize: 9, color: COLORS.bg3, textAlign: 'center', marginTop: 8, fontStyle: 'italic' },
 
-  tooth:    { borderRadius: 5, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', gap: 2 },
+  tooth:    { borderRadius: 2, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', gap: 2 },
   toothNum: { fontSize: 7, fontWeight: '700' },
   dot:      { width: 4, height: 4, borderRadius: 2 },
 
   // ── Štatistiky ──
-  statsCard:  { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  statsCard:  { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   statsTitle: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
   statsEmpty: { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
   statsGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  statChip:   { borderRadius: 10, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 7, alignItems: 'center', minWidth: 80 },
+  statChip:   { borderRadius: 2, borderWidth: 1, paddingHorizontal: 12, paddingVertical: 7, alignItems: 'center', minWidth: 80 },
   statCount:  { fontSize: 22, fontWeight: '800', lineHeight: 26 },
   statLabel:  { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5 },
 
@@ -691,20 +691,20 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
 
   statusGrid:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  statusBtn:     { flexDirection: 'row', alignItems: 'center', borderRadius: 8, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 7 },
+  statusBtn:     { flexDirection: 'row', alignItems: 'center', borderRadius: 2, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 7 },
   statusBtnText: { fontSize: 12, fontWeight: '600' },
 
-  input:       { borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 60, textAlignVertical: 'top', backgroundColor: COLORS.bg2 },
-  saveBtn:     { backgroundColor: COLORS.esp, borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginTop: 14 },
+  input:       { borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 2, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 60, textAlignVertical: 'top', backgroundColor: COLORS.bg2 },
+  saveBtn:     { backgroundColor: COLORS.esp, borderRadius: 2, paddingVertical: 15, alignItems: 'center', marginTop: 14 },
   saveBtnText: { fontSize: 15, fontWeight: '700', color: COLORS.cream, letterSpacing: 0.5 },
 
   photoDot: { position: 'absolute', bottom: 2, right: 2, width: 5, height: 5, borderRadius: 3, backgroundColor: '#1A5276' },
 
   // Foto
-  photoWrap:      { position: 'relative', marginBottom: 10, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: COLORS.bg3 },
-  photoPreview:   { width: '100%', height: 160, borderRadius: 10 },
-  photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.cream, borderRadius: 11 },
+  photoWrap:      { position: 'relative', marginBottom: 10, borderRadius: 2, overflow: 'hidden', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  photoPreview:   { width: '100%', height: 160, borderRadius: 2 },
+  photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.cream, borderRadius: 2 },
   photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
-  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 10, backgroundColor: '#E2DDD6', borderWidth: 1.5, borderColor: COLORS.sand },
+  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: '#E2DDD6', borderWidth: 1.5, borderColor: COLORS.sand },
   photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal }
 });

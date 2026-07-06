@@ -165,11 +165,11 @@ const s = StyleSheet.create({
   title:       { fontSize: 26, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 12 },
   subtitle:    { fontSize: 16, color: '#3A4256', textAlign: 'center' },
   stepTitle:   { fontSize: 22, fontWeight: '800', color: '#111827', marginBottom: 24 },
-  input:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#BBACA0', borderRadius: 10, padding: 16, fontSize: 16, color: '#111827', marginBottom: 14 },
+  input:       { backgroundColor: '#fff', borderWidth: 1, borderColor: '#BBACA0', borderRadius: 2, padding: 16, fontSize: 16, color: '#111827', marginBottom: 14 },
   bullets:     { marginTop: 28, width: '100%', paddingHorizontal: 8 },
   bulletRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 14 },
   bulletDot:   { fontSize: 20, color: '#3A4256', marginRight: 12, lineHeight: 24 },
   bulletText:  { fontSize: 15, color: '#3A4256', lineHeight: 24, flex: 1 },
-  btn:         { backgroundColor: '#3A4256', paddingVertical: 16, borderRadius: 10, alignItems: 'center', marginBottom: 16 },
+  btn:         { backgroundColor: '#3A4256', paddingVertical: 16, borderRadius: 2, alignItems: 'center', marginBottom: 16 },
   btnText:     { color: '#111827', fontSize: 17, fontWeight: '800' }
 });

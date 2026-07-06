@@ -527,11 +527,11 @@ const styles = StyleSheet.create({
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
-  countBadge:  { backgroundColor: COLORS.gold, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 },
+  countBadge:  { backgroundColor: COLORS.gold, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   countText:   { fontSize: 13, fontWeight: '800', color: COLORS.esp },
 
   // Štatistiky
-  statsCard: { flexDirection: 'row', borderRadius: 14, borderWidth: 1, padding: 14, marginBottom: 12 },
+  statsCard: { flexDirection: 'row', borderRadius: 2, borderWidth: 1, padding: 14, marginBottom: 12 },
   statBox:   { flex: 1, alignItems: 'center' },
   statNum:   { fontSize: 20, fontWeight: '800', lineHeight: 24, marginBottom: 2 },
   statLabel: { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, textAlign: 'center' },
@@ -540,32 +540,32 @@ const styles = StyleSheet.create({
   // Filtre
   filterScroll:      { maxHeight: 48, marginBottom: 10 },
   filterContent:     { gap: 8, alignItems: 'center', paddingRight: 4 },
-  filterTab:         { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5 },
+  filterTab:         { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, borderWidth: 1.5 },
   filterTabText:     { fontSize: 12, fontWeight: '600' },
-  filterBadge:       { borderRadius: 10, paddingHorizontal: 7, paddingVertical: 1 },
+  filterBadge:       { borderRadius: 2, paddingHorizontal: 7, paddingVertical: 1 },
   filterBadgeText:   { fontSize: 11, fontWeight: '700' },
 
   // Výber
-  selectBar:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 12, borderWidth: 1, padding: 10, marginBottom: 12, gap: 8 },
+  selectBar:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 2, borderWidth: 1, padding: 10, marginBottom: 12, gap: 8 },
   selectAllBtn:  { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
   selectAllText: { fontSize: 12, fontWeight: '600' },
-  checkbox:      { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
-  bulkSendBtn:   { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.esp, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
+  checkbox:      { width: 22, height: 22, borderRadius: 2, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  bulkSendBtn:   { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.esp, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
   bulkSendText:  { fontSize: 11, fontWeight: '700', color: '#fff' },
 
   // Karta
-  card:        { flexDirection: 'row', borderRadius: 12, borderWidth: 1, marginBottom: 10, overflow: 'hidden', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3 },
+  card:        { flexDirection: 'row', borderRadius: 2, borderWidth: 1, marginBottom: 10, overflow: 'hidden', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3 },
   urgBar:      { width: 5, minHeight: '100%' },
   cardTopRow:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, paddingTop: 12, paddingRight: 12 },
   name:        { fontSize: 15, fontWeight: '800', flex: 1, marginRight: 8 },
   phone:       { fontSize: 13, marginBottom: 8 },
   metaRow:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  urgBadge:    { flexDirection: 'row', alignItems: 'center', borderRadius: 8, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3 },
+  urgBadge:    { flexDirection: 'row', alignItems: 'center', borderRadius: 2, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3 },
   urgText:     { fontSize: 12, fontWeight: '700' },
   visitCount:  { fontSize: 12, fontWeight: '500' },
   lastVisitRow:{ fontSize: 12, marginBottom: 8 },
   cardActions: { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  cardBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1 },
+  cardBtn:     { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 2, borderWidth: 1 },
   cardBtnText: { fontSize: 12, fontFamily: 'DMSans_500Medium' },
 
   // Empty
@@ -581,10 +581,10 @@ const styles = StyleSheet.create({
   modalTitle:         { fontSize: 20, fontWeight: '700', marginBottom: 6 },
   modalSub:           { fontSize: 13, lineHeight: 19, marginBottom: 16 },
   modalLabel:         { fontSize: 9, letterSpacing: 1.5, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
-  modalInput:         { borderWidth: 1.5, borderRadius: 12, padding: 14, fontSize: 14, minHeight: 110, textAlignVertical: 'top', marginBottom: 16 },
+  modalInput:         { borderWidth: 1.5, borderRadius: 2, padding: 14, fontSize: 14, minHeight: 110, textAlignVertical: 'top', marginBottom: 16 },
   modalBtnRow:        { flexDirection: 'row', gap: 10 },
-  modalBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5 },
+  modalBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5 },
   modalBtnCancelText: { fontSize: 14, fontWeight: '600' },
-  modalBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: COLORS.esp },
+  modalBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.esp },
   modalBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });

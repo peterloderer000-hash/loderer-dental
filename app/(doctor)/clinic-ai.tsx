@@ -158,9 +158,9 @@ const bbl = StyleSheet.create({
   wrap:       { flexDirection: 'row', alignItems: 'flex-end', gap: 8, marginBottom: 12 },
   wrapUser:   { justifyContent: 'flex-end' },
   wrapAI:     { justifyContent: 'flex-start' },
-  avatar:     { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  avatar:     { width: 32, height: 32, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   avatarEmoji:{ fontSize: 16 },
-  bubble:     { maxWidth: '78%', borderRadius: 16, padding: 12 },
+  bubble:     { maxWidth: '78%', borderRadius: 4, padding: 12 },
   bubbleUser: { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
   bubbleAI:   { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
   textUser:   { fontSize: 14, color: '#fff', lineHeight: 20 },
@@ -318,16 +318,16 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
-  aiBadge:    { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
+  aiBadge:    { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   aiBadgeText:{ fontSize: 10, fontWeight: '700', color: COLORS.cream, letterSpacing: 1 },
 
   thinkingRow:    { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  thinkingBubble: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 16, borderBottomLeftRadius: 4, padding: 12, borderWidth: 1.5, borderColor: COLORS.bg3 },
+  thinkingBubble: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 4, borderBottomLeftRadius: 4, padding: 12, borderWidth: 1.5, borderColor: COLORS.bg3 },
   thinkingText:   { fontSize: 13, color: COLORS.wal, fontStyle: 'italic' },
 
   suggestScroll: { maxHeight: 44, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   suggestRow:    { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
-  suggestChip:   { backgroundColor: COLORS.bg2, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.bg3 },
+  suggestChip:   { backgroundColor: COLORS.bg2, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: COLORS.bg3 },
   suggestText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
 
   inputBar: {
@@ -336,11 +336,11 @@ const s = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {
-    flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 16,
+    flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 4,
     paddingHorizontal: 14, paddingVertical: 10,
     fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2,
     maxHeight: 100
   },
-  sendBtn:         { width: 44, height: 44, borderRadius: 22, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
+  sendBtn:         { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   sendBtnDisabled: { backgroundColor: COLORS.bg3 }
 });

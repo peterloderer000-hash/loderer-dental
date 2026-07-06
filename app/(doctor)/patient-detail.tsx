@@ -1416,52 +1416,52 @@ const styles = StyleSheet.create({
   backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },
-  scoreChip:      { width: 44, height: 44, borderRadius: 22, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
+  scoreChip:      { width: 44, height: 44, borderRadius: 4, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
   scoreChipNum:   { fontSize: 16, fontWeight: '800', lineHeight: 18 },
   scoreChipLabel: { fontSize: 7, fontWeight: '600', textTransform: 'uppercase' },
 
   // Info karta
-  infoCard:    { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
+  infoCard:    { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
   avatarWrap:  { alignItems: 'center', gap: 6 },
   avatar:      { width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.sand, overflow: 'hidden' },
   avatarText:  { fontSize: 22, fontWeight: '700', color: '#fff' },
-  loyaltyBadge:{ flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 8, borderWidth: 1, paddingHorizontal: 5, paddingVertical: 2 },
+  loyaltyBadge:{ flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 2, borderWidth: 1, paddingHorizontal: 5, paddingVertical: 2 },
   loyaltyIcon: { fontSize: 10 },
   loyaltyName: { fontSize: 8, fontWeight: '700' },
   patientName: { fontSize: 16, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   phoneRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 6 },
   phoneText:   { fontSize: 12, color: COLORS.wal },
   infoChips:   { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 5 },
-  chip:        { borderRadius: 6, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
+  chip:        { borderRadius: 2, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
   chipGreen:   { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' },
   chipOrange:  { backgroundColor: '#FEF9E7', borderColor: '#F9E79F' },
   chipGray:    { backgroundColor: COLORS.bg3, borderColor: COLORS.bg3 },
   chipText:    { fontSize: 9, fontWeight: '700', color: COLORS.esp },
 
   // Interné poznámky
-  notesPrivateBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EBF5FB', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1, borderColor: '#AED6F1' },
+  notesPrivateBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#EBF5FB', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1, borderColor: '#AED6F1' },
   notesPrivateText:  { fontSize: 9, fontWeight: '700', color: '#1A5276' },
-  notesInput:        { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 90, backgroundColor: COLORS.bg2, marginBottom: 10, lineHeight: 20 },
-  notesSaveBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1A5276', borderRadius: 10, paddingVertical: 11 },
+  notesInput:        { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 90, backgroundColor: COLORS.bg2, marginBottom: 10, lineHeight: 20 },
+  notesSaveBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1A5276', borderRadius: 2, paddingVertical: 11 },
   notesSaveBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
   statsRow:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
   loyaltyPts:  { fontSize: 10, color: COLORS.wal },
-  ratingPill:  { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FEF9E7', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: '#F39C12' },
+  ratingPill:  { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FEF9E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: '#F39C12' },
   ratingPillText: { fontSize: 10, fontWeight: '700', color: '#F39C12' },
 
   // Akcie
   actionsRow:       { flexDirection: 'row', gap: 8 },
-  actionBtn:        { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.cream, borderRadius: 14, paddingVertical: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  actionBtn:        { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.cream, borderRadius: 2, paddingVertical: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   actionBtnPrimary: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   actionBtnText:    { fontSize: 11, fontWeight: '700', color: COLORS.wal, textAlign: 'center' },
-  actionBtnSm:      { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: COLORS.cream, borderRadius: 12, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.bg3 },
+  actionBtnSm:      { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: COLORS.cream, borderRadius: 2, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   actionBtnSmText:  { fontSize: 10, fontWeight: '600', color: COLORS.wal, textAlign: 'center' },
   // Plán liečby
-  planBtn:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EAFAF1', borderRadius: 12, paddingVertical: 12, paddingHorizontal: 14, marginBottom: 14, borderWidth: 1.5, borderColor: '#A9DFBF' },
+  planBtn:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EAFAF1', borderRadius: 2, paddingVertical: 12, paddingHorizontal: 14, marginBottom: 14, borderWidth: 1.5, borderColor: '#A9DFBF' },
   planBtnText:      { fontSize: 13, fontWeight: '700', color: '#1E8449' },
 
   // Karta
-  card:           { backgroundColor: COLORS.cream, borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
+  card:           { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   cardTitle:      { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 12 },
   cardTitleRow:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   scoreCircleMini:{ width: 42, height: 42, borderRadius: 21, borderWidth: 3, alignItems: 'center', justifyContent: 'center' },
@@ -1474,7 +1474,7 @@ const styles = StyleSheet.create({
   dimTrack:    { flex: 1, height: 8, backgroundColor: COLORS.bg3, borderRadius: 4, overflow: 'hidden' },
   dimFill:     { height: 8, borderRadius: 4 },
   dimScore:    { fontSize: 12, fontWeight: '800', width: 24, textAlign: 'right' },
-  gradeBox:    { width: 20, height: 20, borderRadius: 5, alignItems: 'center', justifyContent: 'center' },
+  gradeBox:    { width: 20, height: 20, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
   gradeText:   { fontSize: 9, fontWeight: '800', color: '#fff' },
   dimLegend:   { flexDirection: 'row', gap: 10, marginTop: 4, justifyContent: 'flex-end' },
   dimLegendItem:{ flexDirection: 'row', alignItems: 'center', gap: 3 },
@@ -1483,24 +1483,24 @@ const styles = StyleSheet.create({
 
   // Zuby
   teethGrid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  teethChip:  { borderRadius: 10, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 7, alignItems: 'center', minWidth: 72 },
+  teethChip:  { borderRadius: 2, borderWidth: 1, paddingHorizontal: 10, paddingVertical: 7, alignItems: 'center', minWidth: 72 },
   teethEmoji: { fontSize: 14, marginBottom: 2 },
   teethCount: { fontSize: 18, fontWeight: '800', lineHeight: 22 },
   teethLabel: { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, marginTop: 1 },
-  warningBox: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: '#FDEDEC', borderRadius: 8, padding: 10, marginTop: 4 },
+  warningBox: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: '#FDEDEC', borderRadius: 2, padding: 10, marginTop: 4 },
   warningText:{ flex: 1, fontSize: 11, color: '#922B21', lineHeight: 16 },
 
 
   // Termíny
   emptyText:     { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
   apptRow:       { flexDirection: 'row', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  apptDateBox:   { width: 38, alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 8, paddingVertical: 5 },
+  apptDateBox:   { width: 38, alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 2, paddingVertical: 5 },
   apptDay:       { fontSize: 18, fontWeight: '800', color: COLORS.esp, lineHeight: 22 },
   apptMonth:     { fontSize: 9, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },
   apptYear:      { fontSize: 10, color: '#888' },
   apptTop:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 3 },
   apptTime:      { fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  apptBadge:     { borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 },
+  apptBadge:     { borderRadius: 2, paddingHorizontal: 7, paddingVertical: 2 },
   apptBadgeText: { fontSize: 9, fontWeight: '700' },
   apptService:   { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
   familyTag:     { fontSize: 10, color: '#784212', fontWeight: '600', marginBottom: 2 },
@@ -1510,49 +1510,49 @@ const styles = StyleSheet.create({
   reviewText:    { fontSize: 11, color: '#888', fontStyle: 'italic', lineHeight: 15, marginTop: 2, paddingLeft: 2 },
   // Appointment note editing
   apptNoteEdit:      { marginTop: 6, marginBottom: 4 },
-  apptNoteInput:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 8, padding: 8, fontSize: 12, color: COLORS.esp, minHeight: 64, backgroundColor: COLORS.bg2, lineHeight: 18, marginBottom: 6 },
-  apptNoteSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, backgroundColor: '#1A5276', borderRadius: 8, paddingVertical: 7 },
+  apptNoteInput:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 8, fontSize: 12, color: COLORS.esp, minHeight: 64, backgroundColor: COLORS.bg2, lineHeight: 18, marginBottom: 6 },
+  apptNoteSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, backgroundColor: '#1A5276', borderRadius: 2, paddingVertical: 7 },
   apptNoteSaveBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' },
   // Faktúra
-  invoiceBtn:        { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
+  invoiceBtn:        { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 2, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
   invoiceBtnText:    { fontSize: 11, fontWeight: '700', color: '#7D3C98' },
   // Quick status actions
   apptActRow:        { flexDirection: 'row', gap: 6, marginTop: 7 },
-  apptActDone:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 8, backgroundColor: '#1E8449' },
+  apptActDone:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 2, backgroundColor: '#1E8449' },
   apptActDoneText:   { fontSize: 11, fontWeight: '700', color: '#fff' },
-  apptActCancel:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 8, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F5B7B1' },
+  apptActCancel:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 2, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F5B7B1' },
   apptActCancelText: { fontSize: 11, fontWeight: '700', color: '#922B21' },
-  apptActClone:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
+  apptActClone:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 2, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
   apptActCloneText:  { fontSize: 11, fontWeight: '700', color: '#7D3C98' },
 
   // Poisťovňa
-  insRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 8, padding: 10 },
+  insRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.bg2, borderRadius: 2, padding: 10 },
   insText: { flex: 1, fontSize: 13, color: COLORS.esp, fontWeight: '600' },
 
   // Platby
-  unpaidBanner:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 5, backgroundColor: '#FDEDEC', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1, borderColor: '#F5B7B1', alignSelf: 'flex-start' },
+  unpaidBanner:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 5, backgroundColor: '#FDEDEC', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3, borderWidth: 1, borderColor: '#F5B7B1', alignSelf: 'flex-start' },
   unpaidBannerText:{ fontSize: 10, fontWeight: '700', color: '#922B21' },
   apptPayRow:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' },
-  payBadge:        { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 8, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4 },
+  payBadge:        { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4 },
   payBadgeIcon:    { fontSize: 11 },
   payBadgeText:    { fontSize: 10, fontWeight: '700' },
 
   // Kritické upozornenia
-  recallBanner:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#E8F8F5', borderWidth: 1.5, borderColor: '#A2D9CE', borderRadius: 14, padding: 12, marginBottom: 12 },
+  recallBanner:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#E8F8F5', borderWidth: 1.5, borderColor: '#A2D9CE', borderRadius: 2, padding: 12, marginBottom: 12 },
   recallTitle:     { fontSize: 13, fontWeight: '700', color: '#0E6655', marginBottom: 2 },
   recallSub:       { fontSize: 11, color: '#17A589' },
-  critBox:         { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, padding: 12, marginBottom: 12 },
+  critBox:         { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 2, padding: 12, marginBottom: 12 },
   critHeader:      { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: '#F5B7B1' },
   critTitle:       { fontSize: 10, fontWeight: '800', color: '#C0392B', letterSpacing: 1.5, flex: 1 },
-  critBlood:       { backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 14, paddingHorizontal: 10, paddingVertical: 2 },
+  critBlood:       { backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 2 },
   critBloodText:   { fontSize: 11, fontWeight: '800', color: '#C0392B' },
   critLine:        { fontSize: 13, color: '#6A1A12', lineHeight: 18, marginTop: 3 },
   critStrong:      { fontWeight: '800' },
 
   // Quick stats
-  quickStats:    { borderRadius: 14, padding: 12, marginBottom: 14, borderWidth: 1 },
+  quickStats:    { borderRadius: 2, padding: 12, marginBottom: 14, borderWidth: 1 },
   qsRow:         { flexDirection: 'row', gap: 8 },
-  qsBox:         { flex: 1, alignItems: 'center', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 4 },
+  qsBox:         { flex: 1, alignItems: 'center', borderRadius: 2, paddingVertical: 10, paddingHorizontal: 4 },
   qsVal:         { fontSize: 15, fontWeight: '800', marginBottom: 2 },
   qsLabel:       { fontSize: 8, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, textAlign: 'center' },
 
@@ -1561,19 +1561,19 @@ const styles = StyleSheet.create({
 
   // Diagnózy
   diagRow:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, borderBottomWidth: 1 },
-  diagIcd:       { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },
+  diagIcd:       { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   diagIcdText:   { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   diagDesc:      { fontSize: 12, fontWeight: '600', marginBottom: 2 },
-  diagSev:       { borderRadius: 6, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
+  diagSev:       { borderRadius: 2, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
   diagSevText:   { fontSize: 9, fontWeight: '700' },
 
   // Timeline
   tlMonthLabel:  { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, marginLeft: 28 },
   tlRow:         { flexDirection: 'row', gap: 0 },
   tlLineWrap:    { width: 22, alignItems: 'center' },
-  tlDot:         { width: 10, height: 10, borderRadius: 5, borderWidth: 2, zIndex: 1 },
+  tlDot:         { width: 10, height: 10, borderRadius: 2, borderWidth: 2, zIndex: 1 },
   tlLine:        { width: 2, flex: 1, marginTop: -1 },
-  tlCard:        { flex: 1, borderRadius: 12, padding: 12, marginBottom: 10, marginLeft: 6, borderWidth: 1 },
+  tlCard:        { flex: 1, borderRadius: 2, padding: 12, marginBottom: 10, marginLeft: 6, borderWidth: 1 },
 
   // FAB
   fab: { position: 'absolute', bottom: 84, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
@@ -1585,14 +1585,14 @@ const styles = StyleSheet.create({
   notifTitle:         { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   notifSub:           { fontSize: 12, color: COLORS.wal, marginBottom: 16 },
   notifLabel:         { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6, marginTop: 10 },
-  notifInput:         { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2 },
+  notifInput:         { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 12, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2 },
   notifTemplates:     { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
-  notifTplBtn:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 16, backgroundColor: '#E8F8F5', borderWidth: 1, borderColor: '#A2D9CE' },
+  notifTplBtn:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4, backgroundColor: '#E8F8F5', borderWidth: 1, borderColor: '#A2D9CE' },
   notifTplText:       { fontSize: 11, fontWeight: '600', color: '#0E6655' },
   notifBtnRow:        { flexDirection: 'row', gap: 10, marginTop: 18 },
-  notifBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
+  notifBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   notifBtnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
-  notifBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: '#0E6655' },
+  notifBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 2, backgroundColor: '#0E6655' },
   notifBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
 });
 
@@ -1604,6 +1604,6 @@ const tabStyles = StyleSheet.create({
   tabInner:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
   tabText:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
   tabTextActive: { color: COLORS.gold, fontWeight: '700' },
-  tabBadge:      { minWidth: 16, height: 16, borderRadius: 8, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  tabBadge:      { minWidth: 16, height: 16, borderRadius: 2, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
   tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' }
 });

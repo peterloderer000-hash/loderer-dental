@@ -576,7 +576,7 @@ const s = StyleSheet.create({
     paddingHorizontal: SPACING.xl, paddingBottom: 14, gap: 8
   },
   tabBtn: {
-    flex: 1, paddingVertical: 8, borderRadius: 10,
+    flex: 1, paddingVertical: 8, borderRadius: 2,
     alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)'
   },
   tabBtnActive: { backgroundColor: COLORS.wal },
@@ -592,7 +592,7 @@ const s = StyleSheet.create({
   threadRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl,
-    marginBottom: 8, borderRadius: 14, padding: 14,
+    marginBottom: 8, borderRadius: 2, padding: 14,
     borderWidth: 1, borderColor: COLORS.bg3, elevation: 1
   },
   threadAvatar: {
@@ -608,7 +608,7 @@ const s = StyleSheet.create({
   threadPreview: { flex: 1, fontSize: 13, color: '#888', lineHeight: 18 },
   threadPreviewBold: { color: COLORS.esp, fontWeight: '600' },
   unreadBadge: {
-    backgroundColor: COLORS.wal, borderRadius: 10,
+    backgroundColor: COLORS.wal, borderRadius: 2,
     minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 5, marginLeft: 8
   },
@@ -633,7 +633,7 @@ const cv = StyleSheet.create({
     backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3
   },
   input: {
-    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 20,
+    flex: 1, backgroundColor: COLORS.bg2, borderRadius: 4,
     paddingHorizontal: 14, paddingVertical: 9,
     fontSize: 14, color: COLORS.esp, maxHeight: 100,
     borderWidth: 1, borderColor: COLORS.bg3
@@ -655,7 +655,7 @@ const bubble = StyleSheet.create({
   },
   avatarText: { fontSize: 11, fontWeight: '700', color: '#fff' },
   box: {
-    maxWidth: '75%', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8,
+    maxWidth: '75%', borderRadius: 4, paddingHorizontal: 12, paddingVertical: 8,
     elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2
   },
   boxMe:    { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
