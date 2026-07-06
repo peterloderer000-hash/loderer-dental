@@ -86,4 +86,6 @@ export const TYPO = {
   bodyMed:      { fontFamily: 'DMSans_500Medium',  fontSize: 14, lineHeight: 21 },
   bodyMedium:   { fontFamily: 'DMSans_500Medium',  fontSize: 14, lineHeight: 20 },
   btnText:  { fontFamily: 'DMSans_500Medium',  fontSize: 13, lineHeight: 18, letterSpacing: 1.5, textTransform: 'uppercase' as const },
-  caption:  { fontFamily: 'DMSans_500Medium',  fontSize: 10, lineHeight: 13, letterSpac
+  caption:  { fontFamily: 'DMSans_500Medium',  fontSize: 10, lineHeight: 13, letterSpacing: 1.8, textTransform: 'uppercase' as const },
+  overline: { fontFamily: 'DMSans_500Medium',  fontSize: 9,  lineHeight: 12, letterSpacing: 2.5, textTransform: 'uppercase' as const },
+};
