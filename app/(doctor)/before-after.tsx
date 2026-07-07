@@ -224,7 +224,7 @@ export default function BeforeAfterScreen() {
                 onPress={() => setSelectedItem(item)} activeOpacity={0.9}
               >
                 <View style={s.itemHeader}>
-                  <View style={[s.treatBadge, { backgroundColor: dark ? 'rgba(201,168,76,0.15)' : '#FEF9E7' }]}>
+                  <View style={[s.treatBadge, { backgroundColor: dark ? 'rgba(201,168,76,0.15)' : '#FDF3E7' }]}>
                     <Text style={[s.treatText, { color: COLORS.gold }]}>{item.treatment_type}</Text>
                   </View>
                   <Text style={[s.dateText, { color: colors.textSecondary }]}>
@@ -287,7 +287,7 @@ export default function BeforeAfterScreen() {
                     style={[s.treatChip, { backgroundColor: treatment === t ? COLORS.gold : colors.cardBg, borderColor: treatment === t ? COLORS.gold : colors.bg3 }]}
                     onPress={() => setTreatment(t)}
                   >
-                    <Text style={[s.treatChipText, { color: treatment === t ? '#fff' : colors.textPrimary }]}>{t}</Text>
+                    <Text style={[s.treatChipText, { color: treatment === t ? '#F5F6F8' : colors.textPrimary }]}>{t}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -363,7 +363,7 @@ const s = StyleSheet.create({
   content: { padding: SPACING.xl },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: RADII.pill, marginBottom: SPACING.xl, ...SHADOWS.gold },
-  addBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  addBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   emptyCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xl, alignItems: 'center' },
   emptyTitle: { fontSize: 18, fontWeight: '700', marginTop: 12, marginBottom: 6 },
@@ -379,7 +379,7 @@ const s = StyleSheet.create({
   miniBox: { flex: 1, height: 100, borderRadius: RADII.sm, overflow: 'hidden', position: 'relative' },
   miniImg: { width: '100%', height: '100%' },
   miniLabel: { position: 'absolute', bottom: 4, left: 4, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  miniLabelText: { color: '#fff', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  miniLabelText: { color: '#F5F6F8', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
 
   descText: { fontSize: 12, lineHeight: 17, marginBottom: 8 },
   tapHint: { flexDirection: 'row', alignItems: 'center', gap: 4, justifyContent: 'center' },
@@ -389,11 +389,11 @@ const s = StyleSheet.create({
   sliderContainer: { width: IMG_W, height: IMG_W * 0.75, borderRadius: RADII.md, overflow: 'hidden', alignSelf: 'center', marginTop: 20 },
   sliderImage: { width: '100%', height: '100%' },
   sliderClip: { position: 'absolute', top: 0, left: 0, height: '100%', overflow: 'hidden' },
-  sliderLine: { position: 'absolute', top: 0, bottom: 0, width: 3, backgroundColor: '#fff', marginLeft: -1.5, zIndex: 10 },
+  sliderLine: { position: 'absolute', top: 0, bottom: 0, width: 3, backgroundColor: '#F5F6F8', marginLeft: -1.5, zIndex: 10 },
   sliderHandle: { position: 'absolute', top: '50%', marginTop: -18, left: -15, width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.gold, justifyContent: 'center', alignItems: 'center', ...SHADOWS.gold },
   sliderLabels: { position: 'absolute', top: 8, left: 0, right: 0, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 8 },
   sliderLabel: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
-  sliderLabelText: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 1 },
+  sliderLabelText: { color: '#F5F6F8', fontSize: 10, fontWeight: '800', letterSpacing: 1 },
 
   // Modals
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
@@ -411,10 +411,10 @@ const s = StyleSheet.create({
   photoPreview: { width: '100%', height: '100%' },
 
   saveBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, backgroundColor: COLORS.gold, borderRadius: RADII.pill, marginTop: 24, marginBottom: 30, ...SHADOWS.gold },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  saveBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   compareOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.95)', justifyContent: 'center', padding: SPACING.xl },
   compareHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  compareTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  compareTitle: { color: '#F5F6F8', fontSize: 18, fontWeight: '700' },
   compareHint: { color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginTop: 16, fontSize: 13 },
 });

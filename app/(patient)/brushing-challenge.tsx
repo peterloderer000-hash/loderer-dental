@@ -206,7 +206,7 @@ export default function BrushingChallenge() {
 
         {/* ── Streak banner ──────────────────────────────── */}
         <Animated.View entering={FadeInDown.delay(100)}
-          style={[st.streakCard, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FEF9E7', borderColor: COLORS.gold + '30' }]}>
+          style={[st.streakCard, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FDF3E7', borderColor: COLORS.gold + '30' }]}>
           <Text style={{ fontSize: 32 }}>🔥</Text>
           <View style={{ flex: 1 }}>
             <Text style={[st.streakNum, { color: COLORS.gold }]}>{stats.currentStreak} dní</Text>
@@ -373,13 +373,13 @@ const st = StyleSheet.create({
   progressLabel: { fontSize: 9, textAlign: 'center' },
 
   startBtn: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 32, paddingVertical: 14, borderRadius: RADII.pill, ...SHADOWS.gold },
-  startBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  startBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 16 },
 
   completeBox: { alignItems: 'center', paddingVertical: 16 },
   completeTitle: { fontSize: 24, fontWeight: '800', marginTop: 8 },
   completeSub: { fontSize: 13, textAlign: 'center', marginTop: 6, marginBottom: 16 },
   againBtn: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: RADII.pill, backgroundColor: COLORS.gold },
-  againBtnText: { color: '#fff', fontWeight: '600' },
+  againBtnText: { color: '#F5F6F8', fontWeight: '600' },
 
   weekCard: { borderRadius: RADII.lg, borderWidth: 1, padding: 16, marginBottom: SPACING.lg },
   weekTitle: { fontSize: 14, fontWeight: '700', marginBottom: 12 },

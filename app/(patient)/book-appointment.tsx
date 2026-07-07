@@ -44,7 +44,7 @@ function StepBar({ step }: { step: Step }) {
               <View style={[styles.stepDot, done && styles.stepDotDone, active && styles.stepDotActive]}>
                 {done
                   ? <Ionicons name="checkmark" size={10} color="#fff" />
-                  : <Text style={[styles.stepDotText, active && { color: '#fff' }]}>{i + 1}</Text>}
+                  : <Text style={[styles.stepDotText, active && { color: '#F5F6F8' }]}>{i + 1}</Text>}
               </View>
               <Text style={[styles.stepLabel, { color: colors.textSecondary }, active && styles.stepLabelActive]}>{label}</Text>
             </View>
@@ -586,8 +586,8 @@ export default function BookAppointmentScreen() {
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                         <Text style={[styles.serviceName, { color: colors.textPrimary }]}>{svc.name}</Text>
-                        <View style={{ backgroundColor: dark ? '#27AE6033' : '#D5F5E3', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 2 }}>
-                          <Text style={{ fontSize: 9, fontWeight: '700', color: dark ? '#58D68D' : '#1E8449' }}>ODPORÚČANÉ</Text>
+                        <View style={{ backgroundColor: dark ? '#52C89633' : '#EDF7F3', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 2 }}>
+                          <Text style={{ fontSize: 9, fontWeight: '700', color: dark ? '#58D68D' : '#2E7D5E' }}>ODPORÚČANÉ</Text>
                         </View>
                       </View>
                       {svc.description && <Text style={[styles.serviceDesc, { color: colors.textSecondary }]} numberOfLines={1}>{svc.description}</Text>}
@@ -707,7 +707,7 @@ export default function BookAppointmentScreen() {
                       <Ionicons
                         name={selected ? 'checkmark-circle' : 'chevron-forward'}
                         size={20}
-                        color={selected ? '#1E8449' : '#ddd'}
+                        color={selected ? '#2E7D5E' : '#ddd'}
                       />
                     </TouchableOpacity>
                   );
@@ -834,7 +834,7 @@ export default function BookAppointmentScreen() {
               <Text style={styles.wlSub}>Môžete sa zapísať na čakaciu listinu pre {selectedDate?.toLocaleDateString('sk-SK', { weekday: 'long', day: 'numeric', month: 'long' })}. Doktor vás kontaktuje pri uvoľnení miesta.</Text>
               {wlJoined ? (
                 <View style={styles.wlSuccess}>
-                  <Ionicons name="checkmark-circle" size={18} color="#1E8449" />
+                  <Ionicons name="checkmark-circle" size={18} color="#2E7D5E" />
                   <Text style={styles.wlSuccessText}>Zapísaní na čakaciu listinu ✓</Text>
                 </View>
               ) : (
@@ -870,8 +870,8 @@ export default function BookAppointmentScreen() {
             contentContainerStyle={[styles.content, { alignItems: 'center', paddingTop: 36 }]}
             showsVerticalScrollIndicator={false}>
             <Reanimated.View entering={FadeInDown.springify().damping(14)} style={{ alignItems: 'center', width: '100%' }}>
-              <View style={[styles.successIconWrap, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-                <Ionicons name="checkmark-circle" size={72} color="#1E8449" />
+              <View style={[styles.successIconWrap, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
+                <Ionicons name="checkmark-circle" size={72} color="#2E7D5E" />
               </View>
               <Text style={[styles.successTitle, { color: colors.textPrimary }]}>Termín odoslaný na schválenie</Text>
               <Text style={[styles.successSub, { color: colors.textSecondary }]}>
@@ -879,7 +879,7 @@ export default function BookAppointmentScreen() {
               </Text>
 
               {selectedService && selectedDate && (
-                <View style={[styles.successCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
+                <View style={[styles.successCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#52C89633' : '#A3D4BE' }]}>
                   <Text style={styles.successCardEmoji}>{selectedService.emoji ?? '🦷'}</Text>
                   <Text style={[styles.successCardService, { color: colors.textPrimary }]}>{selectedService.name}</Text>
                   <Text style={[styles.successCardDate, { color: colors.textSecondary }]}>
@@ -1012,7 +1012,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: COLORS.bg2 },
   content:{ padding: SPACING.xl, paddingTop: 16 },
 
-  familyBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF9E7', paddingHorizontal: SPACING.xl, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0D9A8' },
+  familyBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FDF3E7', paddingHorizontal: SPACING.xl, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0D9A8' },
   familyBannerText: { fontSize: 13, color: '#784212' },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', gap: 12 },
   loadingText: { color: COLORS.wal, fontSize: 13 },
@@ -1021,19 +1021,19 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
 
   // Step bar
   stepBar:      { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   stepItem:     { alignItems: 'center', gap: 4 },
   stepDot:      { width: 22, height: 22, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   stepDotActive:{ backgroundColor: COLORS.wal, borderColor: COLORS.wal },
-  stepDotDone:  { backgroundColor: '#1E8449', borderColor: '#1E8449' },
+  stepDotDone:  { backgroundColor: '#2E7D5E', borderColor: '#2E7D5E' },
   stepDotText:  { fontSize: 11, fontWeight: '700', color: '#666' },
   stepLabel:    { fontSize: 10, fontWeight: '600', color: '#666', textTransform: 'uppercase', letterSpacing: 0.5 },
   stepLabelActive: { color: COLORS.wal },
   stepLine:     { flex: 1, height: 2, backgroundColor: COLORS.bg3, marginHorizontal: 4 },
-  stepLineDone: { backgroundColor: '#1E8449' },
+  stepLineDone: { backgroundColor: '#2E7D5E' },
 
   // Search
   searchBar:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 16 },
@@ -1057,9 +1057,9 @@ const styles = StyleSheet.create({
 
   // Service card
   serviceCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
-  serviceCardSel: { borderColor: '#1E8449', backgroundColor: '#EAFAF1' },
+  serviceCardSel: { borderColor: '#2E7D5E', backgroundColor: '#EDF7F3' },
   serviceEmoji:   { width: 52, height: 52, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
-  serviceEmojiSel:{ backgroundColor: '#D5F5E3' },
+  serviceEmojiSel:{ backgroundColor: '#EDF7F3' },
   serviceName:    { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   serviceNameSel: { color: '#1E4D2B' },
   serviceDesc:    { fontSize: 12, color: COLORS.wal, marginBottom: 6 },
@@ -1102,14 +1102,14 @@ const styles = StyleSheet.create({
 
   // Urgent toggle
   urgentCard:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 14 },
-  urgentCardActive:   { borderColor: '#E74C3C', backgroundColor: '#FEF9F9' },
+  urgentCardActive:   { borderColor: '#C0392B', backgroundColor: '#FEF9F9' },
   urgentLeft:         { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   urgentEmoji:        { fontSize: 26 },
   urgentTitle:        { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   urgentTitleActive:  { color: '#C0392B' },
   urgentSub:          { fontSize: 12, color: COLORS.wal },
   urgentToggle:       { width: 44, height: 26, borderRadius: 2, backgroundColor: COLORS.bg3, justifyContent: 'center', paddingHorizontal: 3 },
-  urgentToggleActive: { backgroundColor: '#E74C3C' },
+  urgentToggleActive: { backgroundColor: '#C0392B' },
   urgentThumb:        { width: 20, height: 20, borderRadius: 2, backgroundColor: COLORS.cream, elevation: 2 },
   urgentThumbActive:  { alignSelf: 'flex-end' },
 
@@ -1118,20 +1118,20 @@ const styles = StyleSheet.create({
   notesInput: { fontSize: 13, color: COLORS.esp, minHeight: 72, lineHeight: 20 },
 
   // Waiting list
-  wlBox:         { backgroundColor: '#FEF9E7', borderRadius: 2, borderWidth: 1.5, borderColor: '#F9E79F', padding: 16, marginBottom: 16 },
-  wlTitle:       { fontSize: 14, fontWeight: '700', color: '#7D6608', marginBottom: 8 },
+  wlBox:         { backgroundColor: '#FDF3E7', borderRadius: 2, borderWidth: 1.5, borderColor: '#D0D4DC', padding: 16, marginBottom: 16 },
+  wlTitle:       { fontSize: 14, fontWeight: '700', color: '#B87333', marginBottom: 8 },
   wlSub:         { fontSize: 13, color: '#9A7D0A', lineHeight: 19, marginBottom: 14 },
   wlBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 12 },
-  wlBtnText:     { fontSize: 13, fontWeight: '700', color: '#fff' },
-  wlSuccess:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EAFAF1', borderRadius: 2, padding: 10 },
-  wlSuccessText: { fontSize: 13, fontWeight: '600', color: '#1E8449' },
+  wlBtnText:     { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
+  wlSuccess:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EDF7F3', borderRadius: 2, padding: 10 },
+  wlSuccessText: { fontSize: 13, fontWeight: '600', color: '#2E7D5E' },
 
   // Buttons
   nextBtn:         { backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 15, alignItems: 'center', elevation: 3 },
   nextBtnDisabled: { opacity: 0.35 },
-  nextBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
-  bookBtn:         { backgroundColor: '#1E8449', borderRadius: 2, paddingVertical: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, elevation: 4 },
-  bookBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
+  nextBtnText:     { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
+  bookBtn:         { backgroundColor: '#2E7D5E', borderRadius: 2, paddingVertical: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, elevation: 4 },
+  bookBtnText:     { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   // Price chip in selectedServiceChip
   chipPricePill: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3, marginTop: 4 },
@@ -1152,8 +1152,8 @@ const styles = StyleSheet.create({
   successCardDate:        { fontSize: 13, textAlign: 'center' },
   successCardTime:        { fontSize: 15, fontWeight: '700', textAlign: 'center' },
   successCardPrice:       { fontSize: 13, fontWeight: '600', textAlign: 'center' },
-  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1E8449', borderRadius: 2, paddingVertical: 16 },
-  successBtnText:         { fontSize: 15, fontWeight: '700', color: '#fff' },
+  successBtn:             { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#2E7D5E', borderRadius: 2, paddingVertical: 16 },
+  successBtnText:         { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
   successBtnAnother:      { width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 2, paddingVertical: 16, borderWidth: 1.5, marginTop: 10 },
   successBtnAnotherText:  { fontSize: 15, fontWeight: '700', color: '#3A4256' },
   successBtnSecondary:    { width: '100%', alignItems: 'center', justifyContent: 'center', borderRadius: 2, paddingVertical: 14, borderWidth: 1, marginTop: 8 },

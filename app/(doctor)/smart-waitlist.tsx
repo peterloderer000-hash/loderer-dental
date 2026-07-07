@@ -266,7 +266,7 @@ const st = StyleSheet.create({
 
   cardActions: { flexDirection: 'row', gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.05)' },
   notifyBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: COLORS.gold, borderRadius: RADII.pill },
-  notifyText: { color: '#fff', fontWeight: '700', fontSize: 12 },
+  notifyText: { color: '#F5F6F8', fontWeight: '700', fontSize: 12 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 8, borderRadius: RADII.pill },
   actionText: { fontWeight: '700', fontSize: 11 },
 });

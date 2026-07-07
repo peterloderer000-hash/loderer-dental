@@ -126,7 +126,7 @@ export default function ReceptionProfile() {
                 value={dark}
                 onValueChange={toggleTheme}
                 trackColor={{ false: COLORS.bg3, true: COLORS.wal }}
-                thumbColor={dark ? COLORS.cream : '#fff'}
+                thumbColor={dark ? COLORS.cream : '#F5F6F8'}
                 ios_backgroundColor={COLORS.bg3}
               />
             </View>

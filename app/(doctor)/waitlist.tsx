@@ -168,7 +168,7 @@ export default function WaitlistScreen() {
                           <View style={[styles.waitBadge, {
                             backgroundColor: isLong ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D2233' : '#EBF5FB'),
                             borderColor: isLong ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#1A527633' : '#AED6F1') }]}>
-                            <Text style={[styles.waitBadgeText, { color: isLong ? '#E74C3C' : (dark ? '#5DADE2' : '#1A5276') }]}>
+                            <Text style={[styles.waitBadgeText, { color: isLong ? '#C0392B' : (dark ? '#5DADE2' : '#1A5276') }]}>
                               {days === 0 ? 'dnes' : days === 1 ? 'čaká 1 deň' : `čaká ${days} dní`}
                             </Text>
                           </View>
@@ -217,8 +217,8 @@ export default function WaitlistScreen() {
                       disabled={!!acting}
                       activeOpacity={0.8}
                     >
-                      <Ionicons name="close-circle-outline" size={15} color={dark ? '#E74C3C' : '#922B21'} />
-                      <Text style={[styles.btnDismissText, { color: dark ? '#E74C3C' : '#922B21' }]}>Zamietnuť</Text>
+                      <Ionicons name="close-circle-outline" size={15} color={dark ? '#C0392B' : '#922B21'} />
+                      <Text style={[styles.btnDismissText, { color: dark ? '#C0392B' : '#922B21' }]}>Zamietnuť</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.btnApprove, isActing && { opacity: 0.5 }]}
@@ -255,9 +255,9 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
   countBadge:  { backgroundColor: '#0E6655', borderRadius: 4, minWidth: 32, height: 32, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
-  countBadgeNum: { fontSize: 15, fontWeight: '800', color: '#fff' },
+  countBadgeNum: { fontSize: 15, fontWeight: '800', color: '#F5F6F8' },
 
   empty:      { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 60 },
   emptyIcon:  { fontSize: 48, marginBottom: 14 },
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   infoBanner:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8, backgroundColor: '#EBF5FB', borderRadius: 2, padding: 10, borderWidth: 1, borderColor: '#AED6F1', marginBottom: 14 },
   infoBannerText: { flex: 1, fontSize: 11, color: '#1A5276', lineHeight: 16 },
 
-  card:       { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  card:       { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
   avatar:     { width: 42, height: 42, borderRadius: 21, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },
@@ -291,5 +291,5 @@ const styles = StyleSheet.create({
   btnDismiss: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 10, borderRadius: 2, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnDismissText: { fontSize: 12, fontWeight: '700', color: '#922B21' },
   btnApprove: { flex: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: '#0E6655' },
-  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  btnApproveText: { fontSize: 12, fontWeight: '700', color: '#F5F6F8' },
 });

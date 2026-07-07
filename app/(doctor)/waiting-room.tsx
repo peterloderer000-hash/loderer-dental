@@ -149,15 +149,15 @@ export default function WaitingRoomScreen() {
           {inChair.length > 0 && (
             <>
               <View style={s.sectionHeader}>
-                <View style={[s.sectionDot, { backgroundColor: '#2ECC71' }]} />
+                <View style={[s.sectionDot, { backgroundColor: '#52C896' }]} />
                 <Text style={[s.sectionLabel, { color: colors.textSecondary }]}>V ORDINÁCII ({inChair.length})</Text>
               </View>
               {inChair.map((p) => {
                 const treatMin = waitMins(p.started_at);
                 return (
-                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#0D3B1F' : '#F0FAF4', borderColor: dark ? '#2ECC7155' : '#A9DFBF' }]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#1A3D2E' : '#F0FAF4', borderColor: dark ? '#52C89655' : '#A3D4BE' }]}>
                     <View style={s.cardTop}>
-                      <View style={[s.numBadge, { backgroundColor: '#1E8449' }]}>
+                      <View style={[s.numBadge, { backgroundColor: '#2E7D5E' }]}>
                         <Ionicons name="medical" size={18} color="#fff" />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -167,18 +167,18 @@ export default function WaitingRoomScreen() {
                         )}
                         {p.room_name && (
                           <View style={s.roomBadge}>
-                            <Ionicons name="bed-outline" size={11} color="#1E8449" />
+                            <Ionicons name="bed-outline" size={11} color="#2E7D5E" />
                             <Text style={s.roomBadgeText}>{p.room_name}</Text>
                           </View>
                         )}
                       </View>
                       <View style={s.waitBox}>
-                        <Text style={[s.waitNum, { color: '#1E8449' }]}>{treatMin}</Text>
-                        <Text style={[s.waitLabel, { color: '#1E8449' }]}>min</Text>
+                        <Text style={[s.waitNum, { color: '#2E7D5E' }]}>{treatMin}</Text>
+                        <Text style={[s.waitLabel, { color: '#2E7D5E' }]}>min</Text>
                       </View>
                     </View>
                     <TouchableOpacity
-                      style={[s.actionBtn, { backgroundColor: '#1E8449' }, saving && { opacity: 0.5 }]}
+                      style={[s.actionBtn, { backgroundColor: '#2E7D5E' }, saving && { opacity: 0.5 }]}
                       onPress={() => finishTreatment(p.id)}
                       disabled={saving}
                       activeOpacity={0.85}
@@ -290,7 +290,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 10 },
   iconBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   timeBadge:   { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   timeText:    { fontSize: 11, color: COLORS.sand, fontWeight: '500' },
 
@@ -301,28 +301,28 @@ const s = StyleSheet.create({
   card: {
     backgroundColor: COLORS.cream, borderRadius: 4, padding: 14, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
+    elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
     gap: 12 },
   cardUrgent:     { borderColor: '#F1948A', backgroundColor: '#FFF8F8' },
-  cardInProgress: { borderColor: '#A9DFBF', backgroundColor: '#F0FAF4' },
+  cardInProgress: { borderColor: '#A3D4BE', backgroundColor: '#F0FAF4' },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 14 },
 
   numBadge: { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
-  numText:  { fontSize: 20, fontWeight: '900', color: '#fff' },
+  numText:  { fontSize: 20, fontWeight: '900', color: '#F5F6F8' },
 
   name:     { fontSize: 16, fontWeight: '800', color: COLORS.esp, marginBottom: 2 },
   service:  { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
   apptTime: { fontSize: 11, color: '#999' },
 
   roomBadge:     { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  roomBadgeText: { fontSize: 11, fontWeight: '600', color: '#1E8449' },
+  roomBadgeText: { fontSize: 11, fontWeight: '600', color: '#2E7D5E' },
 
   waitBox:   { alignItems: 'center', minWidth: 48 },
   waitNum:   { fontSize: 26, fontWeight: '900', color: '#0E6655', lineHeight: 30 },
   waitLabel: { fontSize: 10, fontWeight: '700', color: '#0E6655', textTransform: 'uppercase' },
 
   actionBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 2, paddingVertical: 11 },
-  actionBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  actionBtnText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   emptyIcon:  { fontSize: 56, marginBottom: 16 },
   emptyTitle: { fontSize: 20, fontWeight: '700', color: COLORS.esp, marginBottom: 6, textAlign: 'center' },

@@ -109,12 +109,12 @@ function ActionButtons({ status, onAction, isDoctor }: {
   if (status === 'scheduled' || status === 'late') {
     buttons = [
       { label: 'Pacient prišiel', icon: 'enter-outline',         color: '#117A65', bg: '#E8F8F5', action: 'arrived', big: true },
-      { label: 'Mešká',           icon: 'time-outline',           color: '#7D6608', bg: '#FEF9E7', action: 'late' },
+      { label: 'Mešká',           icon: 'time-outline',           color: '#B87333', bg: '#FDF3E7', action: 'late' },
       { label: 'No-show',         icon: 'close-circle-outline',   color: '#922B21', bg: '#FDEDEC', action: 'noshow' },
     ];
   } else if (status === 'arrived' || status === 'waiting') {
     buttons = [
-      ...(isDoctor ? [{ label: 'DO KRESLA', icon: 'medical-outline', color: '#1E8449', bg: '#EAFAF1', action: 'start', big: true } as BtnDef] : []),
+      ...(isDoctor ? [{ label: 'DO KRESLA', icon: 'medical-outline', color: '#2E7D5E', bg: '#EDF7F3', action: 'start', big: true } as BtnDef] : []),
       { label: 'No-show', icon: 'close-circle-outline', color: '#922B21', bg: '#FDEDEC', action: 'noshow' },
     ];
   } else if (status === 'in_chair') {
@@ -128,14 +128,14 @@ function ActionButtons({ status, onAction, isDoctor }: {
     ];
   } else if (status === 'checkout') {
     buttons = [
-      { label: 'ZAPLATENÉ', icon: 'card-outline', color: '#1E8449', bg: '#EAFAF1', action: 'paid', big: true },
+      { label: 'ZAPLATENÉ', icon: 'card-outline', color: '#2E7D5E', bg: '#EDF7F3', action: 'paid', big: true },
     ];
   }
 
   if (buttons.length === 0) {
     return (
       <View style={pc.doneRow}>
-        <Ionicons name="checkmark-circle" size={22} color="#1E8449" />
+        <Ionicons name="checkmark-circle" size={22} color="#2E7D5E" />
         <Text style={pc.doneText}>Pacient odišiel · Zaplatené</Text>
       </View>
     );
@@ -162,7 +162,7 @@ const pc = StyleSheet.create({
   card: {
     backgroundColor: COLORS.cream, borderRadius: 4, padding: 20,
     borderWidth: 1.5, borderColor: COLORS.bg3,
-    elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8
+    elevation: 4, shadowColor: '#121417', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8
   },
   statusBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start',
@@ -186,7 +186,7 @@ const pc = StyleSheet.create({
   btnText:    { fontSize: 14, fontWeight: '700' },
   btnTextBig: { fontSize: 16 },
   doneRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
-  doneText:   { fontSize: 15, color: '#1E8449', fontWeight: '600' },
+  doneText:   { fontSize: 15, color: '#2E7D5E', fontWeight: '600' },
   loadingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
   loadingText:{ fontSize: 13, color: COLORS.wal, fontStyle: 'italic' }
 });
@@ -208,7 +208,7 @@ export default function ClinicRoomScreen() {
       <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#F5F6F8', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Táto obrazovka je dostupná len pre doktora a recepciu.</Text>
         </View>
       </View>
@@ -298,7 +298,7 @@ export default function ClinicRoomScreen() {
               activeOpacity={0.8}
             >
               <View style={[s.roomDot, { backgroundColor: r.color }]} />
-              <Text style={[s.roomTabText, selectedRoom === r.id && { color: '#fff' }]}>{r.name}</Text>
+              <Text style={[s.roomTabText, selectedRoom === r.id && { color: '#F5F6F8' }]}>{r.name}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -376,7 +376,7 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
 
   roomScroll:  { maxHeight: 46, backgroundColor: COLORS.esp },
   roomRow:     { paddingHorizontal: 12, paddingBottom: 10, gap: 8, flexDirection: 'row', alignItems: 'center' },
@@ -401,5 +401,5 @@ const s = StyleSheet.create({
   waitName:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
   waitService:   { fontSize: 11, color: COLORS.wal, marginTop: 1 },
   assignBtn:     { backgroundColor: COLORS.esp, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 7 },
-  assignBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' }
+  assignBtnText: { fontSize: 12, fontWeight: '700', color: '#F5F6F8' }
 });

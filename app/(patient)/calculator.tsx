@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   clearBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: '#FDEDEC', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
 
   infoBanner: { flexDirection: 'row', gap: 8, alignItems: 'flex-start', backgroundColor: '#EBF5FB', borderRadius: 2, padding: 12, marginBottom: 14, borderWidth: 1, borderColor: '#AED6F1' },
   infoText:   { flex: 1, fontSize: 11, color: '#1A5276', lineHeight: 17 },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   catLabelOpen:   { color: COLORS.wal },
   catRight:       { flexDirection: 'row', alignItems: 'center', gap: 8 },
   catBadge:       { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, minWidth: 18, alignItems: 'center' },
-  catBadgeText:   { fontSize: 9, fontWeight: '800', color: '#fff' },
+  catBadgeText:   { fontSize: 9, fontWeight: '800', color: '#F5F6F8' },
 
   // Služba
   svcRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.cream, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1, borderColor: COLORS.wal, borderTopWidth: 0, marginTop: 0 },
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   qtyCount:   { fontSize: 13, fontWeight: '800', color: COLORS.esp, minWidth: 16, textAlign: 'center' },
 
   // Súhrnný panel
-  summaryPanel: { backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 12 },
+  summaryPanel: { backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 24, maxHeight: 280, shadowColor: '#121417', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 6 },
   emptyBasket:  { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 },
   emptyText:    { fontSize: 12, color: COLORS.wal, fontStyle: 'italic' },
 
@@ -308,5 +308,5 @@ const styles = StyleSheet.create({
   totalLabel: { fontSize: 10, color: COLORS.wal, fontWeight: '500', marginBottom: 3 },
   totalPrice: { fontSize: 22, fontWeight: '800', color: COLORS.esp },
   bookBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 16, paddingVertical: 12 },
-  bookBtnText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
+  bookBtnText:{ fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 });

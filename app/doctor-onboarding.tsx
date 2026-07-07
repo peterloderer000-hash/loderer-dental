@@ -48,7 +48,7 @@ const sd = StyleSheet.create({
   dotActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   dotDone:   { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   dotNum:    { fontSize: 12, fontWeight: '700', color: COLORS.wal },
-  dotNumLight: { color: '#fff' },
+  dotNumLight: { color: '#F5F6F8' },
 });
 
 // ─── Step 1 — Welcome ─────────────────────────────────────────────────────────
@@ -434,7 +434,7 @@ const step = StyleSheet.create({
     marginBottom: 16, borderWidth: 2, borderColor: COLORS.sand,
   },
   heroGreet: { fontSize: 14, color: COLORS.sand, fontWeight: '500', marginBottom: 2 },
-  heroName:  { fontSize: 26, fontWeight: '800', color: '#fff', marginBottom: 10 },
+  heroName:  { fontSize: 26, fontWeight: '800', color: '#F5F6F8', marginBottom: 10 },
   heroSub:   { fontSize: 13, color: COLORS.cream, textAlign: 'center', lineHeight: 20, opacity: 0.85 },
 
   infoCards: { gap: 10, marginBottom: 28 },
@@ -478,7 +478,7 @@ const step = StyleSheet.create({
     elevation: 4, shadowColor: COLORS.esp,
     shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
-  btnText:        { fontSize: 15, fontWeight: '700', color: '#fff' },
+  btnText:        { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
   btnSecondary: {
     paddingHorizontal: 16, paddingVertical: 15,
     borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3,
@@ -493,7 +493,7 @@ const step = StyleSheet.create({
   doneCircle: {
     width: 100, height: 100, borderRadius: 20,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
-    marginBottom: 24, elevation: 8,
+    marginBottom: 24, elevation: 4,
     shadowColor: COLORS.wal, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12,
   },
   doneTitle: { fontSize: 26, fontWeight: '800', color: COLORS.esp, marginBottom: 12, textAlign: 'center' },
@@ -512,7 +512,7 @@ const hrs = StyleSheet.create({
   },
   dayBtnOn: { backgroundColor: COLORS.esp },
   dayText:  { fontSize: 12, fontWeight: '700', color: COLORS.wal },
-  dayTextOn: { color: '#fff' },
+  dayTextOn: { color: '#F5F6F8' },
   timeRow: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   timeInput: {
     flex: 1, borderWidth: 1, borderColor: COLORS.bg3,

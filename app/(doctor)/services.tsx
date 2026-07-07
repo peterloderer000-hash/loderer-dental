@@ -268,7 +268,7 @@ export default function ServicesScreen() {
                   <TouchableOpacity
                     key={e}
                     style={[s.emojiBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 },
-                      emoji === e && { borderColor: COLORS.gold, backgroundColor: dark ? COLORS.wal + '22' : '#FEF9E7' }]}
+                      emoji === e && { borderColor: COLORS.gold, backgroundColor: dark ? COLORS.wal + '22' : '#FDF3E7' }]}
                     onPress={() => setEmoji(e)}
                   >
                     <Text style={s.emojiText}>{e}</Text>
@@ -349,7 +349,7 @@ const s = StyleSheet.create({
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
   countBadge: { backgroundColor: COLORS.gold, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   countText:  { fontSize: 13, fontWeight: '800', color: COLORS.esp },
 

@@ -326,7 +326,7 @@ export default function DoctorAddAppointment() {
               autoCapitalize="words"
             />
             {selectedPatient && (
-              <Ionicons name="checkmark-circle" size={20} color="#1E8449" />
+              <Ionicons name="checkmark-circle" size={20} color="#2E7D5E" />
             )}
           </View>
 
@@ -453,7 +453,7 @@ export default function DoctorAddAppointment() {
                           </Text>
                         </View>
                         {selectedService?.id === svc.id && (
-                          <Ionicons name="checkmark-circle" size={18} color="#1E8449" />
+                          <Ionicons name="checkmark-circle" size={18} color="#2E7D5E" />
                         )}
                       </TouchableOpacity>
                     ))}
@@ -526,7 +526,7 @@ export default function DoctorAddAppointment() {
           {/* Odporúčané sloty */}
           {suggestedSlots.length > 0 && !loadingSlots && (
             <View style={{ marginBottom: 10 }}>
-              <Text style={{ fontSize: 10, fontWeight: '700', color: dark ? '#27AE60' : '#1E8449', letterSpacing: 1, marginBottom: 6 }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: dark ? '#52C896' : '#2E7D5E', letterSpacing: 1, marginBottom: 6 }}>
                 ⚡ ODPORÚČANÉ
               </Text>
               <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -535,10 +535,10 @@ export default function DoctorAddAppointment() {
                   return (
                     <TouchableOpacity key={t}
                       style={[styles.suggestedSlot, isSel && styles.suggestedSlotSel,
-                        { borderColor: dark ? '#27AE6044' : '#A9DFBF', backgroundColor: isSel ? '#1E8449' : dark ? '#0D3B1F' : '#EAFAF1' }]}
+                        { borderColor: dark ? '#52C89644' : '#A3D4BE', backgroundColor: isSel ? '#2E7D5E' : dark ? '#1A3D2E' : '#EDF7F3' }]}
                       onPress={() => setTime(t)} activeOpacity={0.7}>
-                      <Ionicons name="flash" size={12} color={isSel ? '#fff' : dark ? '#27AE60' : '#1E8449'} />
-                      <Text style={[styles.suggestedSlotText, { color: isSel ? '#fff' : dark ? '#27AE60' : '#1E8449' }]}>{t}</Text>
+                      <Ionicons name="flash" size={12} color={isSel ? '#F5F6F8' : dark ? '#52C896' : '#2E7D5E'} />
+                      <Text style={[styles.suggestedSlotText, { color: isSel ? '#F5F6F8' : dark ? '#52C896' : '#2E7D5E' }]}>{t}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -558,7 +558,7 @@ export default function DoctorAddAppointment() {
                   <TouchableOpacity key={slot.start}
                     style={[styles.timeCell, { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
                       isSel && styles.timeCellSel, taken && styles.timeCellTaken,
-                      isSuggested && !isSel && !taken && { borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}
+                      isSuggested && !isSel && !taken && { borderColor: dark ? '#52C89644' : '#A3D4BE' }]}
                     onPress={() => { if (!taken) setTime(slot.start); }}
                     activeOpacity={taken ? 1 : 0.75}
                     disabled={taken}>
@@ -651,10 +651,10 @@ export default function DoctorAddAppointment() {
 
           {/* ── Zhrnutie ── */}
           {selectedPatient && selectedDate && selectedTime && (
-            <View style={[styles.summaryCard, dark && { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' }]}>
-              <Ionicons name="checkmark-circle" size={20} color={dark ? '#27AE60' : '#1E8449'} />
+            <View style={[styles.summaryCard, dark && { backgroundColor: '#1A3D2E', borderColor: '#52C89644' }]}>
+              <Ionicons name="checkmark-circle" size={20} color={dark ? '#52C896' : '#2E7D5E'} />
               <View style={{ flex: 1 }}>
-                <Text style={[styles.summaryTitle, { color: dark ? '#27AE60' : '#1E8449' }]}>Zhrnutie termínu</Text>
+                <Text style={[styles.summaryTitle, { color: dark ? '#52C896' : '#2E7D5E' }]}>Zhrnutie termínu</Text>
                 <Text style={[styles.summaryLine, { color: colors.textPrimary }]}>
                   👤 {selectedPatient.full_name}
                 </Text>
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
 
   sectionLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
 
@@ -712,7 +712,7 @@ const styles = StyleSheet.create({
   patientSearchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, marginBottom: 4 },
   patientInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: COLORS.esp },
 
-  dropdown: { backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 10, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 6 },
+  dropdown: { backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 10, overflow: 'hidden', elevation: 4, shadowColor: '#121417', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 6 },
   dropdownEmpty: { padding: 14, fontSize: 13, color: COLORS.wal, textAlign: 'center', fontStyle: 'italic' },
   dropdownItem: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },
   dropdownAvatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
@@ -720,11 +720,11 @@ const styles = StyleSheet.create({
   dropdownName:  { fontSize: 14, fontWeight: '600', color: COLORS.esp },
   dropdownPhone: { fontSize: 11, color: COLORS.wal, marginTop: 1 },
 
-  selectedChip: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#EAFAF1', borderRadius: 2, borderWidth: 1.5, borderColor: '#A9DFBF', padding: 12, marginBottom: 4 },
-  chipAvatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1E8449', alignItems: 'center', justifyContent: 'center' },
-  chipAvatarText: { fontSize: 15, fontWeight: '700', color: '#fff' },
-  chipName:  { fontSize: 14, fontWeight: '600', color: '#1E8449' },
-  chipPhone: { fontSize: 11, color: '#27AE60', marginTop: 1 },
+  selectedChip: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#EDF7F3', borderRadius: 2, borderWidth: 1.5, borderColor: '#A3D4BE', padding: 12, marginBottom: 4 },
+  chipAvatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: '#2E7D5E', alignItems: 'center', justifyContent: 'center' },
+  chipAvatarText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
+  chipName:  { fontSize: 14, fontWeight: '600', color: '#2E7D5E' },
+  chipPhone: { fontSize: 11, color: '#52C896', marginTop: 1 },
 
   // Dates
 
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   timeSel:        { color: COLORS.cream },
   timeTakenText:  { color: '#ccc' },
-  timeTakenLabel: { fontSize: 9, color: '#E74C3C', marginTop: 2, fontWeight: '700' },
+  timeTakenLabel: { fontSize: 9, color: '#C0392B', marginTop: 2, fontWeight: '700' },
   timeEndText:    { fontSize: 10, color: '#aaa', marginTop: 2 },
   slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
 
@@ -765,13 +765,13 @@ const styles = StyleSheet.create({
   notesInput: { fontSize: 13, color: COLORS.esp, minHeight: 72, lineHeight: 20 },
 
   // Summary
-  summaryCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#EAFAF1', borderRadius: 2, borderWidth: 1.5, borderColor: '#A9DFBF', padding: 14, marginBottom: 16 },
-  summaryTitle: { fontSize: 11, fontWeight: '700', color: '#1E8449', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
+  summaryCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#EDF7F3', borderRadius: 2, borderWidth: 1.5, borderColor: '#A3D4BE', padding: 14, marginBottom: 16 },
+  summaryTitle: { fontSize: 11, fontWeight: '700', color: '#2E7D5E', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 },
   summaryLine:  { fontSize: 13, color: COLORS.esp, marginBottom: 3, lineHeight: 19 },
 
   saveBtn:         { backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, elevation: 4, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 },
   saveBtnDisabled: { opacity: 0.4 },
-  saveBtnText:     { fontSize: 15, fontWeight: '700', color: '#fff' },
+  saveBtnText:     { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   // Opakovanie
   repeatRow:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
@@ -781,7 +781,7 @@ const styles = StyleSheet.create({
   repeatChipTextActive:{ color: COLORS.cream },
   repeatCountLabel:    { fontSize: 9, letterSpacing: 1.5, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8 },
   repeatCountChip:     { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3, minWidth: 46, alignItems: 'center' },
-  repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#E2DDD6', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
+  repeatPreview:       { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#D0D4DC', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 7, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
   repeatPreviewText:   { fontSize: 11, color: COLORS.wal, flex: 1, fontStyle: 'italic' },
 
   // Recent patients
@@ -792,6 +792,6 @@ const styles = StyleSheet.create({
 
   // Suggested slots
   suggestedSlot:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 2, borderWidth: 1.5 },
-  suggestedSlotSel:  { borderColor: '#1E8449' },
+  suggestedSlotSel:  { borderColor: '#2E7D5E' },
   suggestedSlotText: { fontSize: 14, fontWeight: '700' }
 });

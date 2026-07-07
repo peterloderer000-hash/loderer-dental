@@ -17,7 +17,7 @@ import { useAppTheme } from '../../context/ThemeContext';
 // ─── Config ───────────────────────────────────────────────────────────────────
 const TYPE_CONFIG = {
   info:    { icon: 'information-circle' as const, color: COLORS.info,    bg: COLORS.infoBg,    border: '#AED6F1' },
-  success: { icon: 'checkmark-circle'   as const, color: COLORS.success, bg: COLORS.successBg, border: '#A9DFBF' },
+  success: { icon: 'checkmark-circle'   as const, color: COLORS.success, bg: COLORS.successBg, border: '#A3D4BE' },
   warning: { icon: 'warning'            as const, color: COLORS.warning,  bg: COLORS.warningBg, border: '#F0C78A' },
   error:   { icon: 'close-circle'       as const, color: COLORS.error,   bg: COLORS.errorBg,   border: '#F1948A' },
 };
@@ -147,7 +147,7 @@ export default function NotificationsScreen() {
               onPress={() => { setFilter(tab.key); Haptics.selectionAsync(); }}
               activeOpacity={0.8}
             >
-              <Text style={[s.filterLabel, filter === tab.key ? { color: '#fff' } : { color: 'rgba(196,168,130,0.65)' }]}>
+              <Text style={[s.filterLabel, filter === tab.key ? { color: '#F5F6F8' } : { color: 'rgba(196,168,130,0.65)' }]}>
                 {tab.label}
                 {tab.key === 'unread' && unreadCount > 0 ? ` (${unreadCount})` : ''}
               </Text>

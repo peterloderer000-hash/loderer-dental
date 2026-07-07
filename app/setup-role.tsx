@@ -127,11 +127,11 @@ const styles = StyleSheet.create({
     width: 88, height: 88, borderRadius: 26,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     marginBottom: 18, borderWidth: 3, borderColor: COLORS.sand,
-    elevation: 8, shadowColor: '#000',
+    elevation: 4, shadowColor: '#121417',
     shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
   logoEmoji: { fontSize: 46 },
-  heroTitle: { fontSize: 24, fontWeight: '800', color: '#fff', letterSpacing: 0.3, marginBottom: 6 },
+  heroTitle: { fontSize: 24, fontWeight: '800', color: '#F5F6F8', letterSpacing: 0.3, marginBottom: 6 },
   heroSub:   { fontSize: 13, color: COLORS.sand, letterSpacing: 0.4 },
 
   card: {
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
   btnDisabled:    { opacity: 0.35 },
-  btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   inviteLink: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

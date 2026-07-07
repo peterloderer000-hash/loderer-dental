@@ -336,13 +336,13 @@ const mStyles = StyleSheet.create({
   timeRow:   { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
   timeWrap:  { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.bg2, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 10, paddingVertical: 4 },
   timeInput: { fontSize: 16, fontWeight: '700', color: COLORS.esp, paddingVertical: 6, minWidth: 48 },
-  inputErr:  { borderColor: '#E74C3C', backgroundColor: '#FEF0EE' },
-  errText:   { fontSize: 11, color: '#E74C3C', marginBottom: 8 },
+  inputErr:  { borderColor: '#C0392B', backgroundColor: '#FEF0EE' },
+  errText:   { fontSize: 11, color: '#C0392B', marginBottom: 8 },
   btnRow:    { flexDirection: 'row', gap: 10, marginTop: 16 },
   btnCancel: { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:   { flex: 1.6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.esp },
-  btnSaveText: { fontSize: 14, fontWeight: '700', color: '#fff' } });
+  btnSaveText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' } });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
 export default function TimeBlocksScreen() {
@@ -504,9 +504,9 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
-  addBtnText:  { fontSize: 12, fontWeight: '700', color: '#fff' },
+  addBtnText:  { fontSize: 12, fontWeight: '700', color: '#F5F6F8' },
 
   infoBanner:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#EBF5FB', borderRadius: 2, borderWidth: 1, borderColor: '#AED6F1', padding: 12, marginBottom: 20 },
   infoText:    { flex: 1, fontSize: 12, color: '#1A5276', lineHeight: 18 },

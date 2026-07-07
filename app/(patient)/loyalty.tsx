@@ -36,10 +36,10 @@ const TIERS = [
 ];
 
 const REASON_CFG: Record<string, { icon: string; label: string; color: string }> = {
-  appointment: { icon: '🦷', label: 'Návšteva',  color: '#1E8449' },
-  review:      { icon: '⭐', label: 'Recenzia',  color: '#F39C12' },
+  appointment: { icon: '🦷', label: 'Návšteva',  color: '#2E7D5E' },
+  review:      { icon: '⭐', label: 'Recenzia',  color: '#B8ACA0' },
   referral:    { icon: '👥', label: 'Odporúčanie', color: '#3498DB' },
-  streak:      { icon: '🔥', label: 'Séria',     color: '#E74C3C' },
+  streak:      { icon: '🔥', label: 'Séria',     color: '#C0392B' },
   bonus:       { icon: '🎁', label: 'Bonus',     color: '#9B59B6' },
 };
 
@@ -136,7 +136,7 @@ export default function LoyaltyScreen() {
         {/* ── TIER CARD ── */}
         <Animated.View entering={FadeInDown.delay(100).duration(500)}>
           <LinearGradient
-            colors={dark ? ['#1A120B', '#111827'] : [tier.bg, '#fff']}
+            colors={dark ? ['#1A120B', '#111827'] : [tier.bg, '#F5F6F8']}
             style={[s.tierCard, SHADOWS.card]}
           >
             <View style={s.tierTop}>
@@ -204,7 +204,7 @@ export default function LoyaltyScreen() {
                     <Text style={[s.rewardDesc, { color: colors.textSecondary }]}>{reward.desc}</Text>
                   </View>
                   <View style={[s.rewardBadge, { backgroundColor: canClaim ? COLORS.gold : colors.bg3 }]}>
-                    <Text style={[s.rewardBadgeText, { color: canClaim ? '#fff' : colors.textSecondary }]}>{reward.points}</Text>
+                    <Text style={[s.rewardBadgeText, { color: canClaim ? '#F5F6F8' : colors.textSecondary }]}>{reward.points}</Text>
                   </View>
                 </View>
               </AnimatedListItem>
@@ -246,7 +246,7 @@ export default function LoyaltyScreen() {
                         {d.toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </Text>
                     </View>
-                    <Text style={[s.historyPts, { color: entry.points > 0 ? '#27AE60' : '#E74C3C' }]}>
+                    <Text style={[s.historyPts, { color: entry.points > 0 ? '#52C896' : '#C0392B' }]}>
                       {entry.points > 0 ? '+' : ''}{entry.points}
                     </Text>
                   </View>
@@ -295,7 +295,7 @@ const s = StyleSheet.create({
   emptyTitle:   { fontSize: 16, fontWeight: '700', marginBottom: 6 },
   emptyDesc:    { fontSize: 12, textAlign: 'center', lineHeight: 18, paddingHorizontal: 20, marginBottom: 16 },
   emptyBtn:     { backgroundColor: COLORS.wal, borderRadius: RADII.md, paddingHorizontal: 24, paddingVertical: 12 },
-  emptyBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  emptyBtnText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   // History
   historyRow:   { flexDirection: 'row', alignItems: 'center', borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 6, gap: 10 },

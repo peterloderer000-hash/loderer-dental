@@ -325,7 +325,7 @@ export default function ChatScreen() {
                 <View style={s.botAvatar}><Text style={{ fontSize: 14 }}>🤖</Text></View>
               )}
               <View style={msg.from === 'bot' ? [s.bubbleBot, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }] : s.bubbleUser}>
-                <Text style={[s.bubbleText, { color: msg.from === 'bot' ? colors.textPrimary : '#fff' }]}>
+                <Text style={[s.bubbleText, { color: msg.from === 'bot' ? colors.textPrimary : '#F5F6F8' }]}>
                   {msg.text}
                 </Text>
                 <Text style={[s.bubbleTime, { color: msg.from === 'bot' ? colors.textSecondary : 'rgba(255,255,255,0.55)' }]}>
@@ -446,7 +446,7 @@ const s = StyleSheet.create({
   groupChipActive: { backgroundColor: COLORS.gold, borderColor: COLORS.goldDark },
   groupEmoji:      { fontSize: 13 },
   groupLabel:      { fontFamily: 'DMSans_500Medium', fontSize: 11, color: 'rgba(196,168,130,0.75)', letterSpacing: 0.3 },
-  groupLabelActive:{ color: '#fff' },
+  groupLabelActive:{ color: '#F5F6F8' },
 
   // Messages
   messagesContent: { padding: 16, paddingBottom: 8, gap: 12 },

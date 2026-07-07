@@ -136,13 +136,13 @@ export default function DentalPassportQR() {
 
     const cellSize = 8;
     return (
-      <View style={{ padding: 16, backgroundColor: '#fff', borderRadius: RADII.md }}>
+      <View style={{ padding: 16, backgroundColor: '#F5F6F8', borderRadius: RADII.md }}>
         {cells.map((row, r) => (
           <View key={r} style={{ flexDirection: 'row' }}>
             {row.map((filled, c) => (
               <View key={c} style={{
                 width: cellSize, height: cellSize,
-                backgroundColor: filled ? '#111827' : '#fff',
+                backgroundColor: filled ? '#111827' : '#F5F6F8',
               }} />
             ))}
           </View>
@@ -259,7 +259,7 @@ const st = StyleSheet.create({
   statLabel: { fontSize: 10, marginTop: 2 },
 
   shareBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold, marginBottom: SPACING.lg },
-  shareBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  shareBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   disclaimer: { flexDirection: 'row', gap: 8, padding: 12, borderRadius: RADII.sm, alignItems: 'flex-start' },
   disclaimerText: { flex: 1, fontSize: 11, lineHeight: 16 },

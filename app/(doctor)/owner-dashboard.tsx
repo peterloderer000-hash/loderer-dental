@@ -141,7 +141,7 @@ export default function OwnerDashboard() {
   const paymentBreakdown = useMemo(() => {
     const total = kpi.totalRevenue || 1;
     return [
-      { label: 'Hotovosť', amount: kpi.cashPayments, pct: (kpi.cashPayments / total) * 100, color: '#27AE60' },
+      { label: 'Hotovosť', amount: kpi.cashPayments, pct: (kpi.cashPayments / total) * 100, color: '#52C896' },
       { label: 'Karta', amount: kpi.cardPayments, pct: (kpi.cardPayments / total) * 100, color: '#3498DB' },
       { label: 'Prevod', amount: kpi.transferPayments, pct: (kpi.transferPayments / total) * 100, color: '#9B59B6' },
     ];
@@ -184,20 +184,20 @@ export default function OwnerDashboard() {
         ) : (
           <>
             {/* Revenue KPI */}
-            <View style={[styles.revenueCard, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+            <View style={[styles.revenueCard, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89644' : '#A3D4BE' }]}>
               <View style={styles.revenueTop}>
-                <Text style={[styles.revenueLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>CELKOVÉ TRŽBY</Text>
+                <Text style={[styles.revenueLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>CELKOVÉ TRŽBY</Text>
                 {kpi.revenueChange !== 0 && (
-                  <View style={[styles.changeBadge, { backgroundColor: kpi.revenueChange > 0 ? (dark ? '#27AE6022' : '#D5F5E3') : (dark ? '#92281122' : '#FDEDEC') }]}>
+                  <View style={[styles.changeBadge, { backgroundColor: kpi.revenueChange > 0 ? (dark ? '#52C89622' : '#EDF7F3') : (dark ? '#C0392B22' : '#FDEDEC') }]}>
                     <Ionicons name={kpi.revenueChange > 0 ? 'trending-up' : 'trending-down'} size={12}
-                      color={kpi.revenueChange > 0 ? '#27AE60' : '#E74C3C'} />
-                    <Text style={{ fontSize: 10, fontWeight: '700', color: kpi.revenueChange > 0 ? '#27AE60' : '#E74C3C' }}>
+                      color={kpi.revenueChange > 0 ? '#52C896' : '#C0392B'} />
+                    <Text style={{ fontSize: 10, fontWeight: '700', color: kpi.revenueChange > 0 ? '#52C896' : '#C0392B' }}>
                       {kpi.revenueChange > 0 ? '+' : ''}{kpi.revenueChange.toFixed(0)}%
                     </Text>
                   </View>
                 )}
               </View>
-              <Text style={[styles.revenueAmount, { color: dark ? '#2ECC71' : '#1E8449' }]}>
+              <Text style={[styles.revenueAmount, { color: dark ? '#52C896' : '#2E7D5E' }]}>
                 {fmtEur(kpi.totalRevenue)}
               </Text>
             </View>
@@ -208,13 +208,13 @@ export default function OwnerDashboard() {
                 <Text style={[styles.kpiVal, { color: dark ? '#5DADE2' : '#1A5276' }]}>{kpi.completed}</Text>
                 <Text style={[styles.kpiLabel, { color: dark ? '#5DADE2' : '#2E86C1' }]}>Dokončených</Text>
               </View>
-              <View style={[styles.kpiBox, { backgroundColor: dark ? '#2D2200' : '#FEF9E7', borderColor: dark ? '#D4AC0D44' : '#F9E79F' }]}>
-                <Text style={[styles.kpiVal, { color: dark ? '#F1C40F' : '#7D6608' }]}>{kpi.cancelled}</Text>
+              <View style={[styles.kpiBox, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#B8ACA044' : '#D0D4DC' }]}>
+                <Text style={[styles.kpiVal, { color: dark ? '#F1C40F' : '#B87333' }]}>{kpi.cancelled}</Text>
                 <Text style={[styles.kpiLabel, { color: dark ? '#F1C40F' : '#B7950B' }]}>Zrušených</Text>
               </View>
-              <View style={[styles.kpiBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#E74C3C44' : '#F5B7B1' }]}>
-                <Text style={[styles.kpiVal, { color: dark ? '#E74C3C' : '#922B21' }]}>{kpi.noShow}</Text>
-                <Text style={[styles.kpiLabel, { color: dark ? '#E74C3C' : '#C0392B' }]}>No-show</Text>
+              <View style={[styles.kpiBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B44' : '#F5B7B1' }]}>
+                <Text style={[styles.kpiVal, { color: dark ? '#C0392B' : '#922B21' }]}>{kpi.noShow}</Text>
+                <Text style={[styles.kpiLabel, { color: dark ? '#C0392B' : '#C0392B' }]}>No-show</Text>
               </View>
               <View style={[styles.kpiBox, { backgroundColor: dark ? '#1E0D33' : '#F5EEF8', borderColor: dark ? '#AF7AC544' : '#D7BDE2' }]}>
                 <Text style={[styles.kpiVal, { color: dark ? '#AF7AC5' : '#6C3483' }]}>{kpi.avgRating ? kpi.avgRating.toFixed(1) : '—'}</Text>
@@ -258,7 +258,7 @@ export default function OwnerDashboard() {
                     {doc.avgRating && <Text style={[styles.docStat, { color: colors.textSecondary }]}>⭐ {doc.avgRating.toFixed(1)}</Text>}
                   </View>
                 </View>
-                <Text style={[styles.docRevenue, { color: dark ? '#27AE60' : '#1E8449' }]}>{fmtEur(doc.revenue * 100)}</Text>
+                <Text style={[styles.docRevenue, { color: dark ? '#52C896' : '#2E7D5E' }]}>{fmtEur(doc.revenue * 100)}</Text>
               </View>
             ))}
 
@@ -277,7 +277,7 @@ export default function OwnerDashboard() {
               </View>
               <View style={styles.summaryRow}>
                 <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>No-show rate</Text>
-                <Text style={[styles.summaryVal, { color: kpi.noShow > 0 ? '#E74C3C' : colors.textPrimary }]}>
+                <Text style={[styles.summaryVal, { color: kpi.noShow > 0 ? '#C0392B' : colors.textPrimary }]}>
                   {kpi.total > 0 ? ((kpi.noShow / kpi.total) * 100).toFixed(1) : 0}%
                 </Text>
               </View>
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   header:  { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
 
   periodRow:   { flexDirection: 'row', gap: 8, marginBottom: 8 },
   periodChip:  { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, borderWidth: 1.5 },

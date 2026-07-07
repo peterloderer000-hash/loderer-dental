@@ -1,0 +1,151 @@
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  ActivityIndicator, Alert, KeyboardAvoidingView, Modal, Platform,
+  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { supabase } from '../../supabase';
+import { COLORS, SPACING, RADII } from '../../styles/theme';
+import HeroHeader from '../../components/ui/HeroHeader';
+import { SkeletonList } from '../../components/Skeleton';
+import { exportTreatmentPlan } from '../../utils/exportPDF';
+import { useAppTheme } from '../../context/ThemeContext';
+
+// ─── Typy ─────────────────────────────────────────────────────────────────────
+type PlanItem = {
+  id: string;
+  plan_id: string;
+  title: string;
+  description: string | null;
+  estimated_cost: number | null;
+  status: 'planned' | 'scheduled' | 'completed' | 'skipped';
+  tooth_number: number | null;
+  sort_order: number;
+};
+
+type Plan = {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  title: string;
+  notes: string | null;
+  status: 'active' | 'completed' | 'cancelled';
+  visible_to_patient: boolean;
+  created_at: string;
+  items: PlanItem[];
+};
+
+// ─── Typy ─────────────────────────────────────────────────────────────────────
+type Service = { id: string; name: string; emoji: string | null; price_min: number | null };
+
+// ─── Konfigurácia stavov ───────────────────────────────────────────────────────
+const ITEM_STATUS_CFG = {
+  planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', border: '#AED6F1', icon: 'time-outline'             as const },
+  scheduled: { label: 'Naplánované', color: '#7D6608', bg: '#FEF9E7', darkBg: '#2D2200', border: '#F9E79F', icon: 'calendar-outline'         as const },
+  completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', border: '#A3D4BE', icon: 'checkmark-circle-outline' as const },
+  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const }
+};
+const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
+
+const PLAN_STATUS_CFG = {
+  active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#E2DDD6' },
+  completed: { label: 'Hotový',   color: '#2E7D5E',   bg: '#EDF7F3' },
+  cancelled: { label: 'Zrušený',  color: '#922B21',   bg: '#FDEDEC' }
+};
+
+// ─── Pomocné ──────────────────────────────────────────────────────────────────
+function fmtDate(s: string) {
+  return new Date(s).toLocaleDateString('sk-SK', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function fmtEur(n: number | null) {
+  if (n === null) return '—';
+  return `${n.toFixed(2).replace('.', ',')} €`;
+}
+
+// ─── Modál: nový/edit plán ────────────────────────────────────────────────────
+const PLAN_TEMPLATES = [
+  { title: 'Komplexný liečebný plán', notes: 'Celkové ošetrenie s postupnými fázami.' },
+  { title: 'Protetický plán',         notes: 'Korunky, mostíky, implantáty.' },
+  { title: 'Endodontické ošetrenie',  notes: 'Liečba koreňových kanálikov.' },
+  { title: 'Parodontologická liečba', notes: 'Ošetrenie ďasien a parodontu.' },
+  { title: 'Estetický plán',          notes: 'Bielenie, veneery, estetické úpravy.' },
+  { title: 'Chirurgický plán',        notes: 'Extrakcie, implantácie, chirurgia.' },
+  { title: 'Detský liečebný plán',    notes: 'Preventíva a liečba mliečneho chrupu.' },
+  { title: 'Ortodontický plán',       notes: 'Rovnátka, alignery, korekcia zhryzu.' },
+];
+
+function PlanModal({ visible, initial, onClose, onSave }: {
+  visible: boolean;
+  initial: { title: string; notes: string } | null;
+  onClose: () => void;
+  onSave: (title: string, notes: string) => Promise<void>;
+}) {
+  const { colors, dark } = useAppTheme();
+  const [title, setTitle] = useState('');
+  const [notes, setNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (visible) {
+      setTitle(initial?.title ?? '');
+      setNotes(initial?.notes ?? '');
+    }
+  }, [visible, initial]);
+
+  async function handleSave() {
+    if (!title.trim()) { Alert.alert('Chyba', 'Zadaj názov plánu.'); return; }
+    setSaving(true);
+    await onSave(title.trim(), notes.trim());
+    setSaving(false);
+  }
+
+  function applyTemplate(t: typeof PLAN_TEMPLATES[0]) {
+    setTitle(t.title);
+    setNotes(t.notes);
+  }
+
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <View style={mStyles.overlay}>
+          <TouchableOpacity style={{ flex: 0.15 }} activeOpacity={1} onPress={onClose} />
+          <View style={[mStyles.sheet, { backgroundColor: colors.cardBg }]}>
+            <View style={[mStyles.handle, { backgroundColor: colors.bg3 }]} />
+            <Text style={[mStyles.title, { color: colors.textPrimary }]}>{initial ? 'Upraviť plán' : 'Nový plán'}</Text>
+
+            {/* Šablóny — len pri vytváraní nového */}
+            {!initial && (
+              <>
+                <Text style={[mStyles.label, { color: colors.textSecondary }]}>ŠABLÓNY</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12, maxHeight: 36 }}
+                  contentContainerStyle={{ gap: 8, paddingRight: 4 }}>
+                  {PLAN_TEMPLATES.map((t) => (
+                    <TouchableOpacity key={t.title}
+                      style={[mStyles.templateChip, {
+                        backgroundColor: title === t.title ? COLORS.wal : colors.bg2,
+                        borderColor: title === t.title ? COLORS.wal : colors.bg3,
+                      }]}
+                      onPress={() => applyTemplate(t)} activeOpacity={0.8}>
+                      <Text style={[mStyles.templateText, {
+                        color: title === t.title ? '#F5F6F8' : colors.textPrimary,
+                      }]}>{t.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            )}
+
+            <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV PLÁNU</Text>
+            <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={title} onChangeText={setTitle}
+              placeholder="Liečebný plán" placeholderTextColor={dark ? '#666' : '#bbb'} autoFocus />
+
+            <Text style={[mStyles.label, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
+            <TextInput style={[mStyles.input, { minHeight: 80, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={notes} onChangeText={setNotes}
+              placeholder="Celkový postup, odporúčania..." placeholderTextColor={dark ? '#666' : '#bbb'}
+              multiline numberOfLines={3} textAlignVertical="top" />
+
+            <View style={mStyles.btnRow}>
+              <TouchableOpacity style={[mStyles.btnCancel, { borderColor: colors.bg3 }]} onPress={onClose} activeOpacity={0.8}>
+                <Text style={[mStyles.btnCancelText, { color:

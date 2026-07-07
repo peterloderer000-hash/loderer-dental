@@ -165,7 +165,7 @@ export default function ReceptionReports() {
           >
             {period === tab.key ? (
               <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.tabGrad}>
-                <Text style={[s.tabLabel, { color: '#fff' }]}>{tab.label}</Text>
+                <Text style={[s.tabLabel, { color: '#F5F6F8' }]}>{tab.label}</Text>
               </LinearGradient>
             ) : (
               <Text style={[s.tabLabel, { color: 'rgba(196,168,130,0.7)' }]}>{tab.label}</Text>

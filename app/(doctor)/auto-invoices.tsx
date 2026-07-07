@@ -208,7 +208,7 @@ const st = StyleSheet.create({
   statLabel: { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', marginTop: 2 },
 
   genBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold, marginBottom: SPACING.lg },
-  genBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  genBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 14 },
 
   empty: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xxl, alignItems: 'center' },
   emptyTitle: { fontSize: 18, fontWeight: '700', marginTop: 12 },

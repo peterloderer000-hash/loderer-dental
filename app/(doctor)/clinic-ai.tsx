@@ -163,7 +163,7 @@ const bbl = StyleSheet.create({
   bubble:     { maxWidth: '78%', borderRadius: 4, padding: 12 },
   bubbleUser: { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
   bubbleAI:   { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
-  textUser:   { fontSize: 14, color: '#fff', lineHeight: 20 },
+  textUser:   { fontSize: 14, color: '#F5F6F8', lineHeight: 20 },
   textAI:     { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   time:       { fontSize: 9, color: '#999', marginTop: 4, textAlign: 'right' }
 });
@@ -205,7 +205,7 @@ export default function ClinicAIScreen() {
       <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#F5F6F8', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>AI asistent je dostupný len pre doktora.</Text>
         </View>
       </View>
@@ -317,7 +317,7 @@ const s = StyleSheet.create({
   },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   aiBadge:    { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   aiBadgeText:{ fontSize: 10, fontWeight: '700', color: COLORS.cream, letterSpacing: 1 },
 

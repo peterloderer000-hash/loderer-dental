@@ -113,16 +113,16 @@ export default function FormsHubScreen() {
       >
         {/* Status banner */}
         {pendingCount > 0 ? (
-          <View style={[styles.statusBanner, { backgroundColor: dark ? '#2D2200' : '#FEF9E7', borderColor: dark ? '#F39C1244' : '#F9E79F' }]}>
-            <Ionicons name="alert-circle" size={20} color="#F39C12" />
-            <Text style={[styles.statusText, { color: dark ? '#F0A030' : '#7D6608' }]}>
+          <View style={[styles.statusBanner, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#B8ACA044' : '#D0D4DC' }]}>
+            <Ionicons name="alert-circle" size={20} color="#B8ACA0" />
+            <Text style={[styles.statusText, { color: dark ? '#F0A030' : '#B87333' }]}>
               {pendingCount} {pendingCount === 1 ? 'formulár čaká' : pendingCount < 5 ? 'formuláre čakajú' : 'formulárov čaká'} na vyplnenie
             </Text>
           </View>
         ) : (
-          <View style={[styles.statusBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-            <Ionicons name="checkmark-circle" size={20} color="#27AE60" />
-            <Text style={[styles.statusText, { color: dark ? '#58D68D' : '#1E8449' }]}>
+          <View style={[styles.statusBanner, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89644' : '#A3D4BE' }]}>
+            <Ionicons name="checkmark-circle" size={20} color="#52C896" />
+            <Text style={[styles.statusText, { color: dark ? '#58D68D' : '#2E7D5E' }]}>
               Všetky formuláre sú vyplnené
             </Text>
           </View>
@@ -146,11 +146,11 @@ export default function FormsHubScreen() {
           </View>
           <View style={[styles.formStatus, {
             backgroundColor: hasHealthPassport
-              ? (dark ? '#0D3B1F' : '#EAFAF1')
-              : (dark ? '#2D2200' : '#FEF9E7'),
+              ? (dark ? '#1A3D2E' : '#EDF7F3')
+              : (dark ? '#2D1F10' : '#FDF3E7'),
           }]}>
             <Text style={[styles.formStatusText, {
-              color: hasHealthPassport ? (dark ? '#58D68D' : '#1E8449') : (dark ? '#F0A030' : '#7D6608'),
+              color: hasHealthPassport ? (dark ? '#58D68D' : '#2E7D5E') : (dark ? '#F0A030' : '#B87333'),
             }]}>
               {hasHealthPassport ? '✅ Vyplnený' : '⏳ Nevyplnený'}
             </Text>
@@ -188,16 +188,16 @@ export default function FormsHubScreen() {
 
         {pendingConsents.length > 0 && (
           <>
-            <Text style={[styles.subLabel, { color: dark ? '#F0A030' : '#7D6608' }]}>⏳ Čakajúce na podpis</Text>
+            <Text style={[styles.subLabel, { color: dark ? '#F0A030' : '#B87333' }]}>⏳ Čakajúce na podpis</Text>
             {pendingConsents.map(c => (
               <TouchableOpacity
                 key={c.id}
-                style={[styles.formCard, { backgroundColor: dark ? '#2D2200' : '#FEF9E7', borderColor: dark ? '#F39C1244' : '#F9E79F' }]}
+                style={[styles.formCard, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#B8ACA044' : '#D0D4DC' }]}
                 onPress={() => router.push('/(patient)/consents')}
                 activeOpacity={0.85}
               >
                 <View style={[styles.formIcon, { backgroundColor: dark ? '#3D2A00' : '#FDE8C0' }]}>
-                  <Ionicons name="document-text" size={22} color="#F39C12" />
+                  <Ionicons name="document-text" size={22} color="#B8ACA0" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.formTitle, { color: colors.textPrimary }]}>{c.form?.title ?? 'Súhlas'}</Text>
@@ -215,7 +215,7 @@ export default function FormsHubScreen() {
 
         {signedConsents.length > 0 && (
           <>
-            <Text style={[styles.subLabel, { color: dark ? '#58D68D' : '#1E8449' }]}>✅ Podpísané</Text>
+            <Text style={[styles.subLabel, { color: dark ? '#58D68D' : '#2E7D5E' }]}>✅ Podpísané</Text>
             {signedConsents.slice(0, 5).map(c => (
               <TouchableOpacity
                 key={c.id}
@@ -223,8 +223,8 @@ export default function FormsHubScreen() {
                 onPress={() => router.push('/(patient)/consents')}
                 activeOpacity={0.85}
               >
-                <View style={[styles.formIcon, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-                  <Ionicons name="checkmark-circle" size={22} color="#27AE60" />
+                <View style={[styles.formIcon, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
+                  <Ionicons name="checkmark-circle" size={22} color="#52C896" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.formTitle, { color: colors.textPrimary }]}>{c.form?.title ?? 'Súhlas'}</Text>
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   safe:        { flex: 1, backgroundColor: COLORS.bg2 },
   header:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.lg, paddingTop: 14, paddingBottom: 16 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
   headerSub:   { fontSize: 11, color: COLORS.sand, marginTop: 1 },
 
   statusBanner:    { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: RADII.md, borderWidth: 1.5, padding: 14, marginBottom: 20 },

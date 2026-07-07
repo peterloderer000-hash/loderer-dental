@@ -36,21 +36,21 @@ const FILTER_LABELS: Record<RecallFilter, string> = {
 // ─── Urgentnosť ───────────────────────────────────────────────────────────────
 function getUrgency(months: number, dark: boolean) {
   if (months >= 24) return {
-    dot: '#E74C3C', color: '#922B21',
+    dot: '#C0392B', color: '#922B21',
     bg: dark ? '#4A1010' : '#FDEDEC',
     border: dark ? '#C0392B33' : '#F5B7B1',
     emoji: '🔴'
   };
   if (months >= 12) return {
-    dot: '#F39C12', color: '#7D6608',
-    bg: dark ? '#2D2200' : '#FEF9E7',
-    border: dark ? '#E67E2233' : '#F9E79F',
+    dot: '#B8ACA0', color: '#B87333',
+    bg: dark ? '#2D1F10' : '#FDF3E7',
+    border: dark ? '#E67E2233' : '#D0D4DC',
     emoji: '🟡'
   };
   return {
-    dot: '#2ECC71', color: '#1E8449',
-    bg: dark ? '#0D3B1F' : '#EAFAF1',
-    border: dark ? '#27AE6033' : '#A9DFBF',
+    dot: '#52C896', color: '#2E7D5E',
+    bg: dark ? '#1A3D2E' : '#EDF7F3',
+    border: dark ? '#52C89633' : '#A3D4BE',
     emoji: '🟢'
   };
 }
@@ -406,12 +406,12 @@ export default function RecallScreen() {
                     onPress={() => { setFilter(f); setSelected(new Set()); }}
                     activeOpacity={0.8}>
                     <Text style={[styles.filterTabText, { color: colors.textSecondary },
-                      active && { color: '#fff' }]}>
+                      active && { color: '#F5F6F8' }]}>
                       {FILTER_LABELS[f]}
                     </Text>
                     <View style={[styles.filterBadge,
                       { backgroundColor: active ? 'rgba(255,255,255,0.22)' : colors.bg3 }]}>
-                      <Text style={[styles.filterBadgeText, { color: active ? '#fff' : colors.textSecondary }]}>
+                      <Text style={[styles.filterBadgeText, { color: active ? '#F5F6F8' : colors.textSecondary }]}>
                         {counts[f]}
                       </Text>
                     </View>
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
   countBadge:  { backgroundColor: COLORS.gold, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   countText:   { fontSize: 13, fontWeight: '800', color: COLORS.esp },
 
@@ -551,10 +551,10 @@ const styles = StyleSheet.create({
   selectAllText: { fontSize: 12, fontWeight: '600' },
   checkbox:      { width: 22, height: 22, borderRadius: 2, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   bulkSendBtn:   { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.esp, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
-  bulkSendText:  { fontSize: 11, fontWeight: '700', color: '#fff' },
+  bulkSendText:  { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
 
   // Karta
-  card:        { flexDirection: 'row', borderRadius: 2, borderWidth: 1, marginBottom: 10, overflow: 'hidden', elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3 },
+  card:        { flexDirection: 'row', borderRadius: 2, borderWidth: 1, marginBottom: 10, overflow: 'hidden', elevation: 1, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3 },
   urgBar:      { width: 5, minHeight: '100%' },
   cardTopRow:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, paddingTop: 12, paddingRight: 12 },
   name:        { fontSize: 15, fontWeight: '800', flex: 1, marginRight: 8 },
@@ -586,5 +586,5 @@ const styles = StyleSheet.create({
   modalBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5 },
   modalBtnCancelText: { fontSize: 14, fontWeight: '600' },
   modalBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.esp },
-  modalBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
+  modalBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });

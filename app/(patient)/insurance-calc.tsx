@@ -74,7 +74,7 @@ export default function InsuranceCalc() {
                 <TouchableOpacity key={ins.key}
                   style={[st.insurerChip, { backgroundColor: sel ? COLORS.gold : colors.bg2, borderColor: sel ? COLORS.gold : colors.bg3 }]}
                   onPress={() => { setInsurer(ins.key); Haptics.selectionAsync(); }}>
-                  <Text style={[st.insurerText, { color: sel ? '#fff' : colors.textPrimary }]}>{ins.name}</Text>
+                  <Text style={[st.insurerText, { color: sel ? '#F5F6F8' : colors.textPrimary }]}>{ins.name}</Text>
                 </TouchableOpacity>
               );
             })}

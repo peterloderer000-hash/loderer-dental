@@ -103,7 +103,7 @@ export default function ClinicDashboardScreen() {
       <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#F5F6F8', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Denný dashboard je dostupný len pre doktora.</Text>
         </View>
       </View>
@@ -112,7 +112,7 @@ export default function ClinicDashboardScreen() {
 
   const utilizationColor =
     metrics.utilizationPct === null  ? COLORS.wal :
-    metrics.utilizationPct >= 80     ? '#1E8449' :
+    metrics.utilizationPct >= 80     ? '#2E7D5E' :
     metrics.utilizationPct >= 50     ? '#E67E22' : '#C0392B';
 
   return (
@@ -176,14 +176,14 @@ export default function ClinicDashboardScreen() {
             <StatCard
               label="Čaká teraz" value={metrics.waitingNow}
               icon="hourglass-outline"
-              color={metrics.waitingNow > 0 ? '#7D6608' : '#1E8449'}
-              bg={metrics.waitingNow > 0 ? '#FEF9E7' : '#EAFAF1'}
+              color={metrics.waitingNow > 0 ? '#B87333' : '#2E7D5E'}
+              bg={metrics.waitingNow > 0 ? '#FDF3E7' : '#EDF7F3'}
             />
           </View>
           <View style={s.statsGrid}>
             <StatCard
               label="V kresle" value={metrics.inChairNow}
-              icon="medical-outline" color="#1E8449" bg="#EAFAF1"
+              icon="medical-outline" color="#2E7D5E" bg="#EDF7F3"
             />
             <StatCard
               label="Dokončených" value={metrics.completedToday}
@@ -195,14 +195,14 @@ export default function ClinicDashboardScreen() {
               label="Čaká príliš dlho" value={metrics.waitingTooLong}
               sub="> 15 minút"
               icon="alert-circle-outline"
-              color={metrics.waitingTooLong > 0 ? '#C0392B' : '#1E8449'}
-              bg={metrics.waitingTooLong > 0 ? '#FDEDEC' : '#EAFAF1'}
+              color={metrics.waitingTooLong > 0 ? '#C0392B' : '#2E7D5E'}
+              bg={metrics.waitingTooLong > 0 ? '#FDEDEC' : '#EDF7F3'}
             />
             <StatCard
               label="No-show" value={metrics.noShowToday}
               icon="close-circle-outline"
-              color={metrics.noShowToday > 0 ? '#922B21' : '#1E8449'}
-              bg={metrics.noShowToday > 0 ? '#FDEDEC' : '#EAFAF1'}
+              color={metrics.noShowToday > 0 ? '#922B21' : '#2E7D5E'}
+              bg={metrics.noShowToday > 0 ? '#FDEDEC' : '#EDF7F3'}
             />
           </View>
 
@@ -282,7 +282,7 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
 
   navRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   navBtn: {

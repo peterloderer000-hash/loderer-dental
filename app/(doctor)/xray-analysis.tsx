@@ -46,12 +46,12 @@ type AnalysisResult = {
 /* ── Konfigurácia typov nálezov ──────────────────────────────────────── */
 const FINDING_CFG: Record<string, { label: string; icon: string; color: string; bg: string }> = {
   cavity:       { label: 'Kariés',        icon: '🦷', color: '#C0392B', bg: '#FDEDEC' },
-  inflammation: { label: 'Zápal',         icon: '🔴', color: '#E74C3C', bg: '#FDEDEC' },
+  inflammation: { label: 'Zápal',         icon: '🔴', color: '#C0392B', bg: '#FDEDEC' },
   bone_loss:    { label: 'Úbytok kosti',  icon: '🦴', color: '#D35400', bg: '#FDF3E7' },
   fracture:     { label: 'Fraktúra',      icon: '💥', color: '#922B21', bg: '#FDEDEC' },
   impaction:    { label: 'Impakcia',      icon: '⚠️', color: '#B87333', bg: '#FDF3E7' },
   abscess:      { label: 'Absces',        icon: '🏥', color: '#C0392B', bg: '#FDEDEC' },
-  calculus:     { label: 'Zubný kameň',   icon: '🪨', color: '#7D6608', bg: '#FEF9E7' },
+  calculus:     { label: 'Zubný kameň',   icon: '🪨', color: '#B87333', bg: '#FDF3E7' },
 };
 
 const SEVERITY_CFG = {
@@ -283,7 +283,7 @@ export default function XrayAnalysis() {
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.tipBox, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FEF9E7' }]}>
+            <View style={[styles.tipBox, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FDF3E7' }]}>
               <Ionicons name="bulb-outline" size={16} color={COLORS.gold} />
               <Text style={[styles.tipText, { color: colors.textSecondary }]}>
                 Pre najlepšie výsledky použite kvalitný panoramatický RTG snímok
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   uploadSub: { fontSize: 13, textAlign: 'center', marginBottom: SPACING.xl, lineHeight: 19 },
   uploadBtns: { flexDirection: 'row', gap: 12, marginBottom: SPACING.lg },
   uploadBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingVertical: 12, borderRadius: RADII.pill },
-  uploadBtnText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  uploadBtnText: { color: '#F5F6F8', fontWeight: '600', fontSize: 14 },
   tipBox: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: RADII.sm, width: '100%' },
   tipText: { flex: 1, fontSize: 12, lineHeight: 17 },
 
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
   heatmapToggle: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADII.pill },
   heatmapText: { fontSize: 12, fontWeight: '600' },
   changeBtn: { padding: 6 },
-  imageContainer: { width: '100%', aspectRatio: 1.6, backgroundColor: '#000', position: 'relative' },
+  imageContainer: { width: '100%', aspectRatio: 1.6, backgroundColor: '#121417', position: 'relative' },
   xrayImage: { width: '100%', height: '100%' },
 
   // Heatmap dots
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', zIndex: 10,
   },
   heatmapDotSelected: { borderWidth: 3 },
-  heatmapLabel: { fontSize: 10, fontWeight: '800', color: '#fff' },
+  heatmapLabel: { fontSize: 10, fontWeight: '800', color: '#F5F6F8' },
 
   // Analyze
   analyzeBtn: {
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
     gap: 10, margin: 14, paddingVertical: 14, backgroundColor: COLORS.gold,
     borderRadius: RADII.pill, ...SHADOWS.gold,
   },
-  analyzeBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  analyzeBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
   analyzingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   progressBar: { height: 3, backgroundColor: 'rgba(255,255,255,0.15)', marginHorizontal: 14, marginBottom: 14, borderRadius: 2, overflow: 'hidden' },
   progressFill: { height: '100%', backgroundColor: COLORS.gold, borderRadius: 2 },
@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 13 },
   historyCard: { borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 8 },
   historyRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  historyThumb: { width: 48, height: 48, borderRadius: 2, backgroundColor: '#000' },
+  historyThumb: { width: 48, height: 48, borderRadius: 2, backgroundColor: '#121417' },
   historyMeta: { flex: 1 },
   historyDate: { fontSize: 13, fontWeight: '600' },
   historyFindings: { fontSize: 11 },

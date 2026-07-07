@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   header:  { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
 
   sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
   sectionSub:   { fontSize: 12, marginBottom: 12, fontStyle: 'italic' },

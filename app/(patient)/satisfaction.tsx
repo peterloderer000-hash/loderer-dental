@@ -172,10 +172,10 @@ const st = StyleSheet.create({
   commentInput: { borderWidth: 1, borderRadius: RADII.md, padding: 14, fontSize: 14, minHeight: 100, lineHeight: 20 },
 
   submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold },
-  submitText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  submitText: { color: '#F5F6F8', fontWeight: '700', fontSize: 16 },
 
   thankTitle: { fontSize: 22, fontWeight: '800', marginTop: 16 },
   thankSub: { fontSize: 14, textAlign: 'center', lineHeight: 20, marginTop: 8, marginBottom: 24, paddingHorizontal: 20 },
   doneBtn: { paddingHorizontal: 32, paddingVertical: 12, backgroundColor: COLORS.gold, borderRadius: RADII.pill },
-  doneBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  doneBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 });

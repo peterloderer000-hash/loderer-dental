@@ -40,7 +40,7 @@ function Avatar({ name, avatarUrl }: { name: string | null; avatarUrl: string | 
 
   // Deterministická farba podľa prvého písmena
   const PALETTE = [
-    '#1A5276', '#1E8449', '#6C3483', '#922B21',
+    '#1A5276', '#2E7D5E', '#6C3483', '#922B21',
     '#9A7D0A', '#1A5276', '#17A589', '#784212',
   ];
   const color = PALETTE[(initials.charCodeAt(0) ?? 0) % PALETTE.length];
@@ -287,7 +287,7 @@ export default function PatientsScreen() {
           onPress={() => setShowSort(p => !p)}
           hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Ionicons name="swap-vertical-outline" size={18} color={showSort ? '#fff' : COLORS.wal} />
+          <Ionicons name="swap-vertical-outline" size={18} color={showSort ? '#F5F6F8' : COLORS.wal} />
         </TouchableOpacity>
       </View>
 
@@ -313,11 +313,11 @@ export default function PatientsScreen() {
       {/* ── Štatistiky ── */}
       {!loading && query.length === 0 && (
         <View style={styles.statsRow}>
-          <View style={[styles.statChip, { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
-            <Text style={[styles.statNum, { color: '#1E8449' }]}>{passportCount}</Text>
-            <Text style={[styles.statLbl, { color: '#1E8449' }]}>S anamnézou</Text>
+          <View style={[styles.statChip, { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' }]}>
+            <Text style={[styles.statNum, { color: '#2E7D5E' }]}>{passportCount}</Text>
+            <Text style={[styles.statLbl, { color: '#2E7D5E' }]}>S anamnézou</Text>
           </View>
-          <View style={[styles.statChip, { backgroundColor: '#FEF9E7', borderColor: '#F9E79F' }]}>
+          <View style={[styles.statChip, { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' }]}>
             <Text style={[styles.statNum, { color: '#9A7D0A' }]}>{missingCount}</Text>
             <Text style={[styles.statLbl, { color: '#9A7D0A' }]}>Bez anamnézy</Text>
           </View>
@@ -328,7 +328,7 @@ export default function PatientsScreen() {
             </View>
           )}
           {recallCount > 0 && (
-            <View style={[styles.statChip, { backgroundColor: '#FEF9E7', borderColor: '#F9E79F' }]}>
+            <View style={[styles.statChip, { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' }]}>
               <Text style={[styles.statNum, { color: '#9A7D0A' }]}>{recallCount}</Text>
               <Text style={[styles.statLbl, { color: '#9A7D0A' }]}>Recall</Text>
             </View>
@@ -491,20 +491,20 @@ const styles = StyleSheet.create({
   // Header
   header: { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl + 4, paddingTop: 20, paddingBottom: 20, flexDirection: 'row', alignItems: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
-  headerTitle: { fontSize: 20, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 20, fontWeight: '600', color: '#F5F6F8' },
   countBadge: { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 8, alignItems: 'center', borderWidth: 2, borderColor: COLORS.sand },
-  countNum:   { fontSize: 22, fontWeight: '700', color: '#fff', lineHeight: 26 },
+  countNum:   { fontSize: 22, fontWeight: '700', color: '#F5F6F8', lineHeight: 26 },
   countLabel: { fontSize: 10, color: COLORS.cream, letterSpacing: 1, textTransform: 'uppercase' },
 
   // Search bar
-  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, marginTop: 14, marginBottom: 4, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, marginTop: 14, marginBottom: 4, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, paddingHorizontal: 12, gap: 8, elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   searchIcon:  { flexShrink: 0 },
   searchInput: { flex: 1, paddingVertical: 13, fontSize: 14, color: COLORS.esp },
   sortBtn:        { width: 32, height: 32, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   sortBtnActive:  { backgroundColor: COLORS.wal },
-  sortPanel:      { backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
+  sortPanel:      { backgroundColor: COLORS.cream, marginHorizontal: SPACING.xl, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, marginBottom: 6, overflow: 'hidden', elevation: 4, shadowColor: '#121417', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
   sortOption:     { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  sortOptionActive:{ backgroundColor: '#E2DDD6' },
+  sortOptionActive:{ backgroundColor: '#D0D4DC' },
   sortOptionText: { fontSize: 13, color: COLORS.esp, fontWeight: '500' },
   sortOptionTextActive: { fontWeight: '700', color: COLORS.wal },
 
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
   filterChip:             { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive:       { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterChipText:         { fontSize: 11, fontWeight: '600', color: COLORS.wal },
-  filterChipTextActive:   { color: '#fff' },
+  filterChipTextActive:   { color: '#F5F6F8' },
   filterChipBadge:        { backgroundColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 5, paddingVertical: 1 },
   filterChipBadgeActive:  { backgroundColor: COLORS.sand },
   filterChipBadgeText:    { fontSize: 9, fontWeight: '800', color: COLORS.wal },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
   resultLabel: { fontSize: 11, color: COLORS.wal, paddingHorizontal: SPACING.xl, paddingTop: 12, paddingBottom: 4, fontStyle: 'italic' },
 
   // Patient card
-  card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
+  card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, marginTop: 12, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4 },
   cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
 
   avatar:     { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
@@ -538,39 +538,39 @@ const styles = StyleSheet.create({
   infoRow:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
   infoText:    { fontSize: 12, color: COLORS.wal },
   infoMuted:   { fontSize: 12, color: '#888', fontStyle: 'italic' },
-  recallChip:  { backgroundColor: '#FEF9E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 1, marginLeft: 4, borderWidth: 1, borderColor: '#F9E79F' },
+  recallChip:  { backgroundColor: '#FDF3E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 1, marginLeft: 4, borderWidth: 1, borderColor: '#D0D4DC' },
   recallChipText: { fontSize: 9, fontWeight: '700', color: '#9A7D0A' },
 
   passportBadge:        { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, alignSelf: 'flex-start' },
-  passportBadgeOk:      { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' },
-  passportBadgeMissing: { backgroundColor: '#FEF9E7', borderColor: '#F9E79F' },
+  passportBadgeOk:      { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' },
+  passportBadgeMissing: { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' },
   passportBadgeText:    { fontSize: 9, fontWeight: '700', color: COLORS.esp, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   actions:         { flexDirection: 'row', gap: 8 },
-  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 2, backgroundColor: '#E2DDD6', borderWidth: 1, borderColor: COLORS.sand },
+  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 2, backgroundColor: '#D0D4DC', borderWidth: 1, borderColor: COLORS.sand },
   btnChartText:    { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 9, borderRadius: 2, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },
   btnBook:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 9, borderRadius: 2, backgroundColor: COLORS.wal, marginTop: 8 },
-  btnBookText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  btnBookText: { fontSize: 12, fontWeight: '700', color: '#F5F6F8' },
 
   // Waiting list
-  wlSection:       { backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingTop: 10, paddingBottom: 12 },
+  wlSection:       { backgroundColor: '#FDF3E7', borderBottomWidth: 1, borderBottomColor: '#D0D4DC', paddingTop: 10, paddingBottom: 12 },
   wlSectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: SPACING.xl, marginBottom: 10 },
-  wlDot:           { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#D4AC0D' },
-  wlSectionTitle:  { fontSize: 9, fontWeight: '800', color: '#7D6608', letterSpacing: 1.5 },
-  wlCard:          { width: 190, backgroundColor: COLORS.cream, borderRadius: 2, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', elevation: 2 },
+  wlDot:           { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#B8ACA0' },
+  wlSectionTitle:  { fontSize: 9, fontWeight: '800', color: '#B87333', letterSpacing: 1.5 },
+  wlCard:          { width: 190, backgroundColor: COLORS.cream, borderRadius: 2, padding: 12, borderWidth: 1.5, borderColor: '#D0D4DC', elevation: 2 },
   wlCardTop:       { marginBottom: 6 },
   wlPatient:       { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   wlService:       { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
-  wlDate:          { fontSize: 11, color: '#7D6608', fontWeight: '500', marginBottom: 4 },
+  wlDate:          { fontSize: 11, color: '#B87333', fontWeight: '500', marginBottom: 4 },
   wlNotes:         { fontSize: 11, color: '#888', marginBottom: 8, fontStyle: 'italic' },
   wlActions:       { flexDirection: 'row', gap: 6 },
   wlBtnBook:       { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: 2, backgroundColor: COLORS.wal },
-  wlBtnBookText:   { fontSize: 11, fontWeight: '700', color: '#fff' },
+  wlBtnBookText:   { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
   wlBtnMsg:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: 2, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   wlBtnMsgText:    { fontSize: 11, fontWeight: '700', color: '#1A5276' },
-  wlBtnDone:       { width: 30, alignItems: 'center', justifyContent: 'center', paddingVertical: 7, borderRadius: 2, backgroundColor: '#1E8449' },
+  wlBtnDone:       { width: 30, alignItems: 'center', justifyContent: 'center', paddingVertical: 7, borderRadius: 2, backgroundColor: '#2E7D5E' },
 
   // Empty / loading
   loadingText: { marginTop: 12, color: COLORS.wal, fontSize: 13 },
@@ -578,5 +578,5 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 17, fontWeight: '600', color: COLORS.esp, marginBottom: 6, textAlign: 'center' },
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20 },
   clearBtn:     { marginTop: 18, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 20, paddingVertical: 10 },
-  clearBtnText: { fontSize: 13, fontWeight: '600', color: '#fff' }
+  clearBtnText: { fontSize: 13, fontWeight: '600', color: '#F5F6F8' }
 });

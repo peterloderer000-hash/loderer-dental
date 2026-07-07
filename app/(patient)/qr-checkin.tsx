@@ -119,11 +119,11 @@ export default function QRCheckinScreen() {
     return (
       <View style={[s.center, { backgroundColor: colors.bg2 }]}>
         <Animated.View entering={FadeInDown.duration(400)} style={[s.resultCard, { backgroundColor: colors.cardBg }]}>
-          <View style={[s.resultIcon, { backgroundColor: result.success ? (dark ? '#0D3B1F' : '#EAFAF1') : (dark ? '#4A1010' : '#FDEDEC') }]}>
+          <View style={[s.resultIcon, { backgroundColor: result.success ? (dark ? '#1A3D2E' : '#EDF7F3') : (dark ? '#4A1010' : '#FDEDEC') }]}>
             <Ionicons
               name={result.success ? 'checkmark-circle' : 'close-circle'}
               size={48}
-              color={result.success ? '#27AE60' : '#E74C3C'}
+              color={result.success ? '#52C896' : '#C0392B'}
             />
           </View>
           <Text style={[s.resultTitle, { color: colors.textPrimary }]}>
@@ -132,7 +132,7 @@ export default function QRCheckinScreen() {
           <Text style={[s.resultMsg, { color: colors.textSecondary }]}>{result.message}</Text>
 
           <TouchableOpacity
-            style={[s.resultBtn, { backgroundColor: result.success ? '#27AE60' : COLORS.wal }]}
+            style={[s.resultBtn, { backgroundColor: result.success ? '#52C896' : COLORS.wal }]}
             onPress={() => router.back()}
             activeOpacity={0.85}
           >
@@ -150,7 +150,7 @@ export default function QRCheckinScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000' }}>
+    <View style={{ flex: 1, backgroundColor: '#121417' }}>
       <CameraView
         style={StyleSheet.absoluteFill}
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
@@ -192,7 +192,7 @@ const s = StyleSheet.create({
   permTitle: { fontSize: 18, fontWeight: '700', marginTop: 16, marginBottom: 8 },
   permDesc:  { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
   permBtn:   { backgroundColor: COLORS.wal, borderRadius: RADII.md, paddingHorizontal: 28, paddingVertical: 12 },
-  permBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  permBtnText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
   backLink:  { fontSize: 13, fontWeight: '600' },
 
   overlay:   { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
@@ -206,7 +206,7 @@ const s = StyleSheet.create({
   cornerBR:  { bottom: 0, right: 0, borderBottomWidth: BORDER, borderRightWidth: BORDER, borderBottomRightRadius: 8 },
 
   instructions: { marginTop: 40, alignItems: 'center' },
-  instrTitle: { fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 6 },
+  instrTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8', marginBottom: 6 },
   instrSub:   { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
 
   resultCard:  { borderRadius: RADII.xl, padding: 32, alignItems: 'center', width: '100%', maxWidth: 340 },
@@ -214,5 +214,5 @@ const s = StyleSheet.create({
   resultTitle: { fontSize: 20, fontWeight: '800', marginBottom: 12 },
   resultMsg:   { fontSize: 14, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
   resultBtn:   { borderRadius: RADII.md, paddingHorizontal: 32, paddingVertical: 12 },
-  resultBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  resultBtnText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 });

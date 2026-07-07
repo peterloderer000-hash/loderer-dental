@@ -20,8 +20,8 @@ type SimType = 'whitening' | 'braces' | 'veneers' | 'alignment';
 const SIMULATIONS: { key: SimType; label: string; icon: string; desc: string; color: string }[] = [
   { key: 'whitening', label: 'Bielenie', icon: '✨', desc: 'Simulácia belšieho úsmevu', color: '#F1C40F' },
   { key: 'braces', label: 'Rovnátka', icon: '😬', desc: 'Vizualizácia rovnátok', color: '#3498DB' },
-  { key: 'veneers', label: 'Fazety', icon: '💎', desc: 'Simulácia porcelánových faziet', color: '#E74C3C' },
-  { key: 'alignment', label: 'Zarovnanie', icon: '🦷', desc: 'Po vyrovnaní zubov', color: '#2ECC71' },
+  { key: 'veneers', label: 'Fazety', icon: '💎', desc: 'Simulácia porcelánových faziet', color: '#C0392B' },
+  { key: 'alignment', label: 'Zarovnanie', icon: '🦷', desc: 'Po vyrovnaní zubov', color: '#52C896' },
 ];
 
 export default function SmileDesign() {
@@ -170,7 +170,7 @@ export default function SmileDesign() {
                     borderColor: intensity === v ? COLORS.gold : colors.bg3,
                   }]}
                   onPress={() => { setIntensity(v); Haptics.selectionAsync(); }}>
-                  <Text style={[st.sliderText, { color: intensity === v ? '#fff' : colors.textPrimary }]}>{v}%</Text>
+                  <Text style={[st.sliderText, { color: intensity === v ? '#F5F6F8' : colors.textPrimary }]}>{v}%</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -222,9 +222,9 @@ const st = StyleSheet.create({
   photo: { width: '100%', aspectRatio: 1, resizeMode: 'cover' },
   photoOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   processingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },
-  processingText: { color: '#fff', fontWeight: '700', fontSize: 14, marginTop: 8 },
+  processingText: { color: '#F5F6F8', fontWeight: '700', fontSize: 14, marginTop: 8 },
   simLabel: { position: 'absolute', top: 12, right: 12, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: RADII.pill },
-  simLabelText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  simLabelText: { color: '#F5F6F8', fontSize: 12, fontWeight: '700' },
 
   photoActions: { flexDirection: 'row', gap: 8, padding: SPACING.md },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: RADII.pill },
@@ -243,7 +243,7 @@ const st = StyleSheet.create({
   sliderText: { fontWeight: '700', fontSize: 13 },
 
   ctaBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold, marginBottom: SPACING.lg },
-  ctaText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  ctaText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   disclaimer: { flexDirection: 'row', gap: 8, padding: 12, borderRadius: RADII.sm, alignItems: 'flex-start' },
   disclaimerText: { flex: 1, fontSize: 11, lineHeight: 16 },

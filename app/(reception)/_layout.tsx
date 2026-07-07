@@ -19,7 +19,7 @@ export default function ReceptionLayout() {
           height: 64,
           paddingBottom: 8,
           paddingTop: 6,
-          elevation: 8,
+          elevation: 4,
           shadowColor: '#1A2030',
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.08,

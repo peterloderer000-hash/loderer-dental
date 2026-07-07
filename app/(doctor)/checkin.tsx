@@ -165,7 +165,7 @@ const s = StyleSheet.create({
     paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
 
   body:     { flex: 1, backgroundColor: COLORS.bg2, padding: SPACING.xl, gap: 14 },
   card:     { backgroundColor: COLORS.cream, borderRadius: 4, padding: 20, borderWidth: 1, borderColor: COLORS.bg3 },
@@ -188,7 +188,7 @@ const s = StyleSheet.create({
   confirmBtn:    {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: '#0E6655', borderRadius: 2, paddingVertical: 13 },
-  confirmText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
+  confirmText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 
   hintCard: {
     flexDirection: 'row', gap: 10, alignItems: 'flex-start',

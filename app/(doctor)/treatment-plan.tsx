@@ -43,15 +43,15 @@ type Service = { id: string; name: string; emoji: string | null; price_min: numb
 // ─── Konfigurácia stavov ───────────────────────────────────────────────────────
 const ITEM_STATUS_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', border: '#AED6F1', icon: 'time-outline'             as const },
-  scheduled: { label: 'Naplánované', color: '#7D6608', bg: '#FEF9E7', darkBg: '#2D2200', border: '#F9E79F', icon: 'calendar-outline'         as const },
-  completed: { label: 'Hotové',      color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F', border: '#A9DFBF', icon: 'checkmark-circle-outline' as const },
+  scheduled: { label: 'Naplánované', color: '#B87333', bg: '#FDF3E7', darkBg: '#2D1F10', border: '#D0D4DC', icon: 'calendar-outline'         as const },
+  completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', border: '#A3D4BE', icon: 'checkmark-circle-outline' as const },
   skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const }
 };
 const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
 
 const PLAN_STATUS_CFG = {
-  active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#E2DDD6' },
-  completed: { label: 'Hotový',   color: '#1E8449',   bg: '#EAFAF1' },
+  active:    { label: 'Aktívny',  color: COLORS.wal,  bg: '#D0D4DC' },
+  completed: { label: 'Hotový',   color: '#2E7D5E',   bg: '#EDF7F3' },
   cancelled: { label: 'Zrušený',  color: '#922B21',   bg: '#FDEDEC' }
 };
 
@@ -129,7 +129,7 @@ function PlanModal({ visible, initial, onClose, onSave }: {
                       }]}
                       onPress={() => applyTemplate(t)} activeOpacity={0.8}>
                       <Text style={[mStyles.templateText, {
-                        color: title === t.title ? '#fff' : colors.textPrimary,
+                        color: title === t.title ? '#F5F6F8' : colors.textPrimary,
                       }]}>{t.title}</Text>
                     </TouchableOpacity>
                   ))}
@@ -241,7 +241,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
                       <TouchableOpacity key={svc.id}
                         style={[mStyles.svcChip, {
                           backgroundColor: itemTitle === svc.name
-                            ? (dark ? COLORS.wal + '33' : '#E2DDD6')
+                            ? (dark ? COLORS.wal + '33' : '#D0D4DC')
                             : colors.bg2,
                           borderColor: itemTitle === svc.name ? COLORS.wal : colors.bg3
                         }]}
@@ -292,7 +292,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
                     <TouchableOpacity key={s}
                       style={[mStyles.chip, { borderColor: cfg.border, backgroundColor: active ? cfg.color : colors.cardBg }]}
                       onPress={() => setStatus(s)} activeOpacity={0.8}>
-                      <Text style={[mStyles.chipText, { color: active ? '#fff' : cfg.color }]}>
+                      <Text style={[mStyles.chipText, { color: active ? '#F5F6F8' : cfg.color }]}>
                         {cfg.label}
                       </Text>
                     </TouchableOpacity>
@@ -333,7 +333,7 @@ const mStyles = StyleSheet.create({
   btnCancel:    { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:      { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  btnSaveText:  { fontSize: 14, fontWeight: '700', color: '#fff' },
+  btnSaveText:  { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
   svcChip:      { flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 4, borderWidth: 1.5, paddingHorizontal: 12, paddingVertical: 7 },
   svcChipEmoji: { fontSize: 14 },
   svcChipText:  { fontSize: 12, fontWeight: '600' },
@@ -647,8 +647,8 @@ export default function TreatmentPlanScreen() {
                         )} activeOpacity={0.8}>
                         <Ionicons
                           name={plan.status === 'active' ? 'checkmark-circle-outline' : 'refresh-outline'}
-                          size={13} color="#1E8449" />
-                        <Text style={[styles.planActText, { color: '#1E8449' }]}>
+                          size={13} color="#2E7D5E" />
+                        <Text style={[styles.planActText, { color: '#2E7D5E' }]}>
                           {plan.status === 'active' ? 'Dokončiť' : 'Znovu aktivovať'}
                         </Text>
                       </TouchableOpacity>
@@ -749,13 +749,13 @@ export default function TreatmentPlanScreen() {
                           <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Celková cena</Text>
                           <Text style={[styles.summaryVal, { color: COLORS.wal }]}>{fmtEur(total)}</Text>
                         </View>
-                        <View style={[styles.summaryBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
-                          <Text style={[styles.summaryLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Dokončené</Text>
-                          <Text style={[styles.summaryVal, { color: dark ? '#27AE60' : '#1E8449' }]}>{fmtEur(completed)}</Text>
+                        <View style={[styles.summaryBox, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89633' : '#A3D4BE' }]}>
+                          <Text style={[styles.summaryLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>Dokončené</Text>
+                          <Text style={[styles.summaryVal, { color: dark ? '#52C896' : '#2E7D5E' }]}>{fmtEur(completed)}</Text>
                         </View>
                         <View style={[styles.summaryBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
-                          <Text style={[styles.summaryLabel, { color: dark ? '#E74C3C' : '#922B21' }]}>Zostatok</Text>
-                          <Text style={[styles.summaryVal, { color: dark ? '#E74C3C' : '#922B21' }]}>
+                          <Text style={[styles.summaryLabel, { color: dark ? '#C0392B' : '#922B21' }]}>Zostatok</Text>
+                          <Text style={[styles.summaryVal, { color: dark ? '#C0392B' : '#922B21' }]}>
                             {fmtEur(total - completed)}
                           </Text>
                         </View>
@@ -797,17 +797,17 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: COLORS.sand },
-  addBtnText:  { fontSize: 12, fontWeight: '700', color: '#fff' },
+  addBtnText:  { fontSize: 12, fontWeight: '700', color: '#F5F6F8' },
 
   emptyIcon:    { fontSize: 52, marginBottom: 14 },
   emptyTitle:   { fontSize: 18, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:     { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20 },
   emptyBtn:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 22, paddingVertical: 13 },
-  emptyBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  emptyBtnText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 
-  planCard:     { backgroundColor: COLORS.cream, borderRadius: 4, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  planCard:     { backgroundColor: COLORS.cream, borderRadius: 4, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, overflow: 'hidden', elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   planHeader:   { padding: 16, flexDirection: 'row', alignItems: 'flex-start' },
   planTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' },
   planTitle:    { fontSize: 16, fontWeight: '700', color: COLORS.esp },

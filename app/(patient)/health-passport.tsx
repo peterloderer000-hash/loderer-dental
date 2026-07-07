@@ -363,8 +363,8 @@ export default function HealthPassportScreen() {
               </View>
 
               {/* Emergency card */}
-              <View style={[qrS.card, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-                <Text style={[qrS.cardTitle, { color: dark ? '#58D68D' : '#1E8449' }]}>🚨 Núdzové info</Text>
+              <View style={[qrS.card, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89644' : '#A3D4BE' }]}>
+                <Text style={[qrS.cardTitle, { color: dark ? '#58D68D' : '#2E7D5E' }]}>🚨 Núdzové info</Text>
                 {bloodType     ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>🩸 Krvná skupina: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{bloodType}</Text></Text> : null}
                 {allergies     ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>⚠️ Alergie: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{allergies}</Text></Text> : null}
                 {medications   ? <Text style={[qrS.cardRow, { color: colors.textPrimary }]}>💊 Lieky: <Text style={{ fontFamily: 'DMSans_500Medium' }}>{medications}</Text></Text> : null}
@@ -610,12 +610,12 @@ const styles = StyleSheet.create({
   backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.15)', alignItems: 'center', justifyContent: 'center' },
   exportBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(201,168,76,0.15)', alignItems: 'center', justifyContent: 'center' },
   headerLabel: { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
   introBanner: { flexDirection: 'row', gap: 10, alignItems: 'flex-start', backgroundColor: COLORS.bg3, borderRadius: RADII.md, borderLeftWidth: 3, borderLeftColor: COLORS.gold, padding: 12, margin: SPACING.xl, marginBottom: 4 },
   introText: { flex: 1, fontSize: 13, color: COLORS.wal, lineHeight: 20 },
   secHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SPACING.xl, paddingTop: 18, paddingBottom: 8 },
   secBadge: { width: 22, height: 22, borderRadius: 2, overflow: 'hidden' as const, alignItems: 'center', justifyContent: 'center' },
-  secBadgeText: { fontSize: 10, fontWeight: '700', color: '#fff' },
+  secBadgeText: { fontSize: 10, fontWeight: '700', color: '#F5F6F8' },
   secTitle: { fontSize: 12, letterSpacing: 1.5, color: COLORS.esp, fontWeight: '700', textTransform: 'uppercase' },
   card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, gap: 6 },
   cardSub: { fontSize: 12, color: COLORS.wal, marginBottom: 6, lineHeight: 18 },

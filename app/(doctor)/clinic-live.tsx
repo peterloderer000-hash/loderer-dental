@@ -125,7 +125,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
                     onPress={() => onAssignRoom(appt, r.id)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[s.roomBtnText, { color: colors.textSecondary }, appt.room_id === r.id && { color: '#fff' }]}>{r.name}</Text>
+                    <Text style={[s.roomBtnText, { color: colors.textSecondary }, appt.room_id === r.id && { color: '#F5F6F8' }]}>{r.name}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -161,7 +161,7 @@ function AppointmentCard({ appt, expanded, onToggle, actions, rooms, onAssignRoo
 
           {appt.clinic_status === 'paid' && (
             <View style={s.doneRow}>
-              <Ionicons name="checkmark-circle" size={18} color="#1E8449" />
+              <Ionicons name="checkmark-circle" size={18} color="#2E7D5E" />
               <Text style={s.doneText}>Pacient odišiel · Zaplatené</Text>
             </View>
           )}
@@ -204,7 +204,7 @@ export default function ClinicLiveScreen() {
       <View style={{ flex: 1, backgroundColor: COLORS.esp }}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 16 }}>🔒</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 8 }}>Prístup zamietnutý</Text>
+          <Text style={{ fontSize: 18, fontWeight: '700', color: '#F5F6F8', marginBottom: 8 }}>Prístup zamietnutý</Text>
           <Text style={{ fontSize: 13, color: COLORS.sand, textAlign: 'center' }}>Táto obrazovka je dostupná len pre doktora a recepciu.</Text>
         </View>
       </View>
@@ -233,7 +233,7 @@ export default function ClinicLiveScreen() {
         },
         ...(status === 'scheduled' ? [{
           label: 'Mešká', icon: 'time-outline',
-          color: '#7D6608', bg: '#FEF9E7',
+          color: '#B87333', bg: '#FDF3E7',
           handler: wrapAction(appt.id, async () => { await clinic.markLate(appt); setExpanded(null); })
         }] : []),
         {
@@ -248,7 +248,7 @@ export default function ClinicLiveScreen() {
       return [
         ...(isDoctor ? [{
           label: 'Do kresla', icon: 'medical-outline',
-          color: '#1E8449', bg: '#EAFAF1',
+          color: '#2E7D5E', bg: '#EDF7F3',
           handler: wrapAction(appt.id, async () => { await clinic.startTreatment(appt); setExpanded(null); })
         }] : []),
         {
@@ -288,7 +288,7 @@ export default function ClinicLiveScreen() {
       return [
         {
           label: 'Zaplatené', icon: 'card-outline',
-          color: '#1E8449', bg: '#EAFAF1',
+          color: '#2E7D5E', bg: '#EDF7F3',
           handler: wrapAction(appt.id, async () => { await clinic.markPaid(appt); setExpanded(null); })
         },
       ];
@@ -352,8 +352,8 @@ export default function ClinicLiveScreen() {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.summaryScroll} contentContainerStyle={s.summaryRow}>
         <SummaryChip emoji="📋" label={`${totalToday} dnes`} color={COLORS.wal} />
         {counts.late > 0        && <SummaryChip emoji="⚠️" label={`${counts.late} mešká`}      color="#922B21" urgent />}
-        {counts.waiting > 0     && <SummaryChip emoji="⏳" label={`${counts.waiting} čaká`}     color="#7D6608" />}
-        {counts.in_chair > 0    && <SummaryChip emoji="🦷" label={`${counts.in_chair} v kresle`} color="#1E8449" />}
+        {counts.waiting > 0     && <SummaryChip emoji="⏳" label={`${counts.waiting} čaká`}     color="#B87333" />}
+        {counts.in_chair > 0    && <SummaryChip emoji="🦷" label={`${counts.in_chair} v kresle`} color="#2E7D5E" />}
         {counts.treatment_done > 0 && <SummaryChip emoji="✅" label={`${counts.treatment_done} hotový`} color="#7D3C98" />}
         {counts.checkout > 0    && <SummaryChip emoji="🧾" label={`${counts.checkout} účet`}    color="#E67E22" />}
       </ScrollView>
@@ -418,10 +418,10 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   liveDot:    { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 5 },
-  liveDotInner: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#27AE60' },
-  liveText:   { fontSize: 10, fontWeight: '700', color: '#27AE60', letterSpacing: 1 },
+  liveDotInner: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#52C896' },
+  liveText:   { fontSize: 10, fontWeight: '700', color: '#52C896', letterSpacing: 1 },
 
   // Summary bar
   summaryScroll: { maxHeight: 42, backgroundColor: COLORS.esp },
@@ -439,7 +439,7 @@ const s = StyleSheet.create({
   card: {
     backgroundColor: COLORS.cream, borderRadius: 2, marginBottom: 10,
     borderWidth: 1.5, borderColor: COLORS.bg3, overflow: 'hidden',
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4
+    elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4
   },
   cardExpanded: { borderColor: COLORS.sand },
 
@@ -484,7 +484,7 @@ const s = StyleSheet.create({
   },
   roomBtnActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   roomBtnText:   { fontSize: 12, fontWeight: '600', color: COLORS.wal },
-  roomBtnTextActive: { color: '#fff' },
+  roomBtnTextActive: { color: '#F5F6F8' },
 
   // Action buttons
   actionsWrap:  {},
@@ -498,7 +498,7 @@ const s = StyleSheet.create({
   actionBtnText: { fontSize: 13, fontWeight: '700' },
 
   doneRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 },
-  doneText: { fontSize: 13, color: '#1E8449', fontWeight: '600' },
+  doneText: { fontSize: 13, color: '#2E7D5E', fontWeight: '600' },
 
   // Loading / empty
   loadingText: { marginTop: 12, fontSize: 13, color: COLORS.wal },

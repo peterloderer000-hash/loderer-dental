@@ -44,8 +44,8 @@ function fmtDate(s: string) {
 }
 
 const SEV_CFG: Record<Severity, { label: string; color: string; bg: string; darkBg: string; icon: keyof typeof Ionicons.glyphMap }> = {
-  mild:     { label: 'Mierna',  color: '#2E7D5E', bg: '#EAFAF1', darkBg: '#0D3B1F', icon: 'shield-checkmark-outline' },
-  moderate: { label: 'Stredná', color: '#3A4256', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'alert-circle-outline' },
+  mild:     { label: 'Mierna',  color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', icon: 'shield-checkmark-outline' },
+  moderate: { label: 'Stredná', color: '#3A4256', bg: '#FDF3E7', darkBg: '#2D2000', icon: 'alert-circle-outline' },
   severe:   { label: 'Ťažká',   color: '#C0392B', bg: '#FDEDEC', darkBg: '#3A0E0E', icon: 'warning-outline' },
 };
 
@@ -101,14 +101,14 @@ const PrescriptionCard = React.memo(function PrescriptionCard({ item, dark, colo
     <AppCard style={st.card} shadow="sm">
       {/* Header */}
       <View style={st.cardRow}>
-        <View style={[st.cardIcon, { backgroundColor: active ? (dark ? '#0D3B1F' : '#EAFAF1') : (dark ? '#1A1C1D' : COLORS.bg2) }]}>
+        <View style={[st.cardIcon, { backgroundColor: active ? (dark ? '#1A3D2E' : '#EDF7F3') : (dark ? '#1A1C1D' : COLORS.bg2) }]}>
           <Ionicons name="medical-outline" size={18} color={active ? '#2E7D5E' : '#7F8C8D'} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={[st.cardTitle, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
           <Text style={[st.cardDate, { color: colors.textSecondary }]}>{fmtDate(item.created_at)}</Text>
         </View>
-        <View style={[st.statusBadge, { backgroundColor: active ? (dark ? '#0D3B1F' : '#EAFAF1') : (dark ? '#1A1C1D' : COLORS.bg3) }]}>
+        <View style={[st.statusBadge, { backgroundColor: active ? (dark ? '#1A3D2E' : '#EDF7F3') : (dark ? '#1A1C1D' : COLORS.bg3) }]}>
           <View style={[st.statusDot, { backgroundColor: active ? '#2E7D5E' : '#7F8C8D' }]} />
           <Text style={[st.statusText, { color: active ? '#2E7D5E' : '#7F8C8D' }]}>
             {active ? 'Aktívny' : isExpired ? 'Expirovaný' : 'Neaktívny'}

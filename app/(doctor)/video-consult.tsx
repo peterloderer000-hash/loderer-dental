@@ -202,7 +202,7 @@ const st = StyleSheet.create({
 
   card: { borderRadius: RADII.lg, borderWidth: 1.5, padding: SPACING.lg, marginBottom: SPACING.md },
   todayBadge: { position: 'absolute', top: -1, right: 16, backgroundColor: COLORS.gold, paddingHorizontal: 10, paddingVertical: 3, borderBottomLeftRadius: 6, borderBottomRightRadius: 6 },
-  todayText: { color: '#fff', fontSize: 9, fontWeight: '800' },
+  todayText: { color: '#F5F6F8', fontSize: 9, fontWeight: '800' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarCircle: { width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   cardName: { fontSize: 15, fontWeight: '700' },
@@ -211,7 +211,7 @@ const st = StyleSheet.create({
   metaItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   metaText: { fontSize: 12 },
   callBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, backgroundColor: COLORS.success, borderRadius: RADII.pill, marginTop: 14 },
-  callBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  callBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 14 },
 
   histRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: RADII.md, borderWidth: 1, padding: 12, marginBottom: 6 },
   histName: { fontSize: 13, fontWeight: '600' },

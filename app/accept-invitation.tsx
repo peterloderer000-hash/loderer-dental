@@ -151,7 +151,7 @@ export default function AcceptInvitation() {
               {/* Potvrdenie roly */}
               <View style={styles.roleBanner}>
                 <View style={styles.roleBannerIcon}>
-                  <Ionicons name="checkmark-circle" size={26} color="#1E8449" />
+                  <Ionicons name="checkmark-circle" size={26} color="#2E7D5E" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.roleBannerTitle}>Pozvánka platná</Text>
@@ -226,10 +226,10 @@ const styles = StyleSheet.create({
     width: 88, height: 88, borderRadius: 26,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     marginBottom: 18, borderWidth: 3, borderColor: COLORS.sand,
-    elevation: 8, shadowColor: '#000',
+    elevation: 4, shadowColor: '#121417',
     shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
-  heroTitle: { fontSize: 22, fontWeight: '800', color: '#fff', letterSpacing: 0.3, marginBottom: 6 },
+  heroTitle: { fontSize: 22, fontWeight: '800', color: '#F5F6F8', letterSpacing: 0.3, marginBottom: 6 },
   heroSub:   { fontSize: 13, color: COLORS.sand, letterSpacing: 0.3, textAlign: 'center', paddingHorizontal: 32 },
 
   card: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
   },
   btnDisabled:    { opacity: 0.35 },
-  btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   roleBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 12,

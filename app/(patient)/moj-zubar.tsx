@@ -41,9 +41,9 @@ function StarRow({ avg, count }: { avg: number; count: number }) {
   const empty = 5 - full - (half ? 1 : 0);
   return (
     <View style={s.starRow}>
-      {Array.from({ length: full  }).map((_, i) => <Ionicons key={`f${i}`} name="star"         size={16} color="#F39C12" />)}
-      {half &&                                       <Ionicons key="h"       name="star-half"   size={16} color="#F39C12" />}
-      {Array.from({ length: empty }).map((_, i) => <Ionicons key={`e${i}`} name="star-outline" size={16} color="#F39C12" />)}
+      {Array.from({ length: full  }).map((_, i) => <Ionicons key={`f${i}`} name="star"         size={16} color="#B8ACA0" />)}
+      {half &&                                       <Ionicons key="h"       name="star-half"   size={16} color="#B8ACA0" />}
+      {Array.from({ length: empty }).map((_, i) => <Ionicons key={`e${i}`} name="star-outline" size={16} color="#B8ACA0" />)}
       <Text style={s.starAvg}>{avg.toFixed(1)}</Text>
       <Text style={s.starCount}>({count} hodnotení)</Text>
     </View>
@@ -165,7 +165,7 @@ export default function MojZubarScreen() {
 
           {/* Today status */}
           <View style={[s.statusBadge, { backgroundColor: isOpenToday ? 'rgba(46,125,94,0.25)' : 'rgba(192,57,43,0.25)' }]}>
-            <View style={[s.statusDot, { backgroundColor: isOpenToday ? '#2ECC71' : '#E74C3C' }]} />
+            <View style={[s.statusDot, { backgroundColor: isOpenToday ? '#52C896' : '#C0392B' }]} />
             <Text style={[s.statusText, { color: isOpenToday ? '#A8D5C0' : '#F1948A' }]}>
               {isOpenToday
                 ? `Dnes otvorené: ${todayRow!.open_time?.slice(0, 5)} – ${todayRow!.close_time?.slice(0, 5)}`
@@ -258,7 +258,7 @@ export default function MojZubarScreen() {
           {/* Urgentný kontakt */}
           <SectionCard title="URGENTNÁ POMOC" colors={colors}>
             <View style={urg.wrap}>
-              <Ionicons name="warning-outline" size={18} color="#E74C3C" />
+              <Ionicons name="warning-outline" size={18} color="#C0392B" />
               <Text style={[urg.text, { color: colors.textSecondary }]}>
                 Pri akútnej bolesti alebo úraze nás kontaktujte telefonicky. Mimo ordinačných hodín navštívte pohotovostnú stomatológiu.
               </Text>
@@ -269,7 +269,7 @@ export default function MojZubarScreen() {
                 onPress={() => Linking.openURL(`tel:${displayDoctor.phone_number}`).catch(() => {})}
                 activeOpacity={0.8}
               >
-                <Ionicons name="call" size={16} color="#E74C3C" />
+                <Ionicons name="call" size={16} color="#C0392B" />
                 <Text style={urg.callText}>Zavolať — {displayDoctor.phone_number}</Text>
               </TouchableOpacity>
             )}
@@ -394,7 +394,7 @@ const s = StyleSheet.create({
   doctorSpec: { ...TYPO.body, color: 'rgba(196,168,130,0.75)', textAlign: 'center', marginBottom: 8 },
 
   starRow:   { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 14 },
-  starAvg:   { fontFamily: 'DMSans_500Medium', fontSize: 14, color: '#F39C12', marginLeft: 4 },
+  starAvg:   { fontFamily: 'DMSans_500Medium', fontSize: 14, color: '#B8ACA0', marginLeft: 4 },
   starCount: { fontFamily: 'DMSans_400Regular', fontSize: 12, color: 'rgba(196,168,130,0.6)' },
 
   statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 7 },
@@ -403,7 +403,7 @@ const s = StyleSheet.create({
 
   ctaBtn:  { borderRadius: RADII.md, overflow: 'hidden' },
   ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16 },
-  ctaText: { fontFamily: 'DMSans_500Medium', fontSize: 15, color: '#fff', flex: 1, textAlign: 'center', marginLeft: -26, letterSpacing: 0.3 },
+  ctaText: { fontFamily: 'DMSans_500Medium', fontSize: 15, color: '#F5F6F8', flex: 1, textAlign: 'center', marginLeft: -26, letterSpacing: 0.3 },
 });
 
 const sc = StyleSheet.create({
@@ -446,5 +446,5 @@ const urg = StyleSheet.create({
   wrap:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 14, paddingBottom: 10 },
   text:     { flex: 1, ...TYPO.body, lineHeight: 20 },
   callBtn:  { flexDirection: 'row', alignItems: 'center', gap: 8, margin: 14, marginTop: 4, padding: 12, borderRadius: RADII.md, borderWidth: 1 },
-  callText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#E74C3C' },
+  callText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#C0392B' },
 });

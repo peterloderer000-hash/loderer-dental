@@ -84,24 +84,24 @@ function calcScore(teeth: Record<number, ToothStatus>): number {
 }
 
 function scoreInfo(score: number) {
-  if (score >= 85) return { label: 'Výborný',  emoji: '🌟', color: '#27AE60', ring: '#2ECC71', bg: '#0D3B1F', gradient: ['#1A4D2E', '#0D3B1F'] as string[] };
+  if (score >= 85) return { label: 'Výborný',  emoji: '🌟', color: '#52C896', ring: '#52C896', bg: '#1A3D2E', gradient: ['#1A4D2E', '#1A3D2E'] as string[] };
   if (score >= 70) return { label: 'Dobrý',    emoji: '👍', color: '#2E86C1', ring: '#3498DB', bg: '#0D2233', gradient: ['#143A5C', '#0D2233'] as string[] };
-  if (score >= 50) return { label: 'Pozor',    emoji: '⚠️', color: '#E67E22', ring: '#F39C12', bg: '#2D1500', gradient: ['#3D2000', '#2D1500'] as string[] };
-  return                  { label: 'Kritický', emoji: '🚨', color: '#E74C3C', ring: '#FF5252', bg: '#4A1010', gradient: ['#5A1515', '#4A1010'] as string[] };
+  if (score >= 50) return { label: 'Pozor',    emoji: '⚠️', color: '#E67E22', ring: '#B8ACA0', bg: '#2D1500', gradient: ['#3D2000', '#2D1500'] as string[] };
+  return                  { label: 'Kritický', emoji: '🚨', color: '#C0392B', ring: '#FF5252', bg: '#4A1010', gradient: ['#5A1515', '#4A1010'] as string[] };
 }
 
 // ─── Status farby a konfig pre zuby ─────────────────────────────────────────
 type StatusVisual = { color: string; bg: string; icon: string; label: string };
 
 const STATUS_VISUALS: Record<string, StatusVisual> = {
-  healthy:        { color: '#2ECC71', bg: '#0D3B1F', icon: 'checkmark',         label: 'Zdravý' },
-  watch:          { color: '#F39C12', bg: '#2D1500', icon: 'eye-outline',       label: 'Sledovanie' },
+  healthy:        { color: '#52C896', bg: '#1A3D2E', icon: 'checkmark',         label: 'Zdravý' },
+  watch:          { color: '#B8ACA0', bg: '#2D1500', icon: 'eye-outline',       label: 'Sledovanie' },
   caries_initial: { color: '#E67E22', bg: '#3D2000', icon: 'alert-outline',     label: 'Počiatočný kaz' },
-  caries_deep:    { color: '#E74C3C', bg: '#4A1010', icon: 'alert-circle',      label: 'Hlboký kaz' },
+  caries_deep:    { color: '#C0392B', bg: '#4A1010', icon: 'alert-circle',      label: 'Hlboký kaz' },
   filling:        { color: '#3A4256', bg: '#2D2000', icon: 'shield-checkmark',  label: 'Plomba' },
   inlay:          { color: '#3A4256', bg: '#2D2000', icon: 'diamond-outline',   label: 'Inlay' },
   crown:          { color: '#2D3544', bg: '#2D1A00', icon: 'ribbon-outline',    label: 'Korunka' },
-  endo:           { color: '#E74C3C', bg: '#4A1010', icon: 'medical-outline',   label: 'Endodoncia' },
+  endo:           { color: '#C0392B', bg: '#4A1010', icon: 'medical-outline',   label: 'Endodoncia' },
   implant:        { color: '#9B59B6', bg: '#2A1236', icon: 'hardware-chip',     label: 'Implantát' },
   extracted:      { color: '#95A5A6', bg: '#1A1F20', icon: 'close-circle',      label: 'Extrahovaný' },
   missing:        { color: '#7F8C8D', bg: '#1A1C1D', icon: 'remove-outline',   label: 'Chýbajúci' },
@@ -132,7 +132,7 @@ function ConsentModal({ visible, onAccept }: { visible: boolean; onAccept: () =>
             </Text>
           </View>
 
-          <View style={[cs.warningBox, { backgroundColor: dark ? '#2D1500' : '#FEF9E7', borderColor: dark ? '#7D4800' : '#F9E79F' }]}>
+          <View style={[cs.warningBox, { backgroundColor: dark ? '#2D1500' : '#FDF3E7', borderColor: dark ? '#7D4800' : '#D0D4DC' }]}>
             <Ionicons name="warning-outline" size={16} color={dark ? '#F0A030' : '#B87333'} />
             <Text style={[cs.warningText, { color: dark ? '#F0A030' : '#7D4800' }]}>
               Predikcia je orientačná, založená na klinických štatistikách a tvojich rizikových faktoroch. Nenahrádza odbornú diagnostiku.
@@ -228,7 +228,7 @@ const RiskPanel = React.memo(({
                 <Text style={s.riskLabel}>{label}</Text>
                 <Text style={s.riskHint}>{hint}</Text>
               </View>
-              <View style={[s.toggle, { backgroundColor: risk[key] ? '#E74C3C' : '#2A2218' }]}>
+              <View style={[s.toggle, { backgroundColor: risk[key] ? '#C0392B' : '#2A2218' }]}>
                 <View style={[s.thumb, risk[key] && s.thumbOn]} />
               </View>
             </TouchableOpacity>
@@ -355,8 +355,8 @@ const ToothIndicator = React.memo(({
       style={[
         s.toothIndicator,
         { backgroundColor: isHealthy ? '#162012' : visual.bg },
-        { borderColor: isHealthy ? '#2ECC7140' : `${visual.color}60` },
-        isChanged && { borderColor: '#fff', borderWidth: 2 },
+        { borderColor: isHealthy ? '#52C89640' : `${visual.color}60` },
+        isChanged && { borderColor: '#F5F6F8', borderWidth: 2 },
       ]}
     >
       {isHealthy ? (
@@ -402,7 +402,7 @@ const DentalArch = React.memo(({
         </Text>
         {year > 0 && (
           <View style={s.archPredBadge}>
-            <Ionicons name="time-outline" size={10} color="#E74C3C" />
+            <Ionicons name="time-outline" size={10} color="#C0392B" />
             <Text style={s.archPredTxt}>+{year}R</Text>
           </View>
         )}
@@ -458,13 +458,13 @@ const DentalArch = React.memo(({
 
 // ─── Status Legend ────────────────────────────────────────────────────────────
 const LEGEND_ITEMS: { status: string; label: string; color: string }[] = [
-  { status: 'healthy',        label: 'Zdravý',       color: '#2ECC71' },
-  { status: 'watch',          label: 'Sledovanie',   color: '#F39C12' },
+  { status: 'healthy',        label: 'Zdravý',       color: '#52C896' },
+  { status: 'watch',          label: 'Sledovanie',   color: '#B8ACA0' },
   { status: 'caries_initial', label: 'Kaz',          color: '#E67E22' },
-  { status: 'caries_deep',    label: 'Hlboký kaz',   color: '#E74C3C' },
+  { status: 'caries_deep',    label: 'Hlboký kaz',   color: '#C0392B' },
   { status: 'filling',        label: 'Plomba',       color: '#3A4256' },
   { status: 'crown',          label: 'Korunka',      color: '#2D3544' },
-  { status: 'endo',           label: 'Endo',         color: '#E74C3C' },
+  { status: 'endo',           label: 'Endo',         color: '#C0392B' },
   { status: 'implant',        label: 'Implantát',    color: '#9B59B6' },
   { status: 'extracted',      label: 'Extrahovaný',  color: '#95A5A6' },
 ];
@@ -510,7 +510,7 @@ const InsightsSection = React.memo(({
   if ((counts.caries_deep ?? 0) > 0) {
     insights.push({
       icon: 'warning',
-      color: '#E74C3C',
+      color: '#C0392B',
       text: `${counts.caries_deep} ${(counts.caries_deep ?? 0) === 1 ? 'zub vyžaduje' : 'zuby vyžadujú'} urgentné ošetrenie hlbokého kazu.`,
       priority: 1,
     });
@@ -518,7 +518,7 @@ const InsightsSection = React.memo(({
   if ((counts.watch ?? 0) > 0) {
     insights.push({
       icon: 'eye',
-      color: '#F39C12',
+      color: '#B8ACA0',
       text: `${counts.watch} ${(counts.watch ?? 0) === 1 ? 'zub je' : 'zuby sú'} v sledovaní — pravidelné kontroly sú kľúčové.`,
       priority: 3,
     });
@@ -531,7 +531,7 @@ const InsightsSection = React.memo(({
     if (savings > 100) {
       insights.push({
         icon: 'trending-down',
-        color: '#2ECC71',
+        color: '#52C896',
         text: `Prevenciou môžeš ušetriť až ${savings} € za 5 rokov oproti neskorším zákrokom.`,
         priority: 4,
       });
@@ -541,7 +541,7 @@ const InsightsSection = React.memo(({
   if (score >= 85 && insights.length === 0) {
     insights.push({
       icon: 'star',
-      color: '#2ECC71',
+      color: '#52C896',
       text: 'Výborný stav chrupu! Pokračuj v pravidelných prehliadkach a kvalitnej ústnej hygiene.',
       priority: 5,
     });
@@ -577,7 +577,7 @@ const YearCard = React.memo(({
   year: number; newIssues: number; cumCost: number;
   active: boolean; onPress: () => void; isToday: boolean;
 }) => {
-  const color = newIssues === 0 ? '#2ECC71' : newIssues <= 2 ? '#E67E22' : '#E74C3C';
+  const color = newIssues === 0 ? '#52C896' : newIssues <= 2 ? '#E67E22' : '#C0392B';
 
   return (
     <TouchableOpacity
@@ -750,7 +750,7 @@ function ToothModal({
                           Pravdepodobnosť: {Math.round(issue.probability * 100)}%
                         </Text>
                       </View>
-                      <Text style={{ fontSize: 13, color: '#E74C3C', fontFamily: 'DMSans_500Medium' }}>
+                      <Text style={{ fontSize: 13, color: '#C0392B', fontFamily: 'DMSans_500Medium' }}>
                         ~{issue.cost} €
                       </Text>
                     </View>
@@ -758,9 +758,9 @@ function ToothModal({
                 })}
               </View>
             ) : (
-              <View style={[s.okBanner, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
-                <Ionicons name="checkmark-circle" size={17} color={dark ? '#58D68D' : '#1E8449'} />
-                <Text style={{ flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: dark ? '#58D68D' : '#1E8449' }}>
+              <View style={[s.okBanner, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89644' : '#A3D4BE' }]}>
+                <Ionicons name="checkmark-circle" size={17} color={dark ? '#58D68D' : '#2E7D5E'} />
+                <Text style={{ flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: dark ? '#58D68D' : '#2E7D5E' }}>
                   V horizonte 5 rokov bez predpokladanej zmeny
                 </Text>
               </View>
@@ -973,9 +973,9 @@ export default function DentalTwinScreen() {
           {/* ── Quick Stats ── */}
           <View style={s.statsRow}>
             {[
-              { val: stats.healthy, lbl: 'Zdravých',  color: '#2ECC71', icon: 'checkmark-circle' as const },
-              { val: stats.issues,  lbl: 'Problémov', color: '#E74C3C', icon: 'alert-circle' as const },
-              { val: stats.watch,   lbl: 'Sledovanie', color: '#F39C12', icon: 'eye' as const },
+              { val: stats.healthy, lbl: 'Zdravých',  color: '#52C896', icon: 'checkmark-circle' as const },
+              { val: stats.issues,  lbl: 'Problémov', color: '#C0392B', icon: 'alert-circle' as const },
+              { val: stats.watch,   lbl: 'Sledovanie', color: '#B8ACA0', icon: 'eye' as const },
               { val: stats.treated, lbl: 'Ošetrených', color: '#3A4256', icon: 'shield-checkmark' as const },
             ].map(({ val, lbl, color, icon }) => (
               <View key={lbl} style={s.statPill}>
@@ -1104,7 +1104,7 @@ export default function DentalTwinScreen() {
                     <View style={s.counterSummaryRow}>
                       <Text style={{ fontSize: 14, width: 22 }}>💰</Text>
                       <Text style={s.counterSummaryLabel}>Odhad ošetrenia:</Text>
-                      <Text style={[s.counterSummaryVal, { color: '#E74C3C' }]}>{snap.cumulativeCost} €</Text>
+                      <Text style={[s.counterSummaryVal, { color: '#C0392B' }]}>{snap.cumulativeCost} €</Text>
                     </View>
                     <View style={s.counterSummaryRow}>
                       <Text style={{ fontSize: 14, width: 22 }}>💚</Text>
@@ -1142,7 +1142,7 @@ export default function DentalTwinScreen() {
               <View style={s.compareCard}>
                 {/* Prevencia */}
                 <View style={s.compareItem}>
-                  <View style={[s.compareIconWrap, { backgroundColor: '#0D3B1F' }]}>
+                  <View style={[s.compareIconWrap, { backgroundColor: '#1A3D2E' }]}>
                     <Ionicons name="shield-checkmark" size={20} color="#58D68D" />
                   </View>
                   <Text style={s.compareLabel}>Prevencia</Text>
@@ -1261,11 +1261,11 @@ const s = StyleSheet.create({
   archLabelDot:  { width: 4, height: 4, borderRadius: 2, backgroundColor: '#3A4256' },
   archLabel:     { flex: 1, fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.5 },
   archPredBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(231,76,60,0.1)', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
-  archPredTxt:   { fontSize: 9, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
+  archPredTxt:   { fontSize: 9, fontFamily: 'DMSans_500Medium', color: '#C0392B' },
   archRow:       { position: 'relative', width: '100%' },
   archDivider:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 6, paddingHorizontal: 4 },
   archDividerLine: { flex: 1, height: 1, backgroundColor: '#1E1610' },
-  archDividerText: { fontSize: 8, fontFamily: 'DMSans_500Medium', color: '#333', letterSpacing: 1.5 },
+  archDividerText: { fontSize: 8, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 1.5 },
   toothAbsolute: { position: 'absolute' },
   toothIndicator: { width: TOOTH_SIZE, height: TOOTH_SIZE, borderRadius: TOOTH_SIZE / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   toothHealthyDot: { width: 6, height: 6, borderRadius: 3 },
@@ -1306,16 +1306,16 @@ const s = StyleSheet.create({
   counterEmoji:       { fontSize: 18, width: 26, textAlign: 'center' },
   counterLabel:       { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
   counterTeeth:       { fontSize: 10, color: '#555', marginTop: 1, fontFamily: 'DMSans_400Regular' },
-  counterCost:        { fontSize: 12, color: '#E74C3C', fontFamily: 'DMSans_500Medium' },
+  counterCost:        { fontSize: 12, color: '#C0392B', fontFamily: 'DMSans_500Medium' },
   counterDivider:     { height: 1, backgroundColor: '#1E1610', marginHorizontal: 14, marginVertical: 4 },
   counterSummary:     { paddingHorizontal: 14, paddingBottom: 14, gap: 6 },
   counterSummaryRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
   counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#888', fontFamily: 'DMSans_500Medium' },
   counterSummaryVal:  { fontSize: 14, fontFamily: 'PlayfairDisplay_700Bold' },
-  counterSavingsRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, backgroundColor: '#0D3B1F', padding: 12, marginTop: 4 },
+  counterSavingsRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, backgroundColor: '#1A3D2E', padding: 12, marginTop: 4 },
   savingsLabel:       { flex: 1, fontSize: 12, color: '#58D68D', fontFamily: 'DMSans_500Medium' },
   savingsVal:         { fontSize: 16, color: '#58D68D', fontFamily: 'PlayfairDisplay_700Bold' },
-  yearOK:             { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 2, padding: 14, backgroundColor: '#0D3B1F' },
+  yearOK:             { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 12, borderRadius: 2, padding: 14, backgroundColor: '#1A3D2E' },
   yearOKText:         { flex: 1, fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#58D68D' },
 
   // Compare
@@ -1328,7 +1328,7 @@ const s = StyleSheet.create({
   compareVsWrap:  { alignItems: 'center', gap: 4, width: 30 },
   compareVsLine:  { width: 1, height: 14, backgroundColor: '#1E1610' },
   compareVsTxt:   { fontSize: 10, color: '#555', fontFamily: 'DMSans_500Medium' },
-  savingsBanner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 8, backgroundColor: '#0D3B1F', borderRadius: 2, padding: 12, borderWidth: 1, borderColor: '#27AE6033' },
+  savingsBanner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 8, backgroundColor: '#1A3D2E', borderRadius: 2, padding: 12, borderWidth: 1, borderColor: '#52C89633' },
   savingsBannerTxt:{ flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#58D68D' },
 
   // CTA
@@ -1337,7 +1337,7 @@ const s = StyleSheet.create({
   ctaTxt:  { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
 
   // Footer
-  footerDisclaimer: { fontSize: 10, color: '#333', textAlign: 'center', margin: 16, lineHeight: 15, fontFamily: 'DMSans_400Regular' },
+  footerDisclaimer: { fontSize: 10, color: '#3A4256', textAlign: 'center', margin: 16, lineHeight: 15, fontFamily: 'DMSans_400Regular' },
 
   // Modal
   overlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' },
@@ -1359,7 +1359,7 @@ const s = StyleSheet.create({
 
   predRow:      { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
   predYearBadge:{ backgroundColor: '#3A0E0E', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
-  predYearTxt:  { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#E74C3C' },
+  predYearTxt:  { fontSize: 11, fontFamily: 'DMSans_500Medium', color: '#C0392B' },
 
   okBanner:   { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, borderWidth: 1, padding: 12, marginBottom: 14 },
 
@@ -1385,7 +1385,7 @@ const s = StyleSheet.create({
   riskDivider:    { height: 1, backgroundColor: '#1E1610', marginVertical: 8 },
   hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#F8F6F2', marginBottom: 8 },
   toggle:         { width: 42, height: 24, borderRadius: 2, justifyContent: 'center', paddingHorizontal: 2 },
-  thumb:          { width: 20, height: 20, borderRadius: 2, backgroundColor: '#fff', alignSelf: 'flex-start' },
+  thumb:          { width: 20, height: 20, borderRadius: 2, backgroundColor: '#F5F6F8', alignSelf: 'flex-start' },
   thumbOn:        { alignSelf: 'flex-end' },
   hygieneRow:     { flexDirection: 'row', gap: 8, marginBottom: 8 },
   hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', gap: 4 },

@@ -554,7 +554,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', marginBottom: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   backBtn: {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.12)',
@@ -564,7 +564,7 @@ const s = StyleSheet.create({
     width: 38, height: 38, borderRadius: 19,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
-  dmAvatarText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  dmAvatarText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
   newBtn: {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.12)',
@@ -581,7 +581,7 @@ const s = StyleSheet.create({
   },
   tabBtnActive: { backgroundColor: COLORS.wal },
   tabBtnText:   { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  tabBtnTextActive: { color: '#fff' },
+  tabBtnTextActive: { color: '#F5F6F8' },
 
   emptyCenter: {
     flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 10
@@ -599,7 +599,7 @@ const s = StyleSheet.create({
     width: 46, height: 46, borderRadius: 23,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
-  threadAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  threadAvatarText: { fontSize: 16, fontWeight: '700', color: '#F5F6F8' },
   threadTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
   threadName: { fontSize: 14, fontWeight: '600', color: COLORS.esp },
   threadNameBold: { fontWeight: '700' },
@@ -612,7 +612,7 @@ const s = StyleSheet.create({
     minWidth: 20, height: 20, alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 5, marginLeft: 8
   },
-  unreadText: { fontSize: 11, fontWeight: '700', color: '#fff' }
+  unreadText: { fontSize: 11, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // ChatView styles
@@ -653,16 +653,16 @@ const bubble = StyleSheet.create({
     width: 30, height: 30, borderRadius: 15,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 2
   },
-  avatarText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  avatarText: { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
   box: {
     maxWidth: '75%', borderRadius: 4, paddingHorizontal: 12, paddingVertical: 8,
-    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2
+    elevation: 1, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2
   },
   boxMe:    { backgroundColor: COLORS.esp, borderBottomRightRadius: 4 },
   boxOther: { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4 },
   senderName: { fontSize: 11, fontWeight: '700', color: COLORS.wal, marginBottom: 3 },
   text:   { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
-  textMe: { color: '#fff' },
+  textMe: { color: '#F5F6F8' },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 4 },
   time:   { fontSize: 10, color: '#aaa' },
   timeMe: { color: 'rgba(255,255,255,0.55)' }
@@ -689,7 +689,7 @@ const nm = StyleSheet.create({
     width: 42, height: 42, borderRadius: 21,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
-  avatarText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  avatarText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
   name: { fontSize: 14, fontWeight: '600', color: COLORS.esp },
   role: { fontSize: 12, color: COLORS.wal, marginTop: 2 }
 });

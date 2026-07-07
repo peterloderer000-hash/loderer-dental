@@ -72,10 +72,10 @@ function fmtEnd(dateStr: string, durMin: number) {
 }
 
 const STATUS_COLOR: Record<Appointment['status'], string> = {
-  pending:   '#D4AC0D',
+  pending:   '#B8ACA0',
   scheduled: COLORS.wal,
   arrived:   '#17A589',
-  completed: '#1E8449',
+  completed: '#2E7D5E',
   cancelled: '#922B21'
 };
 
@@ -415,7 +415,7 @@ export default function DoctorCalendar() {
               <TouchableOpacity key={mode}
                 style={[styles.toggleBtn, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, viewMode === mode && styles.toggleBtnActive]}
                 onPress={() => setViewMode(mode)} activeOpacity={0.75}>
-                <Ionicons name={icon} size={15} color={viewMode === mode ? '#fff' : colors.textSecondary} />
+                <Ionicons name={icon} size={15} color={viewMode === mode ? '#F5F6F8' : colors.textSecondary} />
               </TouchableOpacity>
             ))}
           </View>
@@ -806,7 +806,7 @@ const styles = StyleSheet.create({
   // Header
   header:       { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl + 4, paddingTop: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center' },
   headerLabel:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '500', textTransform: 'uppercase', marginBottom: 4 },
-  headerTitle:  { fontSize: 20, fontWeight: '600', color: '#fff' },
+  headerTitle:  { fontSize: 20, fontWeight: '600', color: '#F5F6F8' },
   todayBtn:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
   todayBtnText: { fontSize: 11, fontWeight: '700', color: COLORS.cream },
 
@@ -819,16 +819,16 @@ const styles = StyleSheet.create({
   weekGrid:          { flexDirection: 'row', backgroundColor: COLORS.cream, paddingVertical: 10, paddingHorizontal: 4, borderBottomWidth: 1, borderColor: COLORS.bg3 },
   dayCell:           { flex: 1, alignItems: 'center', gap: 3, paddingVertical: 6, borderRadius: 2 },
   dayCellSel:        { backgroundColor: COLORS.esp },
-  dayCellToday:      { backgroundColor: '#E2DDD6' },
+  dayCellToday:      { backgroundColor: '#D0D4DC' },
   dayName:           { fontSize: 9, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.4 },
   dayNameSel:        { color: COLORS.sand },
   dayNameToday:      { color: COLORS.wal, fontWeight: '800' },
   dayNum:            { fontSize: 16, fontWeight: '700', color: COLORS.esp },
-  dayNumSel:         { color: '#fff' },
+  dayNumSel:         { color: '#F5F6F8' },
   dayNumToday:       { color: COLORS.wal },
   countPill:         { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 5, paddingVertical: 1, minWidth: 16, alignItems: 'center' },
   countPillSel:      { backgroundColor: COLORS.sand },
-  countPillText:     { fontSize: 9, fontWeight: '700', color: '#fff' },
+  countPillText:     { fontSize: 9, fontWeight: '700', color: '#F5F6F8' },
   countPillTextSel:  { color: COLORS.esp },
   emptyDot:          { width: 4, height: 4, borderRadius: 2, backgroundColor: 'transparent' },
 
@@ -865,10 +865,10 @@ const styles = StyleSheet.create({
   monthGrid:     { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: SPACING.xl - 4 },
   monthCell:     { width: '14.28%', alignItems: 'center', paddingVertical: 6, borderRadius: 2, gap: 2 },
   monthCellSel:  { backgroundColor: COLORS.esp },
-  monthCellToday:{ backgroundColor: '#E2DDD6' },
+  monthCellToday:{ backgroundColor: '#D0D4DC' },
   monthCellOut:  { opacity: 0.3 },
   monthCellNum:  { fontSize: 15, fontWeight: '600', color: COLORS.esp },
-  monthCellNumSel:   { color: '#fff' },
+  monthCellNumSel:   { color: '#F5F6F8' },
   monthCellNumToday: { color: COLORS.wal, fontWeight: '800' },
   monthCellNumOut:   { color: COLORS.wal },
   monthDots:     { flexDirection: 'row', gap: 2, height: 6, alignItems: 'center' },
@@ -896,11 +896,11 @@ const styles = StyleSheet.create({
 
   // "Teraz" čiara
   nowLine: { position: 'absolute', left: 52, right: 0, flexDirection: 'row', alignItems: 'center', zIndex: 10 },
-  nowDot:  { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#E74C3C', marginLeft: -4 },
-  nowBar:  { flex: 1, height: 1.5, backgroundColor: '#E74C3C' },
+  nowDot:  { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#C0392B', marginLeft: -4 },
+  nowBar:  { flex: 1, height: 1.5, backgroundColor: '#C0392B' },
 
   // FAB
-  fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
+  fab: { position: 'absolute', bottom: 82, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 4, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
 
   // Block button in day header
   blockBtn: { width: 34, height: 34, borderRadius: 2, backgroundColor: '#F5EEF8', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#D7BDE2' },
@@ -928,5 +928,5 @@ const styles = StyleSheet.create({
   presetChipText: { fontSize: 12, fontWeight: '600', color: COLORS.esp },
   reasonInput:    { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 20, marginTop: 6 },
   blockSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#7D3C98', borderRadius: 2, paddingVertical: 14 },
-  blockSaveBtnText: { fontSize: 15, fontWeight: '800', color: '#fff' }
+  blockSaveBtnText: { fontSize: 15, fontWeight: '800', color: '#F5F6F8' }
 });

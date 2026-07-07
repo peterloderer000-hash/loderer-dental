@@ -122,7 +122,7 @@ export default function BookingSuccessScreen() {
 
           {/* Info */}
           <View style={styles.infoBox}>
-            <Ionicons name="time-outline" size={15} color="#7D6608" />
+            <Ionicons name="time-outline" size={15} color="#B87333" />
             <Text style={styles.infoText}>
               Tvoja žiadosť čaká na schválenie doktorom. Po schválení dostaneš notifikáciu.
             </Text>
@@ -131,7 +131,7 @@ export default function BookingSuccessScreen() {
           {/* Pridať do Kalendára */}
           {!!appointmentIso && (
             <TouchableOpacity
-              style={[styles.btnShare, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, calAdded && { borderColor: '#27AE60', backgroundColor: '#EAFAF1' }]}
+              style={[styles.btnShare, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }, calAdded && { borderColor: '#52C896', backgroundColor: '#EDF7F3' }]}
               onPress={handleAddToCalendar}
               activeOpacity={0.85}
               disabled={calAdded || calLoading}
@@ -141,9 +141,9 @@ export default function BookingSuccessScreen() {
                 : <Ionicons
                     name={calAdded ? 'checkmark-circle' : 'calendar-outline'}
                     size={16}
-                    color={calAdded ? '#27AE60' : COLORS.wal}
+                    color={calAdded ? '#52C896' : COLORS.wal}
                   />}
-              <Text style={[styles.btnShareText, { color: colors.textSecondary }, calAdded && { color: '#27AE60' }]}>
+              <Text style={[styles.btnShareText, { color: colors.textSecondary }, calAdded && { color: '#52C896' }]}>
                 {calAdded ? 'Pridané do kalendára' : 'Pridať do Google Kalendára'}
               </Text>
             </TouchableOpacity>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
 
   // Icon
   iconWrap:   { alignItems: 'center', marginBottom: 20 },
-  iconCircle: { width: 100, height: 100, borderRadius: 20, backgroundColor: '#D4AC0D', alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#1E8449', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
+  iconCircle: { width: 100, height: 100, borderRadius: 20, backgroundColor: '#B8ACA0', alignItems: 'center', justifyContent: 'center', elevation: 4, shadowColor: '#2E7D5E', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 12 },
   confetti:   { fontSize: 32, position: 'absolute', bottom: -8, right: -8 },
 
   // Text
@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
   serviceName: { fontSize: 16, fontWeight: '600', color: COLORS.wal },
 
   // Detail karta
-  card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 4, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
+  card: { width: '100%', backgroundColor: COLORS.cream, borderRadius: 4, padding: 16, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 14, elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
   row:  { flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  rowIcon:  { width: 32, height: 32, borderRadius: 2, backgroundColor: '#E2DDD6', alignItems: 'center', justifyContent: 'center' },
+  rowIcon:  { width: 32, height: 32, borderRadius: 2, backgroundColor: '#D0D4DC', alignItems: 'center', justifyContent: 'center' },
   rowLabel: { fontSize: 9, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 2 },
   rowValue: { fontSize: 14, fontWeight: '600', color: COLORS.esp, lineHeight: 19 },
 
@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
   urgentText: { flex: 1, fontSize: 12, color: '#C0392B', fontWeight: '600', lineHeight: 18 },
 
   // Info
-  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FEF9E7', borderRadius: 2, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#F9E79F' },
-  infoText: { flex: 1, fontSize: 12, color: '#7D6608', lineHeight: 18 },
+  infoBox:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: '#FDF3E7', borderRadius: 2, padding: 12, width: '100%', marginBottom: 24, borderWidth: 1, borderColor: '#D0D4DC' },
+  infoText: { flex: 1, fontSize: 12, color: '#B87333', lineHeight: 18 },
 
   // Buttons
   btnShare:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 12, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand, width: '100%', marginBottom: 10 },
@@ -212,5 +212,5 @@ const styles = StyleSheet.create({
   btnSecondary:   { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.sand },
   btnSecondaryText:{ fontSize: 13, fontWeight: '700', color: COLORS.wal },
   btnPrimary:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 14, borderRadius: 2, backgroundColor: COLORS.esp },
-  btnPrimaryText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  btnPrimaryText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 });

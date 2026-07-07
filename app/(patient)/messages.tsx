@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
   doctorAvatar:{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
-  headerName: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  headerName: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
   headerSub:  { fontSize: 12, color: COLORS.sand },
 
   // List
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   bubbleMine:      { backgroundColor: COLORS.esp, borderColor: COLORS.esp, alignSelf: 'flex-end' },
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
-  bubbleTextMine:  { color: '#fff' },
+  bubbleTextMine:  { color: '#F5F6F8' },
   bubbleTime:      { fontSize: 11, color: '#888', marginTop: 4, textAlign: 'right' },
   bubbleTimeMine:  { color: COLORS.sand },
 

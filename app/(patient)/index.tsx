@@ -80,9 +80,9 @@ const OpeningHoursCompact = React.memo(function OpeningHoursCompact() {
 
   return (
     <View style={[ohS.card, { backgroundColor: colors.cardBg }]}>
-      <LinearGradient colors={isOpen ? ['#EAFAF1', '#D5F5E3'] : ['#FDEDEC', '#F5B7B1']} style={ohS.banner}>
-        <View style={[ohS.dot, { backgroundColor: isOpen ? '#2ECC71' : '#E74C3C' }]} />
-        <Text style={[ohS.bannerText, { color: isOpen ? '#1E8449' : '#922B21' }]}>
+      <LinearGradient colors={isOpen ? ['#EDF7F3', '#EDF7F3'] : ['#FDEDEC', '#F5B7B1']} style={ohS.banner}>
+        <View style={[ohS.dot, { backgroundColor: isOpen ? '#52C896' : '#C0392B' }]} />
+        <Text style={[ohS.bannerText, { color: isOpen ? '#2E7D5E' : '#922B21' }]}>
           {isOpen ? `Dnes otvorené · ${todayRow?.open_time?.slice(0, 5)} – ${todayRow?.close_time?.slice(0, 5)}` : 'Dnes zatvorené'}
         </Text>
       </LinearGradient>
@@ -273,9 +273,9 @@ export default function PatientHome() {
   }, [arrivedAppt]);
 
   const scoreColor = dentalScore == null ? COLORS.sand
-    : dentalScore >= 80 ? '#27AE60'
+    : dentalScore >= 80 ? '#52C896'
     : dentalScore >= 60 ? '#F4C95D'
-    : '#E74C3C';
+    : '#C0392B';
 
   const scoreLabel = dentalScore == null ? '?' : String(dentalScore);
 
@@ -348,22 +348,22 @@ export default function PatientHome() {
         {arrivedAppt && queuePosition !== null && (
           <Reanimated.View entering={FadeInUp.delay(100).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginTop: -20, marginBottom: 8 }}>
             <TouchableOpacity
-              style={[styles.queueCard, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6044' : '#82E0AA' }]}
+              style={[styles.queueCard, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89644' : '#82E0AA' }]}
               onPress={() => router.push('/(patient)/appointments')} activeOpacity={0.9}
             >
               <View style={styles.queueLeft}>
                 <Text style={styles.queueEmoji}>🏥</Text>
                 <View>
-                  <Text style={[styles.queueTitle, { color: dark ? '#58D68D' : '#1E8449' }]}>Ste v čakárni</Text>
-                  <Text style={[styles.queueSub, { color: dark ? '#A9DFBF' : '#27AE60' }]}>
+                  <Text style={[styles.queueTitle, { color: dark ? '#58D68D' : '#2E7D5E' }]}>Ste v čakárni</Text>
+                  <Text style={[styles.queueSub, { color: dark ? '#A3D4BE' : '#52C896' }]}>
                     {arrivedAppt.service?.name ?? 'Termín'}
                   </Text>
                 </View>
               </View>
               <View style={styles.queueRight}>
-                <Text style={[styles.queueNum, { color: dark ? '#58D68D' : '#1E8449' }]}>{queuePosition}</Text>
-                <Text style={[styles.queueDen, { color: dark ? '#A9DFBF' : '#27AE60' }]}>/ {queueTotal}</Text>
-                <Text style={[styles.queueLabel, { color: dark ? '#A9DFBF' : '#27AE60' }]}>v rade</Text>
+                <Text style={[styles.queueNum, { color: dark ? '#58D68D' : '#2E7D5E' }]}>{queuePosition}</Text>
+                <Text style={[styles.queueDen, { color: dark ? '#A3D4BE' : '#52C896' }]}>/ {queueTotal}</Text>
+                <Text style={[styles.queueLabel, { color: dark ? '#A3D4BE' : '#52C896' }]}>v rade</Text>
               </View>
             </TouchableOpacity>
           </Reanimated.View>
@@ -373,14 +373,14 @@ export default function PatientHome() {
         {todayScheduled && !arrivedAppt && (
           <Reanimated.View entering={FadeInUp.delay(120).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginTop: -16, marginBottom: 8 }}>
             <TouchableOpacity
-              style={[styles.queueCard, { backgroundColor: dark ? '#1A1209' : '#FFF8E1', borderColor: dark ? COLORS.gold + '44' : '#F9E79F' }]}
+              style={[styles.queueCard, { backgroundColor: dark ? '#1A1209' : '#FFF8E1', borderColor: dark ? COLORS.gold + '44' : '#D0D4DC' }]}
               onPress={() => router.push('/(patient)/qr-checkin')}
               activeOpacity={0.9}
             >
               <View style={styles.queueLeft}>
                 <Text style={styles.queueEmoji}>📱</Text>
                 <View>
-                  <Text style={[styles.queueTitle, { color: dark ? COLORS.gold : '#7D6608' }]}>QR Check-in</Text>
+                  <Text style={[styles.queueTitle, { color: dark ? COLORS.gold : '#B87333' }]}>QR Check-in</Text>
                   <Text style={[styles.queueSub, { color: dark ? COLORS.sand : '#9A7D0A' }]}>
                     Naskenujte kód v čakárni
                   </Text>
@@ -412,7 +412,7 @@ export default function PatientHome() {
                   <Text style={styles.apptDate}>{formatApptDate(nextAppointment.appointment_date)}</Text>
                   {daysUntilNext !== null && (
                     <View style={[styles.countdownPill, {
-                      backgroundColor: daysUntilNext === 0 ? '#E74C3C' : daysUntilNext <= 3 ? '#E67E22' : '#1E8449',
+                      backgroundColor: daysUntilNext === 0 ? '#C0392B' : daysUntilNext <= 3 ? '#E67E22' : '#2E7D5E',
                     }]}>
                       <Text style={styles.countdownText}>
                         {daysUntilNext === 0 ? 'DNES' : daysUntilNext === 1 ? 'o 1 deň' : daysUntilNext < 5 ? `o ${daysUntilNext} dni` : `o ${daysUntilNext} dní`}
@@ -465,7 +465,7 @@ export default function PatientHome() {
 
           {/* 🚨 URGENTNÝ TERMÍN */}
           <TouchableOpacity
-            style={[styles.urgentBtn, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#E74C3C44' : '#F1948A' }]}
+            style={[styles.urgentBtn, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B44' : '#F1948A' }]}
             onPress={() => router.push({ pathname: '/(patient)/book-appointment', params: { urgent: '1' } })}
             activeOpacity={0.85}
           >
@@ -474,9 +474,9 @@ export default function PatientHome() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.urgentTitle, { color: dark ? '#F1948A' : '#C0392B' }]}>Bolí ma zub / Urgentný termín</Text>
-              <Text style={[styles.urgentSub, { color: dark ? '#E57373' : '#E74C3C' }]}>Prednostná rezervácia — čo najskôr</Text>
+              <Text style={[styles.urgentSub, { color: dark ? '#E57373' : '#C0392B' }]}>Prednostná rezervácia — čo najskôr</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color={dark ? '#F1948A' : '#E74C3C'} />
+            <Ionicons name="chevron-forward" size={18} color={dark ? '#F1948A' : '#C0392B'} />
           </TouchableOpacity>
 
           <View style={styles.quickRow}>
@@ -507,7 +507,7 @@ export default function PatientHome() {
             {([
               { icon: 'sparkles-outline', label: 'Smile Design', route: '/(patient)/smile-design', color: '#F1C40F' },
               { icon: 'grid-outline', label: 'Zubná mapa', route: '/(patient)/dental-map', color: '#3498DB' },
-              { icon: 'timer-outline', label: 'Čistenie', route: '/(patient)/brushing-challenge', color: '#2ECC71' },
+              { icon: 'timer-outline', label: 'Čistenie', route: '/(patient)/brushing-challenge', color: '#52C896' },
               { icon: 'people-outline', label: 'Rodina', route: '/(patient)/family-dashboard', color: '#9B59B6' },
             ] as { icon: any; label: string; route: any; color: string }[]).map((item) => (
               <TouchableOpacity
@@ -558,7 +558,7 @@ export default function PatientHome() {
                 <Text style={styles.twinEmoji}>🏆</Text>
                 <View>
                   <Text style={styles.twinLabel}>VERNOSTNÝ PROGRAM</Text>
-                  <Text style={[styles.twinTitle, { color: dark ? COLORS.cream : '#fff' }]}>Zbieraj body za návštevy</Text>
+                  <Text style={[styles.twinTitle, { color: dark ? COLORS.cream : '#F5F6F8' }]}>Zbieraj body za návštevy</Text>
                   <Text style={[styles.twinSub, { color: dark ? 'rgba(201,168,76,0.7)' : 'rgba(255,255,255,0.8)' }]}>Odmeny, zľavy a VIP ošetrenie</Text>
                 </View>
               </View>
@@ -571,11 +571,11 @@ export default function PatientHome() {
         {postVisitAppt && (
           <Reanimated.View entering={FadeInUp.delay(290).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 12 }}>
             <TouchableOpacity
-              style={[styles.postVisitCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}
+              style={[styles.postVisitCard, { backgroundColor: colors.cardBg, borderColor: dark ? '#52C89644' : '#A3D4BE' }]}
               onPress={() => router.push('/(patient)/appointments')}
               activeOpacity={0.88}
             >
-              <View style={[styles.postVisitIcon, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
+              <View style={[styles.postVisitIcon, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
                 <Text style={{ fontSize: 22 }}>🦷</Text>
               </View>
               <View style={{ flex: 1 }}>
@@ -593,7 +593,7 @@ export default function PatientHome() {
                   </Text>
                 ) : null}
               </View>
-              <Ionicons name="chevron-forward" size={16} color={dark ? '#27AE60' : '#1E8449'} />
+              <Ionicons name="chevron-forward" size={16} color={dark ? '#52C896' : '#2E7D5E'} />
             </TouchableOpacity>
           </Reanimated.View>
         )}
@@ -602,7 +602,7 @@ export default function PatientHome() {
         {problemTeeth > 0 && (
           <Reanimated.View entering={FadeInUp.delay(310).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 10 }}>
             <TouchableOpacity
-              style={[styles.warnCard, { backgroundColor: dark ? '#2D2200' : '#FEF9E7', borderColor: dark ? '#E67E2233' : '#F9E79F' }]}
+              style={[styles.warnCard, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#E67E2233' : '#D0D4DC' }]}
               onPress={() => router.push('/(patient)/score')}
               activeOpacity={0.85}
             >
@@ -610,7 +610,7 @@ export default function PatientHome() {
                 <Ionicons name="warning" size={20} color="#E67E22" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[styles.warnTitle, { color: dark ? '#F0A030' : '#7D6608' }]}>Odporúčame návštevu</Text>
+                <Text style={[styles.warnTitle, { color: dark ? '#F0A030' : '#B87333' }]}>Odporúčame návštevu</Text>
                 <Text style={[styles.warnSub, { color: dark ? '#C09028' : '#9A7D0A' }]}>
                   Máte {problemTeeth} {problemTeeth === 1 ? 'zub' : problemTeeth < 5 ? 'zuby' : 'zubov'} vyžadujúcich pozornosť
                 </Text>
@@ -684,7 +684,7 @@ export default function PatientHome() {
                         </View>
                         {appt.patient_rating ? (
                           <View style={styles.ratingMini}>
-                            <Ionicons name="star" size={10} color="#F39C12" />
+                            <Ionicons name="star" size={10} color="#B8ACA0" />
                             <Text style={styles.ratingMiniText}>{appt.patient_rating}</Text>
                           </View>
                         ) : null}
@@ -732,7 +732,7 @@ export default function PatientHome() {
             <Animated.View style={[styles.starsRow, { transform: [{ scale: starScale }] }]}>
               {[1, 2, 3, 4, 5].map(n => (
                 <TouchableOpacity key={n} onPress={() => { setRatingVal(n); animateStar(); }} activeOpacity={0.7}>
-                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#F39C12' : '#ddd'} />
+                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#ddd'} />
                 </TouchableOpacity>
               ))}
             </Animated.View>
@@ -792,7 +792,7 @@ const styles = StyleSheet.create({
   notifDot: {
     position: 'absolute', top: 6, right: 6,
     width: 8, height: 8, borderRadius: 4,
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#C0392B',
     borderWidth: 1.5, borderColor: COLORS.esp,
   },
   msgBadge: {
@@ -802,7 +802,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 3,
   },
-  msgBadgeText: { fontSize: 7, fontFamily: 'DMSans_500Medium', color: '#fff' },
+  msgBadgeText: { fontSize: 7, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
   avatar: {
     width: 44, height: 44, borderRadius: 4,
     backgroundColor: COLORS.wal,
@@ -888,7 +888,7 @@ const styles = StyleSheet.create({
   countdownPill: {
     alignSelf: 'flex-start', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3, marginTop: 6,
   },
-  countdownText: { fontSize: 11, fontWeight: '800', color: '#fff', letterSpacing: 0.5 },
+  countdownText: { fontSize: 11, fontWeight: '800', color: '#F5F6F8', letterSpacing: 0.5 },
   warnCard:        { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 2, borderWidth: 1.5, padding: 14 },
   warnIconWrap:    { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   warnTitle:       { fontSize: 13, fontWeight: '700', marginBottom: 2 },
@@ -1122,11 +1122,11 @@ const styles = StyleSheet.create({
   },
   ratingMini: {
     flexDirection: 'row', alignItems: 'center', gap: 2,
-    backgroundColor: '#FEF9E7', borderRadius: 2,
+    backgroundColor: '#FDF3E7', borderRadius: 2,
     paddingHorizontal: 6, paddingVertical: 3,
   },
   ratingMiniText: {
-    fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#F39C12',
+    fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#B8ACA0',
   },
 
   // Tip card
@@ -1159,16 +1159,16 @@ const styles = StyleSheet.create({
 
   // Rating modal
   ratingOverlay:     { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
-  ratingSheet:       { backgroundColor: '#fff', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
+  ratingSheet:       { backgroundColor: '#F5F6F8', borderTopLeftRadius: 26, borderTopRightRadius: 26, padding: 24, paddingBottom: 44 },
   ratingHandle:      { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.bg3, alignSelf: 'center', marginBottom: 20 },
   ratingTitle:       { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.esp, textAlign: 'center', marginBottom: 4 },
   ratingSubtitle:    { fontSize: 13, color: COLORS.wal, textAlign: 'center', marginBottom: 20, fontFamily: 'DMSans_400Regular' },
   starsRow:          { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 8 },
-  ratingLabel:       { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F39C12', textAlign: 'center', marginBottom: 16 },
+  ratingLabel:       { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#B8ACA0', textAlign: 'center', marginBottom: 16 },
   ratingInput:       { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 76, backgroundColor: COLORS.bg2, marginBottom: 20, fontFamily: 'DMSans_400Regular' },
   ratingActions:     { flexDirection: 'row', gap: 10 },
   ratingBtnSkip:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   ratingBtnSkipText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
-  ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
-  ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#fff' },
+  ratingBtnSubmit:   { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: '#B8ACA0', justifyContent: 'center' },
+  ratingBtnSubmitText: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
 });

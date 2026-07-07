@@ -107,13 +107,13 @@ const LEVELS = [
 
 // ─── Konfigurácia statusov ─────────────────────────────────────────────────────
 const STATUS_CFG: Partial<Record<ToothStatus, { label: string; color: string; bg: string; emoji: string }>> = {
-  healthy:           { label: 'Zdravý',        color: '#1E8449', bg: '#EAFAF1', emoji: '✅' },
+  healthy:           { label: 'Zdravý',        color: '#2E7D5E', bg: '#EDF7F3', emoji: '✅' },
   cavity:            { label: 'Kaz',           color: '#922B21', bg: '#FDEDEC', emoji: '🔴' },
   early_cavity:      { label: 'Začín. kaz',    color: '#CB4335', bg: '#FDEDEC', emoji: '🟠' },
-  watch:             { label: 'Pozorovanie',   color: '#E67E22', bg: '#FEF9E7', emoji: '👁' },
-  filled:            { label: 'Plomba',        color: '#9A7D0A', bg: '#FEF9E7', emoji: '🟡' },
-  large_filling:     { label: 'Veľká plomba',  color: '#7D6608', bg: '#FEF9E7', emoji: '🟤' },
-  replace_filling:   { label: 'Vymeniť pl.',   color: '#B7770D', bg: '#FEF9E7', emoji: '🔄' },
+  watch:             { label: 'Pozorovanie',   color: '#E67E22', bg: '#FDF3E7', emoji: '👁' },
+  filled:            { label: 'Plomba',        color: '#9A7D0A', bg: '#FDF3E7', emoji: '🟡' },
+  large_filling:     { label: 'Veľká plomba',  color: '#B87333', bg: '#FDF3E7', emoji: '🟤' },
+  replace_filling:   { label: 'Vymeniť pl.',   color: '#B7770D', bg: '#FDF3E7', emoji: '🔄' },
   crown:             { label: 'Korunka',       color: '#1A5276', bg: '#EBF5FB', emoji: '👑' },
   bridge:            { label: 'Mostík',        color: '#154360', bg: '#EBF5FB', emoji: '🌉' },
   implant:           { label: 'Implantát',     color: '#117A65', bg: '#E8F8F5', emoji: '🔩' },
@@ -122,28 +122,28 @@ const STATUS_CFG: Partial<Record<ToothStatus, { label: string; color: string; bg
   root_canal:        { label: 'Devitalizácia', color: '#7D3C98', bg: '#F5EEF8', emoji: '🟣' },
   extracted:         { label: 'Extrahovaný',   color: '#566573', bg: '#F2F3F4', emoji: '⚫' },
   missing:           { label: 'Chýba',         color: '#AAB7B8', bg: '#FDFEFE', emoji: '⬜' },
-  fracture:          { label: 'Fraktúra',      color: '#E74C3C', bg: '#FDEDEC', emoji: '💥' },
-  erosion:           { label: 'Erózia',        color: '#A04000', bg: '#FEF9E7', emoji: '🌊' },
-  abrasion:          { label: 'Abrázia',       color: '#784212', bg: '#FEF9E7', emoji: '⚠️' },
+  fracture:          { label: 'Fraktúra',      color: '#C0392B', bg: '#FDEDEC', emoji: '💥' },
+  erosion:           { label: 'Erózia',        color: '#A04000', bg: '#FDF3E7', emoji: '🌊' },
+  abrasion:          { label: 'Abrázia',       color: '#784212', bg: '#FDF3E7', emoji: '⚠️' },
   hypoplasia:        { label: 'Hypoplázia',    color: '#5D6D7E', bg: '#F2F3F4', emoji: '🔵' },
   hypomineralization:{ label: 'Hypominer.',    color: '#2E4057', bg: '#EBF5FB', emoji: '🔷' },
   periodontal:       { label: 'Parodont.',     color: '#C0392B', bg: '#FDEDEC', emoji: '🦷' },
   mobility:          { label: 'Pohyblivosť',   color: '#922B21', bg: '#FDEDEC', emoji: '↔️' },
   improve_hygiene:   { label: 'Zlepš hygienu', color: '#2980B9', bg: '#EBF5FB', emoji: '🪥' },
-  treatment_needed:  { label: 'Na prerobenie', color: '#F39C12', bg: '#FEF9E7', emoji: '🔧' }
+  treatment_needed:  { label: 'Na prerobenie', color: '#B8ACA0', bg: '#FDF3E7', emoji: '🔧' }
 };
 
 const APPT_STATUS: Record<string, { label: string; color: string; bg: string }> = {
   scheduled:  { label: 'Naplánovaný', color: '#1A5276', bg: '#EBF5FB' },
-  completed:  { label: 'Dokončený',   color: '#1E8449', bg: '#EAFAF1' },
+  completed:  { label: 'Dokončený',   color: '#2E7D5E', bg: '#EDF7F3' },
   cancelled:  { label: 'Zrušený',     color: '#922B21', bg: '#FDEDEC' },
-  pending:    { label: 'Čaká',        color: '#E67E22', bg: '#FEF9E7' }
+  pending:    { label: 'Čaká',        color: '#E67E22', bg: '#FDF3E7' }
 };
 
 const PAYMENT_CFG: Record<string, { label: string; color: string; bg: string; icon: string; next: string }> = {
   unpaid:  { label: 'Nezaplatené', color: '#922B21', bg: '#FDEDEC', icon: '💸', next: 'paid'    },
-  paid:    { label: 'Zaplatené',   color: '#1E8449', bg: '#EAFAF1', icon: '✅', next: 'partial' },
-  partial: { label: 'Čiastočne',  color: '#7D6608', bg: '#FEF9E7', icon: '⚠️', next: 'unpaid'  }
+  paid:    { label: 'Zaplatené',   color: '#2E7D5E', bg: '#EDF7F3', icon: '✅', next: 'partial' },
+  partial: { label: 'Čiastočne',  color: '#B87333', bg: '#FDF3E7', icon: '⚠️', next: 'unpaid'  }
 };
 
 const RATING_LABELS = ['', 'Veľmi zlý', 'Zlý', 'Dobrý', 'Veľmi dobrý', 'Výborný!'];
@@ -152,7 +152,7 @@ const RATING_LABELS = ['', 'Veľmi zlý', 'Zlý', 'Dobrý', 'Veľmi dobrý', 'V�
 function DimBar({ label, score, color, emoji }: { label: string; score: number; color: string; emoji: string }) {
   const { colors } = useAppTheme();
   const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
-  const gc    = score >= 85 ? '#1E8449' : score >= 70 ? '#9A7D0A' : score >= 50 ? '#E67E22' : '#922B21';
+  const gc    = score >= 85 ? '#2E7D5E' : score >= 70 ? '#9A7D0A' : score >= 50 ? '#E67E22' : '#922B21';
   return (
     <View style={styles.dimRow}>
       <Text style={styles.dimEmoji}>{emoji}</Text>
@@ -175,7 +175,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
   const c = 2 * Math.PI * r;
   const pct = Math.min(100, Math.max(0, score));
   const offset = c - (pct / 100) * c;
-  const col = score >= 80 ? '#1E8449' : score >= 65 ? '#27AE60' : score >= 45 ? '#E67E22' : '#922B21';
+  const col = score >= 80 ? '#2E7D5E' : score >= 65 ? '#52C896' : score >= 45 ? '#E67E22' : '#922B21';
   const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
 
   return (
@@ -211,7 +211,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
       <View style={{ alignItems: 'center' }}>
         <Text style={{ fontSize: size * 0.32, fontWeight: '800', color: col, lineHeight: size * 0.36 }}>{score}</Text>
         <View style={{ backgroundColor: col, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 1, marginTop: 2 }}>
-          <Text style={{ fontSize: 10, fontWeight: '800', color: '#fff' }}>{grade}</Text>
+          <Text style={{ fontSize: 10, fontWeight: '800', color: '#F5F6F8' }}>{grade}</Text>
         </View>
       </View>
     </View>
@@ -502,7 +502,7 @@ export default function PatientDetailScreen() {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'appointments' | 'plan' | 'payments' | 'messages' | 'records'>('overview');
 
-  const scoreCol = overall >= 80 ? '#1E8449' : overall >= 65 ? '#27AE60' : overall >= 45 ? '#E67E22' : '#922B21';
+  const scoreCol = overall >= 80 ? '#2E7D5E' : overall >= 65 ? '#52C896' : overall >= 45 ? '#E67E22' : '#922B21';
   const initials = (patientName ?? '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   // Quick stats
@@ -645,19 +645,19 @@ export default function PatientDetailScreen() {
             )}
             <View style={styles.infoChips}>
               <View style={[styles.chip, hasPassport ? styles.chipGreen : styles.chipOrange,
-                hasPassport ? (dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }) : (dark && { backgroundColor: '#2D2200', borderColor: '#F9E79F44' })]}>
+                hasPassport ? (dark && { backgroundColor: '#1A3D2E', borderColor: '#A9DFBF55' }) : (dark && { backgroundColor: '#2D1F10', borderColor: '#D0D4DC44' })]}>
                 <Text style={[styles.chipText, { color: colors.textPrimary }]}>{hasPassport ? '✓ Anamnéza' : '⚠ Bez anamnézy'}</Text>
               </View>
               <View style={[styles.chip, teeth.length > 0 ? styles.chipGreen : styles.chipGray,
-                teeth.length > 0 && dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF55' }]}>
+                teeth.length > 0 && dark && { backgroundColor: '#1A3D2E', borderColor: '#A9DFBF55' }]}>
                 <Text style={[styles.chipText, { color: colors.textPrimary }]}>{teeth.length > 0 ? `🦷 ${teeth.length} zubov` : 'Karta prázdna'}</Text>
               </View>
             </View>
             <View style={styles.statsRow}>
               <Text style={[styles.loyaltyPts, { color: colors.textSecondary }]}>{loyaltyPts} bodov · {appointments.filter(a => a.status === 'completed').length} návštev</Text>
               {avgRating !== null && (
-                <View style={[styles.ratingPill, dark && { backgroundColor: '#2D2200', borderColor: '#B7950B55' }]}>
-                  <Ionicons name="star" size={10} color="#F39C12" />
+                <View style={[styles.ratingPill, dark && { backgroundColor: '#2D1F10', borderColor: '#B7950B55' }]}>
+                  <Ionicons name="star" size={10} color="#B8ACA0" />
                   <Text style={styles.ratingPillText}>{avgRating.toFixed(1)}</Text>
                 </View>
               )}
@@ -690,15 +690,15 @@ export default function PatientDetailScreen() {
             <TouchableOpacity style={[styles.actionBtn, styles.actionBtnPrimary, { flex: 1 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/add-appointment', params: { patientId, patientName } })}>
               <Ionicons name="calendar-outline" size={22} color="#fff" />
-              <Text style={[styles.actionBtnText, { color: '#fff' }]}>Rezervovať</Text>
+              <Text style={[styles.actionBtnText, { color: '#F5F6F8' }]}>Rezervovať</Text>
             </TouchableOpacity>
           </View>
           {/* Sekundárne akcie */}
           <View style={styles.actionsRow}>
             <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/prescriptions', params: { patientId, patientName } })}>
-              <Ionicons name="medical-outline" size={18} color="#1E8449" />
-              <Text style={[styles.actionBtnSmText, { color: '#1E8449' }]}>Recepty</Text>
+              <Ionicons name="medical-outline" size={18} color="#2E7D5E" />
+              <Text style={[styles.actionBtnSmText, { color: '#2E7D5E' }]}>Recepty</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => exportPatientHistory(patientName ?? 'Pacient', appointments as unknown as Appointment[])}>
@@ -726,13 +726,13 @@ export default function PatientDetailScreen() {
         {/* ── Plán liečby + Súhlasy ── */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 14 }}>
           <TouchableOpacity
-            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark && { backgroundColor: '#0D3B1F', borderColor: '#A9DFBF44' }]}
+            style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark && { backgroundColor: '#1A3D2E', borderColor: '#A9DFBF44' }]}
             activeOpacity={0.8}
             onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId, patientName } })}
           >
-            <Ionicons name="list-outline" size={17} color={dark ? '#27AE60' : '#1E8449'} />
-            <Text style={[styles.planBtnText, dark && { color: '#27AE60' }]}>Plán liečby</Text>
-            <Ionicons name="chevron-forward-outline" size={14} color={dark ? '#27AE60' : '#1E8449'} style={{ marginLeft: 'auto' }} />
+            <Ionicons name="list-outline" size={17} color={dark ? '#52C896' : '#2E7D5E'} />
+            <Text style={[styles.planBtnText, dark && { color: '#52C896' }]}>Plán liečby</Text>
+            <Ionicons name="chevron-forward-outline" size={14} color={dark ? '#52C896' : '#2E7D5E'} style={{ marginLeft: 'auto' }} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.planBtn, { flex: 1, marginBottom: 0 }, dark ? { backgroundColor: '#1E0D33', borderColor: '#D7BDE244' } : { backgroundColor: '#F5EEF8', borderColor: '#D7BDE2' }]}
@@ -788,12 +788,12 @@ export default function PatientDetailScreen() {
         {/* ── Rýchly prehľad ── */}
         <View style={[styles.quickStats, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
           <View style={styles.qsRow}>
-            <View style={[styles.qsBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-              <Text style={[styles.qsVal, { color: dark ? '#27AE60' : '#1E8449' }]}>{completedCount}</Text>
+            <View style={[styles.qsBox, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
+              <Text style={[styles.qsVal, { color: dark ? '#52C896' : '#2E7D5E' }]}>{completedCount}</Text>
               <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Návštevy</Text>
             </View>
             <View style={[styles.qsBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
-              <Text style={[styles.qsVal, { color: dark ? '#E74C3C' : '#922B21' }]}>{problemCount}</Text>
+              <Text style={[styles.qsVal, { color: dark ? '#C0392B' : '#922B21' }]}>{problemCount}</Text>
               <Text style={[styles.qsLabel, { color: colors.textSecondary }]}>Probl. zuby</Text>
             </View>
             <View style={[styles.qsBox, { backgroundColor: dark ? '#0D2233' : '#EBF5FB' }]}>
@@ -817,14 +817,14 @@ export default function PatientDetailScreen() {
           <View style={styles.scoreGaugeRow}>
             <ScoreGauge score={overall} size={100} />
             <View style={{ flex: 1 }}>
-              <DimBar label="Zdravie"    score={dims.health}     color="#1E8449" emoji="❤️" />
+              <DimBar label="Zdravie"    score={dims.health}     color="#2E7D5E" emoji="❤️" />
               <DimBar label="Hygiena"    score={dims.hygiene}    color="#148F77" emoji="🪥" />
               <DimBar label="Estetika"   score={dims.aesthetics} color="#1A5276" emoji="✨" />
-              <DimBar label="Prevencia"  score={dims.prevention} color="#7D6608" emoji="🛡️" />
+              <DimBar label="Prevencia"  score={dims.prevention} color="#B87333" emoji="🛡️" />
             </View>
           </View>
           <View style={styles.dimLegend}>
-            {[['A', '≥85', '#1E8449'], ['B', '≥70', '#9A7D0A'], ['C', '≥50', '#E67E22'], ['D', '<50', '#922B21']].map(([g, r, c]) => (
+            {[['A', '≥85', '#2E7D5E'], ['B', '≥70', '#9A7D0A'], ['C', '≥50', '#E67E22'], ['D', '<50', '#922B21']].map(([g, r, c]) => (
               <View key={g} style={styles.dimLegendItem}>
                 <View style={[styles.dimLegendDot, { backgroundColor: c as string }]} />
                 <Text style={styles.dimLegendText}>{g}: {r}</Text>
@@ -868,8 +868,8 @@ export default function PatientDetailScreen() {
           <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>DIAGNÓZY ({diagnoses.length})</Text>
             {diagnoses.slice(0, 8).map(dg => {
-              const sevColor = dg.severity === 'high' ? '#922B21' : dg.severity === 'medium' ? '#E67E22' : '#1E8449';
-              const sevBg = dg.severity === 'high' ? (dark ? '#4A1010' : '#FDEDEC') : dg.severity === 'medium' ? (dark ? '#2D2200' : '#FEF9E7') : (dark ? '#0D3B1F' : '#EAFAF1');
+              const sevColor = dg.severity === 'high' ? '#922B21' : dg.severity === 'medium' ? '#E67E22' : '#2E7D5E';
+              const sevBg = dg.severity === 'high' ? (dark ? '#4A1010' : '#FDEDEC') : dg.severity === 'medium' ? (dark ? '#2D1F10' : '#FDF3E7') : (dark ? '#1A3D2E' : '#EDF7F3');
               const sevLabel = dg.severity === 'high' ? 'Vysoká' : dg.severity === 'medium' ? 'Stredná' : 'Nízka';
               return (
                 <View key={dg.id} style={[styles.diagRow, { borderBottomColor: colors.bg3 }]}>
@@ -1032,7 +1032,7 @@ export default function PatientDetailScreen() {
               const isFuture  = new Date(a.appointment_date) >= new Date();
               const canAct    = (a.status === 'scheduled' || a.status === 'pending') && isFuture;
               const isLast = i === group.items.length - 1;
-              const dotCol = a.status === 'completed' ? '#1E8449' : a.status === 'cancelled' ? '#922B21' : '#1A5276';
+              const dotCol = a.status === 'completed' ? '#2E7D5E' : a.status === 'cancelled' ? '#922B21' : '#1A5276';
               return (
                 <View key={a.id} style={styles.tlRow}>
                   {/* Timeline line + dot */}
@@ -1111,7 +1111,7 @@ export default function PatientDetailScreen() {
                               key={n}
                               name={n <= (a.patient_rating ?? 0) ? 'star' : 'star-outline'}
                               size={12}
-                              color={a.patient_rating ? '#F39C12' : '#ccc'}
+                              color={a.patient_rating ? '#B8ACA0' : '#ccc'}
                             />
                           ))}
                           {a.patient_rating ? (
@@ -1204,12 +1204,12 @@ export default function PatientDetailScreen() {
             <TouchableOpacity style={styles.planBtn}
               onPress={() => router.push({ pathname: '/(doctor)/treatment-plan', params: { patientId, patientName } })}
               activeOpacity={0.8}>
-              <Ionicons name="list-outline" size={22} color="#1E8449" />
+              <Ionicons name="list-outline" size={22} color="#2E7D5E" />
               <View style={{ flex: 1 }}>
                 <Text style={styles.planBtnText}>Otvoriť liečebný plán</Text>
                 <Text style={[styles.emptyText, { marginTop: 2, color: colors.textSecondary }]}>Prehľad výkonov, stav a ceny</Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color="#1E8449" />
+              <Ionicons name="chevron-forward" size={16} color="#2E7D5E" />
             </TouchableOpacity>
           </View>
         )}
@@ -1294,11 +1294,11 @@ export default function PatientDetailScreen() {
             {[
               { label: 'Zubná karta', icon: 'clipboard-outline', color: COLORS.wal, path: '/(doctor)/dental-chart' },
               { label: 'Anamnéza',    icon: 'document-text-outline', color: '#1A5276', path: '/(doctor)/patient-passport' },
-              { label: 'Recepty',     icon: 'medical-outline', color: '#1E8449', path: '/(doctor)/prescriptions' },
+              { label: 'Recepty',     icon: 'medical-outline', color: '#2E7D5E', path: '/(doctor)/prescriptions' },
               { label: 'Prílohy',     icon: 'attach-outline', color: '#784212', path: '/(doctor)/patient-attachments' },
               { label: 'AI RTG',      icon: 'scan-outline', color: '#3A4256', path: '/(doctor)/xray-analysis' },
               { label: 'AI Riziká',   icon: 'analytics-outline', color: '#8E44AD', path: '/(doctor)/risk-prediction' },
-              { label: 'Before/After',icon: 'images-outline', color: '#1E8449', path: '/(doctor)/before-after' },
+              { label: 'Before/After',icon: 'images-outline', color: '#2E7D5E', path: '/(doctor)/before-after' },
               { label: 'Súhlasy',     icon: 'checkmark-circle-outline', color: '#7D3C98', path: '/(doctor)/consent-forms' },
             ].map(item => (
               <TouchableOpacity key={item.label}
@@ -1415,7 +1415,7 @@ const styles = StyleSheet.create({
   header:         { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:        { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:      { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:    { fontSize: 17, fontWeight: '700', color: '#fff' },
+  headerTitle:    { fontSize: 17, fontWeight: '700', color: '#F5F6F8' },
   scoreChip:      { width: 44, height: 44, borderRadius: 4, borderWidth: 2.5, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
   scoreChipNum:   { fontSize: 16, fontWeight: '800', lineHeight: 18 },
   scoreChipLabel: { fontSize: 7, fontWeight: '600', textTransform: 'uppercase' },
@@ -1424,7 +1424,7 @@ const styles = StyleSheet.create({
   infoCard:    { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3, flexDirection: 'row', gap: 14 },
   avatarWrap:  { alignItems: 'center', gap: 6 },
   avatar:      { width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.sand, overflow: 'hidden' },
-  avatarText:  { fontSize: 22, fontWeight: '700', color: '#fff' },
+  avatarText:  { fontSize: 22, fontWeight: '700', color: '#F5F6F8' },
   loyaltyBadge:{ flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 2, borderWidth: 1, paddingHorizontal: 5, paddingVertical: 2 },
   loyaltyIcon: { fontSize: 10 },
   loyaltyName: { fontSize: 8, fontWeight: '700' },
@@ -1433,8 +1433,8 @@ const styles = StyleSheet.create({
   phoneText:   { fontSize: 12, color: COLORS.wal },
   infoChips:   { flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 5 },
   chip:        { borderRadius: 2, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
-  chipGreen:   { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' },
-  chipOrange:  { backgroundColor: '#FEF9E7', borderColor: '#F9E79F' },
+  chipGreen:   { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' },
+  chipOrange:  { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' },
   chipGray:    { backgroundColor: COLORS.bg3, borderColor: COLORS.bg3 },
   chipText:    { fontSize: 9, fontWeight: '700', color: COLORS.esp },
 
@@ -1443,11 +1443,11 @@ const styles = StyleSheet.create({
   notesPrivateText:  { fontSize: 9, fontWeight: '700', color: '#1A5276' },
   notesInput:        { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 12, fontSize: 13, color: COLORS.esp, minHeight: 90, backgroundColor: COLORS.bg2, marginBottom: 10, lineHeight: 20 },
   notesSaveBtn:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#1A5276', borderRadius: 2, paddingVertical: 11 },
-  notesSaveBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
+  notesSaveBtnText:  { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
   statsRow:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
   loyaltyPts:  { fontSize: 10, color: COLORS.wal },
-  ratingPill:  { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FEF9E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: '#F39C12' },
-  ratingPillText: { fontSize: 10, fontWeight: '700', color: '#F39C12' },
+  ratingPill:  { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#FDF3E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: '#B8ACA0' },
+  ratingPillText: { fontSize: 10, fontWeight: '700', color: '#B8ACA0' },
 
   // Akcie
   actionsRow:       { flexDirection: 'row', gap: 8 },
@@ -1457,8 +1457,8 @@ const styles = StyleSheet.create({
   actionBtnSm:      { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: COLORS.cream, borderRadius: 2, paddingVertical: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   actionBtnSmText:  { fontSize: 10, fontWeight: '600', color: COLORS.wal, textAlign: 'center' },
   // Plán liečby
-  planBtn:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EAFAF1', borderRadius: 2, paddingVertical: 12, paddingHorizontal: 14, marginBottom: 14, borderWidth: 1.5, borderColor: '#A9DFBF' },
-  planBtnText:      { fontSize: 13, fontWeight: '700', color: '#1E8449' },
+  planBtn:          { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#EDF7F3', borderRadius: 2, paddingVertical: 12, paddingHorizontal: 14, marginBottom: 14, borderWidth: 1.5, borderColor: '#A3D4BE' },
+  planBtnText:      { fontSize: 13, fontWeight: '700', color: '#2E7D5E' },
 
   // Karta
   card:           { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: COLORS.bg3 },
@@ -1475,7 +1475,7 @@ const styles = StyleSheet.create({
   dimFill:     { height: 8, borderRadius: 4 },
   dimScore:    { fontSize: 12, fontWeight: '800', width: 24, textAlign: 'right' },
   gradeBox:    { width: 20, height: 20, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
-  gradeText:   { fontSize: 9, fontWeight: '800', color: '#fff' },
+  gradeText:   { fontSize: 9, fontWeight: '800', color: '#F5F6F8' },
   dimLegend:   { flexDirection: 'row', gap: 10, marginTop: 4, justifyContent: 'flex-end' },
   dimLegendItem:{ flexDirection: 'row', alignItems: 'center', gap: 3 },
   dimLegendDot:{ width: 7, height: 7, borderRadius: 4 },
@@ -1506,20 +1506,20 @@ const styles = StyleSheet.create({
   familyTag:     { fontSize: 10, color: '#784212', fontWeight: '600', marginBottom: 2 },
   apptNotes:     { fontSize: 11, color: '#888', fontStyle: 'italic', lineHeight: 15, marginBottom: 2 },
   ratingRow:     { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3 },
-  ratingLabel:   { fontSize: 11, color: '#F39C12', fontWeight: '600', marginLeft: 2 },
+  ratingLabel:   { fontSize: 11, color: '#B8ACA0', fontWeight: '600', marginLeft: 2 },
   reviewText:    { fontSize: 11, color: '#888', fontStyle: 'italic', lineHeight: 15, marginTop: 2, paddingLeft: 2 },
   // Appointment note editing
   apptNoteEdit:      { marginTop: 6, marginBottom: 4 },
   apptNoteInput:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 8, fontSize: 12, color: COLORS.esp, minHeight: 64, backgroundColor: COLORS.bg2, lineHeight: 18, marginBottom: 6 },
   apptNoteSaveBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, backgroundColor: '#1A5276', borderRadius: 2, paddingVertical: 7 },
-  apptNoteSaveBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  apptNoteSaveBtnText: { fontSize: 12, fontWeight: '700', color: '#F5F6F8' },
   // Faktúra
   invoiceBtn:        { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', marginTop: 6, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 2, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
   invoiceBtnText:    { fontSize: 11, fontWeight: '700', color: '#7D3C98' },
   // Quick status actions
   apptActRow:        { flexDirection: 'row', gap: 6, marginTop: 7 },
-  apptActDone:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 2, backgroundColor: '#1E8449' },
-  apptActDoneText:   { fontSize: 11, fontWeight: '700', color: '#fff' },
+  apptActDone:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 2, backgroundColor: '#2E7D5E' },
+  apptActDoneText:   { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
   apptActCancel:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, borderRadius: 2, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F5B7B1' },
   apptActCancelText: { fontSize: 11, fontWeight: '700', color: '#922B21' },
   apptActClone:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 2, backgroundColor: '#F5EEF8', borderWidth: 1, borderColor: '#D7BDE2' },
@@ -1541,10 +1541,10 @@ const styles = StyleSheet.create({
   recallBanner:    { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#E8F8F5', borderWidth: 1.5, borderColor: '#A2D9CE', borderRadius: 2, padding: 12, marginBottom: 12 },
   recallTitle:     { fontSize: 13, fontWeight: '700', color: '#0E6655', marginBottom: 2 },
   recallSub:       { fontSize: 11, color: '#17A589' },
-  critBox:         { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 2, padding: 12, marginBottom: 12 },
+  critBox:         { backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#C0392B', borderRadius: 2, padding: 12, marginBottom: 12 },
   critHeader:      { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 8, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: '#F5B7B1' },
   critTitle:       { fontSize: 10, fontWeight: '800', color: '#C0392B', letterSpacing: 1.5, flex: 1 },
-  critBlood:       { backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#E74C3C', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 2 },
+  critBlood:       { backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#C0392B', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 2 },
   critBloodText:   { fontSize: 11, fontWeight: '800', color: '#C0392B' },
   critLine:        { fontSize: 13, color: '#6A1A12', lineHeight: 18, marginTop: 3 },
   critStrong:      { fontWeight: '800' },
@@ -1576,7 +1576,7 @@ const styles = StyleSheet.create({
   tlCard:        { flex: 1, borderRadius: 2, padding: 12, marginBottom: 10, marginLeft: 6, borderWidth: 1 },
 
   // FAB
-  fab: { position: 'absolute', bottom: 84, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
+  fab: { position: 'absolute', bottom: 84, right: 20, width: 54, height: 54, borderRadius: 27, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', elevation: 4, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, borderWidth: 2, borderColor: COLORS.sand },
 
   // Notifikačný modal
   notifOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
@@ -1593,7 +1593,7 @@ const styles = StyleSheet.create({
   notifBtnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   notifBtnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   notifBtnSend:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 2, backgroundColor: '#0E6655' },
-  notifBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
+  notifBtnSendText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });
 
 const tabStyles = StyleSheet.create({
@@ -1604,6 +1604,6 @@ const tabStyles = StyleSheet.create({
   tabInner:      { flexDirection: 'row', alignItems: 'center', gap: 5 },
   tabText:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
   tabTextActive: { color: COLORS.gold, fontWeight: '700' },
-  tabBadge:      { minWidth: 16, height: 16, borderRadius: 2, backgroundColor: '#E74C3C', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
-  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#fff' }
+  tabBadge:      { minWidth: 16, height: 16, borderRadius: 2, backgroundColor: '#C0392B', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  tabBadgeText:  { fontSize: 9, fontWeight: '800', color: '#F5F6F8' }
 });

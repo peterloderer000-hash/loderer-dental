@@ -186,7 +186,7 @@ export default function AuthScreen() {
 
               {resetSent ? (
                 <View style={styles.successBox}>
-                  <Ionicons name="checkmark-circle" size={40} color="#1E8449" />
+                  <Ionicons name="checkmark-circle" size={40} color="#2E7D5E" />
                   <Text style={styles.successTitle}>Email odoslaný!</Text>
                   <Text style={styles.successSub}>
                     Skontrolujte schránku {email} a kliknite na odkaz pre obnovenie hesla.
@@ -297,16 +297,16 @@ const styles = StyleSheet.create({
   splash:      { flex: 1, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
   splashLogo:  { width: 100, height: 100, borderRadius: 6, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 20, borderWidth: 3, borderColor: COLORS.sand },
   splashEmoji: { fontSize: 52 },
-  splashTitle: { fontSize: 26, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  splashTitle: { fontSize: 26, fontWeight: '700', color: '#F5F6F8', letterSpacing: 0.5 },
   splashSub:   { fontSize: 13, color: COLORS.sand, marginTop: 6 },
 
   // Hero section
   hero: { backgroundColor: COLORS.esp, paddingTop: 72, paddingBottom: 48, alignItems: 'center', overflow: 'hidden' },
   heroDeco1: { position: 'absolute', width: 280, height: 280, borderRadius: 4, backgroundColor: COLORS.wal, opacity: 0.15, top: -100, right: -80 },
   heroDeco2: { position: 'absolute', width: 180, height: 180, borderRadius: 90, backgroundColor: COLORS.sand, opacity: 0.08, bottom: -60, left: -40 },
-  logoWrap:  { width: 90, height: 90, borderRadius: 26, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 18, borderWidth: 3, borderColor: COLORS.sand, elevation: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
+  logoWrap:  { width: 90, height: 90, borderRadius: 26, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', marginBottom: 18, borderWidth: 3, borderColor: COLORS.sand, elevation: 4, shadowColor: '#121417', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   logoEmoji: { fontSize: 48 },
-  heroTitle: { fontSize: 28, fontWeight: '800', color: '#fff', letterSpacing: 0.3, marginBottom: 6 },
+  heroTitle: { fontSize: 28, fontWeight: '800', color: '#F5F6F8', letterSpacing: 0.3, marginBottom: 6 },
   heroSub:   { fontSize: 13, color: COLORS.sand, letterSpacing: 0.5 },
 
   // Form card
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   eyeBtn:    { padding: 6 },
 
   btnPrimary:     { backgroundColor: COLORS.esp, borderRadius: 2, paddingVertical: 15, alignItems: 'center', marginTop: 8, elevation: 4, flexDirection: 'row', justifyContent: 'center', gap: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
-  btnPrimaryText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  btnPrimaryText: { color: '#F5F6F8', fontSize: 15, fontWeight: '700' },
 
   divider:     { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 18 },
   dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
@@ -343,12 +343,12 @@ const styles = StyleSheet.create({
 
   // Success state
   successBox:   { alignItems: 'center', paddingVertical: 16, gap: 12 },
-  successTitle: { fontSize: 20, fontWeight: '700', color: '#1E8449' },
+  successTitle: { fontSize: 20, fontWeight: '700', color: '#2E7D5E' },
   successSub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20, marginBottom: 8 },
 
   // Retry
   retryWrap:    { alignItems: 'center', marginTop: 32, gap: 14 },
   retryText:    { color: COLORS.sand, fontSize: 13, textAlign: 'center', opacity: 0.8 },
   retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 4 },
-  retryBtnText: { color: '#fff', fontSize: 13, fontWeight: '600' },
+  retryBtnText: { color: '#F5F6F8', fontSize: 13, fontWeight: '600' },
 });

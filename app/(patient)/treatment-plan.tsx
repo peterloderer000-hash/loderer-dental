@@ -39,14 +39,14 @@ type Plan = {
 // ─── Konfig stavov ────────────────────────────────────────────────────────────
 const ITEM_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', icon: 'time-outline'             as const },
-  scheduled: { label: 'Naplánované', color: '#3A4256', bg: '#FEF9E7', darkBg: '#2D2000', icon: 'calendar-outline'         as const },
-  completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EAFAF1', darkBg: '#0D3B1F', icon: 'checkmark-circle-outline' as const },
+  scheduled: { label: 'Naplánované', color: '#3A4256', bg: '#FDF3E7', darkBg: '#2D2000', icon: 'calendar-outline'         as const },
+  completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', icon: 'checkmark-circle-outline' as const },
   skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#1A1C1D', icon: 'remove-circle-outline'    as const },
 };
 
 const PLAN_CFG = {
-  active:    { label: 'Prebieha',  color: COLORS.gold, bg: '#FEF9E7', darkBg: '#2D2000' },
-  completed: { label: 'Hotový',    color: '#2E7D5E',   bg: '#EAFAF1', darkBg: '#0D3B1F' },
+  active:    { label: 'Prebieha',  color: COLORS.gold, bg: '#FDF3E7', darkBg: '#2D2000' },
+  completed: { label: 'Hotový',    color: '#2E7D5E',   bg: '#EDF7F3', darkBg: '#1A3D2E' },
   cancelled: { label: 'Zrušený',   color: '#C0392B',   bg: '#FDEDEC', darkBg: '#3A0E0E' },
 };
 
@@ -226,7 +226,7 @@ const PlanCard = React.memo(function PlanCard({ plan, colors, dark, onBook }: Pl
             {/* E-podpis */}
             {plan.status === 'active' && (
               isApproved ? (
-                <View style={[st.approvedBadge, { backgroundColor: dark ? '#0D3B1F' : COLORS.successBg, borderColor: dark ? '#27AE6044' : '#A9DFBF' }]}>
+                <View style={[st.approvedBadge, { backgroundColor: dark ? '#1A3D2E' : COLORS.successBg, borderColor: dark ? '#52C89644' : '#A3D4BE' }]}>
                   <Ionicons name="checkmark-circle" size={15} color={dark ? '#58D68D' : COLORS.success} />
                   <Text style={[st.approvedText, { color: dark ? '#58D68D' : COLORS.success }]}>Schválené digitálne</Text>
                 </View>
@@ -373,7 +373,7 @@ export default function PatientTreatmentPlanScreen() {
           )}
 
           {/* Info box */}
-          <View style={[st.infoBox, { backgroundColor: dark ? '#1E1610' : '#E2DDD6', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
+          <View style={[st.infoBox, { backgroundColor: dark ? '#1E1610' : '#D0D4DC', borderColor: dark ? '#2A1F15' : COLORS.sand }]}>
             <Ionicons name="information-circle-outline" size={16} color={COLORS.gold} />
             <Text style={[st.infoText, { color: dark ? COLORS.sand : COLORS.wal }]}>
               Liečebný plán vytvára váš zubný lekár. Pre zmeny alebo otázky kontaktujte ordináciu.

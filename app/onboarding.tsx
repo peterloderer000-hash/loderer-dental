@@ -57,7 +57,7 @@ const SLIDES: Slide[] = [
     title:       'Tvoj zdravotný pas',
     description: 'Uchovajte alergény, lieky a zdravotné informácie na jednom mieste. Doktor bude vždy plne pripravený.',
     bg:          '#1E4D2B',
-    accent:      '#A9DFBF',
+    accent:      '#A3D4BE',
     iconBg:      '#2E6B3E',
   },
   {
@@ -76,8 +76,8 @@ function SlideItem({ item }: { item: Slide }) {
   return (
     <View style={[styles.slide, { width }]}>
       {/* Dekoratívne kruhy v pozadí */}
-      <View style={[styles.deco1, { backgroundColor: '#ffffff' }]} />
-      <View style={[styles.deco2, { backgroundColor: '#ffffff' }]} />
+      <View style={[styles.deco1, { backgroundColor: '#F5F6F8' }]} />
+      <View style={[styles.deco2, { backgroundColor: '#F5F6F8' }]} />
 
       {/* Emoji ikona */}
       <View style={[styles.iconRing, { borderColor: item.accent + '55' }]}>
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
     elevation:       12,
-    shadowColor:     '#000',
+    shadowColor:     '#121417',
     shadowOffset:    { width: 0, height: 6 },
     shadowOpacity:   0.3,
     shadowRadius:    10,
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize:    26,
     fontWeight:  '800',
-    color:       '#ffffff',
+    color:       '#F5F6F8',
     textAlign:   'center',
     marginBottom: 16,
     lineHeight:  33,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
     paddingHorizontal: 18,
     elevation:       6,
-    shadowColor:     '#000',
+    shadowColor:     '#121417',
     shadowOffset:    { width: 0, height: 3 },
     shadowOpacity:   0.2,
     shadowRadius:    6,

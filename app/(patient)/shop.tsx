@@ -154,7 +154,7 @@ export default function ShopScreen() {
                 activeOpacity={0.8}
               >
                 <Text style={s.catEmoji}>{c.emoji}</Text>
-                <Text style={[s.catLabel, activeCategory === c.key ? { color: '#fff' } : { color: 'rgba(196,168,130,0.7)' }]}>
+                <Text style={[s.catLabel, activeCategory === c.key ? { color: '#F5F6F8' } : { color: 'rgba(196,168,130,0.7)' }]}>
                   {c.label}
                 </Text>
               </TouchableOpacity>
@@ -320,8 +320,8 @@ const s = StyleSheet.create({
   catLabel:   { fontSize: 12, fontWeight: '600', letterSpacing: 0.3 },
 
   cartBtn:    { position: 'relative', width: 38, height: 38, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
-  cartBadge:  { position: 'absolute', top: -4, right: -4, backgroundColor: '#E74C3C', borderRadius: 2, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
-  cartBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
+  cartBadge:  { position: 'absolute', top: -4, right: -4, backgroundColor: '#C0392B', borderRadius: 2, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
+  cartBadgeText: { fontSize: 10, fontWeight: '800', color: '#F5F6F8' },
 
   grid:  { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   productCard: { width: '48%', borderRadius: RADII.lg, padding: 14, borderWidth: 1, gap: 4 },
@@ -334,7 +334,7 @@ const s = StyleSheet.create({
 
   addBtn:    { marginTop: 8, borderRadius: RADII.sm, overflow: 'hidden' },
   addBtnGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8 },
-  addBtnText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  addBtnText: { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
 
   qtyRow:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 8 },
   qtyBtn:    { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
@@ -350,8 +350,8 @@ const s = StyleSheet.create({
   floatingGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingVertical: 14 },
   floatingLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   floatingBadge: { backgroundColor: COLORS.gold, width: 24, height: 24, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
-  floatingBadgeText: { fontSize: 12, fontWeight: '800', color: '#fff' },
-  floatingLabel: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  floatingBadgeText: { fontSize: 12, fontWeight: '800', color: '#F5F6F8' },
+  floatingLabel: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
   floatingPrice: { fontSize: 16, fontWeight: '800', color: COLORS.gold },
 
   // Cart modal
@@ -377,5 +377,5 @@ const s = StyleSheet.create({
   cartTotalPrice: { fontSize: 20, fontWeight: '800' },
   orderBtn: { marginTop: 8, borderRadius: RADII.lg, overflow: 'hidden' },
   orderBtnGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14 },
-  orderBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  orderBtnText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 });

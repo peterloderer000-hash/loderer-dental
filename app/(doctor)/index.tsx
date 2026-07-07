@@ -176,7 +176,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                         <TouchableOpacity key={s.start}
                           style={[rsStyles.slot, { backgroundColor: rc.cardBg, borderColor: rc.bg3 }, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
                           onPress={() => !taken && setSelTime(s.start)} disabled={taken} activeOpacity={0.8}>
-                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#fff' }, taken && { color: '#ccc' }]}>
+                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#F5F6F8' }, taken && { color: '#ccc' }]}>
                             {s.start}
                           </Text>
                           {taken && <Text style={rsStyles.slotTakenLbl}>✗</Text>}
@@ -229,7 +229,7 @@ const rsStyles = StyleSheet.create({
   btnCancel:   { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnConfirm:  { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  btnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' }
+  btnConfirmText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // ─── Pomocné funkcie ──────────────────────────────────────────────────────────
@@ -245,10 +245,10 @@ function isToday(dateStr: string) {
 }
 
 const STATUS_CONFIG = {
-  pending:   { label: 'Čaká na schválenie', bg: '#FEF9E7', color: '#7D6608', border: '#F9E79F' },
+  pending:   { label: 'Čaká na schválenie', bg: '#FDF3E7', color: '#B87333', border: '#D0D4DC' },
   scheduled: { label: 'Naplánovaný',        bg: '#EBF5FB', color: '#1A5276', border: '#AED6F1' },
   arrived:   { label: '🟢 V čakárni',       bg: '#E8F8F5', color: '#0E6655', border: '#A2D9CE' },
-  completed: { label: 'Dokončený',           bg: '#EAFAF1', color: '#1E8449', border: '#A9DFBF' },
+  completed: { label: 'Dokončený',           bg: '#EDF7F3', color: '#2E7D5E', border: '#A3D4BE' },
   cancelled: { label: 'Zrušený',             bg: '#FDEDEC', color: '#922B21', border: '#F1948A' }
 };
 
@@ -318,18 +318,18 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
       ) : null}
       {/* Hodnotenie pacienta */}
       {item.status === 'completed' && item.patient_rating ? (
-        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D1F10' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n}
               name={n <= item.patient_rating! ? 'star' : 'star-outline'}
-              size={13} color="#F39C12" />
+              size={13} color="#B8ACA0" />
           ))}
           <Text style={styles.ratingLabel}>
             {['','Veľmi zlý','Zlý','Dobrý','Veľmi dobrý','Výborný!'][item.patient_rating]}
           </Text>
         </View>
       ) : item.status === 'completed' ? (
-        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D2200' }]}>
+        <View style={[styles.ratingRow, dark && { backgroundColor: '#2D1F10' }]}>
           {[1,2,3,4,5].map(n => (
             <Ionicons key={n} name="star-outline" size={13} color="#ccc" />
           ))}
@@ -348,8 +348,8 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
         {item.status === 'scheduled' && (
           <>
             <View style={styles.actionsRow}>
-              <TouchableOpacity style={[styles.btnComplete, db('#EAFAF1', '#1E8449')]} onPress={onComplete} activeOpacity={0.8}>
-                <Ionicons name="checkmark-circle-outline" size={15} color="#1E8449" />
+              <TouchableOpacity style={[styles.btnComplete, db('#EDF7F3', '#2E7D5E')]} onPress={onComplete} activeOpacity={0.8}>
+                <Ionicons name="checkmark-circle-outline" size={15} color="#2E7D5E" />
                 <Text style={styles.btnCompleteText}>Dokončiť</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.btnCancel, db('#FDEDEC', '#922B21')]} onPress={onCancel} activeOpacity={0.8}>
@@ -372,7 +372,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
           </TouchableOpacity>
         )}
         <View style={styles.actionsRow}>
-          <TouchableOpacity style={[styles.btnChart, db('#E2DDD6', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
+          <TouchableOpacity style={[styles.btnChart, db('#D0D4DC', COLORS.wal)]} onPress={onDentalChart} activeOpacity={0.8}>
             <Ionicons name="clipboard-outline" size={15} color={COLORS.wal} />
             <Text style={styles.btnChartText}>Zubná karta</Text>
           </TouchableOpacity>
@@ -511,8 +511,8 @@ const aStyles = StyleSheet.create({
   btnRow:    { flexDirection: 'row', gap: 10 },
   btnReject: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: '#FDEDEC', borderWidth: 1.5, borderColor: '#F1948A' },
   btnRejectText: { fontSize: 13, fontWeight: '700', color: '#922B21' },
-  btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: '#1E8449' },
-  btnApproveText: { fontSize: 13, fontWeight: '700', color: '#fff' }
+  btnApprove: { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: '#2E7D5E' },
+  btnApproveText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // ─── Šablóny pokynov po ošetrení ─────────────────────────────────────────────
@@ -625,7 +625,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
 const cmStyles = StyleSheet.create({
   careToggle:    { flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 10, marginBottom: 4 },
   careToggleText:{ fontSize: 12, fontWeight: '700', color: '#1A5276', flex: 1 },
-  careFilledDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#2ECC71' },
+  careFilledDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#52C896' },
   careBox:       { backgroundColor: '#EBF5FB', borderRadius: 2, padding: 10, marginBottom: 12, borderWidth: 1, borderColor: '#AED6F1' },
   templatesRow:  { gap: 8, paddingBottom: 4 },
   templateChip:  { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: '#AED6F1' },
@@ -1121,12 +1121,12 @@ export default function DoctorHome() {
           ...(recallCount > 0 ? [{ label: 'Recall',     icon: 'refresh-outline' as const,  route: '/(doctor)/recall'   as const, color: '#922B21', bg: '#FDEDEC', badge: recallCount }] : []),
           { label: 'Owner',     icon: 'bar-chart-outline'      as const, route: '/(doctor)/owner-dashboard' as const, color: '#1B4F72', bg: '#EBF5FB' },
           { label: 'PDF Export',icon: 'document-outline'       as const, route: '/(doctor)/pdf-exports'     as const, color: '#6C3483', bg: '#F4ECF7' },
-          { label: 'Faktúry',  icon: 'receipt-outline'        as const, route: '/(doctor)/auto-invoices'   as const, color: '#1E8449', bg: '#E8F8F5' },
+          { label: 'Faktúry',  icon: 'receipt-outline'        as const, route: '/(doctor)/auto-invoices'   as const, color: '#2E7D5E', bg: '#E8F8F5' },
           { label: 'Waitlist',  icon: 'hourglass-outline'     as const, route: '/(doctor)/smart-waitlist'  as const, color: '#D35400', bg: '#FEF0E7' },
           { label: 'Video',     icon: 'videocam-outline'      as const, route: '/(doctor)/video-consult'   as const, color: '#2E86C1', bg: '#EBF5FB' },
           { label: 'SMS',       icon: 'chatbox-outline'       as const, route: '/(doctor)/sms-reminders'   as const, color: '#6C3483', bg: '#F4ECF7' },
           { label: 'Sklad',     icon: 'cube-outline'          as const, route: '/(doctor)/inventory'       as const, color: '#784212', bg: '#FDEBD0' },
-          { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#3A4256', bg: '#FEF9E7' },
+          { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#3A4256', bg: '#FDF3E7' },
         ] as { label: string; icon: any; route: any; color: string; bg: string; badge?: number }[]).map((chip) => (
           <TouchableOpacity
             key={chip.label}
@@ -1158,10 +1158,10 @@ export default function DoctorHome() {
       >
         {/* ── Čakajúce žiadosti ── */}
         {pendingAppts.length > 0 && (
-          <View style={[styles.pendingSection, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}>
+          <View style={[styles.pendingSection, dark && { backgroundColor: '#2D1F10', borderBottomColor: '#B8ACA033' }]}>
             <View style={styles.sectionHeader}>
-              <View style={[styles.sectionDot, { backgroundColor: '#D4AC0D' }]} />
-              <Text style={[styles.sectionTitle, { color: '#7D6608' }]}>
+              <View style={[styles.sectionDot, { backgroundColor: '#B8ACA0' }]} />
+              <Text style={[styles.sectionTitle, { color: '#B87333' }]}>
                 ČAKAJÚ NA SCHVÁLENIE ({pendingAppts.length})
               </Text>
             </View>
@@ -1236,7 +1236,7 @@ export default function DoctorHome() {
 
         {/* ── Čakáreň ── */}
         {arrivedAppts.length > 0 && (
-          <View style={[styles.arrivedSection, dark && { backgroundColor: '#0D3B1F', borderBottomColor: '#A2D9CE33' }]}>
+          <View style={[styles.arrivedSection, dark && { backgroundColor: '#1A3D2E', borderBottomColor: '#A2D9CE33' }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionDot, { backgroundColor: '#17A589' }]} />
               <Text style={[styles.sectionTitle, { color: '#0E6655' }]}>V ČAKÁRNI ({arrivedAppts.length})</Text>
@@ -1290,7 +1290,7 @@ export default function DoctorHome() {
         {/* ── Ďalší pacient banner ── */}
         {!loading && nextApptLabel && (
           <TouchableOpacity
-            style={[styles.nextApptBanner, dark && { backgroundColor: '#2D2200', borderBottomColor: '#D4AC0D33' }]}
+            style={[styles.nextApptBanner, dark && { backgroundColor: '#2D1F10', borderBottomColor: '#B8ACA033' }]}
             onPress={() => setFilter('upcoming')}
             activeOpacity={0.8}
           >
@@ -1499,12 +1499,12 @@ const styles = StyleSheet.create({
   heroBadge: {
     position: 'absolute', top: -2, right: -2,
     minWidth: 14, height: 14, borderRadius: 2,
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#C0392B',
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 2,
     borderWidth: 1.5, borderColor: COLORS.esp
   },
-  heroBadgeText: { fontSize: 7, fontWeight: '800', color: '#fff' },
+  heroBadgeText: { fontSize: 7, fontWeight: '800', color: '#F5F6F8' },
   heroGoldLine:  { height: 1, backgroundColor: COLORS.gold, opacity: 0.5, marginBottom: 12 },
   heroStats:     { flexDirection: 'row', alignItems: 'center', gap: 0 },
   heroStatItem:  { alignItems: 'center', paddingHorizontal: 10 },
@@ -1526,11 +1526,11 @@ const styles = StyleSheet.create({
   quickBadge:      {
     position: 'absolute', top: -4, right: -6,
     minWidth: 14, height: 14, borderRadius: 2,
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#C0392B',
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 2
   },
-  quickBadgeText: { fontSize: 7, fontWeight: '800', color: '#fff' },
+  quickBadgeText: { fontSize: 7, fontWeight: '800', color: '#F5F6F8' },
 
   // ── Filter ───────────────────────────────────────────────────────────────────
   filterRow:          { flexDirection: 'row', paddingHorizontal: SPACING.lg, paddingVertical: 10, gap: 8 },
@@ -1538,7 +1538,7 @@ const styles = StyleSheet.create({
   filterTabActive:    { borderColor: 'transparent' },
   filterTabGradient:  { width: '100%', paddingVertical: 8, alignItems: 'center', borderRadius: RADII.full },
   filterTabText:      { fontSize: 11, fontWeight: '600', paddingVertical: 8, textTransform: 'uppercase', letterSpacing: 0.5 },
-  filterTabTextActive:{ fontSize: 11, fontWeight: '700', color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5 },
+  filterTabTextActive:{ fontSize: 11, fontWeight: '700', color: '#F5F6F8', textTransform: 'uppercase', letterSpacing: 0.5 },
 
   // ── Date header ──────────────────────────────────────────────────────────────
   dateHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SPACING.lg, paddingTop: 16, paddingBottom: 8 },
@@ -1568,11 +1568,11 @@ const styles = StyleSheet.create({
 
   actionsGrid:     { gap: 8, marginTop: 10 },
   actionsRow:      { flexDirection: 'row', gap: 8 },
-  btnComplete:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#EAFAF1', borderWidth: 1, borderColor: '#A9DFBF' },
-  btnCompleteText: { fontSize: 12, fontWeight: '600', color: '#1E8449' },
+  btnComplete:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#EDF7F3', borderWidth: 1, borderColor: '#A3D4BE' },
+  btnCompleteText: { fontSize: 12, fontWeight: '600', color: '#2E7D5E' },
   btnCancel:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
   btnCancelText:   { fontSize: 12, fontWeight: '600', color: '#922B21' },
-  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#E2DDD6', borderWidth: 1, borderColor: COLORS.sand },
+  btnChart:        { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#D0D4DC', borderWidth: 1, borderColor: COLORS.sand },
   btnChartText:    { fontSize: 12, fontWeight: '600', color: COLORS.wal },
   btnPassport:     { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#EBF5FB', borderWidth: 1, borderColor: '#AED6F1' },
   btnPassportText: { fontSize: 12, fontWeight: '600', color: '#1A5276' },
@@ -1586,7 +1586,7 @@ const styles = StyleSheet.create({
   emptySub:          { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 10, marginBottom: 20, lineHeight: 19 },
   emptyAddBtn:       { borderRadius: RADII.full, overflow: 'hidden' },
   emptyAddBtnGradient: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingVertical: 13 },
-  emptyAddBtnText:   { fontSize: 14, fontWeight: '700', color: '#fff' },
+  emptyAddBtnText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 
   // ── FAB ──────────────────────────────────────────────────────────────────────
   fab: {
@@ -1603,17 +1603,17 @@ const styles = StyleSheet.create({
   sectionTitle:  { fontSize: 10, fontWeight: '800', letterSpacing: 1.5 },
 
   // ── Pending section ───────────────────────────────────────────────────────────
-  pendingSection:     { backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingTop: 10, paddingBottom: 12 },
-  pendingCard:        { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#F9E79F', ...SHADOWS.sm },
+  pendingSection:     { backgroundColor: '#FDF3E7', borderBottomWidth: 1, borderBottomColor: '#D0D4DC', paddingTop: 10, paddingBottom: 12 },
+  pendingCard:        { width: 200, backgroundColor: COLORS.cream, borderRadius: RADII.md, padding: 12, borderWidth: 1.5, borderColor: '#D0D4DC', ...SHADOWS.sm },
   pendingCardTop:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   pendingPatient:     { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  pendingBadge:       { backgroundColor: '#D4AC0D', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
-  pendingBadgeText:   { fontSize: 8, fontWeight: '800', color: '#fff' },
+  pendingBadge:       { backgroundColor: '#B8ACA0', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
+  pendingBadgeText:   { fontSize: 8, fontWeight: '800', color: '#F5F6F8' },
   pendingService:     { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
-  pendingTime:        { fontSize: 11, color: '#7D6608', fontWeight: '500', marginBottom: 8 },
+  pendingTime:        { fontSize: 11, color: '#B87333', fontWeight: '500', marginBottom: 8 },
   pendingActions:     { flexDirection: 'row', gap: 6 },
-  pendingBtnApprove:  { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: RADII.sm, backgroundColor: '#1E8449' },
-  pendingBtnApproveText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  pendingBtnApprove:  { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: RADII.sm, backgroundColor: '#2E7D5E' },
+  pendingBtnApproveText: { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
   pendingBtnReject:   { width: 30, alignItems: 'center', justifyContent: 'center', paddingVertical: 7, borderRadius: RADII.sm, backgroundColor: '#FDEDEC', borderWidth: 1, borderColor: '#F1948A' },
 
   // ── Arrived / Čakáreň ────────────────────────────────────────────────────────
@@ -1622,15 +1622,15 @@ const styles = StyleSheet.create({
   arrivedCardTop:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   arrivedPatient:   { flex: 1, fontSize: 13, fontWeight: '700', color: COLORS.esp },
   arrivedWaitBadge: { backgroundColor: '#17A589', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
-  arrivedWaitText:  { fontSize: 8, fontWeight: '800', color: '#fff' },
+  arrivedWaitText:  { fontSize: 8, fontWeight: '800', color: '#F5F6F8' },
   arrivedService:   { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
   arrivedTime:      { fontSize: 10, color: '#0E6655', fontWeight: '500', marginBottom: 8 },
   arrivedCallBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, paddingVertical: 8, borderRadius: RADII.sm, backgroundColor: '#0E6655' },
-  arrivedCallBtnText: { fontSize: 11, fontWeight: '700', color: '#fff' },
+  arrivedCallBtnText: { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },
 
   // ── Next appointment banner ───────────────────────────────────────────────────
-  nextApptBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF9E7', borderBottomWidth: 1, borderBottomColor: '#F9E79F', paddingHorizontal: SPACING.lg, paddingVertical: 10 },
-  nextApptText:   { flex: 1, fontSize: 12, fontWeight: '600', color: '#7D6608' },
+  nextApptBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FDF3E7', borderBottomWidth: 1, borderBottomColor: '#D0D4DC', paddingHorizontal: SPACING.lg, paddingVertical: 10 },
+  nextApptText:   { flex: 1, fontSize: 12, fontWeight: '600', color: '#B87333' },
 
   // ── Birthdays ────────────────────────────────────────────────────────────────
   bdSection:  { backgroundColor: '#F5EEF8', borderBottomWidth: 1, borderBottomColor: '#D7BDE2', paddingTop: 8, paddingBottom: 10 },
@@ -1657,5 +1657,5 @@ const styles = StyleSheet.create({
   sheetBtnCancel:   { flex: 1, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: RADII.md, paddingVertical: 14, alignItems: 'center' },
   sheetBtnCancelText:  { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   sheetBtnConfirm:     { flex: 2, borderRadius: RADII.md, paddingVertical: 14, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  sheetBtnConfirmText: { fontSize: 14, fontWeight: '700', color: '#fff' }
+  sheetBtnConfirmText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });

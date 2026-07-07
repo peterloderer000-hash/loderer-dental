@@ -47,9 +47,9 @@ const ALL_CATS = [
 
 const CAT_CFG: Record<string, { label: string; icon: string; color: string; bg: string }> = {
   xray:     { label: 'RTG',      icon: '🩻', color: '#1A5276', bg: '#EBF5FB' },
-  photo:    { label: 'Fotka',    icon: '📸', color: '#1E8449', bg: '#EAFAF1' },
+  photo:    { label: 'Fotka',    icon: '📸', color: '#2E7D5E', bg: '#EDF7F3' },
   document: { label: 'Dokument', icon: '📄', color: '#7D3C98', bg: '#F5EEF8' },
-  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FEF9E7' },
+  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FDF3E7' },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -101,7 +101,7 @@ function PreviewModal({
 
           {/* Delete */}
           <TouchableOpacity style={ms.deleteBtn} onPress={() => onDelete(attachment)} activeOpacity={0.8}>
-            <Ionicons name="trash-outline" size={16} color="#E74C3C" />
+            <Ionicons name="trash-outline" size={16} color="#C0392B" />
             <Text style={ms.deleteBtnText}>Vymazať</Text>
           </TouchableOpacity>
         </View>
@@ -450,7 +450,7 @@ export default function PatientAttachmentsScreen() {
                 <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{c.label}</Text>
                 {cnt > 0 && (
                   <View style={[styles.tabBadge, active && styles.tabBadgeActive]}>
-                    <Text style={[styles.tabBadgeText, active && { color: '#fff' }]}>{cnt}</Text>
+                    <Text style={[styles.tabBadgeText, active && { color: '#F5F6F8' }]}>{cnt}</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -463,13 +463,13 @@ export default function PatientAttachmentsScreen() {
             style={[styles.viewBtn, viewMode === 'grid' && styles.viewBtnActive]}
             onPress={() => setViewMode('grid')} activeOpacity={0.8}
           >
-            <Ionicons name="grid-outline" size={15} color={viewMode === 'grid' ? '#fff' : 'rgba(255,255,255,0.5)'} />
+            <Ionicons name="grid-outline" size={15} color={viewMode === 'grid' ? '#F5F6F8' : 'rgba(255,255,255,0.5)'} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.viewBtn, viewMode === 'list' && styles.viewBtnActive]}
             onPress={() => setViewMode('list')} activeOpacity={0.8}
           >
-            <Ionicons name="list-outline" size={15} color={viewMode === 'list' ? '#fff' : 'rgba(255,255,255,0.5)'} />
+            <Ionicons name="list-outline" size={15} color={viewMode === 'list' ? '#F5F6F8' : 'rgba(255,255,255,0.5)'} />
           </TouchableOpacity>
         </View>
       </View>
@@ -629,7 +629,7 @@ export default function PatientAttachmentsScreen() {
                   {!compareMode && (
                     <TouchableOpacity onPress={() => handleDelete(att)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ paddingLeft: 4 }}>
-                      <Ionicons name="trash-outline" size={18} color="#E74C3C" />
+                      <Ionicons name="trash-outline" size={18} color="#C0392B" />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>
@@ -671,34 +671,34 @@ const ms = StyleSheet.create({
   closeBtn:   { position: 'absolute', top: 54, right: 20, zIndex: 10, width: 40, height: 40, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
   fullImage:  { width: '100%', height: '60%' },
   infoBar:    { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.8)', padding: 20, paddingBottom: 40 },
-  infoName:   { fontSize: 16, fontWeight: '700', color: '#fff', marginBottom: 8 },
+  infoName:   { fontSize: 16, fontWeight: '700', color: '#F5F6F8', marginBottom: 8 },
   infoRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
   infoCatBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
   infoCatText:  { fontSize: 11, fontWeight: '700' },
   infoDate:   { fontSize: 12, color: 'rgba(255,255,255,0.6)' },
   infoNotes:  { fontSize: 12, color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', marginTop: 4 },
   deleteBtn:  { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 2, backgroundColor: 'rgba(231,76,60,0.15)' },
-  deleteBtnText: { fontSize: 12, fontWeight: '600', color: '#E74C3C' },
+  deleteBtnText: { fontSize: 12, fontWeight: '600', color: '#C0392B' },
 });
 
 // Compare modal styles
 const cs = StyleSheet.create({
-  backdrop:   { flex: 1, backgroundColor: '#000' },
+  backdrop:   { flex: 1, backgroundColor: '#121417' },
   header:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 54, paddingBottom: 14 },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: '#F5F6F8' },
   closeBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
   compareArea: { flex: 1, position: 'relative', overflow: 'hidden' },
   fullImg:    { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' },
   beforeClip: { position: 'absolute', top: 0, left: 0, height: '100%', overflow: 'hidden' },
-  sliderLine: { position: 'absolute', top: 0, bottom: 0, width: 3, backgroundColor: '#fff', marginLeft: -1.5 },
+  sliderLine: { position: 'absolute', top: 0, bottom: 0, width: 3, backgroundColor: '#F5F6F8', marginLeft: -1.5 },
   sliderHandle: { position: 'absolute', top: '50%', marginTop: -18, left: -15, width: 33, height: 36, borderRadius: 18, backgroundColor: COLORS.gold, alignItems: 'center', justifyContent: 'center' },
   labelLeft:  { position: 'absolute', top: 16, left: 16, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   labelRight: { position: 'absolute', top: 16, right: 16, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
-  labelText:  { fontSize: 10, fontWeight: '800', color: '#fff', letterSpacing: 1 },
+  labelText:  { fontSize: 10, fontWeight: '800', color: '#F5F6F8', letterSpacing: 1 },
   footer:     { flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 16, paddingBottom: 40, gap: 12 },
   footerItem: { flex: 1 },
   footerLabel: { fontSize: 10, fontWeight: '700', color: COLORS.gold, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 },
-  footerName:  { fontSize: 13, fontWeight: '600', color: '#fff', marginBottom: 2 },
+  footerName:  { fontSize: 13, fontWeight: '600', color: '#F5F6F8', marginBottom: 2 },
   footerDate:  { fontSize: 11, color: 'rgba(255,255,255,0.5)' },
   footerDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.15)' },
 });
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
   content:{ padding: SPACING.xl, paddingTop: 12 },
 
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
-  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
+  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
   compareBtn:  { width: 34, height: 34, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   compareBtnActive: { backgroundColor: COLORS.gold },
 
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
   tabActive:   { backgroundColor: COLORS.wal },
   tabIcon:     { fontSize: 12 },
   tabLabel:    { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
-  tabLabelActive: { color: '#fff' },
+  tabLabelActive: { color: '#F5F6F8' },
   tabBadge:    { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 2, paddingHorizontal: 5, paddingVertical: 1 },
   tabBadgeActive: { backgroundColor: 'rgba(255,255,255,0.3)' },
   tabBadgeText:{ fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.7)' },
@@ -730,7 +730,7 @@ const styles = StyleSheet.create({
   viewBtnActive: { backgroundColor: COLORS.wal },
 
   compareBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: SPACING.xl, paddingVertical: 10, backgroundColor: COLORS.gold },
-  compareBannerText: { flex: 1, fontSize: 12, fontWeight: '600', color: '#fff' },
+  compareBannerText: { flex: 1, fontSize: 12, fontWeight: '600', color: '#F5F6F8' },
   compareBannerCancel: { fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.7)' },
 
   formCard:    { margin: SPACING.xl, marginBottom: 0, borderRadius: 2, padding: 14, borderWidth: 1 },
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
   formCancel:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 2, borderWidth: 1.5 },
   formCancelText: { fontSize: 13, fontWeight: '600' },
   formSave:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: COLORS.wal },
-  formSaveText:{ fontSize: 13, fontWeight: '700', color: '#fff' },
+  formSaveText:{ fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   empty:      { alignItems: 'center', paddingVertical: 60 },
   emptyIcon:  { fontSize: 46, marginBottom: 12 },
@@ -757,8 +757,8 @@ const styles = StyleSheet.create({
   gridImage:     { width: '100%', height: '100%' },
   gridCatBadge:  { position: 'absolute', top: 5, left: 5, borderRadius: 2, width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
   gridNameOverlay: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 6, paddingVertical: 4 },
-  gridName:      { fontSize: 9, fontWeight: '600', color: '#fff' },
-  gridCheckbox:  { position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: 2, borderWidth: 2, borderColor: '#fff', backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
+  gridName:      { fontSize: 9, fontWeight: '600', color: '#F5F6F8' },
+  gridCheckbox:  { position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: 2, borderWidth: 2, borderColor: '#F5F6F8', backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
   gridCheckboxActive: { backgroundColor: COLORS.gold, borderColor: COLORS.gold },
 
   // List styles

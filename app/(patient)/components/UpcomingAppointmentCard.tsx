@@ -65,7 +65,7 @@ export default function UpcomingAppointmentCard({ appointment, onPress, onCancel
     <View style={[styles.card, countdown.urgent && styles.cardUrgent]}>
       {/* Odpočítavanie */}
       <View style={[styles.countdownRow, countdown.urgent && styles.countdownUrgent]}>
-        <View style={[styles.countdownDot, { backgroundColor: countdown.urgent ? '#E74C3C' : '#2ECC71' }]} />
+        <View style={[styles.countdownDot, { backgroundColor: countdown.urgent ? '#C0392B' : '#52C896' }]} />
         <Text style={[styles.countdownText, countdown.urgent && styles.countdownTextUrgent]}>
           {countdown.text}
         </Text>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   cardUrgent: {
-    borderColor: '#E74C3C',
+    borderColor: '#C0392B',
   },
 
   // Countdown banner
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
 
   // Dátum box
   dateBox:     { width: 52, height: 60, borderRadius: 2, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.sand },
-  dateDay:     { fontSize: 22, fontWeight: '800', color: '#fff', lineHeight: 26 },
+  dateDay:     { fontSize: 22, fontWeight: '800', color: '#F5F6F8', lineHeight: 26 },
   dateMonth:   { fontSize: 9,  fontWeight: '700', color: COLORS.cream, letterSpacing: 0.5 },
   dateDayName: { fontSize: 8,  color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginTop: 1 },
 
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   timeRow:     { flexDirection: 'row', alignItems: 'center', gap: 5 },
   timeText:    { fontSize: 12, color: COLORS.sand, fontWeight: '500' },
   timeSep:     { fontSize: 12, color: COLORS.wal },
-  serviceName: { fontSize: 15, fontWeight: '700', color: '#fff', lineHeight: 20 },
+  serviceName: { fontSize: 15, fontWeight: '700', color: '#F5F6F8', lineHeight: 20 },
   doctorRow:   { flexDirection: 'row', alignItems: 'center', gap: 5 },
   doctorText:  { fontSize: 11, color: COLORS.cream, fontWeight: '400' },
 

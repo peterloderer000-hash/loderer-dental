@@ -238,7 +238,7 @@ export default function FamilyDashboard() {
                   <TouchableOpacity key={k}
                     style={[st.relChip, { backgroundColor: sel ? COLORS.gold : colors.bg2, borderColor: sel ? COLORS.gold : colors.bg3 }]}
                     onPress={() => setAddRelation(k)}>
-                    <Text style={[st.relChipText, { color: sel ? '#fff' : colors.textPrimary }]}>{v}</Text>
+                    <Text style={[st.relChipText, { color: sel ? '#F5F6F8' : colors.textPrimary }]}>{v}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -280,7 +280,7 @@ const st = StyleSheet.create({
   statText: { fontSize: 12 },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold, marginTop: 4 },
-  addBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  addBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: SPACING.xl },
   modal: { borderRadius: RADII.lg, padding: SPACING.xl },
@@ -293,5 +293,5 @@ const st = StyleSheet.create({
   modalBtns: { flexDirection: 'row', gap: 10, marginTop: 24 },
   modalBtn: { flex: 1, paddingVertical: 14, borderRadius: RADII.pill, alignItems: 'center' },
   modalBtnText: { fontWeight: '700', fontSize: 14 },
-  modalBtnTextW: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  modalBtnTextW: { color: '#F5F6F8', fontWeight: '700', fontSize: 14 },
 });

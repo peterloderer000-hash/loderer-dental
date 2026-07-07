@@ -177,8 +177,8 @@ export default function ConsentFormsScreen() {
   }
 
   const STATUS_CFG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-    pending: { label: 'Čaká na podpis', color: '#7D6608', bg: '#FEF9E7', icon: '⏳' },
-    signed:  { label: 'Podpísaný',      color: '#1E8449', bg: '#EAFAF1', icon: '✅' },
+    pending: { label: 'Čaká na podpis', color: '#B87333', bg: '#FDF3E7', icon: '⏳' },
+    signed:  { label: 'Podpísaný',      color: '#2E7D5E', bg: '#EDF7F3', icon: '✅' },
     declined:{ label: 'Odmietnutý',     color: '#922B21', bg: '#FDEDEC', icon: '❌' } };
 
   if (loading) return <SkeletonList count={4} />;
@@ -259,11 +259,11 @@ export default function ConsentFormsScreen() {
                     <TouchableOpacity style={[styles.formActionBtn, styles.formActionSend]}
                       onPress={() => openSend(f.id)} activeOpacity={0.85}>
                       <Ionicons name="send-outline" size={14} color="#fff" />
-                      <Text style={[styles.formActionText, { color: '#fff' }]}>Odoslať</Text>
+                      <Text style={[styles.formActionText, { color: '#F5F6F8' }]}>Odoslať</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDeleteForm(f)}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                      <Ionicons name="trash-outline" size={16} color="#E74C3C" />
+                      <Ionicons name="trash-outline" size={16} color="#C0392B" />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -411,15 +411,15 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: '#F5F6F8' },
   addBtn:      { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
-  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#fff' },
+  addBtnText:  { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   tabsRow:       { flexDirection: 'row', backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingBottom: 12, gap: 10 },
   tab:           { flex: 1, paddingVertical: 8, borderRadius: 2, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)' },
   tabActive:     { backgroundColor: COLORS.wal },
   tabText:       { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
-  tabTextActive: { color: '#fff' },
+  tabTextActive: { color: '#F5F6F8' },
 
   templateSection:     { marginBottom: 14 },
   templateSectionTitle:{ fontSize: 9, letterSpacing: 2, color: COLORS.wal, fontWeight: '700', textTransform: 'uppercase', marginBottom: 8 },
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   statusDot:     { width: 44, height: 44, borderRadius: 4, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   consentPatient:{ fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   consentForm:   { fontSize: 10, color: COLORS.wal, marginBottom: 2 },
-  consentSigned: { fontSize: 9, color: '#1E8449', fontStyle: 'italic' },
+  consentSigned: { fontSize: 9, color: '#2E7D5E', fontStyle: 'italic' },
   statusBadge:   { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4 },
   statusBadgeText:{ fontSize: 9, fontWeight: '700' },
 
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
   formInput:   { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14, color: COLORS.esp, backgroundColor: COLORS.bg2, marginBottom: 14 },
 
   patientOption:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  patientOptionActive:{ backgroundColor: '#E2DDD6', borderRadius: 2, paddingHorizontal: 8, borderBottomWidth: 0, marginBottom: 1 },
+  patientOptionActive:{ backgroundColor: '#D0D4DC', borderRadius: 2, paddingHorizontal: 8, borderBottomWidth: 0, marginBottom: 1 },
   patientDot:        { width: 22, height: 22, borderRadius: 2, borderWidth: 2, borderColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   patientOptionText: { fontSize: 14, color: COLORS.wal },
 
@@ -466,4 +466,4 @@ const styles = StyleSheet.create({
   modalCancel:     { flex: 1, paddingVertical: 13, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   modalCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   modalSave:       { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: COLORS.wal },
-  modalSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' } });
+  modalSaveText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' } });

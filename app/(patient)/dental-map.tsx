@@ -23,13 +23,13 @@ type ToothData = {
 };
 
 const STATUS_CONFIG: { [k: string]: { color: string; label: string; icon: string } } = {
-  healthy: { color: '#2ECC71', label: 'Zdravý', icon: '✓' },
-  cavity: { color: '#E74C3C', label: 'Kazivosť', icon: '!' },
+  healthy: { color: '#52C896', label: 'Zdravý', icon: '✓' },
+  cavity: { color: '#C0392B', label: 'Kazivosť', icon: '!' },
   filled: { color: '#3498DB', label: 'Výplň', icon: '◆' },
   filling: { color: '#3498DB', label: 'Výplň', icon: '◆' },
   crown: { color: '#9B59B6', label: 'Korunka', icon: '♛' },
   missing: { color: '#95A5A6', label: 'Chýba', icon: '✕' },
-  implant: { color: '#F39C12', label: 'Implantát', icon: '⚙' },
+  implant: { color: '#B8ACA0', label: 'Implantát', icon: '⚙' },
   root_canal: { color: '#E67E22', label: 'Endodoncia', icon: '↓' },
   bridge: { color: '#8E44AD', label: 'Most', icon: '═' },
   unknown: { color: '#BDC3C7', label: 'Nezistený', icon: '?' },
@@ -273,5 +273,5 @@ const st = StyleSheet.create({
   modalNotes: { fontSize: 13, textAlign: 'center', marginTop: 12, lineHeight: 18 },
   modalDate: { fontSize: 11, marginTop: 8 },
   modalBtn: { marginTop: 20, paddingHorizontal: 32, paddingVertical: 12, backgroundColor: COLORS.gold, borderRadius: RADII.pill },
-  modalBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  modalBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 14 },
 });

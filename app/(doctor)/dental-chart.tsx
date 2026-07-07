@@ -96,30 +96,30 @@ const TOOTH_SYM_SIZE = Math.floor((SCREEN_W - 44 - 14 - 10) / 16);
 
 // ─── Status config (24 statuses) ──────────────────────────────────────────────
 const STATUS_LIST: { key: ToothStatus; label: string; color: string; bg: string }[] = [
-  { key: 'healthy',            label: 'Zdravý',              color: '#1E8449', bg: '#EAFAF1' },
+  { key: 'healthy',            label: 'Zdravý',              color: '#2E7D5E', bg: '#EDF7F3' },
   { key: 'cavity',             label: 'Kaz',                 color: '#922B21', bg: '#FDEDEC' },
   { key: 'early_cavity',       label: 'Začínajúci kaz',      color: '#CB4335', bg: '#FDEDEC' },
   { key: 'watch',              label: 'Na pozorovanie',       color: '#E67E22', bg: '#FEF5E7' },
-  { key: 'filled',             label: 'Plomba',              color: '#9A7D0A', bg: '#FEF9E7' },
-  { key: 'large_filling',      label: 'Veľká plomba',        color: '#7D6608', bg: '#FEF3CD' },
+  { key: 'filled',             label: 'Plomba',              color: '#9A7D0A', bg: '#FDF3E7' },
+  { key: 'large_filling',      label: 'Veľká plomba',        color: '#B87333', bg: '#FEF3CD' },
   { key: 'replace_filling',    label: 'Výmena plomby',       color: '#B7770D', bg: '#FEF0D3' },
   { key: 'crown',              label: 'Korunka',             color: '#1A5276', bg: '#EBF5FB' },
   { key: 'bridge',             label: 'Mostík',              color: '#154360', bg: '#D6EAF8' },
-  { key: 'implant',            label: 'Implantát',           color: '#117A65', bg: '#D5F5E3' },
+  { key: 'implant',            label: 'Implantát',           color: '#117A65', bg: '#EDF7F3' },
   { key: 'veneer',             label: 'Veneer',              color: '#6C3483', bg: '#F5EEF8' },
   { key: 'sealant',            label: 'Pečať',               color: '#1ABC9C', bg: '#E8F8F5' },
   { key: 'root_canal',         label: 'Devitalizácia',       color: '#7D3C98', bg: '#F4ECF7' },
   { key: 'extracted',          label: 'Extrahovaný',         color: '#566573', bg: '#F2F3F4' },
   { key: 'missing',            label: 'Chýba',               color: '#AAB7B8', bg: '#FDFEFE' },
-  { key: 'fracture',           label: 'Fraktúra',            color: '#E74C3C', bg: '#FDEDEC' },
+  { key: 'fracture',           label: 'Fraktúra',            color: '#C0392B', bg: '#FDEDEC' },
   { key: 'erosion',            label: 'Erózia',              color: '#D35400', bg: '#FDEBD0' },
   { key: 'abrasion',           label: 'Abrázia',             color: '#A04000', bg: '#FDEBD0' },
   { key: 'hypoplasia',         label: 'Hypoplázia',          color: '#8E44AD', bg: '#F5EEF8' },
   { key: 'hypomineralization', label: 'Hypomineralizácia',   color: '#9B59B6', bg: '#F5EEF8' },
   { key: 'periodontal',        label: 'Parodontálny prob.',  color: '#C0392B', bg: '#FDEDEC' },
-  { key: 'mobility',           label: 'Kývavosť zuba',       color: '#E74C3C', bg: '#FDEDEC' },
+  { key: 'mobility',           label: 'Kývavosť zuba',       color: '#C0392B', bg: '#FDEDEC' },
   { key: 'improve_hygiene',    label: 'Zlepšiť hygienu',     color: '#2980B9', bg: '#EBF5FB' },
-  { key: 'treatment_needed',   label: 'Indik. prerobenie',   color: '#F39C12', bg: '#FEF9E7' },
+  { key: 'treatment_needed',   label: 'Indik. prerobenie',   color: '#B8ACA0', bg: '#FDF3E7' },
 ];
 
 function getStatus(key: ToothStatus) {
@@ -272,7 +272,7 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving,
             <View style={styles.photoWrap}>
               <Image source={{ uri: photoUrl }} style={styles.photoPreview} resizeMode="cover" />
               <TouchableOpacity style={[styles.photoRemoveBtn, { backgroundColor: colors.cardBg }]} onPress={() => setPhotoUrl(null)} activeOpacity={0.8}>
-                <Ionicons name="close-circle" size={22} color={dark ? '#E74C3C' : '#922B21'} />
+                <Ionicons name="close-circle" size={22} color={dark ? '#C0392B' : '#922B21'} />
               </TouchableOpacity>
             </View>
           ) : null}
@@ -409,8 +409,8 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
 
             <TouchableOpacity
               style={[dStyles.btn, { marginTop: 10,
-                backgroundColor: dark ? '#0D3B1F' : '#EAFAF1',
-                borderWidth: 1.5, borderColor: dark ? '#27AE6044' : '#A9DFBF'
+                backgroundColor: dark ? '#1A3D2E' : '#EDF7F3',
+                borderWidth: 1.5, borderColor: dark ? '#52C89644' : '#A3D4BE'
               }]}
               onPress={() => {
                 onClose();
@@ -421,8 +421,8 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
               }}
               activeOpacity={0.85}
             >
-              <Ionicons name="list-outline" size={16} color={dark ? '#27AE60' : '#1E8449'} />
-              <Text style={[dStyles.btnTextWhite, { color: dark ? '#27AE60' : '#1E8449' }]}>Pridať do liečebného plánu</Text>
+              <Ionicons name="list-outline" size={16} color={dark ? '#52C896' : '#2E7D5E'} />
+              <Text style={[dStyles.btnTextWhite, { color: dark ? '#52C896' : '#2E7D5E' }]}>Pridať do liečebného plánu</Text>
             </TouchableOpacity>
 
             <View style={{ height: 20 }} />
@@ -444,7 +444,7 @@ const dStyles = StyleSheet.create({
   histNote:      { fontSize: 12, lineHeight: 17 },
   histDate:      { fontSize: 10, fontWeight: '600', marginTop: 2, flexShrink: 0 },
   btn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, borderRadius: 2, paddingVertical: 14 },
-  btnTextWhite:  { fontSize: 14, fontWeight: '700', color: '#fff' }
+  btnTextWhite:  { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -644,7 +644,7 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 16 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
 
   // ── Legenda ──
   legendCard:  { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: COLORS.bg3 },
@@ -705,6 +705,6 @@ const styles = StyleSheet.create({
   photoPreview:   { width: '100%', height: 160, borderRadius: 2 },
   photoRemoveBtn: { position: 'absolute', top: 6, right: 6, backgroundColor: COLORS.cream, borderRadius: 2 },
   photoBtnRow:    { flexDirection: 'row', gap: 10, marginBottom: 4 },
-  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: '#E2DDD6', borderWidth: 1.5, borderColor: COLORS.sand },
+  photoBtn:       { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: '#D0D4DC', borderWidth: 1.5, borderColor: COLORS.sand },
   photoBtnText:   { fontSize: 13, fontWeight: '600', color: COLORS.wal }
 });

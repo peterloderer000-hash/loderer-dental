@@ -32,8 +32,8 @@ type BillingAppt = {
 
 const PAY_CFG: Record<string, { label: string; icon: string; color: string; bg: string; border: string; next: string }> = {
   unpaid:  { label: 'Nezaplatené', icon: '💸', color: '#922B21', bg: '#FDEDEC', border: '#F5B7B1', next: 'paid'    },
-  paid:    { label: 'Zaplatené',   icon: '✅', color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF', next: 'partial' },
-  partial: { label: 'Čiastočne',   icon: '⚠️', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F', next: 'unpaid'  } };
+  paid:    { label: 'Zaplatené',   icon: '✅', color: '#2E7D5E', bg: '#EDF7F3', border: '#A3D4BE', next: 'partial' },
+  partial: { label: 'Čiastočne',   icon: '⚠️', color: '#B87333', bg: '#FDF3E7', border: '#D0D4DC', next: 'unpaid'  } };
 
 type Period = 'month' | 'last_month' | 'year' | 'all';
 type PayFilter = 'all' | 'unpaid' | 'partial' | 'paid';
@@ -183,11 +183,11 @@ export default function BillingScreen() {
         <View style={[styles.summaryCard, dyn.card]}>
           <View style={styles.summaryRow}>
             {/* Príjem */}
-            <View style={[styles.summaryBox, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1', borderColor: dark ? '#27AE6033' : '#A9DFBF' }]}>
+            <View style={[styles.summaryBox, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89633' : '#A3D4BE' }]}>
               <Text style={styles.summaryIcon}>💰</Text>
-              <Text style={[styles.summaryAmt, { color: dark ? '#27AE60' : '#1E8449' }]}>{summary.paidTotal} €</Text>
-              <Text style={[styles.summaryLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Príjem</Text>
-              <Text style={[styles.summaryCount, { color: dark ? '#27AE60' : '#1E8449' }]}>{summary.paidCount} {pluralizeAppointments(summary.paidCount)}</Text>
+              <Text style={[styles.summaryAmt, { color: dark ? '#52C896' : '#2E7D5E' }]}>{summary.paidTotal} €</Text>
+              <Text style={[styles.summaryLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>Príjem</Text>
+              <Text style={[styles.summaryCount, { color: dark ? '#52C896' : '#2E7D5E' }]}>{summary.paidCount} {pluralizeAppointments(summary.paidCount)}</Text>
             </View>
             {/* Pohľadávky */}
             <View style={[styles.summaryBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B33' : '#F5B7B1' }]}>
@@ -237,7 +237,7 @@ export default function BillingScreen() {
               <TouchableOpacity key={f.key}
                 style={[styles.payFilterTab, dyn.card, active && { backgroundColor: cfg?.color ?? COLORS.wal, borderColor: cfg?.color ?? COLORS.wal }]}
                 onPress={() => setPayFilter(f.key)} activeOpacity={0.8}>
-                <Text style={[styles.payFilterText, dyn.sub, active && { color: '#fff' }]}>{f.label}</Text>
+                <Text style={[styles.payFilterText, dyn.sub, active && { color: '#F5F6F8' }]}>{f.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
 
   summaryCard: { backgroundColor: COLORS.cream, margin: SPACING.xl, marginBottom: 0, borderRadius: 4, padding: 14, borderWidth: 1, borderColor: COLORS.bg3 },
   summaryRow:  { flexDirection: 'row', gap: 10, marginBottom: 14 },
@@ -384,22 +384,22 @@ const styles = StyleSheet.create({
   rateRow:   { flexDirection: 'row', alignItems: 'center', gap: 10 },
   rateLabel: { fontSize: 10, fontWeight: '600', color: COLORS.wal, width: 90 },
   rateTrack: { flex: 1, height: 8, backgroundColor: COLORS.bg3, borderRadius: 4, overflow: 'hidden' },
-  rateFill:  { height: 8, backgroundColor: '#1E8449', borderRadius: 4 },
-  ratePct:   { fontSize: 11, fontWeight: '800', color: '#1E8449', width: 36, textAlign: 'right' },
+  rateFill:  { height: 8, backgroundColor: '#2E7D5E', borderRadius: 4 },
+  ratePct:   { fontSize: 11, fontWeight: '800', color: '#2E7D5E', width: 36, textAlign: 'right' },
 
   tabsScroll:  { maxHeight: 46, marginTop: 12, marginBottom: 0 },
   tabsContent: { paddingHorizontal: SPACING.xl, gap: 8, alignItems: 'center' },
   periodTab:      { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream },
   periodTabActive:{ backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   periodTabText:     { fontSize: 11, fontWeight: '600', color: COLORS.wal },
-  periodTabTextActive:{ color: '#fff' },
+  periodTabTextActive:{ color: '#F5F6F8' },
 
   payFilters:    { flexDirection: 'row', gap: 8, paddingHorizontal: SPACING.xl, marginTop: 10, marginBottom: 10 },
   payFilterTab:  { flex: 1, paddingVertical: 7, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: COLORS.cream, alignItems: 'center' },
   payFilterText: { fontSize: 10, fontWeight: '700', color: COLORS.wal },
 
   fab:       { position: 'absolute', bottom: 90, right: 20, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 24, paddingVertical: 12, paddingHorizontal: 18, elevation: 6 },
-  fabText:   { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#fff' },
+  fabText:   { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
   planOverlay:    { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   planSheet:      { borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 40 },
   planHandle:     { width: 38, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
@@ -426,6 +426,6 @@ const styles = StyleSheet.create({
   dateMon:    { fontSize: 9,  fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },
   rowPatient: { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 1 },
   rowService: { fontSize: 11, color: COLORS.wal },
-  rowPrice:   { fontSize: 13, fontWeight: '800', color: '#1E8449', minWidth: 42, textAlign: 'right' },
+  rowPrice:   { fontSize: 13, fontWeight: '800', color: '#2E7D5E', minWidth: 42, textAlign: 'right' },
   payBadge:   { flexDirection: 'row', alignItems: 'center', gap: 3, borderRadius: 2, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 4 },
   payBadgeIcon:{ fontSize: 12 } });

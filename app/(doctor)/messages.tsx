@@ -349,7 +349,7 @@ export default function DoctorMessagesScreen() {
             onPress={() => setShowTemplates(p => !p)}
             activeOpacity={0.8}
           >
-            <Ionicons name="flash-outline" size={18} color={showTemplates ? '#fff' : COLORS.wal} />
+            <Ionicons name="flash-outline" size={18} color={showTemplates ? '#F5F6F8' : COLORS.wal} />
           </TouchableOpacity>
           <TextInput
             style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
@@ -379,9 +379,9 @@ const styles = StyleSheet.create({
   header:     { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16 },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   headerInfo: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  headerName: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  headerName: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
   headerSub2: { fontSize: 11, color: COLORS.sand },
 
   // Conversations list
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   convBottomRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   convLast:      { flex: 1, fontSize: 12, color: COLORS.wal },
   unreadBadge:   { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 2 },
-  unreadText:    { fontSize: 10, fontWeight: '800', color: '#fff' },
+  unreadText:    { fontSize: 10, fontWeight: '800', color: '#F5F6F8' },
 
   emptyTitle: { fontSize: 17, fontWeight: '700', color: COLORS.esp, marginBottom: 6 },
   emptySub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', paddingHorizontal: 40 },
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
   bubbleMine:      { backgroundColor: COLORS.esp, borderColor: COLORS.esp, alignSelf: 'flex-end' },
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
-  bubbleTextMine:  { color: '#fff' },
+  bubbleTextMine:  { color: '#F5F6F8' },
   bubbleTime:      { fontSize: 10, color: '#bbb', marginTop: 4, textAlign: 'right' },
   bubbleTimeMine:  { color: COLORS.sand },
 

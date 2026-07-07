@@ -208,7 +208,7 @@ const st = StyleSheet.create({
   invFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 12, borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.05)' },
   invAmount: { fontSize: 22, fontWeight: '800' },
   payBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 20, paddingVertical: 10, backgroundColor: COLORS.gold, borderRadius: RADII.pill },
-  payBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  payBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 13 },
 
   paidRow: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: RADII.md, borderWidth: 1, padding: 14, marginBottom: 6 },
   paidDesc: { fontSize: 13, fontWeight: '600' },

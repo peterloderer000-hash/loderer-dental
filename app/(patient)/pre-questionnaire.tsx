@@ -141,12 +141,12 @@ export default function PreQuestionnaireScreen() {
                   key={n}
                   style={[s.painBtn,
                     { borderColor: colors.bg3 },
-                    pain === n && { backgroundColor: n <= 3 ? '#27AE60' : n <= 6 ? '#F39C12' : '#E74C3C', borderColor: 'transparent' },
+                    pain === n && { backgroundColor: n <= 3 ? '#52C896' : n <= 6 ? '#B8ACA0' : '#C0392B', borderColor: 'transparent' },
                     pain !== n && { backgroundColor: colors.bg2 },
                   ]}
                   onPress={() => setPain(n)} activeOpacity={0.7}
                 >
-                  <Text style={[s.painNum, { color: pain === n ? '#fff' : colors.textSecondary }]}>{n}</Text>
+                  <Text style={[s.painNum, { color: pain === n ? '#F5F6F8' : colors.textSecondary }]}>{n}</Text>
                 </TouchableOpacity>
               ))}
             </View>

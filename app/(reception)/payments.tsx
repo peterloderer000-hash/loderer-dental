@@ -198,7 +198,7 @@ export default function ReceptionPayments() {
           >
             {filter === tab.key ? (
               <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.filterGrad}>
-                <Text style={[s.filterLabel, { color: '#fff' }]}>{tab.label}</Text>
+                <Text style={[s.filterLabel, { color: '#F5F6F8' }]}>{tab.label}</Text>
               </LinearGradient>
             ) : (
               <Text style={[s.filterLabel, { color: 'rgba(196,168,130,0.7)' }]}>{tab.label}</Text>
@@ -432,7 +432,7 @@ const pc = StyleSheet.create({
   methodText:  { fontFamily: 'DMSans_500Medium', fontSize: 10, letterSpacing: 0.3 },
   payBtn:    { borderRadius: RADII.md, overflow: 'hidden' },
   payGrad:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10 },
-  payText:   { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#fff' },
+  payText:   { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#F5F6F8' },
 });
 
 const pm = StyleSheet.create({

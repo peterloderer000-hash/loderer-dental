@@ -51,8 +51,8 @@ const ROLE_LABELS: Record<string, string> = {
 
 const ROLE_COLORS: Record<string, { bg: string; darkBg: string; text: string; darkText: string }> = {
   doctor:    { bg: '#EBF5FB', darkBg: '#0D2233', text: '#1A5276', darkText: '#5DADE2' },
-  reception: { bg: '#FEF9E7', darkBg: '#2D2200', text: '#7D6608', darkText: '#F39C12' },
-  hygienist: { bg: '#EAFAF1', darkBg: '#0D3B1F', text: '#1E8449', darkText: '#27AE60' },
+  reception: { bg: '#FDF3E7', darkBg: '#2D1F10', text: '#B87333', darkText: '#B8ACA0' },
+  hygienist: { bg: '#EDF7F3', darkBg: '#1A3D2E', text: '#2E7D5E', darkText: '#52C896' },
   owner:     { bg: '#F5EEF8', darkBg: '#1E0D33', text: '#6C3483', darkText: '#AF7AC5' }
 };
 
@@ -392,7 +392,7 @@ export default function AdminScreen() {
                     </View>
                     {m.role !== 'owner' && (
                       <TouchableOpacity onPress={() => removeTeamMember(m)} style={[s.removeBtn, { backgroundColor: dark ? '#4A1010' : '#FDF2F2' }]} activeOpacity={0.8}>
-                        <Ionicons name="person-remove-outline" size={16} color={dark ? '#E74C3C' : '#c0392b'} />
+                        <Ionicons name="person-remove-outline" size={16} color={dark ? '#C0392B' : '#c0392b'} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -486,8 +486,8 @@ export default function AdminScreen() {
               <View style={s.statsGrid}>
                 {[
                   { label: 'Pacienti',         value: stats.totalPatients,         icon: 'people-outline',    color: '#1A5276' },
-                  { label: 'Celkom termínov',   value: stats.totalAppointments,     icon: 'calendar-outline',  color: '#1E8449' },
-                  { label: 'Tento mesiac',      value: stats.thisMonthAppointments, icon: 'today-outline',     color: '#7D6608' },
+                  { label: 'Celkom termínov',   value: stats.totalAppointments,     icon: 'calendar-outline',  color: '#2E7D5E' },
+                  { label: 'Tento mesiac',      value: stats.thisMonthAppointments, icon: 'today-outline',     color: '#B87333' },
                   { label: 'Čakajú na potvrd.', value: stats.pendingAppointments,   icon: 'hourglass-outline', color: '#922B21' },
                 ].map((card, i) => (
                   <View key={i} style={[s.statCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -504,9 +504,9 @@ export default function AdminScreen() {
                   <Text style={[s.payCardLabel, dark && { color: '#5DADE2' }]}>Celkový obrat</Text>
                   <Text style={[s.payCardValue, dark && { color: '#5DADE2' }]}>{euros(stats.totalPayments)}</Text>
                 </View>
-                <View style={[s.payCard, dark ? { backgroundColor: '#0D3B1F', borderColor: '#2ECC7144' } : { backgroundColor: '#EAFAF1', borderColor: '#A9DFBF' }]}>
-                  <Text style={[s.payCardLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>Zaplatené</Text>
-                  <Text style={[s.payCardValue, { color: dark ? '#27AE60' : '#1E8449' }]}>{euros(stats.paidPayments)}</Text>
+                <View style={[s.payCard, dark ? { backgroundColor: '#1A3D2E', borderColor: '#52C89644' } : { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' }]}>
+                  <Text style={[s.payCardLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>Zaplatené</Text>
+                  <Text style={[s.payCardValue, { color: dark ? '#52C896' : '#2E7D5E' }]}>{euros(stats.paidPayments)}</Text>
                 </View>
               </View>
 
@@ -534,19 +534,19 @@ export default function AdminScreen() {
                               <Text style={[s.tsNum, { color: dark ? '#5DADE2' : '#1A5276' }]}>{ts.thisMonth}</Text>
                               <Text style={[s.tsLabel, { color: dark ? '#5DADE2' : '#1A5276' }]}>tento mes.</Text>
                             </View>
-                            <View style={[s.tsStat, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-                              <Text style={[s.tsNum, { color: dark ? '#27AE60' : '#1E8449' }]}>{ts.completed}</Text>
-                              <Text style={[s.tsLabel, { color: dark ? '#27AE60' : '#1E8449' }]}>dokončené</Text>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#52C896' : '#2E7D5E' }]}>{ts.completed}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>dokončené</Text>
                             </View>
                             <View style={[s.tsStat, { backgroundColor: dark ? '#4A1010' : '#FDEDEC' }]}>
-                              <Text style={[s.tsNum, { color: dark ? '#E74C3C' : '#922B21' }]}>{ts.cancelled}</Text>
-                              <Text style={[s.tsLabel, { color: dark ? '#E74C3C' : '#922B21' }]}>zrušené</Text>
+                              <Text style={[s.tsNum, { color: dark ? '#C0392B' : '#922B21' }]}>{ts.cancelled}</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#C0392B' : '#922B21' }]}>zrušené</Text>
                             </View>
-                            <View style={[s.tsStat, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]}>
-                              <Text style={[s.tsNum, { color: dark ? '#F39C12' : '#7D6608' }]}>
+                            <View style={[s.tsStat, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7' }]}>
+                              <Text style={[s.tsNum, { color: dark ? '#B8ACA0' : '#B87333' }]}>
                                 {ts.avgRating != null ? `${ts.avgRating}⭐` : '—'}
                               </Text>
-                              <Text style={[s.tsLabel, { color: dark ? '#F39C12' : '#7D6608' }]}>hodnotenie</Text>
+                              <Text style={[s.tsLabel, { color: dark ? '#B8ACA0' : '#B87333' }]}>hodnotenie</Text>
                             </View>
                           </View>
                         </View>
@@ -582,7 +582,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', marginBottom: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   inviteBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 2,
@@ -613,7 +613,7 @@ const s = StyleSheet.create({
     width: 46, height: 46, borderRadius: 23,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center'
   },
-  memberAvatarText: { fontSize: 16, fontWeight: '700', color: '#fff' },
+  memberAvatarText: { fontSize: 16, fontWeight: '700', color: '#F5F6F8' },
   memberTop: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 3 },
   memberName: { fontSize: 14, fontWeight: '700', color: COLORS.esp, flex: 1 },
   roleBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
@@ -655,7 +655,7 @@ const s = StyleSheet.create({
     flex: 2, paddingVertical: 14, borderRadius: 2,
     backgroundColor: COLORS.esp, alignItems: 'center'
   },
-  saveBtnText: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  saveBtnText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 
   statsSection: { fontSize: 10, fontWeight: '700', color: COLORS.wal, letterSpacing: 2, marginBottom: 12 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -687,7 +687,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.esp, borderRadius: 2,
     paddingHorizontal: 20, paddingVertical: 12, marginTop: 6
   },
-  emptyCtaText: { fontSize: 14, fontWeight: '700', color: '#fff' }
+  emptyCtaText: { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // InviteModal styles
@@ -714,11 +714,11 @@ const im = StyleSheet.create({
   },
   roleBtnActive:     { backgroundColor: COLORS.esp },
   roleBtnText:       { fontSize: 13, fontWeight: '600', color: COLORS.wal },
-  roleBtnTextActive: { color: '#fff' },
+  roleBtnTextActive: { color: '#F5F6F8' },
   sendBtn: {
     backgroundColor: COLORS.esp, borderRadius: 2, paddingVertical: 15,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8
   },
   sendBtnDisabled: { opacity: 0.35 },
-  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' }
+  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' }
 });

@@ -25,7 +25,7 @@ type PayAppt = {
 type Filter = 'all' | 'unpaid' | 'paid';
 
 const PAY_CFG: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ComponentProps<typeof Ionicons>['name'] }> = {
-  paid:    { label: 'Zaplatené',   color: COLORS.success, bg: COLORS.successBg, border: '#A9DFBF', icon: 'checkmark-circle' },
+  paid:    { label: 'Zaplatené',   color: COLORS.success, bg: COLORS.successBg, border: '#A3D4BE', icon: 'checkmark-circle' },
   unpaid:  { label: 'Nezaplatené', color: COLORS.error,   bg: COLORS.errorBg,   border: '#F5B7B1', icon: 'alert-circle' },
   partial: { label: 'Čiastočne',   color: COLORS.warning, bg: COLORS.warningBg, border: '#F0C78A', icon: 'warning' },
 };
@@ -174,7 +174,7 @@ export default function PaymentHistoryScreen() {
               onPress={() => { setFilter(f.key); Haptics.selectionAsync(); }}
               activeOpacity={0.8}
             >
-              <Text style={[s.filterLabel, filter === f.key ? { color: '#fff' } : { color: 'rgba(196,168,130,0.7)' }]}>
+              <Text style={[s.filterLabel, filter === f.key ? { color: '#F5F6F8' } : { color: 'rgba(196,168,130,0.7)' }]}>
                 {f.label}
               </Text>
             </TouchableOpacity>
@@ -304,7 +304,7 @@ const s = StyleSheet.create({
   pendingBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.warningBg, borderRadius: RADII.md, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#F0C78A' },
   pendingBannerText: { flex: 1, fontFamily: 'DMSans_400Regular', fontSize: 12, color: COLORS.warning },
   pendingBtn:     { backgroundColor: COLORS.warning, borderRadius: RADII.sm, paddingHorizontal: 10, paddingVertical: 5 },
-  pendingBtnText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#fff' },
+  pendingBtnText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#F5F6F8' },
 
   empty:      { alignItems: 'center', paddingVertical: 60, gap: 8 },
   emptyEmoji: { fontSize: 52 },
@@ -316,7 +316,7 @@ const s = StyleSheet.create({
   cardContent: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, paddingLeft: 18 },
 
   dateBox:   { width: 44, alignItems: 'center', backgroundColor: COLORS.esp, borderRadius: RADII.sm, paddingVertical: 6 },
-  dateDay:   { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, color: '#fff', lineHeight: 22 },
+  dateDay:   { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, color: '#F5F6F8', lineHeight: 22 },
   dateMonth: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: COLORS.sand, textTransform: 'uppercase' },
   dateYear:  { fontFamily: 'DMSans_400Regular', fontSize: 9, color: 'rgba(196,168,130,0.6)' },
 

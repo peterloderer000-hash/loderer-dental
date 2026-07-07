@@ -415,7 +415,7 @@ const s = StyleSheet.create({
   tlBarWrap:    { flex: 1, height: 14, borderRadius: 2, overflow: 'hidden', position: 'relative' as const },
   tlBarBg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
   tlBarFg:      { position: 'absolute' as const, left: 0, top: 0, bottom: 0, borderRadius: 2 },
-  tlNowDot:     { position: 'absolute' as const, right: -3, top: 3, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold, borderWidth: 1.5, borderColor: '#fff' },
+  tlNowDot:     { position: 'absolute' as const, right: -3, top: 3, width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.gold, borderWidth: 1.5, borderColor: '#F5F6F8' },
   tlCount:      { width: 20, fontSize: 11, fontFamily: 'DMSans_500Medium', textAlign: 'center' },
 
   listCard:  { borderRadius: RADII.lg, borderWidth: 1, overflow: 'hidden' },
@@ -425,7 +425,7 @@ const s = StyleSheet.create({
   listTime:  { ...TYPO.bodyMed },
 
   numBadge: { width: 32, height: 32, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
-  numText:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 14, color: '#fff' },
+  numText:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 14, color: '#F5F6F8' },
 
   waitBadge: { alignItems: 'center', minWidth: 44 },
   waitMins:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18, lineHeight: 22 },

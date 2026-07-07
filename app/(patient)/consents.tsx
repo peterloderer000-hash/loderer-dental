@@ -29,8 +29,8 @@ type Consent = {
 };
 
 const STATUS_CFG: Record<string, { label: string; icon: string; color: string; bg: string }> = {
-  pending:  { label: 'Čaká na podpis', icon: '⏳', color: '#7D6608', bg: '#FEF9E7' },
-  signed:   { label: 'Podpísaný',      icon: '✅', color: '#1E8449', bg: '#EAFAF1' },
+  pending:  { label: 'Čaká na podpis', icon: '⏳', color: '#B87333', bg: '#FDF3E7' },
+  signed:   { label: 'Podpísaný',      icon: '✅', color: '#2E7D5E', bg: '#EDF7F3' },
   declined: { label: 'Odmietnutý',     icon: '❌', color: '#922B21', bg: '#FDEDEC' },
 };
 
@@ -144,7 +144,7 @@ export default function ConsentsScreen() {
         {pending.length > 0 && (
           <>
             <View style={styles.sectionHeader}>
-              <Ionicons name="alert-circle" size={14} color="#7D6608" />
+              <Ionicons name="alert-circle" size={14} color="#B87333" />
               <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>VYŽADUJE PODPIS</Text>
             </View>
             {pending.map(c => (
@@ -159,8 +159,8 @@ export default function ConsentsScreen() {
                       Doručené: {new Date(c.created_at).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short' })}
                     </Text>
                   </View>
-                  <View style={[styles.statusBadge, { backgroundColor: '#FEF9E7' }]}>
-                    <Text style={[styles.statusBadgeText, { color: '#7D6608' }]}>⏳ Čaká</Text>
+                  <View style={[styles.statusBadge, { backgroundColor: '#FDF3E7' }]}>
+                    <Text style={[styles.statusBadgeText, { color: '#B87333' }]}>⏳ Čaká</Text>
                   </View>
                 </View>
                 <TouchableOpacity style={styles.signBtn} onPress={() => openSign(c)} activeOpacity={0.85}>
@@ -279,25 +279,25 @@ const styles = StyleSheet.create({
   header:       { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:    { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:  { fontSize: 18, fontWeight: '700', color: '#fff' },
+  headerTitle:  { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
   pendingBadge: { backgroundColor: '#E67E22', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
-  pendingBadgeText: { fontSize: 11, fontWeight: '800', color: '#fff' },
+  pendingBadgeText: { fontSize: 11, fontWeight: '800', color: '#F5F6F8' },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, marginTop: 4 },
   sectionTitle:  { fontSize: 9, letterSpacing: 2, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase' },
 
   card:        { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
-  cardPending: { borderColor: '#F9E79F', borderWidth: 1.5 },
+  cardPending: { borderColor: '#D0D4DC', borderWidth: 1.5 },
   cardTop:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 10 },
   cardIcon:    { fontSize: 22, marginTop: 2 },
   cardTitle:   { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 3, lineHeight: 20 },
   cardDate:    { fontSize: 11, color: COLORS.wal },
-  signedName:  { fontSize: 11, color: '#1E8449', marginTop: 2, fontStyle: 'italic' },
+  signedName:  { fontSize: 11, color: '#2E7D5E', marginTop: 2, fontStyle: 'italic' },
   statusBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start' },
   statusBadgeText: { fontSize: 9, fontWeight: '700' },
 
   signBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 11 },
-  signBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  signBtnText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   empty:      { alignItems: 'center', paddingVertical: 60 },
   emptyIcon:  { fontSize: 46, marginBottom: 12 },
@@ -325,5 +325,5 @@ const styles = StyleSheet.create({
   declineBtn:   { flex: 1, paddingVertical: 13, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: '#F1948A', backgroundColor: '#FDEDEC' },
   declineBtnText:{ fontSize: 13, fontWeight: '600', color: '#922B21' },
   confirmBtn:   { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: COLORS.wal },
-  confirmBtnText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
+  confirmBtnText:{ fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 });

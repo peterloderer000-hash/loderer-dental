@@ -46,8 +46,8 @@ function fmtDate(s: string): string {
 }
 
 const SEVERITY_CFG: Record<Severity, { label: string; color: string; bg: string; border: string }> = {
-  mild:     { label: 'Mierna',  color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF' },
-  moderate: { label: 'Stredná', color: '#7D6608', bg: '#FEF9E7', border: '#F9E79F' },
+  mild:     { label: 'Mierna',  color: '#2E7D5E', bg: '#EDF7F3', border: '#A3D4BE' },
+  moderate: { label: 'Stredná', color: '#B87333', bg: '#FDF3E7', border: '#D0D4DC' },
   severe:   { label: 'Ťažká',   color: '#922B21', bg: '#FDEDEC', border: '#F5B7B1' }
 };
 
@@ -130,11 +130,11 @@ function AddDiagModal({
                 return (
                   <TouchableOpacity
                     key={sev}
-                    style={[ms.chip, { borderColor: cfg.border, backgroundColor: active ? cfg.color : '#fff' }]}
+                    style={[ms.chip, { borderColor: cfg.border, backgroundColor: active ? cfg.color : '#F5F6F8' }]}
                     onPress={() => setSeverity(sev)}
                     activeOpacity={0.8}
                   >
-                    <Text style={[ms.chipText, { color: active ? '#fff' : cfg.color }]}>
+                    <Text style={[ms.chipText, { color: active ? '#F5F6F8' : cfg.color }]}>
                       {cfg.label}
                     </Text>
                   </TouchableOpacity>
@@ -297,7 +297,7 @@ const ms = StyleSheet.create({
   btnCancel:     { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText: { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   btnSave:       { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: COLORS.wal, justifyContent: 'center' },
-  btnSaveText:   { fontSize: 14, fontWeight: '700', color: '#fff' }
+  btnSaveText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' }
 });
 
 // ─── Hlavná obrazovka ─────────────────────────────────────────────────────────
@@ -498,7 +498,7 @@ export default function PrescriptionsScreen() {
   // ── Render karty receptu ──────────────────────────────────────────────────
   function renderRxCard(item: Prescription) {
     const activeCfg = item.is_active
-      ? { label: 'Aktívny',    color: '#1E8449', bg: '#EAFAF1', border: '#A9DFBF' }
+      ? { label: 'Aktívny',    color: '#2E7D5E', bg: '#EDF7F3', border: '#A3D4BE' }
       : { label: 'Neaktívny',  color: '#7F8C8D', bg: '#F4F6F7', border: '#D5D8DC' };
     return (
       <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -680,7 +680,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#fff',
+    color: '#F5F6F8',
     marginTop: 1
   },
   addBtn: {
@@ -851,6 +851,6 @@ const styles = StyleSheet.create({
   emptyBtnText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#fff'
+    color: '#F5F6F8'
   }
 });

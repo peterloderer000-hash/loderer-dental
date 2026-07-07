@@ -199,7 +199,7 @@ export default function Inventory() {
               onPress={() => setFilter(c.key)}
             >
               <Text style={{ fontSize: 14 }}>{c.icon}</Text>
-              <Text style={[st.catText, { color: filter === c.key ? '#fff' : colors.textPrimary }]}>{c.label}</Text>
+              <Text style={[st.catText, { color: filter === c.key ? '#F5F6F8' : colors.textPrimary }]}>{c.label}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -280,7 +280,7 @@ export default function Inventory() {
                     style={[st.catOption, { backgroundColor: formCategory === c.key ? COLORS.gold : colors.cardBg }]}
                     onPress={() => setFormCategory(c.key)}>
                     <Text style={{ fontSize: 16 }}>{c.icon}</Text>
-                    <Text style={[st.catOptionText, { color: formCategory === c.key ? '#fff' : colors.textPrimary }]}>{c.label}</Text>
+                    <Text style={[st.catOptionText, { color: formCategory === c.key ? '#F5F6F8' : colors.textPrimary }]}>{c.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -423,5 +423,5 @@ const st = StyleSheet.create({
   typeBtnText: { fontSize: 14, fontWeight: '600' },
 
   saveBtn: { paddingVertical: 14, borderRadius: RADII.pill, backgroundColor: COLORS.gold, alignItems: 'center', marginTop: 20, marginBottom: 20, ...SHADOWS.gold },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  saveBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 });

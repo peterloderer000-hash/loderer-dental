@@ -70,7 +70,7 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'Zrušený',    pending:   'Čaká',    arrived: 'V čakárni'
 };
 const STATUS_COLOR: Record<string, string> = {
-  scheduled: '#1A5276', completed: '#1E8449', cancelled: '#922B21', pending: '#E67E22'
+  scheduled: '#1A5276', completed: '#2E7D5E', cancelled: '#922B21', pending: '#E67E22'
 };
 
 export default function SearchScreen() {
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   header:    { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: SPACING.xl, paddingTop: 10, paddingBottom: 12, backgroundColor: COLORS.esp },
   backBtn:   { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 2, paddingHorizontal: 12, paddingVertical: 8 },
-  searchInput:{ flex: 1, fontSize: 14, color: '#fff', paddingVertical: 0 },
+  searchInput:{ flex: 1, fontSize: 14, color: '#F5F6F8', paddingVertical: 0 },
 
   hint:      { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl, gap: 8 },
   hintTitle: { fontSize: 16, fontWeight: '700', color: COLORS.esp, textAlign: 'center' },

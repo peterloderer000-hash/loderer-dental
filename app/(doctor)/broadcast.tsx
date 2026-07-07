@@ -18,10 +18,10 @@ import { useAppTheme } from '../../context/ThemeContext';
 type Audience = 'all' | 'upcoming' | 'recall' | 'custom';
 
 const AUDIENCE_CFG: { key: Audience; label: string; desc: string; icon: string; color: string; bg: string; darkBg: string }[] = [
-  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#E2DDD6', darkBg: '#1E2535' },
+  { key: 'all',      label: 'Všetci pacienti',        desc: 'Pošle správu všetkým registrovaným pacientom',               icon: 'people-outline',        color: COLORS.wal,  bg: '#D0D4DC', darkBg: '#1E2535' },
   { key: 'upcoming', label: 'Najbližšie termíny',      desc: 'Pacienti s termínom v nasledujúcich 7 dňoch',                icon: 'calendar-outline',      color: '#1A5276',   bg: '#EBF5FB', darkBg: '#0D2233' },
   { key: 'recall',   label: 'Recall — >6 mesiacov',   desc: 'Pacienti, ktorí neboli na kontrole viac ako 6 mesiacov',     icon: 'time-outline',          color: '#922B21',   bg: '#FDEDEC', darkBg: '#4A1010' },
-  { key: 'custom',   label: 'Vybraní pacienti',        desc: 'Vyberte konkrétnych pacientov zo zoznamu',                   icon: 'checkmark-circle-outline', color: '#1E8449', bg: '#EAFAF1', darkBg: '#0D3B1F' },
+  { key: 'custom',   label: 'Vybraní pacienti',        desc: 'Vyberte konkrétnych pacientov zo zoznamu',                   icon: 'checkmark-circle-outline', color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E' },
 ];
 
 const MESSAGE_TEMPLATES = [
@@ -246,7 +246,7 @@ export default function BroadcastScreen() {
                 activeOpacity={0.8}
               >
                 <View style={[styles.audienceIcon, { backgroundColor: audience === a.key ? a.color : colors.bg3 }]}>
-                  <Ionicons name={a.icon as any} size={16} color={audience === a.key ? '#fff' : COLORS.wal} />
+                  <Ionicons name={a.icon as any} size={16} color={audience === a.key ? '#F5F6F8' : COLORS.wal} />
                 </View>
                 <Text style={[styles.audienceLabel, { color: colors.textPrimary }, audience === a.key && { color: a.color }]}>{a.label}</Text>
                 <Text style={[styles.audienceDesc, { color: colors.textSecondary }]}>{a.desc}</Text>
@@ -281,12 +281,12 @@ export default function BroadcastScreen() {
                   return (
                     <TouchableOpacity
                       key={p.id}
-                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && [styles.ptRowSel, { backgroundColor: dark ? '#1E2535' : '#E2DDD6' }]]}
+                      style={[styles.ptRow, { borderBottomColor: colors.bg3 }, sel && [styles.ptRowSel, { backgroundColor: dark ? '#1E2535' : '#D0D4DC' }]]}
                       onPress={() => togglePatient(p.id)}
                       activeOpacity={0.8}
                     >
                       <View style={[styles.ptAvatar, { backgroundColor: colors.bg3 }, sel && { backgroundColor: COLORS.wal }]}>
-                        <Text style={[styles.ptAvatarText, sel && { color: '#fff' }]}>{initials}</Text>
+                        <Text style={[styles.ptAvatarText, sel && { color: '#F5F6F8' }]}>{initials}</Text>
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={[styles.ptName, { color: colors.textPrimary }]}>{p.full_name ?? 'Pacient'}</Text>
@@ -376,7 +376,7 @@ export default function BroadcastScreen() {
 
           {/* Naplánovať odoslanie */}
           <TouchableOpacity
-            style={[styles.schedToggle, { backgroundColor: colors.bg3 }, isScheduled && [styles.schedToggleActive, { backgroundColor: dark ? '#2D2200' : '#FEF9E7' }]]}
+            style={[styles.schedToggle, { backgroundColor: colors.bg3 }, isScheduled && [styles.schedToggleActive, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7' }]]}
             onPress={() => setIsScheduled(v => !v)}
             activeOpacity={0.85}
           >
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
   header:      { backgroundColor: COLORS.esp, paddingHorizontal: SPACING.xl, paddingTop: 14, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:   { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 3 },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: '#F5F6F8' },
 
   sectionLabel: { fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 10, marginTop: 4 },
 
@@ -461,9 +461,9 @@ const styles = StyleSheet.create({
   searchRow:    { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   searchInput:  { flex: 1, fontSize: 13, color: COLORS.esp },
   selBadge:     { backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 7, paddingVertical: 1 },
-  selBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
+  selBadgeText: { fontSize: 10, fontWeight: '800', color: '#F5F6F8' },
   ptRow:        { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
-  ptRowSel:     { backgroundColor: '#E2DDD6' },
+  ptRowSel:     { backgroundColor: '#D0D4DC' },
   ptAvatar:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center' },
   ptAvatarText: { fontSize: 13, fontWeight: '700', color: COLORS.wal },
   ptName:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
@@ -487,13 +487,13 @@ const styles = StyleSheet.create({
   previewBody:  { fontSize: 13, color: '#555', lineHeight: 17 },
 
   schedToggle:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.bg3, borderRadius: 2, padding: 14, marginBottom: 10 },
-  schedToggleActive: { backgroundColor: '#FEF9E7', borderWidth: 1, borderColor: COLORS.gold },
+  schedToggleActive: { backgroundColor: '#FDF3E7', borderWidth: 1, borderColor: COLORS.gold },
   schedToggleText:   { fontSize: 14, fontWeight: '600', color: COLORS.wal },
   schedRow:          { flexDirection: 'row', marginBottom: 14 },
   schedLabel:        { fontSize: 9, fontWeight: '700', color: COLORS.wal, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 6 },
   schedInput:        { backgroundColor: COLORS.cream, borderWidth: 1, borderColor: COLORS.bg3, borderRadius: 2, padding: 12, fontSize: 15, color: COLORS.esp, fontWeight: '600' },
   sendBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: COLORS.wal, borderRadius: 4, paddingVertical: 16, marginTop: 4 },
-  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#fff' },
+  sendBtnText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   recipientSummary:      { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, paddingHorizontal: 14, paddingVertical: 12, marginBottom: 12 },
   recipientSummaryText:  { fontSize: 13, color: COLORS.wal },

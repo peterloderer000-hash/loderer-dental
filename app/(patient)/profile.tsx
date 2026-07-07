@@ -29,7 +29,7 @@ const AVATAR_BUCKET = 'avatars';
 const LEVELS = [
   { key: 'bronze'  as const, min: 0,    max: 299,   color: '#CD7F32', bg: '#FDF3E7', icon: '🥉' },
   { key: 'silver'  as const, min: 300,  max: 599,   color: '#A0A0A0', bg: '#F4F4F4', icon: '🥈' },
-  { key: 'gold'    as const, min: 600,  max: 999,   color: '#D4A017', bg: '#FEF9E7', icon: '🥇' },
+  { key: 'gold'    as const, min: 600,  max: 999,   color: '#D4A017', bg: '#FDF3E7', icon: '🥇' },
   { key: 'platinum'as const, min: 1000, max: 99999, color: '#6C3483', bg: '#F5EEF8', icon: '💎' },
 ];
 
@@ -297,8 +297,8 @@ export default function ProfileScreen() {
                     onPress={() => router.push('/(patient)/treatment-plan')}
                     activeOpacity={0.8}
                   >
-                    <View style={[docS.icon, { backgroundColor: dark ? '#0D3B1F' : '#EAFAF1' }]}>
-                      <Ionicons name="list-outline" size={16} color={dark ? '#27AE60' : '#1E8449'} />
+                    <View style={[docS.icon, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
+                      <Ionicons name="list-outline" size={16} color={dark ? '#52C896' : '#2E7D5E'} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[docS.name, { color: colors.textPrimary }]} numberOfLines={1}>{plan.title}</Text>
@@ -349,7 +349,7 @@ export default function ProfileScreen() {
                   value={dark}
                   onValueChange={toggleTheme}
                   trackColor={{ false: COLORS.bg3, true: COLORS.wal }}
-                  thumbColor={dark ? COLORS.cream : '#fff'}
+                  thumbColor={dark ? COLORS.cream : '#F5F6F8'}
                   ios_backgroundColor={COLORS.bg3}
                 />
               </View>
@@ -430,7 +430,7 @@ export default function ProfileScreen() {
                 { icon: 'document-text-outline' as const, label: t('profile.quickAccess.consents'),  sub: t('profile.quickAccess.consentsSub'), route: '/(patient)/consents',       bg: '#F5EEF8',         color: '#7D3C98' },
                 { icon: 'list-outline'          as const, label: t('profile.quickAccess.plan'),      sub: t('profile.quickAccess.planSub'),  route: '/(patient)/treatment-plan',   bg: COLORS.successBg,  color: COLORS.success },
                 { icon: 'qr-code-outline'       as const, label: 'Dentálny pas',                     sub: 'QR kód pre iného zubára',           route: '/(patient)/dental-passport-qr', bg: '#EBF5FB',       color: '#2980B9' },
-                { icon: 'calculator-outline'    as const, label: 'Odhad poistenia',                  sub: 'Kalkulačka krytia poisťovňou',      route: '/(patient)/insurance-calc',     bg: '#FEF9E7',       color: '#F39C12' },
+                { icon: 'calculator-outline'    as const, label: 'Odhad poistenia',                  sub: 'Kalkulačka krytia poisťovňou',      route: '/(patient)/insurance-calc',     bg: '#FDF3E7',       color: '#B8ACA0' },
               ].map((item, idx, arr) => (
                 <TouchableOpacity
                   key={item.label}
@@ -516,7 +516,7 @@ const s = StyleSheet.create({
     position: 'absolute', bottom: 0, right: -4,
     width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#fff',
+    borderWidth: 2, borderColor: '#F5F6F8',
   },
   heroName: { ...TYPO.h2, color: '#F8F6F2', marginBottom: 6 },
   roleBadge: { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
@@ -537,7 +537,7 @@ const s = StyleSheet.create({
 
   saveBtn:     { marginTop: 18, borderRadius: RADII.md, overflow: 'hidden' },
   saveGrad:    { paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
-  saveBtnText: { ...TYPO.btnText, color: '#fff' },
+  saveBtnText: { ...TYPO.btnText, color: '#F5F6F8' },
 
   navRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, borderBottomWidth: 1 },
   navIcon:  { width: 40, height: 40, borderRadius: RADII.sm, alignItems: 'center', justifyContent: 'center' },
@@ -570,7 +570,7 @@ const loy = StyleSheet.create({
   title:         { ...TYPO.overline, color: COLORS.wal, marginBottom: 2 },
   level:         { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 18 },
   badge:         { borderRadius: RADII.md, paddingHorizontal: 14, paddingVertical: 8, alignItems: 'center' },
-  badgeNum:      { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#fff', lineHeight: 26 },
+  badgeNum:      { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F5F6F8', lineHeight: 26 },
   badgeLabel:    { fontFamily: 'DMSans_500Medium', fontSize: 8, color: 'rgba(255,255,255,0.8)', letterSpacing: 1, textTransform: 'uppercase' },
   progressBg:    { height: 8, backgroundColor: 'rgba(0,0,0,0.08)', borderRadius: 4, marginBottom: 6, overflow: 'hidden' },
   progressFill:  { height: 8, borderRadius: 4 },
@@ -603,7 +603,7 @@ const ls = StyleSheet.create({
     letterSpacing: 0.5,
   },
   langBtnTextActive: {
-    color: '#fff',
+    color: '#F5F6F8',
   },
 });
 

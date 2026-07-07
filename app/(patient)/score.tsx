@@ -87,7 +87,7 @@ function overall(h: number, a: number, hy: number, p: number) {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function scoreColor(s: number) {
   if (s >= 80) return COLORS.success;
-  if (s >= 65) return '#27AE60';
+  if (s >= 65) return '#52C896';
   if (s >= 50) return COLORS.warning;
   return COLORS.error;
 }
@@ -107,7 +107,7 @@ const STATUS_DISPLAY: Partial<Record<ToothStatus, { label: string; color: string
   cavity:          { label: 'Kaz',           color: COLORS.error,   emoji: '🔴' },
   early_cavity:    { label: 'Začín. kaz',    color: '#CB4335',      emoji: '🟠' },
   filled:          { label: 'Plomba',        color: '#9A7D0A',      emoji: '🟡' },
-  large_filling:   { label: 'Veľká plomba',  color: '#7D6608',      emoji: '🟤' },
+  large_filling:   { label: 'Veľká plomba',  color: '#B87333',      emoji: '🟤' },
   crown:           { label: 'Korunka',       color: COLORS.info,    emoji: '👑' },
   implant:         { label: 'Implantát',     color: '#117A65',      emoji: '🔩' },
   bridge:          { label: 'Mostík',        color: '#154360',      emoji: '🌉' },
@@ -117,8 +117,8 @@ const STATUS_DISPLAY: Partial<Record<ToothStatus, { label: string; color: string
   watch:           { label: 'Pozorovanie',   color: COLORS.warning,  emoji: '👁' },
   periodontal:     { label: 'Parodont.',     color: COLORS.error,   emoji: '🦷' },
   improve_hygiene: { label: 'Zlepš hygienu', color: COLORS.info,    emoji: '🪥' },
-  treatment_needed:{ label: 'Na prerobenie', color: '#F39C12',      emoji: '🔧' },
-  fracture:        { label: 'Fraktúra',      color: '#E74C3C',      emoji: '💥' },
+  treatment_needed:{ label: 'Na prerobenie', color: '#B8ACA0',      emoji: '🔧' },
+  fracture:        { label: 'Fraktúra',      color: '#C0392B',      emoji: '💥' },
 };
 
 // ─── Animated score ring ──────────────────────────────────────────────────────
@@ -497,7 +497,7 @@ export default function ScoreScreen() {
                   key={a.key}
                   style={[ach.item,
                     { backgroundColor: a.unlocked ? (dark ? '#1A2A1A' : '#F0FAF4') : colors.bg2,
-                      borderColor: a.unlocked ? (dark ? '#27AE6044' : '#A9DFBF') : colors.bg3,
+                      borderColor: a.unlocked ? (dark ? '#52C89644' : '#A3D4BE') : colors.bg3,
                       opacity: a.unlocked ? 1 : 0.45 }]}
                 >
                   <Text style={ach.emoji}>{a.emoji}</Text>
@@ -563,8 +563,8 @@ const ach = StyleSheet.create({
   emoji:    { fontSize: 24 },
   title:    { fontSize: 12, fontFamily: 'DMSans_500Medium', lineHeight: 16 },
   desc:     { fontSize: 10, lineHeight: 14 },
-  badge:    { position: 'absolute', top: 8, right: 8, width: 18, height: 18, borderRadius: 9, backgroundColor: '#27AE60', alignItems: 'center', justifyContent: 'center' },
-  badgeText:{ fontSize: 10, color: '#fff', fontWeight: '700' },
+  badge:    { position: 'absolute', top: 8, right: 8, width: 18, height: 18, borderRadius: 9, backgroundColor: '#52C896', alignItems: 'center', justifyContent: 'center' },
+  badgeText:{ fontSize: 10, color: '#F5F6F8', fontWeight: '700' },
   progress: { fontSize: 11, textAlign: 'center', marginTop: 2 },
 });
 
@@ -578,7 +578,7 @@ const s = StyleSheet.create({
   ringWrap:     { alignItems: 'center', gap: 16 },
   ringMeta:     { alignItems: 'center', gap: 8 },
   scoreBadge:   { borderRadius: RADII.full, paddingHorizontal: 16, paddingVertical: 6 },
-  scoreBadgeText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#fff', letterSpacing: 0.3 },
+  scoreBadgeText: { fontFamily: 'DMSans_500Medium', fontSize: 13, color: '#F5F6F8', letterSpacing: 0.3 },
   ringSubtext:  { fontFamily: 'DMSans_400Regular', fontSize: 12, color: 'rgba(196,168,130,0.65)' },
 
   noDataHero:  { alignItems: 'center', gap: 10, paddingBottom: 8 },
@@ -619,7 +619,7 @@ const s = StyleSheet.create({
 
   ctaBtn:  { marginHorizontal: 16, marginTop: 16, borderRadius: RADII.md, overflow: 'hidden' },
   ctaGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 16 },
-  ctaText: { fontFamily: 'DMSans_500Medium', fontSize: 15, color: '#fff', letterSpacing: 0.3 },
+  ctaText: { fontFamily: 'DMSans_500Medium', fontSize: 15, color: '#F5F6F8', letterSpacing: 0.3 },
 });
 
 const sub = StyleSheet.create({
@@ -629,7 +629,7 @@ const sub = StyleSheet.create({
   bar:       { height: 3, borderRadius: 2, alignSelf: 'stretch' },
   label:     { fontFamily: 'DMSans_500Medium', fontSize: 9, letterSpacing: 0.5, textTransform: 'uppercase', textAlign: 'center' },
   grade:     { borderRadius: RADII.xs, paddingHorizontal: 6, paddingVertical: 2 },
-  gradeText: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: '#fff' },
+  gradeText: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: '#F5F6F8' },
 });
 
 const db = StyleSheet.create({
@@ -640,7 +640,7 @@ const db = StyleSheet.create({
   fill:      { height: 7, borderRadius: 4 },
   score:     { fontFamily: 'DMSans_500Medium', fontSize: 12, width: 26, textAlign: 'right' },
   badge:     { width: 22, height: 22, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
-  badgeText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#fff' },
+  badgeText: { fontFamily: 'DMSans_500Medium', fontSize: 10, color: '#F5F6F8' },
 });
 
 const tip = StyleSheet.create({

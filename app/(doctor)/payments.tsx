@@ -165,7 +165,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
                 onChangeText={onSearchChange}
                 onFocus={() => { if (selectedPatient) { setSelected(null); setPatientSearch(''); } }}
               />
-              {selectedPatient && <Ionicons name="checkmark-circle" size={18} color="#1E8449" />}
+              {selectedPatient && <Ionicons name="checkmark-circle" size={18} color="#2E7D5E" />}
             </View>
             {patients.length > 0 && !selectedPatient && (
               <View style={[m.dropdown, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
@@ -201,7 +201,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
                   style={[m.methodBtn, { backgroundColor: colors.bg2, borderColor: colors.bg3 }, method === mt && m.methodBtnActive]}
                   onPress={() => setMethod(mt)} activeOpacity={0.8}>
                   <Ionicons name={METHOD_ICONS[mt] as any} size={18}
-                    color={method === mt ? '#fff' : COLORS.wal} />
+                    color={method === mt ? '#F5F6F8' : COLORS.wal} />
                   <Text style={[m.methodLabel, method === mt && m.methodLabelActive]}>
                     {METHOD_LABELS[mt]}
                   </Text>
@@ -460,7 +460,7 @@ const s = StyleSheet.create({
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   refreshBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, color: COLORS.sand, letterSpacing: 1.5, fontWeight: '600' },
-  headerTitle:{ fontSize: 20, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 20, fontWeight: '700', color: '#F5F6F8' },
 
   rangeRow:     { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: COLORS.esp, paddingBottom: 14 },
   rangeChip:    { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
@@ -468,7 +468,7 @@ const s = StyleSheet.create({
   rangeText:    { fontSize: 12, color: COLORS.cream, fontWeight: '600' },
   rangeTextActive: { color: COLORS.esp },
 
-  summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 2, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
+  summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 2, overflow: 'hidden', elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   summaryCard: { flex: 1, paddingVertical: 12, paddingHorizontal: 10, alignItems: 'center' },
   summaryLbl:  { fontSize: 10, color: '#888', marginBottom: 2 },
   summaryAmt:  { fontSize: 16, fontWeight: '700' },
@@ -477,7 +477,7 @@ const s = StyleSheet.create({
   filterChip:    { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   filterChipActive: { backgroundColor: COLORS.esp, borderColor: COLORS.esp },
   filterText:    { fontSize: 12, color: COLORS.wal, fontWeight: '600' },
-  filterTextActive: { color: '#fff' },
+  filterTextActive: { color: '#F5F6F8' },
 
   list:        { paddingHorizontal: 14, paddingTop: 8, paddingBottom: 100 },
   loadingText: { fontSize: 13, color: COLORS.wal, marginTop: 8 },
@@ -487,11 +487,11 @@ const s = StyleSheet.create({
   emptyTitle:  { fontSize: 17, fontWeight: '700', color: COLORS.esp },
   emptySub:    { fontSize: 13, color: COLORS.wal, textAlign: 'center' },
   emptyBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingHorizontal: 18, paddingVertical: 10, marginTop: 8 },
-  emptyBtnText:{ fontSize: 14, fontWeight: '700', color: '#fff' },
+  emptyBtnText:{ fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 
   card: {
     backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 10,
-    elevation: 1, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3
+    elevation: 1, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3
   },
   cardTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   patientName: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
@@ -506,13 +506,13 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 9, marginTop: 10
   },
-  payBtnText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+  payBtnText: { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
 
   fab: {
     position: 'absolute', right: 20, bottom: 28,
     width: 56, height: 56, borderRadius: 6,
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
-    elevation: 8, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8
+    elevation: 4, shadowColor: COLORS.esp, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8
   }
 });
 
@@ -536,11 +536,11 @@ const m = StyleSheet.create({
   methodBtn:       { flex: 1, minWidth: '45%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10, borderRadius: 2, backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3 },
   methodBtnActive: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   methodLabel:     { fontSize: 12, fontWeight: '600', color: COLORS.wal },
-  methodLabelActive:{ color: '#fff' },
+  methodLabelActive:{ color: '#F5F6F8' },
 
   btns:          { flexDirection: 'row', gap: 10, marginTop: 20 },
   btnSecondary:  { flex: 1, paddingVertical: 13, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnSecondaryText: { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   btnPrimary:    { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 13, borderRadius: 2, backgroundColor: COLORS.wal },
-  btnPrimaryText:{ fontSize: 13, fontWeight: '700', color: '#fff' }
+  btnPrimaryText:{ fontSize: 13, fontWeight: '700', color: '#F5F6F8' }
 });

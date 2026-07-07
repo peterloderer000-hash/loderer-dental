@@ -238,7 +238,7 @@ export default function OpeningHoursScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 28, marginBottom: 10 }}>
           <Text style={[s.sectionTitle, { color: colors.textPrimary }]}>Výnimky</Text>
           <TouchableOpacity
-            style={[s.addExBtn, { backgroundColor: dark ? COLORS.wal + '22' : '#E2DDD6', borderColor: dark ? COLORS.wal + '55' : COLORS.sand }]}
+            style={[s.addExBtn, { backgroundColor: dark ? COLORS.wal + '22' : '#D0D4DC', borderColor: dark ? COLORS.wal + '55' : COLORS.sand }]}
             onPress={() => setShowExForm(v => !v)}
             activeOpacity={0.8}
           >
@@ -318,17 +318,17 @@ export default function OpeningHoursScreen() {
           <Text style={[s.exEmpty, { color: colors.textSecondary }]}>Žiadne výnimky — ambulancia funguje podľa pravidelného rozvrhu.</Text>
         ) : (
           exceptions.map(ex => (
-            <View key={ex.id} style={[s.exRow, { backgroundColor: colors.cardBg, borderColor: ex.is_closed ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#27AE6033' : '#A9DFBF') }]}>
-              <View style={[s.exDateBox, { backgroundColor: ex.is_closed ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#0D3B1F' : '#EAFAF1') }]}>
-                <Text style={[s.exDateText, { color: ex.is_closed ? '#E74C3C' : '#1E8449' }]}>
+            <View key={ex.id} style={[s.exRow, { backgroundColor: colors.cardBg, borderColor: ex.is_closed ? (dark ? '#C0392B33' : '#F5B7B1') : (dark ? '#52C89633' : '#A3D4BE') }]}>
+              <View style={[s.exDateBox, { backgroundColor: ex.is_closed ? (dark ? '#4A1010' : '#FDEDEC') : (dark ? '#1A3D2E' : '#EDF7F3') }]}>
+                <Text style={[s.exDateText, { color: ex.is_closed ? '#C0392B' : '#2E7D5E' }]}>
                   {ex.date.slice(5)}
                 </Text>
-                <Text style={[s.exDateYear, { color: ex.is_closed ? '#E74C3C' : '#1E8449', opacity: 0.7 }]}>
+                <Text style={[s.exDateYear, { color: ex.is_closed ? '#C0392B' : '#2E7D5E', opacity: 0.7 }]}>
                   {ex.date.slice(0, 4)}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={[s.exStatus, { color: ex.is_closed ? '#E74C3C' : '#1E8449' }]}>
+                <Text style={[s.exStatus, { color: ex.is_closed ? '#C0392B' : '#2E7D5E' }]}>
                   {ex.is_closed ? '🔴 Zatvorené' : `🟢 ${ex.open_time ?? ''}–${ex.close_time ?? ''}`}
                 </Text>
                 {ex.note ? <Text style={[s.exNoteText, { color: colors.textSecondary }]}>{ex.note}</Text> : null}
@@ -359,7 +359,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 12 },
   backBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:  { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
-  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#fff' },
+  headerTitle:{ fontSize: 19, fontWeight: '700', color: '#F5F6F8' },
   row: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: COLORS.cream, padding: 14, borderRadius: 2, marginBottom: 10,

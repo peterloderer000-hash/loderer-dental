@@ -124,7 +124,7 @@ export default function ReviewsScreen() {
               <Text style={[styles.avgNum, { color: colors.textPrimary }]}>{avgRating}</Text>
               <View style={styles.starsRow}>
                 {[1,2,3,4,5].map(n => (
-                  <Ionicons key={n} name={n <= Math.round(Number(avgRating)) ? 'star' : 'star-outline'} size={16} color="#F39C12" />
+                  <Ionicons key={n} name={n <= Math.round(Number(avgRating)) ? 'star' : 'star-outline'} size={16} color="#B8ACA0" />
                 ))}
               </View>
               <Text style={[styles.avgSub, { color: colors.textSecondary }]}>{rated.length} hodnotení</Text>
@@ -137,7 +137,7 @@ export default function ReviewsScreen() {
                   <View key={n} style={styles.distRow}>
                     <Text style={[styles.distLabel, { color: colors.textSecondary }]}>{n}</Text>
                     <View style={[styles.distBarBg, { backgroundColor: colors.bg3 }]}>
-                      <View style={[styles.distBarFill, { width: `${pct}%`, backgroundColor: '#F39C12' }]} />
+                      <View style={[styles.distBarFill, { width: `${pct}%`, backgroundColor: '#B8ACA0' }]} />
                     </View>
                     <Text style={[styles.distCount, { color: colors.textSecondary }]}>{count}</Text>
                   </View>
@@ -150,13 +150,13 @@ export default function ReviewsScreen() {
         {/* ── Nehodnotené návštevy ── */}
         {unrated.length > 0 && (
           <>
-            <Text style={[styles.sectionLabel, { color: dark ? '#F0A030' : '#7D6608' }]}>
+            <Text style={[styles.sectionLabel, { color: dark ? '#F0A030' : '#B87333' }]}>
               ⏳ ČAKÁ NA HODNOTENIE ({unrated.length})
             </Text>
             {unrated.map(appt => (
               <TouchableOpacity
                 key={appt.id}
-                style={[styles.reviewCard, { backgroundColor: dark ? '#2D2200' : '#FEF9E7', borderColor: dark ? '#F39C1244' : '#F9E79F' }]}
+                style={[styles.reviewCard, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#B8ACA044' : '#D0D4DC' }]}
                 onPress={() => openRate(appt)}
                 activeOpacity={0.85}
               >
@@ -169,7 +169,7 @@ export default function ReviewsScreen() {
                   </Text>
                 </View>
                 <View style={[styles.rateBtn, { backgroundColor: dark ? '#4A3000' : '#FDE8C0' }]}>
-                  <Ionicons name="star-outline" size={14} color="#F39C12" />
+                  <Ionicons name="star-outline" size={14} color="#B8ACA0" />
                   <Text style={styles.rateBtnText}>Ohodnoť</Text>
                 </View>
               </TouchableOpacity>
@@ -194,7 +194,7 @@ export default function ReviewsScreen() {
                     <Text style={[styles.reviewService, { color: colors.textPrimary }]}>{appt.service?.name ?? 'Návšteva'}</Text>
                     <View style={styles.starsRowSmall}>
                       {[1,2,3,4,5].map(n => (
-                        <Ionicons key={n} name={n <= (appt.patient_rating ?? 0) ? 'star' : 'star-outline'} size={12} color="#F39C12" />
+                        <Ionicons key={n} name={n <= (appt.patient_rating ?? 0) ? 'star' : 'star-outline'} size={12} color="#B8ACA0" />
                       ))}
                     </View>
                   </View>
@@ -237,7 +237,7 @@ export default function ReviewsScreen() {
             <View style={styles.starsRowLarge}>
               {[1,2,3,4,5].map(n => (
                 <TouchableOpacity key={n} onPress={() => setRatingVal(n)} activeOpacity={0.7}>
-                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#F39C12' : '#ddd'} />
+                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#ddd'} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   safe:        { flex: 1, backgroundColor: COLORS.bg2 },
   header:      { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: SPACING.lg, paddingTop: 14, paddingBottom: 16 },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 19, fontWeight: '600', color: '#fff' },
+  headerTitle: { fontSize: 19, fontWeight: '600', color: '#F5F6F8' },
   headerSub:   { fontSize: 11, color: COLORS.sand, marginTop: 1 },
 
   // Avg card
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   reviewText:    { fontSize: 12, fontStyle: 'italic', marginTop: 6, lineHeight: 18 },
 
   rateBtn:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
-  rateBtnText:   { fontSize: 11, fontWeight: '700', color: '#F39C12' },
+  rateBtnText:   { fontSize: 11, fontWeight: '700', color: '#B8ACA0' },
 
   // Modal
   modalOverlay:       { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
   modalHandle:        { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 20 },
   modalTitle:         { fontSize: 22, fontWeight: '800', textAlign: 'center', marginBottom: 4 },
   modalSub:           { fontSize: 13, textAlign: 'center', marginBottom: 20 },
-  ratingLabel:        { fontSize: 15, fontWeight: '600', color: '#F39C12', textAlign: 'center', marginBottom: 16 },
+  ratingLabel:        { fontSize: 15, fontWeight: '600', color: '#B8ACA0', textAlign: 'center', marginBottom: 16 },
   reviewInput:        { borderWidth: 1.5, borderRadius: 2, padding: 12, fontSize: 13, minHeight: 76, marginBottom: 20 },
   modalActions:       { flexDirection: 'row', gap: 10 },
   modalBtnSkip:       { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5 },
   modalBtnSkipText:   { fontSize: 14, fontWeight: '600' },
-  modalBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: '#F39C12', justifyContent: 'center' },
-  modalBtnSubmitText: { fontSize: 14, fontWeight: '600', color: '#fff' },
+  modalBtnSubmit:     { flex: 2, paddingVertical: 14, borderRadius: 2, alignItems: 'center', backgroundColor: '#B8ACA0', justifyContent: 'center' },
+  modalBtnSubmitText: { fontSize: 14, fontWeight: '600', color: '#F5F6F8' },
 });

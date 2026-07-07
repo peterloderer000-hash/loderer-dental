@@ -346,7 +346,7 @@ export default function RiskPrediction() {
               <Text style={[s.overallLevel, { color: riskColor(prediction.overall_risk) }]}>
                 {riskLabel(prediction.overall_risk)} riziko
               </Text>
-              <View style={[s.nextVisitBadge, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FEF9E7' }]}>
+              <View style={[s.nextVisitBadge, { backgroundColor: dark ? 'rgba(201,168,76,0.1)' : '#FDF3E7' }]}>
                 <Ionicons name="calendar-outline" size={14} color={COLORS.gold} />
                 <Text style={[s.nextVisitText, { color: COLORS.gold }]}>
                   Odporúčaná návšteva za {prediction.next_visit_days} dní
@@ -454,7 +454,7 @@ const s = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 24,
     paddingVertical: 14, backgroundColor: COLORS.gold, borderRadius: RADII.pill, ...SHADOWS.gold,
   },
-  generateBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  generateBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 15 },
 
   overallCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.xl, alignItems: 'center', marginBottom: SPACING.lg },
   overallCircle: { width: 100, height: 100, borderRadius: 20, borderWidth: 4, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },

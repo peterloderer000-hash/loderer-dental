@@ -326,7 +326,7 @@ export default function DoctorProfile() {
                 value={dark}
                 onValueChange={toggleTheme}
                 trackColor={{ false: COLORS.bg3, true: COLORS.wal }}
-                thumbColor={dark ? COLORS.cream : '#fff'}
+                thumbColor={dark ? COLORS.cream : '#F5F6F8'}
                 ios_backgroundColor={COLORS.bg3}
               />
             </View>
@@ -340,7 +340,7 @@ export default function DoctorProfile() {
             </View>
             <View style={styles.clinicOpsGrid}>
               {[
-                { icon: 'pulse-outline'      as const, label: 'Live prehľad',     sub: 'Dnešné termíny',      route: '/(doctor)/clinic-live',      color: '#27AE60' },
+                { icon: 'pulse-outline'      as const, label: 'Live prehľad',     sub: 'Dnešné termíny',      route: '/(doctor)/clinic-live',      color: '#52C896' },
                 { icon: 'bed-outline'        as const, label: 'Kreslo',           sub: 'Tablet / ambulancia', route: '/(doctor)/clinic-room',      color: '#2980B9' },
                 { icon: 'bar-chart-outline'  as const, label: 'Dashboard',        sub: 'Denné metriky',       route: '/(doctor)/clinic-dashboard', color: '#8E44AD' },
                 { icon: 'sparkles-outline'   as const, label: 'AI asistent',      sub: 'Opýtaj sa AI',        route: '/(doctor)/clinic-ai',        color: '#E67E22' },
@@ -377,7 +377,7 @@ export default function DoctorProfile() {
               <TouchableOpacity key={item.label}
                 style={[styles.navRow, { borderBottomColor: colors.bg3 }, idx === arr.length - 1 && { borderBottomWidth: 0 }]}
                 onPress={() => router.push(item.route as any)} activeOpacity={0.8}>
-                <View style={[styles.navIcon, { backgroundColor: dark ? colors.bg3 : '#E2DDD6' }]}>
+                <View style={[styles.navIcon, { backgroundColor: dark ? colors.bg3 : '#D0D4DC' }]}>
                   <Ionicons name={item.icon} size={18} color={colors.wal} />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     width: 28, height: 28, borderRadius: 2,
     backgroundColor: COLORS.esp,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: '#fff'
+    borderWidth: 2, borderColor: '#F5F6F8'
   },
   roleBadge:  { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   roleText:   { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.sand },
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
 
   saveBtn:     { borderRadius: RADII.md, overflow: 'hidden', marginTop: 18 },
   saveGrad:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14 },
-  saveBtnText: { ...TYPO.btnText, color: '#fff' },
+  saveBtnText: { ...TYPO.btnText, color: '#F5F6F8' },
 
   // ── Ambulancia ──
   clinicCardHeader:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
@@ -515,7 +515,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: RADII.sm,
     alignItems: 'center', justifyContent: 'center', marginBottom: 4
   },
-  clinicOpsBtnLabel: { ...TYPO.bodyMed, color: '#fff' },
+  clinicOpsBtnLabel: { ...TYPO.bodyMed, color: '#F5F6F8' },
   clinicOpsBtnSub:   { ...TYPO.bodySm, color: COLORS.sand },
 
   // ── Dark mode toggle ──

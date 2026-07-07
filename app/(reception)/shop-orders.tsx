@@ -32,10 +32,10 @@ type Order = {
 };
 
 const STATUS_CFG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pending:   { label: 'Čaká',         color: '#E67E22', bg: '#FEF9E7', icon: '⏳' },
-  ready:     { label: 'Pripravené',   color: '#27AE60', bg: '#EAFAF1', icon: '✅' },
+  pending:   { label: 'Čaká',         color: '#E67E22', bg: '#FDF3E7', icon: '⏳' },
+  ready:     { label: 'Pripravené',   color: '#52C896', bg: '#EDF7F3', icon: '✅' },
   picked_up: { label: 'Vyzdvihnuté', color: '#3498DB', bg: '#EBF5FB', icon: '📦' },
-  cancelled: { label: 'Zrušené',     color: '#E74C3C', bg: '#FDEDEC', icon: '❌' },
+  cancelled: { label: 'Zrušené',     color: '#C0392B', bg: '#FDEDEC', icon: '❌' },
 };
 
 function fmtPrice(n: number) {
@@ -227,7 +227,7 @@ const s = StyleSheet.create({
   filterBtn:  { flex: 1, paddingVertical: 8, borderRadius: 2, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.08)' },
   filterBtnActive: { backgroundColor: COLORS.wal },
   filterText: { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  filterTextActive: { color: '#fff' },
+  filterTextActive: { color: '#F5F6F8' },
 
   empty:      { alignItems: 'center', paddingVertical: 60, gap: 8 },
   emptyTitle: { fontSize: 16, fontWeight: '700' },
