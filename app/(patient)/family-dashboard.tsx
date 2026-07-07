@@ -117,11 +117,12 @@ export default function FamilyDashboard() {
         return;
       }
 
-      await supabase.from('family_members').insert({
+      const { error: addErr } = await supabase.from('family_members').insert({
         group_id: group!.id,
         patient_id: memberProfile.id,
         relationship: addRelation,
       });
+      if (addErr) { Alert.alert('Chyba', addErr.message); return; }
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setAddModal(false);

@@ -106,7 +106,8 @@ export default function ServicesScreen() {
     load();
   }
   async function restoreService(svc: Service) {
-    await supabase.from('services').update({ is_active: true, sort_order: active.length }).eq('id', svc.id);
+    const { error } = await supabase.from('services').update({ is_active: true, sort_order: active.length }).eq('id', svc.id);
+    if (error) { Alert.alert('Chyba', error.message); return; }
     load();
   }
 

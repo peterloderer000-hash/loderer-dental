@@ -142,7 +142,7 @@ export default function OpeningHoursScreen() {
       return;
     }
     setExSaving(true);
-    const uid = doctorId || (await supabase.auth.getUser()).data.user?.id;
+    const uid = doctorId || (await supabase.auth.getUser()).data?.user?.id;
     const { error } = await supabase.from('clinic_exceptions').upsert({
       doctor_id:  uid,
       date:       exDate.trim(),

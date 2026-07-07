@@ -396,17 +396,19 @@ export default function StaffChatScreen() {
   // Send broadcast — realtime handles the append
   async function sendBroadcast(body: string) {
     if (!myId) return;
-    await supabase.from('staff_messages').insert({ sender_id: myId, recipient_id: null, body });
+    const { error } = await supabase.from('staff_messages').insert({ sender_id: myId, recipient_id: null, body });
+    if (error) Alert.alert('Chyba', 'Nepodarilo sa odoslať správu.');
   }
 
   // Send DM — realtime handles the append
   async function sendDm(body: string) {
     if (!myId || !dmPartner) return;
-    await supabase.from('staff_messages').insert({
+    const { error } = await supabase.from('staff_messages').insert({
       sender_id: myId,
       recipient_id: dmPartner.id,
       body
     });
+    if (error) Alert.alert('Chyba', 'Nepodarilo sa odoslať správu.');
   }
 
   // ── DM conversation view ──

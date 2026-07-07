@@ -179,7 +179,7 @@ const st = StyleSheet.create({
   treatName: { fontSize: 13, fontWeight: '600' },
   treatMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
   treatPrice: { fontSize: 12 },
-  coverBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 20 },
+  coverBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 2 },
   coverText: { fontSize: 10, fontWeight: '700' },
 
   resultCard: { borderRadius: RADII.lg, borderWidth: 2, padding: SPACING.lg, marginBottom: SPACING.lg },

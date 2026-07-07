@@ -99,7 +99,8 @@ export default function ConsentsScreen() {
     Alert.alert('Odmietnuť súhlas', 'Naozaj chceš odmietnuť tento súhlas?', [
       { text: 'Nie', style: 'cancel' },
       { text: 'Áno, odmietnuť', style: 'destructive', onPress: async () => {
-        await supabase.from('patient_consents').update({ status: 'declined' }).eq('id', signing.id);
+        const { error } = await supabase.from('patient_consents').update({ status: 'declined' }).eq('id', signing.id);
+        if (error) { Alert.alert('Chyba', error.message); return; }
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setSigning(null);
         load();

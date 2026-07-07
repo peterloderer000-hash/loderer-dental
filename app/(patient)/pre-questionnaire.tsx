@@ -58,7 +58,8 @@ export default function PreQuestionnaireScreen() {
         .from('appointments').select('notes').eq('id', appointmentId).maybeSingle();
       const existingNotes = appt?.notes ?? '';
       const merged = lines + (existingNotes ? '\n\n---\n' + existingNotes : '');
-      await supabase.from('appointments').update({ notes: merged }).eq('id', appointmentId);
+      const { error: updateErr } = await supabase.from('appointments').update({ notes: merged }).eq('id', appointmentId);
+      if (updateErr) { Alert.alert('Chyba', updateErr.message); setSaving(false); return; }
 
       // Notifikácia doktorovi
       if (doctorId) {

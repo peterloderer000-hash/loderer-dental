@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
   iconWrap:  { width: 88, height: 88, borderRadius: 44, backgroundColor: '#FDEDEC', alignItems: 'center', justifyContent: 'center', marginBottom: 20, borderWidth: 1.5, borderColor: '#C0392B' },
   title:     { fontSize: 20, fontWeight: '700', color: '#121417', marginBottom: 12, textAlign: 'center' },
   message:   { fontSize: 13, color: '#3A4256', textAlign: 'center', lineHeight: 20, marginBottom: 28, fontFamily: 'monospace' },
-  btn:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#3A4256', borderRadius: 12, paddingVertical: 13, paddingHorizontal: 24 },
+  btn:       { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#3A4256', borderRadius: 4, paddingVertical: 13, paddingHorizontal: 24 },
   btnText:   { fontSize: 14, fontWeight: '700', color: '#F5F6F8' },
 });

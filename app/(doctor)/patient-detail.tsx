@@ -433,18 +433,20 @@ export default function PatientDetailScreen() {
   async function handleSavePatientNote() {
     if (!patientId) return;
     setPatientNoteSaving(true);
-    await supabase.from('profiles').update({ patient_note: patientNote.trim() || null }).eq('id', patientId);
+    const { error } = await supabase.from('profiles').update({ patient_note: patientNote.trim() || null }).eq('id', patientId);
+    if (error) Alert.alert('Chyba', error.message);
     setPatientNoteSaving(false);
   }
 
   async function handleSaveInsurance() {
     if (!patientId) return;
     setInsuranceSaving(true);
-    await supabase.from('profiles').update({
+    const { error: insErr } = await supabase.from('profiles').update({
       insurance_company: insuranceCompany.trim() || null,
       insurance_number:  insuranceNumber.trim()  || null
     }).eq('id', patientId);
     setInsuranceSaving(false);
+    if (insErr) Alert.alert('Chyba', insErr.message);
     setShowInsEdit(false);
   }
 

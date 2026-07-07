@@ -100,10 +100,11 @@ export default function WaitingRoomScreen() {
     if (!pickerApptId) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSaving(true);
-    await supabase.from('appointments').update({
+    const { error } = await supabase.from('appointments').update({
       clinic_status: 'in_chair',
       started_at:    new Date().toISOString(),
       room_id:       roomId }).eq('id', pickerApptId);
+    if (error) { Alert.alert('Chyba', error.message); setSaving(false); return; }
     setSaving(false);
     setPickerOpen(false);
     setPickerApptId(null);
@@ -113,10 +114,11 @@ export default function WaitingRoomScreen() {
   async function finishTreatment(apptId: string) {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setSaving(true);
-    await supabase.from('appointments').update({
+    const { error: e2 } = await supabase.from('appointments').update({
       clinic_status: 'treatment_done',
       ended_at:      new Date().toISOString(),
       status:        'completed' }).eq('id', apptId);
+    if (e2) { Alert.alert('Chyba', e2.message); setSaving(false); return; }
     setSaving(false);
     load();
   }
