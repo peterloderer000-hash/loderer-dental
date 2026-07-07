@@ -67,7 +67,7 @@ export default function SetupRole() {
             <TextInput
               style={styles.input}
               placeholder="Napr. Jana Nováková"
-              placeholderTextColor="#999"
+              placeholderTextColor="#B8ACA0"
               value={fullName}
               onChangeText={setFullName}
               autoCapitalize="words"
@@ -85,7 +85,7 @@ export default function SetupRole() {
               disabled={!fullName.trim()}
             >
               <Text style={styles.btnConfirmText}>Pokračovať</Text>
-              <Ionicons name="arrow-forward" size={16} color="#fff" />
+              <Ionicons name="arrow-forward" size={16} color="#F5F6F8" />
             </TouchableOpacity>
           )}
 

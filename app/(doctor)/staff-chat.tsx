@@ -202,8 +202,8 @@ function ChatView({
           activeOpacity={0.8}
         >
           {sending
-            ? <ActivityIndicator size="small" color="#fff" />
-            : <Ionicons name="send" size={18} color="#fff" />}
+            ? <ActivityIndicator size="small" color="#F5F6F8" />
+            : <Ionicons name="send" size={18} color="#F5F6F8" />}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -443,7 +443,7 @@ export default function StaffChatScreen() {
       {/* ── Header ── */}
       <View style={s.header}>
         <View style={s.headerIcon}>
-          <Ionicons name="chatbubbles" size={20} color="#fff" />
+          <Ionicons name="chatbubbles" size={20} color="#F5F6F8" />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={s.headerSub}>TÍM</Text>
@@ -603,9 +603,9 @@ const s = StyleSheet.create({
   threadTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
   threadName: { fontSize: 14, fontWeight: '600', color: COLORS.esp },
   threadNameBold: { fontWeight: '700' },
-  threadTime: { fontSize: 11, color: '#aaa' },
+  threadTime: { fontSize: 11, color: '#B8ACA0' },
   threadBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  threadPreview: { flex: 1, fontSize: 13, color: '#888', lineHeight: 18 },
+  threadPreview: { flex: 1, fontSize: 13, color: '#B8ACA0', lineHeight: 18 },
   threadPreviewBold: { color: COLORS.esp, fontWeight: '600' },
   unreadBadge: {
     backgroundColor: COLORS.wal, borderRadius: 2,
@@ -622,7 +622,7 @@ const cv = StyleSheet.create({
   msgList: { paddingHorizontal: 12, paddingTop: 12, paddingBottom: 8 },
   dateSep:   { flexDirection: 'row', alignItems: 'center', gap: 8, marginVertical: 16 },
   dateLine:  { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
-  dateLabel: { fontSize: 11, color: '#888', fontWeight: '600', letterSpacing: 0.5 },
+  dateLabel: { fontSize: 11, color: '#B8ACA0', fontWeight: '600', letterSpacing: 0.5 },
   empty:     { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80, gap: 8 },
   emptyIcon:  { fontSize: 40 },
   emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.esp },
@@ -664,7 +664,7 @@ const bubble = StyleSheet.create({
   text:   { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   textMe: { color: '#F5F6F8' },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginTop: 4 },
-  time:   { fontSize: 10, color: '#aaa' },
+  time:   { fontSize: 10, color: '#B8ACA0' },
   timeMe: { color: 'rgba(255,255,255,0.55)' }
 });
 

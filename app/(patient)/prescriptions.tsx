@@ -102,15 +102,15 @@ const PrescriptionCard = React.memo(function PrescriptionCard({ item, dark, colo
       {/* Header */}
       <View style={st.cardRow}>
         <View style={[st.cardIcon, { backgroundColor: active ? (dark ? '#1A3D2E' : '#EDF7F3') : (dark ? '#1A1C1D' : COLORS.bg2) }]}>
-          <Ionicons name="medical-outline" size={18} color={active ? '#2E7D5E' : '#7F8C8D'} />
+          <Ionicons name="medical-outline" size={18} color={active ? '#2E7D5E' : '#B8ACA0'} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={[st.cardTitle, { color: colors.textPrimary }]} numberOfLines={1}>{item.medication}</Text>
           <Text style={[st.cardDate, { color: colors.textSecondary }]}>{fmtDate(item.created_at)}</Text>
         </View>
         <View style={[st.statusBadge, { backgroundColor: active ? (dark ? '#1A3D2E' : '#EDF7F3') : (dark ? '#1A1C1D' : COLORS.bg3) }]}>
-          <View style={[st.statusDot, { backgroundColor: active ? '#2E7D5E' : '#7F8C8D' }]} />
-          <Text style={[st.statusText, { color: active ? '#2E7D5E' : '#7F8C8D' }]}>
+          <View style={[st.statusDot, { backgroundColor: active ? '#2E7D5E' : '#B8ACA0' }]} />
+          <Text style={[st.statusText, { color: active ? '#2E7D5E' : '#B8ACA0' }]}>
             {active ? 'Aktívny' : isExpired ? 'Expirovaný' : 'Neaktívny'}
           </Text>
         </View>

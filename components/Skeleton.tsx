@@ -31,8 +31,8 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = 4 }: Skel
   });
 
   return (
-    <View style={[s.base, { width, height, borderRadius, backgroundColor: dark ? '#1E2535' : '#D5CEC6' } as any]}>
-      <Animated.View style={[s.shimmer, { width: SHIMMER_W, opacity, transform: [{ translateX }], backgroundColor: dark ? '#4A5568' : '#BBACA0' }]} />
+    <View style={[s.base, { width, height, borderRadius, backgroundColor: dark ? '#1E2535' : '#D0D4DC' } as any]}>
+      <Animated.View style={[s.shimmer, { width: SHIMMER_W, opacity, transform: [{ translateX }], backgroundColor: dark ? '#4A5568' : '#B8ACA0' }]} />
     </View>
   );
 }
@@ -54,6 +54,6 @@ export function SkeletonList({ count = 4 }: { count?: number }) {
 }
 
 const s = StyleSheet.create({
-  base:    { backgroundColor: '#D5CEC6', overflow: 'hidden' },
-  shimmer: { position: 'absolute', top: 0, bottom: 0, backgroundColor: '#BBACA0' },
+  base:    { backgroundColor: '#D0D4DC', overflow: 'hidden' },
+  shimmer: { position: 'absolute', top: 0, bottom: 0, backgroundColor: '#B8ACA0' },
 });

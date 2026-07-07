@@ -52,7 +52,7 @@ function NotifCard({ item, onPress, colors, dark }: { item: AppNotification; onP
       style={[
         nc.card,
         { backgroundColor: colors.cardBg, borderColor: colors.bg3 },
-        !item.read && { backgroundColor: dark ? colors.bg3 : '#FDFAF6', borderColor: COLORS.goldLight },
+        !item.read && { backgroundColor: dark ? colors.bg3 : '#F5F6F8', borderColor: COLORS.goldLight },
         SHADOWS.sm,
       ]}
       onPress={onPress}
@@ -209,7 +209,7 @@ const s = StyleSheet.create({
   hero:        { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, gap: 4 },
   heroRow:     { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
   heroLabel:   { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle:   { ...TYPO.h1, color: '#F8F6F2' },
+  heroTitle:   { ...TYPO.h1, color: '#F5F6F8' },
   backBtn:     { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
   markAllBtn:  { backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: RADII.sm, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   markAllText: { fontFamily: 'DMSans_500Medium', fontSize: 11, color: COLORS.sand },

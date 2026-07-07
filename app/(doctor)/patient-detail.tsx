@@ -100,7 +100,7 @@ function calcOverall(h: number, a: number, hy: number, p: number) {
 // ─── Vernostné úrovne ─────────────────────────────────────────────────────────
 const LEVELS = [
   { name: 'Bronz',    min: 0,    max: 299,   color: '#CD7F32', icon: '🥉' },
-  { name: 'Striebro', min: 300,  max: 599,   color: '#A0A0A0', icon: '🥈' },
+  { name: 'Striebro', min: 300,  max: 599,   color: '#B8ACA0', icon: '🥈' },
   { name: 'Zlato',    min: 600,  max: 999,   color: '#D4A017', icon: '🥇' },
   { name: 'Platina',  min: 1000, max: 99999, color: '#6C3483', icon: '💎' },
 ];
@@ -110,26 +110,26 @@ const STATUS_CFG: Partial<Record<ToothStatus, { label: string; color: string; bg
   healthy:           { label: 'Zdravý',        color: '#2E7D5E', bg: '#EDF7F3', emoji: '✅' },
   cavity:            { label: 'Kaz',           color: '#922B21', bg: '#FDEDEC', emoji: '🔴' },
   early_cavity:      { label: 'Začín. kaz',    color: '#CB4335', bg: '#FDEDEC', emoji: '🟠' },
-  watch:             { label: 'Pozorovanie',   color: '#E67E22', bg: '#FDF3E7', emoji: '👁' },
-  filled:            { label: 'Plomba',        color: '#9A7D0A', bg: '#FDF3E7', emoji: '🟡' },
+  watch:             { label: 'Pozorovanie',   color: '#B87333', bg: '#FDF3E7', emoji: '👁' },
+  filled:            { label: 'Plomba',        color: '#B87333', bg: '#FDF3E7', emoji: '🟡' },
   large_filling:     { label: 'Veľká plomba',  color: '#B87333', bg: '#FDF3E7', emoji: '🟤' },
-  replace_filling:   { label: 'Vymeniť pl.',   color: '#B7770D', bg: '#FDF3E7', emoji: '🔄' },
+  replace_filling:   { label: 'Vymeniť pl.',   color: '#B87333', bg: '#FDF3E7', emoji: '🔄' },
   crown:             { label: 'Korunka',       color: '#1A5276', bg: '#EBF5FB', emoji: '👑' },
   bridge:            { label: 'Mostík',        color: '#154360', bg: '#EBF5FB', emoji: '🌉' },
   implant:           { label: 'Implantát',     color: '#117A65', bg: '#E8F8F5', emoji: '🔩' },
   veneer:            { label: 'Fazetka',       color: '#2E86C1', bg: '#EBF5FB', emoji: '💎' },
   sealant:           { label: 'Tesnenie',      color: '#148F77', bg: '#E8F8F5', emoji: '🛡️' },
   root_canal:        { label: 'Devitalizácia', color: '#7D3C98', bg: '#F5EEF8', emoji: '🟣' },
-  extracted:         { label: 'Extrahovaný',   color: '#566573', bg: '#F2F3F4', emoji: '⚫' },
-  missing:           { label: 'Chýba',         color: '#AAB7B8', bg: '#FDFEFE', emoji: '⬜' },
+  extracted:         { label: 'Extrahovaný',   color: '#3A4256', bg: '#F5F6F8', emoji: '⚫' },
+  missing:           { label: 'Chýba',         color: '#D0D4DC', bg: '#F5F6F8', emoji: '⬜' },
   fracture:          { label: 'Fraktúra',      color: '#C0392B', bg: '#FDEDEC', emoji: '💥' },
-  erosion:           { label: 'Erózia',        color: '#A04000', bg: '#FDF3E7', emoji: '🌊' },
-  abrasion:          { label: 'Abrázia',       color: '#784212', bg: '#FDF3E7', emoji: '⚠️' },
-  hypoplasia:        { label: 'Hypoplázia',    color: '#5D6D7E', bg: '#F2F3F4', emoji: '🔵' },
+  erosion:           { label: 'Erózia',        color: '#B87333', bg: '#FDF3E7', emoji: '🌊' },
+  abrasion:          { label: 'Abrázia',       color: '#B87333', bg: '#FDF3E7', emoji: '⚠️' },
+  hypoplasia:        { label: 'Hypoplázia',    color: '#3A4256', bg: '#F5F6F8', emoji: '🔵' },
   hypomineralization:{ label: 'Hypominer.',    color: '#2E4057', bg: '#EBF5FB', emoji: '🔷' },
   periodontal:       { label: 'Parodont.',     color: '#C0392B', bg: '#FDEDEC', emoji: '🦷' },
   mobility:          { label: 'Pohyblivosť',   color: '#922B21', bg: '#FDEDEC', emoji: '↔️' },
-  improve_hygiene:   { label: 'Zlepš hygienu', color: '#2980B9', bg: '#EBF5FB', emoji: '🪥' },
+  improve_hygiene:   { label: 'Zlepš hygienu', color: '#1A5276', bg: '#EBF5FB', emoji: '🪥' },
   treatment_needed:  { label: 'Na prerobenie', color: '#B8ACA0', bg: '#FDF3E7', emoji: '🔧' }
 };
 
@@ -137,7 +137,7 @@ const APPT_STATUS: Record<string, { label: string; color: string; bg: string }> 
   scheduled:  { label: 'Naplánovaný', color: '#1A5276', bg: '#EBF5FB' },
   completed:  { label: 'Dokončený',   color: '#2E7D5E', bg: '#EDF7F3' },
   cancelled:  { label: 'Zrušený',     color: '#922B21', bg: '#FDEDEC' },
-  pending:    { label: 'Čaká',        color: '#E67E22', bg: '#FDF3E7' }
+  pending:    { label: 'Čaká',        color: '#B87333', bg: '#FDF3E7' }
 };
 
 const PAYMENT_CFG: Record<string, { label: string; color: string; bg: string; icon: string; next: string }> = {
@@ -152,7 +152,7 @@ const RATING_LABELS = ['', 'Veľmi zlý', 'Zlý', 'Dobrý', 'Veľmi dobrý', 'V�
 function DimBar({ label, score, color, emoji }: { label: string; score: number; color: string; emoji: string }) {
   const { colors } = useAppTheme();
   const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
-  const gc    = score >= 85 ? '#2E7D5E' : score >= 70 ? '#9A7D0A' : score >= 50 ? '#E67E22' : '#922B21';
+  const gc    = score >= 85 ? '#2E7D5E' : score >= 70 ? '#B87333' : score >= 50 ? '#B87333' : '#922B21';
   return (
     <View style={styles.dimRow}>
       <Text style={styles.dimEmoji}>{emoji}</Text>
@@ -175,7 +175,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
   const c = 2 * Math.PI * r;
   const pct = Math.min(100, Math.max(0, score));
   const offset = c - (pct / 100) * c;
-  const col = score >= 80 ? '#2E7D5E' : score >= 65 ? '#52C896' : score >= 45 ? '#E67E22' : '#922B21';
+  const col = score >= 80 ? '#2E7D5E' : score >= 65 ? '#52C896' : score >= 45 ? '#B87333' : '#922B21';
   const grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
 
   return (
@@ -183,7 +183,7 @@ function ScoreGauge({ score, size = 110 }: { score: number; size?: number }) {
       {/* SVG-like ring using border trick */}
       <View style={{
         width: size, height: size, borderRadius: size / 2,
-        borderWidth: 6, borderColor: dark ? colors.bg3 : '#E8E0D5',
+        borderWidth: 6, borderColor: dark ? colors.bg3 : '#D0D4DC',
         alignItems: 'center', justifyContent: 'center', position: 'absolute'
       }} />
       {/* Colored arc overlay — using 4 quadrant trick */}
@@ -502,7 +502,7 @@ export default function PatientDetailScreen() {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'appointments' | 'plan' | 'payments' | 'messages' | 'records'>('overview');
 
-  const scoreCol = overall >= 80 ? '#2E7D5E' : overall >= 65 ? '#52C896' : overall >= 45 ? '#E67E22' : '#922B21';
+  const scoreCol = overall >= 80 ? '#2E7D5E' : overall >= 65 ? '#52C896' : overall >= 45 ? '#B87333' : '#922B21';
   const initials = (patientName ?? '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   // Quick stats
@@ -689,7 +689,7 @@ export default function PatientDetailScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={[styles.actionBtn, styles.actionBtnPrimary, { flex: 1 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/add-appointment', params: { patientId, patientName } })}>
-              <Ionicons name="calendar-outline" size={22} color="#fff" />
+              <Ionicons name="calendar-outline" size={22} color="#F5F6F8" />
               <Text style={[styles.actionBtnText, { color: '#F5F6F8' }]}>Rezervovať</Text>
             </TouchableOpacity>
           </View>
@@ -713,7 +713,7 @@ export default function PatientDetailScreen() {
             <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => router.push({ pathname: '/(doctor)/patient-attachments', params: { patientId, patientName } })}>
               <Ionicons name="attach-outline" size={18} color="#784212" />
-              <Text style={[styles.actionBtnSmText, { color: '#784212' }]}>Prílohy</Text>
+              <Text style={[styles.actionBtnSmText, { color: '#B87333' }]}>Prílohy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.actionBtnSm, { flex: 1, backgroundColor: colors.cardBg, borderColor: colors.bg3 }]} activeOpacity={0.8}
               onPress={() => { setNotifTitle(''); setNotifBody(''); setShowNotifModal(true); }}>
@@ -824,7 +824,7 @@ export default function PatientDetailScreen() {
             </View>
           </View>
           <View style={styles.dimLegend}>
-            {[['A', '≥85', '#2E7D5E'], ['B', '≥70', '#9A7D0A'], ['C', '≥50', '#E67E22'], ['D', '<50', '#922B21']].map(([g, r, c]) => (
+            {[['A', '≥85', '#2E7D5E'], ['B', '≥70', '#B87333'], ['C', '≥50', '#B87333'], ['D', '<50', '#922B21']].map(([g, r, c]) => (
               <View key={g} style={styles.dimLegendItem}>
                 <View style={[styles.dimLegendDot, { backgroundColor: c as string }]} />
                 <Text style={styles.dimLegendText}>{g}: {r}</Text>
@@ -868,7 +868,7 @@ export default function PatientDetailScreen() {
           <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={[styles.cardTitle, { color: colors.textSecondary }]}>DIAGNÓZY ({diagnoses.length})</Text>
             {diagnoses.slice(0, 8).map(dg => {
-              const sevColor = dg.severity === 'high' ? '#922B21' : dg.severity === 'medium' ? '#E67E22' : '#2E7D5E';
+              const sevColor = dg.severity === 'high' ? '#922B21' : dg.severity === 'medium' ? '#B87333' : '#2E7D5E';
               const sevBg = dg.severity === 'high' ? (dark ? '#4A1010' : '#FDEDEC') : dg.severity === 'medium' ? (dark ? '#2D1F10' : '#FDF3E7') : (dark ? '#1A3D2E' : '#EDF7F3');
               const sevLabel = dg.severity === 'high' ? 'Vysoká' : dg.severity === 'medium' ? 'Stredná' : 'Nízka';
               return (
@@ -908,14 +908,14 @@ export default function PatientDetailScreen() {
                 value={insuranceCompany}
                 onChangeText={setInsuranceCompany}
                 placeholder="Názov poisťovne (napr. VšZP, Dôvera...)"
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               />
               <TextInput
                 style={[styles.notesInput, { marginTop: 8, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={insuranceNumber}
                 onChangeText={setInsuranceNumber}
                 placeholder="Číslo poistenca"
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 keyboardType="numeric"
               />
               <TouchableOpacity
@@ -925,8 +925,8 @@ export default function PatientDetailScreen() {
                 activeOpacity={0.85}
               >
                 {insuranceSaving
-                  ? <ActivityIndicator color="#fff" size="small" />
-                  : <><Ionicons name="save-outline" size={14} color="#fff" /><Text style={styles.notesSaveBtnText}>Uložiť</Text></>}
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
+                  : <><Ionicons name="save-outline" size={14} color="#F5F6F8" /><Text style={styles.notesSaveBtnText}>Uložiť</Text></>}
               </TouchableOpacity>
             </>
           ) : (insuranceCompany || insuranceNumber) ? (
@@ -950,7 +950,7 @@ export default function PatientDetailScreen() {
             value={patientNote}
             onChangeText={setPatientNote}
             placeholder="Trvalé info o pacientovi (viditeľné pre všetkých doktorov)..."
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -962,8 +962,8 @@ export default function PatientDetailScreen() {
             activeOpacity={0.85}
           >
             {patientNoteSaving
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <><Ionicons name="save-outline" size={14} color="#fff" /><Text style={styles.notesSaveBtnText}>Uložiť poznámku</Text></>}
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
+              : <><Ionicons name="save-outline" size={14} color="#F5F6F8" /><Text style={styles.notesSaveBtnText}>Uložiť poznámku</Text></>}
           </TouchableOpacity>
         </View>
 
@@ -981,7 +981,7 @@ export default function PatientDetailScreen() {
             value={doctorNotes}
             onChangeText={setDoctorNotes}
             placeholder="Alergie, poznámky k liečbe, interné upozornenia..."
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
@@ -993,9 +993,9 @@ export default function PatientDetailScreen() {
             activeOpacity={0.85}
           >
             {notesSaving
-              ? <ActivityIndicator color="#fff" size="small" />
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
               : <>
-                  <Ionicons name="save-outline" size={14} color="#fff" />
+                  <Ionicons name="save-outline" size={14} color="#F5F6F8" />
                   <Text style={styles.notesSaveBtnText}>Uložiť poznámky</Text>
                 </>}
           </TouchableOpacity>
@@ -1082,7 +1082,7 @@ export default function PatientDetailScreen() {
                           value={editNoteText}
                           onChangeText={setEditNoteText}
                           placeholder="Klinické poznámky, diagnóza..."
-                          placeholderTextColor={dark ? '#666' : '#999'}
+                          placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                           multiline
                           numberOfLines={3}
                           textAlignVertical="top"
@@ -1095,7 +1095,7 @@ export default function PatientDetailScreen() {
                           activeOpacity={0.85}
                         >
                           {savingApptNote
-                            ? <ActivityIndicator color="#fff" size="small" />
+                            ? <ActivityIndicator color="#F5F6F8" size="small" />
                             : <Text style={styles.apptNoteSaveBtnText}>💾 Uložiť poznámku</Text>}
                         </TouchableOpacity>
                       </View>
@@ -1111,13 +1111,13 @@ export default function PatientDetailScreen() {
                               key={n}
                               name={n <= (a.patient_rating ?? 0) ? 'star' : 'star-outline'}
                               size={12}
-                              color={a.patient_rating ? '#B8ACA0' : '#ccc'}
+                              color={a.patient_rating ? '#B8ACA0' : '#D0D4DC'}
                             />
                           ))}
                           {a.patient_rating ? (
                             <Text style={styles.ratingLabel}>{RATING_LABELS[a.patient_rating]}</Text>
                           ) : (
-                            <Text style={[styles.ratingLabel, { color: '#888' }]}>Bez hodnotenia</Text>
+                            <Text style={[styles.ratingLabel, { color: '#B8ACA0' }]}>Bez hodnotenia</Text>
                           )}
                         </View>
                         {a.patient_rating && a.patient_review ? (
@@ -1160,7 +1160,7 @@ export default function PatientDetailScreen() {
                               onPress={() => handleChangeApptStatus(a.id, 'completed')}
                               activeOpacity={0.8}
                             >
-                              <Ionicons name="checkmark" size={12} color="#fff" />
+                              <Ionicons name="checkmark" size={12} color="#F5F6F8" />
                               <Text style={styles.apptActDoneText}>Dokončiť</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -1295,7 +1295,7 @@ export default function PatientDetailScreen() {
               { label: 'Zubná karta', icon: 'clipboard-outline', color: COLORS.wal, path: '/(doctor)/dental-chart' },
               { label: 'Anamnéza',    icon: 'document-text-outline', color: '#1A5276', path: '/(doctor)/patient-passport' },
               { label: 'Recepty',     icon: 'medical-outline', color: '#2E7D5E', path: '/(doctor)/prescriptions' },
-              { label: 'Prílohy',     icon: 'attach-outline', color: '#784212', path: '/(doctor)/patient-attachments' },
+              { label: 'Prílohy',     icon: 'attach-outline', color: '#B87333', path: '/(doctor)/patient-attachments' },
               { label: 'AI RTG',      icon: 'scan-outline', color: '#3A4256', path: '/(doctor)/xray-analysis' },
               { label: 'AI Riziká',   icon: 'analytics-outline', color: '#8E44AD', path: '/(doctor)/risk-prediction' },
               { label: 'Before/After',icon: 'images-outline', color: '#2E7D5E', path: '/(doctor)/before-after' },
@@ -1327,7 +1327,7 @@ export default function PatientDetailScreen() {
       <TouchableOpacity style={styles.fab}
         onPress={() => router.push({ pathname: '/(doctor)/add-appointment', params: { patientId, patientName } })}
         activeOpacity={0.85}>
-        <Ionicons name="calendar-outline" size={22} color="#fff" />
+        <Ionicons name="calendar-outline" size={22} color="#F5F6F8" />
       </TouchableOpacity>
 
       {/* ── Modal: Poslať notifikáciu pacientovi ── */}
@@ -1346,7 +1346,7 @@ export default function PatientDetailScreen() {
                 value={notifTitle}
                 onChangeText={setNotifTitle}
                 placeholder="napr. Výsledky sú pripravené"
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 autoFocus
                 maxLength={80}
               />
@@ -1357,7 +1357,7 @@ export default function PatientDetailScreen() {
                 value={notifBody}
                 onChangeText={setNotifBody}
                 placeholder="Detailnejšia správa pre pacienta..."
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 multiline
                 numberOfLines={3}
                 textAlignVertical="top"
@@ -1389,9 +1389,9 @@ export default function PatientDetailScreen() {
                   disabled={!notifTitle.trim() || notifSending}
                   activeOpacity={0.85}>
                   {notifSending
-                    ? <ActivityIndicator color="#fff" size="small" />
+                    ? <ActivityIndicator color="#F5F6F8" size="small" />
                     : <>
-                        <Ionicons name="send" size={15} color="#fff" />
+                        <Ionicons name="send" size={15} color="#F5F6F8" />
                         <Text style={styles.notifBtnSendText}>Odoslať</Text>
                       </>}
                 </TouchableOpacity>
@@ -1497,17 +1497,17 @@ const styles = StyleSheet.create({
   apptDateBox:   { width: 38, alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 2, paddingVertical: 5 },
   apptDay:       { fontSize: 18, fontWeight: '800', color: COLORS.esp, lineHeight: 22 },
   apptMonth:     { fontSize: 9, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase' },
-  apptYear:      { fontSize: 10, color: '#888' },
+  apptYear:      { fontSize: 10, color: '#B8ACA0' },
   apptTop:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 3 },
   apptTime:      { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   apptBadge:     { borderRadius: 2, paddingHorizontal: 7, paddingVertical: 2 },
   apptBadgeText: { fontSize: 9, fontWeight: '700' },
   apptService:   { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
-  familyTag:     { fontSize: 10, color: '#784212', fontWeight: '600', marginBottom: 2 },
-  apptNotes:     { fontSize: 11, color: '#888', fontStyle: 'italic', lineHeight: 15, marginBottom: 2 },
+  familyTag:     { fontSize: 10, color: '#B87333', fontWeight: '600', marginBottom: 2 },
+  apptNotes:     { fontSize: 11, color: '#B8ACA0', fontStyle: 'italic', lineHeight: 15, marginBottom: 2 },
   ratingRow:     { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3 },
   ratingLabel:   { fontSize: 11, color: '#B8ACA0', fontWeight: '600', marginLeft: 2 },
-  reviewText:    { fontSize: 11, color: '#888', fontStyle: 'italic', lineHeight: 15, marginTop: 2, paddingLeft: 2 },
+  reviewText:    { fontSize: 11, color: '#B8ACA0', fontStyle: 'italic', lineHeight: 15, marginTop: 2, paddingLeft: 2 },
   // Appointment note editing
   apptNoteEdit:      { marginTop: 6, marginBottom: 4 },
   apptNoteInput:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, padding: 8, fontSize: 12, color: COLORS.esp, minHeight: 64, backgroundColor: COLORS.bg2, lineHeight: 18, marginBottom: 6 },

@@ -49,8 +49,8 @@ export function EmptyWaitlist() {
 const s = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
   icon:       { fontSize: 64, marginBottom: 16 },
-  title:      { fontSize: 20, fontWeight: '700', color: '#111827', marginBottom: 8, textAlign: 'center' },
+  title:      { fontSize: 20, fontWeight: '700', color: '#121417', marginBottom: 8, textAlign: 'center' },
   subtitle:   { fontSize: 14, color: '#3A4256', textAlign: 'center', marginBottom: 24, lineHeight: 20 },
   button:     { backgroundColor: '#3A4256', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 },
-  buttonText: { color: '#111827', fontSize: 15, fontWeight: '700' },
+  buttonText: { color: '#F5F6F8', fontSize: 15, fontWeight: '700' },
 });

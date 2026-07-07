@@ -124,7 +124,7 @@ function ActionButtons({ status, onAction, isDoctor }: {
     ];
   } else if (status === 'treatment_done') {
     buttons = [
-      { label: 'PRIPRAV ÚČET', icon: 'receipt-outline', color: '#E67E22', bg: '#FEF3E2', action: 'checkout', big: true },
+      { label: 'PRIPRAV ÚČET', icon: 'receipt-outline', color: '#B87333', bg: '#FEF3E2', action: 'checkout', big: true },
     ];
   } else if (status === 'checkout') {
     buttons = [
@@ -172,7 +172,7 @@ const pc = StyleSheet.create({
   statusLabel: { fontSize: 12, fontWeight: '700' },
   patientName: { fontSize: 28, fontWeight: '900', color: COLORS.esp, marginBottom: 4 },
   serviceName: { fontSize: 15, color: COLORS.wal, marginBottom: 2 },
-  phone:       { fontSize: 12, color: '#999', marginBottom: 12 },
+  phone:       { fontSize: 12, color: '#B8ACA0', marginBottom: 12 },
 
   timerRow:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginVertical: 14 },
   timerCell:     { alignItems: 'center', backgroundColor: COLORS.bg2, borderRadius: 2, padding: 10, minWidth: 72, gap: 2, borderWidth: 1, borderColor: COLORS.bg3 },

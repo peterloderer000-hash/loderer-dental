@@ -41,7 +41,7 @@ const ITEM_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', icon: 'time-outline'             as const },
   scheduled: { label: 'Naplánované', color: '#3A4256', bg: '#FDF3E7', darkBg: '#2D2000', icon: 'calendar-outline'         as const },
   completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', icon: 'checkmark-circle-outline' as const },
-  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#1A1C1D', icon: 'remove-circle-outline'    as const },
+  skipped:   { label: 'Preskočené',  color: '#B8ACA0', bg: '#F5F6F8', darkBg: '#1A1C1D', icon: 'remove-circle-outline'    as const },
 };
 
 const PLAN_CFG = {
@@ -145,7 +145,7 @@ const PlanCard = React.memo(function PlanCard({ plan, colors, dark, onBook }: Pl
         <>
           {/* Poznámky doktora */}
           {plan.notes ? (
-            <View style={[st.notesBox, { backgroundColor: dark ? colors.bg2 : '#FDFBF8', borderTopColor: colors.bg3 }]}>
+            <View style={[st.notesBox, { backgroundColor: dark ? colors.bg2 : '#F5F6F8', borderTopColor: colors.bg3 }]}>
               <Ionicons name="chatbox-ellipses-outline" size={14} color={COLORS.gold} />
               <Text style={[st.notesText, { color: colors.textSecondary }]}>{plan.notes}</Text>
             </View>
@@ -175,8 +175,8 @@ const PlanCard = React.memo(function PlanCard({ plan, colors, dark, onBook }: Pl
                       <Text style={[
                         st.itemTitle,
                         { color: colors.textPrimary },
-                        item.status === 'completed' && { textDecorationLine: 'line-through', color: '#7F8C8D' },
-                        item.status === 'skipped' && { color: '#999' },
+                        item.status === 'completed' && { textDecorationLine: 'line-through', color: '#B8ACA0' },
+                        item.status === 'skipped' && { color: '#B8ACA0' },
                       ]}>
                         {item.title}
                       </Text>

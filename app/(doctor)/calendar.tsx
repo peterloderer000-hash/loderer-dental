@@ -509,7 +509,7 @@ export default function DoctorCalendar() {
                         </View>
                       )}
                     </View>
-                    <Ionicons name="chevron-forward" size={13} color="#ccc" />
+                    <Ionicons name="chevron-forward" size={13} color="#D0D4DC" />
                   </TouchableOpacity>
                 );
               })
@@ -576,7 +576,7 @@ export default function DoctorCalendar() {
                       )}
                     </View>
                     {a.family_member_name ? (
-                      <Text style={{ fontSize: 10, color: '#784212', fontWeight: '600', marginBottom: 1 }}>
+                      <Text style={{ fontSize: 10, color: '#B87333', fontWeight: '600', marginBottom: 1 }}>
                         👶 Pre: {a.family_member_name}
                       </Text>
                     ) : null}
@@ -598,7 +598,7 @@ export default function DoctorCalendar() {
                       {a.status === 'scheduled' ? '●' : a.status === 'completed' ? '✓' : a.status === 'pending' ? '⏳' : '✕'}
                     </Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={13} color="#ccc" />
+                  <Ionicons name="chevron-forward" size={13} color="#D0D4DC" />
                 </TouchableOpacity>
               );
             })}
@@ -708,7 +708,7 @@ export default function DoctorCalendar() {
       {/* ── FAB: Pridať termín ── */}
       <TouchableOpacity style={styles.fab}
         onPress={() => router.push('/(doctor)/add-appointment')} activeOpacity={0.85}>
-        <Ionicons name="add" size={26} color="#fff" />
+        <Ionicons name="add" size={26} color="#F5F6F8" />
       </TouchableOpacity>
 
       {/* ── Modal: Blokovať čas ── */}
@@ -729,7 +729,7 @@ export default function DoctorCalendar() {
                 value={blockStart}
                 onChangeText={setBlockStart}
                 placeholder="08:00"
-                placeholderTextColor="#999"
+                placeholderTextColor="#B8ACA0"
                 keyboardType="numbers-and-punctuation"
                 maxLength={5}
               />
@@ -742,7 +742,7 @@ export default function DoctorCalendar() {
                 value={blockEnd}
                 onChangeText={setBlockEnd}
                 placeholder="09:00"
-                placeholderTextColor="#999"
+                placeholderTextColor="#B8ACA0"
                 keyboardType="numbers-and-punctuation"
                 maxLength={5}
               />
@@ -773,7 +773,7 @@ export default function DoctorCalendar() {
             value={blockReason}
             onChangeText={setBlockReason}
             placeholder="Napr. Obed, Školenie, Dovolenka..."
-            placeholderTextColor="#999"
+            placeholderTextColor="#B8ACA0"
           />
 
           <TouchableOpacity
@@ -783,9 +783,9 @@ export default function DoctorCalendar() {
             activeOpacity={0.85}
           >
             {savingBlock
-              ? <ActivityIndicator color="#fff" size="small" />
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
               : <>
-                  <Ionicons name="lock-closed" size={16} color="#fff" />
+                  <Ionicons name="lock-closed" size={16} color="#F5F6F8" />
                   <Text style={styles.blockSaveBtnText}>Blokovať čas</Text>
                 </>
             }
@@ -852,7 +852,7 @@ const styles = StyleSheet.create({
   apptPatient:   { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 3 },
   apptSvcRow:    { flexDirection: 'row', alignItems: 'center', gap: 4 },
   apptSvcName:   { fontSize: 12, color: COLORS.wal, fontWeight: '500', flex: 1 },
-  apptDur:       { fontSize: 12, color: '#888' },
+  apptDur:       { fontSize: 12, color: '#B8ACA0' },
   apptNotes:     { fontSize: 12, color: COLORS.wal, marginTop: 3 },
   statusBadge:   { borderRadius: 2, borderWidth: 1, paddingHorizontal: 6, paddingVertical: 3, alignItems: 'center', justifyContent: 'center' },
   statusText:    { fontSize: 11, fontWeight: '700' },
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
   // Timeline
   timeline:    { position: 'relative', marginHorizontal: SPACING.xl, paddingLeft: 52 },
   tlHour:      { position: 'absolute', left: 0, right: 0, flexDirection: 'row', alignItems: 'center' },
-  tlHourLabel: { width: 46, fontSize: 11, fontWeight: '600', color: '#888', textAlign: 'right', paddingRight: 6 },
+  tlHourLabel: { width: 46, fontSize: 11, fontWeight: '600', color: '#B8ACA0', textAlign: 'right', paddingRight: 6 },
   tlHourLine:  { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
   tlBlock:     { position: 'absolute', left: 58, right: 0, borderRadius: 2, borderLeftWidth: 3, padding: 6, overflow: 'hidden' },
   tlTime:      { fontSize: 9, fontWeight: '700' },

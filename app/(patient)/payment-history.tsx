@@ -281,19 +281,19 @@ const s = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero:    { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, overflow: 'hidden' },
-  circle:  { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
+  circle:  { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8' },
   heroRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 8 },
   backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)' },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle: { ...TYPO.h1, color: '#F8F6F2' },
+  heroTitle: { ...TYPO.h1, color: '#F5F6F8' },
 
-  totalAmount: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 42, color: '#F8F6F2', lineHeight: 48, marginBottom: 2 },
+  totalAmount: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 42, color: '#F5F6F8', lineHeight: 48, marginBottom: 2 },
   totalSub:    { fontFamily: 'DMSans_400Regular', fontSize: 12, color: 'rgba(196,168,130,0.65)', marginBottom: 16 },
 
   chipsRow: { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: RADII.md, paddingVertical: 12, paddingHorizontal: 8, marginBottom: 16 },
   chip:     { flex: 1, alignItems: 'center' },
   chipSep:  { width: 1, backgroundColor: 'rgba(255,255,255,0.12)' },
-  chipValue:{ fontFamily: 'DMSans_500Medium', fontSize: 14, color: '#F8F6F2', marginBottom: 2 },
+  chipValue:{ fontFamily: 'DMSans_500Medium', fontSize: 14, color: '#F5F6F8', marginBottom: 2 },
   chipLabel:{ fontFamily: 'DMSans_400Regular', fontSize: 10, color: 'rgba(196,168,130,0.6)', textAlign: 'center' },
 
   filtersRow:      { flexDirection: 'row', gap: 8, paddingBottom: 14 },

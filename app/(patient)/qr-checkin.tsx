@@ -161,7 +161,7 @@ export default function QRCheckinScreen() {
       <View style={s.overlay}>
         {/* Back button */}
         <TouchableOpacity style={s.closeBtn} onPress={() => router.back()} activeOpacity={0.8}>
-          <Ionicons name="close" size={24} color="#fff" />
+          <Ionicons name="close" size={24} color="#F5F6F8" />
         </TouchableOpacity>
 
         {/* Scan frame */}

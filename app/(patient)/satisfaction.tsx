@@ -143,7 +143,7 @@ export default function Satisfaction() {
         </Animated.View>
 
         <TouchableOpacity style={[st.submitBtn, saving && { opacity: 0.6 }]} onPress={submit} disabled={saving}>
-          <Ionicons name="send" size={18} color="#fff" />
+          <Ionicons name="send" size={18} color="#F5F6F8" />
           <Text style={st.submitText}>{saving ? 'Odosielam...' : 'Odoslať hodnotenie'}</Text>
         </TouchableOpacity>
 

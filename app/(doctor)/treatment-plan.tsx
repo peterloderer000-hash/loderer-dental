@@ -45,7 +45,7 @@ const ITEM_STATUS_CFG = {
   planned:   { label: 'Plánované',   color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233', border: '#AED6F1', icon: 'time-outline'             as const },
   scheduled: { label: 'Naplánované', color: '#B87333', bg: '#FDF3E7', darkBg: '#2D1F10', border: '#D0D4DC', icon: 'calendar-outline'         as const },
   completed: { label: 'Hotové',      color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E', border: '#A3D4BE', icon: 'checkmark-circle-outline' as const },
-  skipped:   { label: 'Preskočené',  color: '#7F8C8D', bg: '#F4F6F7', darkBg: '#232323', border: '#D5D8DC', icon: 'remove-circle-outline'    as const }
+  skipped:   { label: 'Preskočené',  color: '#B8ACA0', bg: '#F5F6F8', darkBg: '#252830', border: '#D0D4DC', icon: 'remove-circle-outline'    as const }
 };
 const ITEM_STATUS_CYCLE: PlanItem['status'][] = ['planned', 'scheduled', 'completed', 'skipped'];
 
@@ -139,11 +139,11 @@ function PlanModal({ visible, initial, onClose, onSave }: {
 
             <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV PLÁNU</Text>
             <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={title} onChangeText={setTitle}
-              placeholder="Liečebný plán" placeholderTextColor={dark ? '#666' : '#bbb'} autoFocus />
+              placeholder="Liečebný plán" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoFocus />
 
             <Text style={[mStyles.label, { color: colors.textSecondary }]}>POZNÁMKY (voliteľné)</Text>
             <TextInput style={[mStyles.input, { minHeight: 80, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={notes} onChangeText={setNotes}
-              placeholder="Celkový postup, odporúčania..." placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholder="Celkový postup, odporúčania..." placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               multiline numberOfLines={3} textAlignVertical="top" />
 
             <View style={mStyles.btnRow}>
@@ -153,7 +153,7 @@ function PlanModal({ visible, initial, onClose, onSave }: {
               <TouchableOpacity style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
                 onPress={handleSave} disabled={saving} activeOpacity={0.85}>
                 {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <Text style={mStyles.btnSaveText}>Uložiť</Text>}
               </TouchableOpacity>
             </View>
@@ -263,23 +263,23 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
 
               <Text style={[mStyles.label, { color: colors.textSecondary }]}>NÁZOV VÝKONU *</Text>
               <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={itemTitle} onChangeText={setItemTitle}
-                placeholder="Extrakcia, plomba, korunka..." placeholderTextColor={dark ? '#666' : '#bbb'} autoFocus />
+                placeholder="Extrakcia, plomba, korunka..." placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoFocus />
 
               <Text style={[mStyles.label, { color: colors.textSecondary }]}>POPIS (voliteľné)</Text>
               <TextInput style={[mStyles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={desc} onChangeText={setDesc}
-                placeholder="Detaily výkonu..." placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholder="Detaily výkonu..." placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 multiline numberOfLines={2} textAlignVertical="top" />
 
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={{ flex: 1 }}>
                   <Text style={[mStyles.label, { color: colors.textSecondary }]}>CENA (€)</Text>
                   <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={cost} onChangeText={setCost}
-                    placeholder="0,00" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="decimal-pad" />
+                    placeholder="0,00" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} keyboardType="decimal-pad" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[mStyles.label, { color: colors.textSecondary }]}>ZUB (1–48)</Text>
                   <TextInput style={[mStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={tooth} onChangeText={setTooth}
-                    placeholder="napr. 16" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="numeric" maxLength={2} />
+                    placeholder="napr. 16" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} keyboardType="numeric" maxLength={2} />
                 </View>
               </View>
 
@@ -308,7 +308,7 @@ function ItemModal({ visible, planId, initial, services, prefilledTooth, onClose
               <TouchableOpacity style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
                 onPress={handleSave} disabled={saving} activeOpacity={0.85}>
                 {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <Text style={mStyles.btnSaveText}>Uložiť</Text>}
               </TouchableOpacity>
             </View>
@@ -558,7 +558,7 @@ export default function TreatmentPlanScreen() {
         rightAction={
           <TouchableOpacity style={styles.addBtn}
             onPress={() => { setEditingPlan(null); setShowPlanModal(true); }} activeOpacity={0.85}>
-            <Ionicons name="add" size={20} color="#fff" />
+            <Ionicons name="add" size={20} color="#F5F6F8" />
             <Text style={styles.addBtnText}>Nový plán</Text>
           </TouchableOpacity>
         }
@@ -573,7 +573,7 @@ export default function TreatmentPlanScreen() {
           <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Vytvorte liečebný plán pre tohto pacienta.</Text>
           <TouchableOpacity style={styles.emptyBtn}
             onPress={() => { setEditingPlan(null); setShowPlanModal(true); }} activeOpacity={0.85}>
-            <Ionicons name="add" size={16} color="#fff" />
+            <Ionicons name="add" size={16} color="#F5F6F8" />
             <Text style={styles.emptyBtnText}>Vytvoriť plán</Text>
           </TouchableOpacity>
         </View>
@@ -686,7 +686,7 @@ export default function TreatmentPlanScreen() {
                               <TouchableOpacity
                                 style={[styles.itemStatusBtn, { backgroundColor: iCfg.color }]}
                                 onPress={() => handleCycleItemStatus(item)} activeOpacity={0.8}>
-                                <Ionicons name={iCfg.icon} size={14} color="#fff" />
+                                <Ionicons name={iCfg.icon} size={14} color="#F5F6F8" />
                               </TouchableOpacity>
                               <View style={{ flex: 1 }}>
                                 <Text style={[styles.itemTitle, { color: colors.textPrimary }]}>{item.title}</Text>
@@ -732,7 +732,7 @@ export default function TreatmentPlanScreen() {
 
                     {/* Add item button */}
                     <TouchableOpacity
-                      style={[styles.addItemBtn, { backgroundColor: dark ? colors.cardBg : '#FDFBF8' }]}
+                      style={[styles.addItemBtn, { backgroundColor: dark ? colors.cardBg : '#F5F6F8' }]}
                       onPress={() => {
                         setEditingItem(null);
                         setActiveItemPlanId(plan.id);
@@ -823,10 +823,10 @@ const styles = StyleSheet.create({
   planActBtnActive: { backgroundColor: 'rgba(201,168,76,0.10)', borderColor: 'rgba(201,168,76,0.4)' },
   planActText:      { fontSize: 11, fontWeight: '600', color: COLORS.wal },
 
-  notesBox:   { flexDirection: 'row', gap: 8, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: '#FDFBF8', borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
+  notesBox:   { flexDirection: 'row', gap: 8, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: '#F5F6F8', borderBottomWidth: 1, borderBottomColor: COLORS.bg3 },
   notesText:  { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 },
 
-  noItems:    { textAlign: 'center', fontSize: 12, color: '#aaa', fontStyle: 'italic', paddingVertical: 16, paddingHorizontal: 20 },
+  noItems:    { textAlign: 'center', fontSize: 12, color: '#B8ACA0', fontStyle: 'italic', paddingVertical: 16, paddingHorizontal: 20 },
 
   itemCard:        { marginHorizontal: 12, marginVertical: 5, borderRadius: 2, padding: 12, borderLeftWidth: 3.5 },
   itemTop:         { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
@@ -839,7 +839,7 @@ const styles = StyleSheet.create({
   itemStatusBadge: { alignSelf: 'flex-start', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3, marginTop: 8, borderWidth: 1 },
   itemStatusText:  { fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
 
-  addItemBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, margin: 12, marginTop: 8, paddingVertical: 10, borderRadius: 2, borderWidth: 1.5, borderStyle: 'dashed', borderColor: COLORS.wal, backgroundColor: '#FDFBF8' },
+  addItemBtn:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, margin: 12, marginTop: 8, paddingVertical: 10, borderRadius: 2, borderWidth: 1.5, borderStyle: 'dashed', borderColor: COLORS.wal, backgroundColor: '#F5F6F8' },
   addItemText:  { fontSize: 13, fontWeight: '600', color: COLORS.wal },
 
   summaryRow:   { flexDirection: 'row', margin: 12, marginTop: 4, gap: 8 },

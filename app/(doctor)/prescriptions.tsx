@@ -104,7 +104,7 @@ function AddDiagModal({
               value={icdCode}
               onChangeText={setIcdCode}
               placeholder="K02.1 – napr. zubný kaz"
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               autoCapitalize="characters"
               maxLength={10}
             />
@@ -115,7 +115,7 @@ function AddDiagModal({
               value={description}
               onChangeText={setDescription}
               placeholder="Popis diagnózy..."
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
@@ -153,7 +153,7 @@ function AddDiagModal({
                 activeOpacity={0.85}
               >
                 {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <Text style={ms.btnSaveText}>Uložiť</Text>}
               </TouchableOpacity>
             </View>
@@ -223,7 +223,7 @@ function AddRxModal({
                 value={medication}
                 onChangeText={setMedication}
                 placeholder="Napr. Ibuprofen 400mg"
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 autoFocus
               />
 
@@ -233,7 +233,7 @@ function AddRxModal({
                 value={dosage}
                 onChangeText={setDosage}
                 placeholder="Napr. 1×3 denne po jedle"
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               />
 
               <Text style={[ms.label, { color: colors.textSecondary }]}>ĎALŠIE POKYNY (voliteľné)</Text>
@@ -242,7 +242,7 @@ function AddRxModal({
                 value={instructions}
                 onChangeText={setInstructions}
                 placeholder="Ďalšie pokyny..."
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 multiline
                 numberOfLines={3}
                 textAlignVertical="top"
@@ -254,7 +254,7 @@ function AddRxModal({
                 value={validUntil}
                 onChangeText={setValidUntil}
                 placeholder="YYYY-MM-DD – napr. 2026-05-31"
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 keyboardType="numbers-and-punctuation"
                 maxLength={10}
               />
@@ -271,7 +271,7 @@ function AddRxModal({
                 activeOpacity={0.85}
               >
                 {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <Text style={ms.btnSaveText}>Uložiť</Text>}
               </TouchableOpacity>
             </View>
@@ -499,7 +499,7 @@ export default function PrescriptionsScreen() {
   function renderRxCard(item: Prescription) {
     const activeCfg = item.is_active
       ? { label: 'Aktívny',    color: '#2E7D5E', bg: '#EDF7F3', border: '#A3D4BE' }
-      : { label: 'Neaktívny',  color: '#7F8C8D', bg: '#F4F6F7', border: '#D5D8DC' };
+      : { label: 'Neaktívny',  color: '#B8ACA0', bg: '#F5F6F8', border: '#D0D4DC' };
     return (
       <View key={item.id} style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
         <View style={styles.cardTopRow}>
@@ -556,7 +556,7 @@ export default function PrescriptionsScreen() {
           onPress={() => isDiag ? setShowAddDiag(true) : setShowAddRx(true)}
           activeOpacity={0.85}
         >
-          <Ionicons name="add" size={18} color="#fff" />
+          <Ionicons name="add" size={18} color="#F5F6F8" />
           <Text style={styles.emptyBtnText}>Pridať</Text>
         </TouchableOpacity>
       </View>
@@ -576,7 +576,7 @@ export default function PrescriptionsScreen() {
             style={styles.addBtn}
             onPress={() => activeTab === 'diagnoses' ? setShowAddDiag(true) : setShowAddRx(true)}
           >
-            <Ionicons name="add" size={22} color="#fff" />
+            <Ionicons name="add" size={22} color="#F5F6F8" />
           </TouchableOpacity>
         }
       />

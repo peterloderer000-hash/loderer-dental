@@ -85,8 +85,8 @@ function calcScore(teeth: Record<number, ToothStatus>): number {
 
 function scoreInfo(score: number) {
   if (score >= 85) return { label: 'Výborný',  emoji: '🌟', color: '#52C896', ring: '#52C896', bg: '#1A3D2E', gradient: ['#1A4D2E', '#1A3D2E'] as string[] };
-  if (score >= 70) return { label: 'Dobrý',    emoji: '👍', color: '#2E86C1', ring: '#3498DB', bg: '#0D2233', gradient: ['#143A5C', '#0D2233'] as string[] };
-  if (score >= 50) return { label: 'Pozor',    emoji: '⚠️', color: '#E67E22', ring: '#B8ACA0', bg: '#2D1500', gradient: ['#3D2000', '#2D1500'] as string[] };
+  if (score >= 70) return { label: 'Dobrý',    emoji: '👍', color: '#2E86C1', ring: '#1A5276', bg: '#0D2233', gradient: ['#143A5C', '#0D2233'] as string[] };
+  if (score >= 50) return { label: 'Pozor',    emoji: '⚠️', color: '#B87333', ring: '#B8ACA0', bg: '#2D1500', gradient: ['#3D2000', '#2D1500'] as string[] };
   return                  { label: 'Kritický', emoji: '🚨', color: '#C0392B', ring: '#FF5252', bg: '#4A1010', gradient: ['#5A1515', '#4A1010'] as string[] };
 }
 
@@ -96,15 +96,15 @@ type StatusVisual = { color: string; bg: string; icon: string; label: string };
 const STATUS_VISUALS: Record<string, StatusVisual> = {
   healthy:        { color: '#52C896', bg: '#1A3D2E', icon: 'checkmark',         label: 'Zdravý' },
   watch:          { color: '#B8ACA0', bg: '#2D1500', icon: 'eye-outline',       label: 'Sledovanie' },
-  caries_initial: { color: '#E67E22', bg: '#3D2000', icon: 'alert-outline',     label: 'Počiatočný kaz' },
+  caries_initial: { color: '#B87333', bg: '#3D2000', icon: 'alert-outline',     label: 'Počiatočný kaz' },
   caries_deep:    { color: '#C0392B', bg: '#4A1010', icon: 'alert-circle',      label: 'Hlboký kaz' },
   filling:        { color: '#3A4256', bg: '#2D2000', icon: 'shield-checkmark',  label: 'Plomba' },
   inlay:          { color: '#3A4256', bg: '#2D2000', icon: 'diamond-outline',   label: 'Inlay' },
   crown:          { color: '#2D3544', bg: '#2D1A00', icon: 'ribbon-outline',    label: 'Korunka' },
   endo:           { color: '#C0392B', bg: '#4A1010', icon: 'medical-outline',   label: 'Endodoncia' },
   implant:        { color: '#9B59B6', bg: '#2A1236', icon: 'hardware-chip',     label: 'Implantát' },
-  extracted:      { color: '#95A5A6', bg: '#1A1F20', icon: 'close-circle',      label: 'Extrahovaný' },
-  missing:        { color: '#7F8C8D', bg: '#1A1C1D', icon: 'remove-outline',   label: 'Chýbajúci' },
+  extracted:      { color: '#B8ACA0', bg: '#1A1F20', icon: 'close-circle',      label: 'Extrahovaný' },
+  missing:        { color: '#B8ACA0', bg: '#1A1C1D', icon: 'remove-outline',   label: 'Chýbajúci' },
 };
 
 function getToothVisual(status: ToothStatus): StatusVisual {
@@ -126,7 +126,7 @@ function ConsentModal({ visible, onAccept }: { visible: boolean; onAccept: () =>
           <Text style={[cs.title, { color: colors.textPrimary }]}>Dental Score™</Text>
           <Text style={[cs.subtitle, { color: '#3A4256' }]}>Digitálny dvojník tvojho chrupu</Text>
 
-          <View style={[cs.infoBox, { backgroundColor: dark ? '#1A1209' : '#F5F0EA', borderColor: colors.bg3 }]}>
+          <View style={[cs.infoBox, { backgroundColor: dark ? '#1A1209' : '#EAECEE', borderColor: colors.bg3 }]}>
             <Text style={[cs.infoText, { color: colors.textPrimary }]}>
               Dental Score™ ti ukáže aktuálny stav chrupu, 5-ročnú predikciu vývoja a cenové porovnanie prevencie vs. neskoršieho ošetrenia.
             </Text>
@@ -460,13 +460,13 @@ const DentalArch = React.memo(({
 const LEGEND_ITEMS: { status: string; label: string; color: string }[] = [
   { status: 'healthy',        label: 'Zdravý',       color: '#52C896' },
   { status: 'watch',          label: 'Sledovanie',   color: '#B8ACA0' },
-  { status: 'caries_initial', label: 'Kaz',          color: '#E67E22' },
+  { status: 'caries_initial', label: 'Kaz',          color: '#B87333' },
   { status: 'caries_deep',    label: 'Hlboký kaz',   color: '#C0392B' },
   { status: 'filling',        label: 'Plomba',       color: '#3A4256' },
   { status: 'crown',          label: 'Korunka',      color: '#2D3544' },
   { status: 'endo',           label: 'Endo',         color: '#C0392B' },
   { status: 'implant',        label: 'Implantát',    color: '#9B59B6' },
-  { status: 'extracted',      label: 'Extrahovaný',  color: '#95A5A6' },
+  { status: 'extracted',      label: 'Extrahovaný',  color: '#B8ACA0' },
 ];
 
 const StatusLegend = React.memo(() => (
@@ -502,7 +502,7 @@ const InsightsSection = React.memo(({
   if ((counts.caries_initial ?? 0) > 0) {
     insights.push({
       icon: 'alert-circle',
-      color: '#E67E22',
+      color: '#B87333',
       text: `Máš ${counts.caries_initial} ${(counts.caries_initial ?? 0) === 1 ? 'počiatočný kaz' : 'počiatočné kazy'}. Včasné ošetrenie zabráni hlbšiemu poškodeniu.`,
       priority: 2,
     });
@@ -577,7 +577,7 @@ const YearCard = React.memo(({
   year: number; newIssues: number; cumCost: number;
   active: boolean; onPress: () => void; isToday: boolean;
 }) => {
-  const color = newIssues === 0 ? '#52C896' : newIssues <= 2 ? '#E67E22' : '#C0392B';
+  const color = newIssues === 0 ? '#52C896' : newIssues <= 2 ? '#B87333' : '#C0392B';
 
   return (
     <TouchableOpacity
@@ -614,7 +614,7 @@ const PastVisitCard = React.memo(({
       onPress={onPress}
       activeOpacity={0.8}
     >
-      <Ionicons name="time-outline" size={11} color={active ? '#3A4256' : '#555'} />
+      <Ionicons name="time-outline" size={11} color={active ? '#3A4256' : '#B8ACA0'} />
       <Text style={[s.pastCardLabel, active && { color: '#3A4256' }]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -678,7 +678,7 @@ function ToothModal({
               <Text style={[s.sheetTitle, { color: colors.textPrimary }]}>Zub {fdi}</Text>
               <Text style={{ fontSize: 12, color: colors.textSecondary, fontFamily: 'DMSans_400Regular' }}>{name}</Text>
             </View>
-            <TouchableOpacity onPress={onClose} style={[s.closeBtn, { backgroundColor: dark ? '#1A1209' : '#F5F0EA' }]}>
+            <TouchableOpacity onPress={onClose} style={[s.closeBtn, { backgroundColor: dark ? '#1A1209' : '#EAECEE' }]}>
               <Ionicons name="close" size={18} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
@@ -699,7 +699,7 @@ function ToothModal({
               {histLoading ? (
                 <ActivityIndicator size="small" color={colors.textSecondary} style={{ marginVertical: 12 }} />
               ) : history.length === 0 ? (
-                <View style={[s.histEmpty, { backgroundColor: dark ? '#1A1209' : '#F5F0EA', borderColor: colors.bg3 }]}>
+                <View style={[s.histEmpty, { backgroundColor: dark ? '#1A1209' : '#EAECEE', borderColor: colors.bg3 }]}>
                   <Ionicons name="document-outline" size={15} color={colors.textSecondary} />
                   <Text style={{ fontSize: 12, color: colors.textSecondary, flex: 1, fontFamily: 'DMSans_400Regular' }}>
                     Zatiaľ žiadny záznam pre tento zub
@@ -1220,13 +1220,13 @@ const s = StyleSheet.create({
   // Loading
   loadingCircle: { width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(201,168,76,0.06)', alignItems: 'center', justifyContent: 'center', marginBottom: 16, borderWidth: 1, borderColor: 'rgba(201,168,76,0.1)' },
   loadingTitle: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 0.5 },
-  loadingSub: { fontSize: 11, fontFamily: 'DMSans_400Regular', color: '#555', marginTop: 4 },
+  loadingSub: { fontSize: 11, fontFamily: 'DMSans_400Regular', color: '#B8ACA0', marginTop: 4 },
 
   // Header
   header:         { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 6, paddingBottom: 10, gap: 12 },
   backBtn:        { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(201,168,76,0.12)' },
   headerSub:      { fontSize: 9, letterSpacing: 2.5, color: '#3A4256', fontFamily: 'DMSans_500Medium' },
-  headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2', marginTop: 1 },
+  headerTitle:    { fontSize: 22, fontFamily: 'PlayfairDisplay_700Bold', color: '#F5F6F8', marginTop: 1 },
   headerScorePill:{ borderRadius: 2, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1 },
   headerScoreVal: { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold' },
 
@@ -1237,7 +1237,7 @@ const s = StyleSheet.create({
   ringGlow:      { position: 'absolute', width: 80, height: 80, borderRadius: 40, opacity: 0.08, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 60, elevation: 0 },
   ringCenter:    { position: 'absolute', alignItems: 'center' },
   ringScore:     { fontSize: 42, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 48 },
-  ringMax:       { fontSize: 12, color: '#555', fontFamily: 'DMSans_500Medium', marginTop: -4 },
+  ringMax:       { fontSize: 12, color: '#B8ACA0', fontFamily: 'DMSans_500Medium', marginTop: -4 },
   ringBadge:     { borderRadius: 2, paddingHorizontal: 12, paddingVertical: 5, marginTop: 4, borderWidth: 1 },
   ringBadgeTxt:  { fontSize: 11, fontFamily: 'DMSans_500Medium', letterSpacing: 1 },
 
@@ -1245,7 +1245,7 @@ const s = StyleSheet.create({
   statsRow:  { flexDirection: 'row', gap: 6, paddingHorizontal: 16, marginTop: 12, marginBottom: 16 },
   statPill:  { flex: 1, flexDirection: 'column', alignItems: 'center', gap: 3, backgroundColor: '#110E09', borderRadius: 2, paddingVertical: 10, borderWidth: 1, borderColor: '#1E1610' },
   statNum:   { fontSize: 18, fontFamily: 'PlayfairDisplay_700Bold' },
-  statLbl:   { fontSize: 7, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, textTransform: 'uppercase', color: '#666' },
+  statLbl:   { fontSize: 7, fontFamily: 'DMSans_500Medium', letterSpacing: 0.5, textTransform: 'uppercase', color: '#B8ACA0' },
 
   // Insights
   insightsWrap:   { marginHorizontal: 16, marginBottom: 16, backgroundColor: '#110E09', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 14 },
@@ -1253,7 +1253,7 @@ const s = StyleSheet.create({
   insightsTitle:  { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#3A4256', letterSpacing: 0.5 },
   insightRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
   insightIcon:    { width: 28, height: 28, borderRadius: 2, alignItems: 'center', justifyContent: 'center' },
-  insightText:    { flex: 1, fontSize: 12, fontFamily: 'DMSans_400Regular', color: '#BBACA0', lineHeight: 18 },
+  insightText:    { flex: 1, fontSize: 12, fontFamily: 'DMSans_400Regular', color: '#B8ACA0', lineHeight: 18 },
 
   // Dental Arch
   archContainer: { marginHorizontal: 16, marginBottom: 8, backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 16, paddingBottom: 12 },
@@ -1270,14 +1270,14 @@ const s = StyleSheet.create({
   toothIndicator: { width: TOOTH_SIZE, height: TOOTH_SIZE, borderRadius: TOOTH_SIZE / 2, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5 },
   toothHealthyDot: { width: 6, height: 6, borderRadius: 3 },
   toothFdi:       { fontSize: 7, fontFamily: 'DMSans_500Medium', marginTop: 1 },
-  tapHint:        { fontSize: 10, color: '#444', textAlign: 'center', marginTop: 8, fontFamily: 'DMSans_400Regular' },
+  tapHint:        { fontSize: 10, color: '#3A4256', textAlign: 'center', marginTop: 8, fontFamily: 'DMSans_400Regular' },
 
   // Legend
   legendWrap:  { marginBottom: 16 },
   legendScroll:{ paddingHorizontal: 16, gap: 12 },
   legendItem:  { flexDirection: 'row', alignItems: 'center', gap: 4 },
   legendDot:   { width: 8, height: 8, borderRadius: 4 },
-  legendText:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#666' },
+  legendText:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#B8ACA0' },
 
   // Sections
   section:          { marginBottom: 20 },
@@ -1287,14 +1287,14 @@ const s = StyleSheet.create({
   // Year cards
   yearCard:      { width: 72, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', padding: 10, alignItems: 'center', gap: 3 },
   yearTodayDot:  { width: 5, height: 5, borderRadius: 2.5, position: 'absolute', top: 5, right: 5 },
-  yearCardLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: '#666' },
+  yearCardLabel: { fontSize: 9, fontFamily: 'DMSans_500Medium', letterSpacing: 1, color: '#B8ACA0' },
   yearCardIssues:{ fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', lineHeight: 24 },
-  yearCardSub:   { fontSize: 8, fontFamily: 'DMSans_400Regular', color: '#555' },
+  yearCardSub:   { fontSize: 8, fontFamily: 'DMSans_400Regular', color: '#B8ACA0' },
 
   // Past visit cards
   pastCard:       { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', paddingHorizontal: 10, paddingVertical: 10, minWidth: 58 },
   pastCardActive: { borderColor: '#3A4256', backgroundColor: '#2D1800' },
-  pastCardLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
+  pastCardLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#B8ACA0' },
   timelineSep:    { flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 2 },
   timelineLine:   { width: 10, height: 1, backgroundColor: '#2A1F14' },
   timelineDotGold:{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#3A4256' },
@@ -1304,13 +1304,13 @@ const s = StyleSheet.create({
   counterTitle:       { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#8B7355', letterSpacing: 0.3, padding: 14, paddingBottom: 10 },
   counterRow:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1E1610' },
   counterEmoji:       { fontSize: 18, width: 26, textAlign: 'center' },
-  counterLabel:       { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
-  counterTeeth:       { fontSize: 10, color: '#555', marginTop: 1, fontFamily: 'DMSans_400Regular' },
+  counterLabel:       { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
+  counterTeeth:       { fontSize: 10, color: '#B8ACA0', marginTop: 1, fontFamily: 'DMSans_400Regular' },
   counterCost:        { fontSize: 12, color: '#C0392B', fontFamily: 'DMSans_500Medium' },
   counterDivider:     { height: 1, backgroundColor: '#1E1610', marginHorizontal: 14, marginVertical: 4 },
   counterSummary:     { paddingHorizontal: 14, paddingBottom: 14, gap: 6 },
   counterSummaryRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#888', fontFamily: 'DMSans_500Medium' },
+  counterSummaryLabel:{ flex: 1, fontSize: 12, color: '#B8ACA0', fontFamily: 'DMSans_500Medium' },
   counterSummaryVal:  { fontSize: 14, fontFamily: 'PlayfairDisplay_700Bold' },
   counterSavingsRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: 2, backgroundColor: '#1A3D2E', padding: 12, marginTop: 4 },
   savingsLabel:       { flex: 1, fontSize: 12, color: '#58D68D', fontFamily: 'DMSans_500Medium' },
@@ -1322,12 +1322,12 @@ const s = StyleSheet.create({
   compareCard:    { marginHorizontal: 16, flexDirection: 'row', alignItems: 'center', backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610', padding: 16, gap: 8 },
   compareItem:    { flex: 1, alignItems: 'center', gap: 6 },
   compareIconWrap:{ width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
-  compareLabel:   { fontSize: 11, color: '#888', fontFamily: 'DMSans_500Medium' },
+  compareLabel:   { fontSize: 11, color: '#B8ACA0', fontFamily: 'DMSans_500Medium' },
   compareVal:     { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold' },
-  compareSub:     { fontSize: 9, color: '#555', fontFamily: 'DMSans_400Regular', textAlign: 'center' },
+  compareSub:     { fontSize: 9, color: '#B8ACA0', fontFamily: 'DMSans_400Regular', textAlign: 'center' },
   compareVsWrap:  { alignItems: 'center', gap: 4, width: 30 },
   compareVsLine:  { width: 1, height: 14, backgroundColor: '#1E1610' },
-  compareVsTxt:   { fontSize: 10, color: '#555', fontFamily: 'DMSans_500Medium' },
+  compareVsTxt:   { fontSize: 10, color: '#B8ACA0', fontFamily: 'DMSans_500Medium' },
   savingsBanner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginTop: 8, backgroundColor: '#1A3D2E', borderRadius: 2, padding: 12, borderWidth: 1, borderColor: '#52C89633' },
   savingsBannerTxt:{ flex: 1, fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#58D68D' },
 
@@ -1366,29 +1366,29 @@ const s = StyleSheet.create({
   modalCTA:    { borderRadius: 2, overflow: 'hidden', marginTop: 12 },
   modalCTAGrad:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 15 },
   modalCTATxt: { fontSize: 14, fontFamily: 'DMSans_500Medium', color: '#1A1209' },
-  modalDisclaimer: { fontSize: 10, textAlign: 'center', color: '#888', lineHeight: 14, marginTop: 8 },
+  modalDisclaimer: { fontSize: 10, textAlign: 'center', color: '#B8ACA0', lineHeight: 14, marginTop: 8 },
 
   // Risk panel
   riskCard:       { backgroundColor: '#0D0B08', borderRadius: 4, borderWidth: 1, borderColor: '#1E1610' },
   riskHeader:     { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14 },
   riskIconWrap:   { width: 32, height: 32, borderRadius: 4, backgroundColor: 'rgba(201,168,76,0.08)', alignItems: 'center', justifyContent: 'center' },
-  riskHeaderTxt:  { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
-  riskHeaderSub:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#666', marginTop: 1 },
+  riskHeaderTxt:  { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
+  riskHeaderSub:  { fontSize: 10, fontFamily: 'DMSans_400Regular', color: '#B8ACA0', marginTop: 1 },
   riskSummary:    { flexDirection: 'row', gap: 4 },
   riskChip:       { fontSize: 14 },
   riskBody:       { paddingHorizontal: 14, paddingBottom: 14 },
   riskRow:        { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#1E1610' },
   riskEmoji:      { fontSize: 20, width: 28, textAlign: 'center' },
-  riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
-  riskHint:       { fontSize: 10, color: '#555', marginTop: 1, fontFamily: 'DMSans_400Regular' },
-  riskDisclaimer: { fontSize: 9, color: '#444', marginTop: 12, lineHeight: 14, fontFamily: 'DMSans_400Regular' },
+  riskLabel:      { fontSize: 13, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
+  riskHint:       { fontSize: 10, color: '#B8ACA0', marginTop: 1, fontFamily: 'DMSans_400Regular' },
+  riskDisclaimer: { fontSize: 9, color: '#3A4256', marginTop: 12, lineHeight: 14, fontFamily: 'DMSans_400Regular' },
   riskDivider:    { height: 1, backgroundColor: '#1E1610', marginVertical: 8 },
-  hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#F8F6F2', marginBottom: 8 },
+  hygieneTitle:   { fontSize: 12, fontFamily: 'DMSans_500Medium', color: '#F5F6F8', marginBottom: 8 },
   toggle:         { width: 42, height: 24, borderRadius: 2, justifyContent: 'center', paddingHorizontal: 2 },
   thumb:          { width: 20, height: 20, borderRadius: 2, backgroundColor: '#F5F6F8', alignSelf: 'flex-start' },
   thumbOn:        { alignSelf: 'flex-end' },
   hygieneRow:     { flexDirection: 'row', gap: 8, marginBottom: 8 },
   hygieneBtn:     { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 2, borderWidth: 1.5, borderColor: '#1E1610', backgroundColor: '#110E09', gap: 4 },
   hygieneBtnActive: { borderColor: '#3A4256', backgroundColor: '#2D2000' },
-  hygieneLbl:     { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#555' },
+  hygieneLbl:     { fontSize: 10, fontFamily: 'DMSans_500Medium', color: '#B8ACA0' },
 });

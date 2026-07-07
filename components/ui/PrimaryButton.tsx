@@ -42,7 +42,7 @@ export default function PrimaryButton({
   }
 
   const height = small ? 44 : 52;
-  const textColor = variant === 'outline' || variant === 'ghost' ? COLORS.gold : '#fff';
+  const textColor = variant === 'outline' || variant === 'ghost' ? COLORS.gold : '#F5F6F8';
 
   const inner = loading
     ? <ActivityIndicator color={textColor} />

@@ -142,7 +142,7 @@ export default function DentalPassportQR() {
             {row.map((filled, c) => (
               <View key={c} style={{
                 width: cellSize, height: cellSize,
-                backgroundColor: filled ? '#111827' : '#F5F6F8',
+                backgroundColor: filled ? '#121417' : '#F5F6F8',
               }} />
             ))}
           </View>
@@ -215,7 +215,7 @@ export default function DentalPassportQR() {
 
             {/* Share button */}
             <TouchableOpacity style={st.shareBtn} onPress={sharePassport} activeOpacity={0.85}>
-              <Ionicons name="share-outline" size={20} color="#fff" />
+              <Ionicons name="share-outline" size={20} color="#F5F6F8" />
               <Text style={st.shareBtnText}>Zdieľať dentálny pas</Text>
             </TouchableOpacity>
 

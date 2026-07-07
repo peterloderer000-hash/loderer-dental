@@ -32,9 +32,9 @@ type Order = {
 };
 
 const STATUS_CFG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pending:   { label: 'Čaká',         color: '#E67E22', bg: '#FDF3E7', icon: '⏳' },
+  pending:   { label: 'Čaká',         color: '#B87333', bg: '#FDF3E7', icon: '⏳' },
   ready:     { label: 'Pripravené',   color: '#52C896', bg: '#EDF7F3', icon: '✅' },
-  picked_up: { label: 'Vyzdvihnuté', color: '#3498DB', bg: '#EBF5FB', icon: '📦' },
+  picked_up: { label: 'Vyzdvihnuté', color: '#1A5276', bg: '#EBF5FB', icon: '📦' },
   cancelled: { label: 'Zrušené',     color: '#C0392B', bg: '#FDEDEC', icon: '❌' },
 };
 

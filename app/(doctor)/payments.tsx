@@ -39,10 +39,10 @@ const METHOD_ICONS: Record<Method, string> = {
   online: 'globe-outline', insurance: 'shield-outline'
 };
 const STATUS_COLOR: Record<string, string> = {
-  pending: '#B7770D', paid: '#1A5C35', refunded: '#7B3F00', cancelled: '#888'
+  pending: '#B87333', paid: '#1A5C35', refunded: '#7B3F00', cancelled: '#B8ACA0'
 };
 const STATUS_BG: Record<string, string> = {
-  pending: '#FEF3CD', paid: '#D4EFDF', refunded: '#FAE5D3', cancelled: '#F2F2F2'
+  pending: '#FEF3CD', paid: '#EDF7F3', refunded: '#FDF3E7', cancelled: '#EAECEE'
 };
 const STATUS_LABEL: Record<string, string> = {
   pending: 'Čaká', paid: 'Zaplatené', refunded: 'Vrátené', cancelled: 'Zrušené'
@@ -160,7 +160,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
               <TextInput
                 style={[m.input, { color: colors.textPrimary }]}
                 placeholder="Hľadaj pacienta..."
-                placeholderTextColor={dark ? '#666' : '#aaa'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={selectedPatient ? (selectedPatient.full_name ?? '') : patientSearch}
                 onChangeText={onSearchChange}
                 onFocus={() => { if (selectedPatient) { setSelected(null); setPatientSearch(''); } }}
@@ -186,7 +186,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
               <TextInput
                 style={[m.input, { color: colors.textPrimary }]}
                 placeholder="0,00"
-                placeholderTextColor={dark ? '#666' : '#aaa'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={amountStr}
                 onChangeText={setAmountStr}
                 keyboardType="decimal-pad"
@@ -215,7 +215,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
               <TextInput
                 style={[m.input, { minHeight: 60, color: colors.textPrimary }]}
                 placeholder="Napr. záloha, doplatenie..."
-                placeholderTextColor={dark ? '#666' : '#aaa'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={notes}
                 onChangeText={setNotes}
                 multiline
@@ -231,7 +231,7 @@ function NewPaymentModal({ visible, onClose, onCreated }: {
               </TouchableOpacity>
               <TouchableOpacity style={m.btnPrimary} onPress={handleSaveAndPay}
                 disabled={saving} activeOpacity={0.8}>
-                <Ionicons name="card-outline" size={16} color="#fff" />
+                <Ionicons name="card-outline" size={16} color="#F5F6F8" />
                 <Text style={m.btnPrimaryText}>Označiť ako zaplatené</Text>
               </TouchableOpacity>
             </View>
@@ -362,7 +362,7 @@ export default function PaymentsScreen() {
         </View>
         <View style={[s.summaryCard, { borderLeftWidth: 1, borderLeftColor: colors.bg3 }]}>
           <Text style={[s.summaryLbl, { color: colors.textSecondary }]}>Čakajú</Text>
-          <Text style={[s.summaryAmt, { color: '#B7770D' }]}>{fmtEur(totalPending)}</Text>
+          <Text style={[s.summaryAmt, { color: '#B87333' }]}>{fmtEur(totalPending)}</Text>
         </View>
       </View>
 
@@ -394,7 +394,7 @@ export default function PaymentsScreen() {
               <Text style={s.emptyTitle}>Žiadne platby</Text>
               <Text style={s.emptySub}>Za vybrané obdobie neboli nájdené žiadne platby.</Text>
               <TouchableOpacity style={s.emptyBtn} onPress={() => setShowModal(true)} activeOpacity={0.8}>
-                <Ionicons name="add" size={16} color="#fff" />
+                <Ionicons name="add" size={16} color="#F5F6F8" />
                 <Text style={s.emptyBtnText}>Pridať platbu</Text>
               </TouchableOpacity>
             </View>
@@ -414,8 +414,8 @@ export default function PaymentsScreen() {
                 </View>
                 <View style={{ alignItems: 'flex-end', gap: 4 }}>
                   <Text style={[s.amount, { color: colors.textPrimary }]}>{fmtEur(p.amount_cents)}</Text>
-                  <View style={[s.statusBadge, { backgroundColor: STATUS_BG[p.status] ?? '#F2F2F2' }]}>
-                    <Text style={[s.statusText, { color: STATUS_COLOR[p.status] ?? '#888' }]}>
+                  <View style={[s.statusBadge, { backgroundColor: STATUS_BG[p.status] ?? '#EAECEE' }]}>
+                    <Text style={[s.statusText, { color: STATUS_COLOR[p.status] ?? '#B8ACA0' }]}>
                       {STATUS_LABEL[p.status] ?? p.status}
                     </Text>
                   </View>
@@ -424,7 +424,7 @@ export default function PaymentsScreen() {
               {p.notes ? <Text style={s.notes} numberOfLines={2}>{p.notes}</Text> : null}
               {p.status === 'pending' && (
                 <TouchableOpacity style={s.payBtn} onPress={() => confirmMarkPaid(p.id)} activeOpacity={0.8}>
-                  <Ionicons name="checkmark-circle-outline" size={15} color="#fff" />
+                  <Ionicons name="checkmark-circle-outline" size={15} color="#F5F6F8" />
                   <Text style={s.payBtnText}>Označiť ako zaplatené</Text>
                 </TouchableOpacity>
               )}
@@ -436,7 +436,7 @@ export default function PaymentsScreen() {
 
       {/* FAB */}
       <TouchableOpacity style={s.fab} onPress={() => setShowModal(true)} activeOpacity={0.85}>
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons name="add" size={28} color="#F5F6F8" />
       </TouchableOpacity>
 
       <NewPaymentModal
@@ -470,7 +470,7 @@ const s = StyleSheet.create({
 
   summaryRow:  { flexDirection: 'row', backgroundColor: COLORS.cream, marginHorizontal: 14, marginTop: 12, borderRadius: 2, overflow: 'hidden', elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4 },
   summaryCard: { flex: 1, paddingVertical: 12, paddingHorizontal: 10, alignItems: 'center' },
-  summaryLbl:  { fontSize: 10, color: '#888', marginBottom: 2 },
+  summaryLbl:  { fontSize: 10, color: '#B8ACA0', marginBottom: 2 },
   summaryAmt:  { fontSize: 16, fontWeight: '700' },
 
   filterRow:     { flexDirection: 'row', gap: 6, paddingHorizontal: 14, paddingTop: 10, paddingBottom: 4, flexWrap: 'wrap' },
@@ -496,12 +496,12 @@ const s = StyleSheet.create({
   cardTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   patientName: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 4 },
   metaRow:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  metaText:    { fontSize: 11, color: '#888' },
-  metaDot:     { fontSize: 11, color: '#ccc' },
+  metaText:    { fontSize: 11, color: '#B8ACA0' },
+  metaDot:     { fontSize: 11, color: '#D0D4DC' },
   amount:      { fontSize: 17, fontWeight: '700', color: COLORS.esp },
   statusBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
   statusText:  { fontSize: 10, fontWeight: '700', letterSpacing: 0.3 },
-  notes:       { fontSize: 12, color: '#888', marginTop: 8, fontStyle: 'italic' },
+  notes:       { fontSize: 12, color: '#B8ACA0', marginTop: 8, fontStyle: 'italic' },
   payBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: 6, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 9, marginTop: 10

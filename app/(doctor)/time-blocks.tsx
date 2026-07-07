@@ -217,7 +217,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
               value={title}
               onChangeText={setTitle}
               placeholder="Názov blokovania..."
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               maxLength={60}
             />
           </View>
@@ -257,7 +257,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
                 value={startStr}
                 onChangeText={(t) => { setStartStr(t); setStartErr(false); }}
                 placeholder="08:00"
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 keyboardType="numeric"
                 maxLength={5}
               />
@@ -270,7 +270,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
                 value={endStr}
                 onChangeText={(t) => { setEndStr(t); setEndErr(false); }}
                 placeholder="09:00"
-                placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 keyboardType="numeric"
                 maxLength={5}
               />
@@ -290,7 +290,7 @@ function AddBlockModal({ visible, onClose, onSave }: {
               value={note}
               onChangeText={setNote}
               placeholder="Dôvod, upozornenie..."
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               multiline
               numberOfLines={2}
               maxLength={200}
@@ -306,8 +306,8 @@ function AddBlockModal({ visible, onClose, onSave }: {
               style={[mStyles.btnSave, saving && { opacity: 0.5 }]}
               onPress={handleSave} disabled={saving} activeOpacity={0.85}>
               {saving
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <><Ionicons name="lock-closed-outline" size={15} color="#fff" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
+                : <><Ionicons name="lock-closed-outline" size={15} color="#F5F6F8" />
                     <Text style={mStyles.btnSaveText}>Zablokovať čas</Text></>}
             </TouchableOpacity>
           </View>

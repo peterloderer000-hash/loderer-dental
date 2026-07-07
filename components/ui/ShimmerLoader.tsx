@@ -54,10 +54,10 @@ export function ShimmerCard({ style }: { style?: ViewStyle }) {
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: '#E8DFD0',
+    backgroundColor: '#D0D4DC',
   },
   card: {
-    backgroundColor: '#FAF7F2',
+    backgroundColor: '#F5F6F8',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,

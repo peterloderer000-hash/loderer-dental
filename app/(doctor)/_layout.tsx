@@ -27,7 +27,7 @@ export default function DoctorLayout() {
         tabBarActiveTintColor: COLORS.gold,
         tabBarInactiveTintColor: dark ? COLORS.sand : '#B8A090',
         tabBarStyle: {
-          backgroundColor: dark ? colors.cardBg : '#F8F6F2',
+          backgroundColor: dark ? colors.cardBg : '#F5F6F8',
           borderTopWidth: 0.5,
           borderTopColor: dark ? colors.bg3 : 'rgba(201,168,76,0.25)',
           height: 64,

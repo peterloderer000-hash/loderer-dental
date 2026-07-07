@@ -25,14 +25,14 @@ type ToothData = {
 const STATUS_CONFIG: { [k: string]: { color: string; label: string; icon: string } } = {
   healthy: { color: '#52C896', label: 'Zdravý', icon: '✓' },
   cavity: { color: '#C0392B', label: 'Kazivosť', icon: '!' },
-  filled: { color: '#3498DB', label: 'Výplň', icon: '◆' },
-  filling: { color: '#3498DB', label: 'Výplň', icon: '◆' },
+  filled: { color: '#1A5276', label: 'Výplň', icon: '◆' },
+  filling: { color: '#1A5276', label: 'Výplň', icon: '◆' },
   crown: { color: '#9B59B6', label: 'Korunka', icon: '♛' },
-  missing: { color: '#95A5A6', label: 'Chýba', icon: '✕' },
+  missing: { color: '#B8ACA0', label: 'Chýba', icon: '✕' },
   implant: { color: '#B8ACA0', label: 'Implantát', icon: '⚙' },
-  root_canal: { color: '#E67E22', label: 'Endodoncia', icon: '↓' },
+  root_canal: { color: '#B87333', label: 'Endodoncia', icon: '↓' },
   bridge: { color: '#8E44AD', label: 'Most', icon: '═' },
-  unknown: { color: '#BDC3C7', label: 'Nezistený', icon: '?' },
+  unknown: { color: '#D0D4DC', label: 'Nezistený', icon: '?' },
 };
 
 // Standard dental numbering (FDI)

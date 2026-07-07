@@ -101,7 +101,7 @@ export default function AcceptInvitation() {
           <View style={styles.heroDeco1} />
           <View style={styles.heroDeco2} />
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-            <Ionicons name="arrow-back" size={20} color="#fff" />
+            <Ionicons name="arrow-back" size={20} color="#F5F6F8" />
           </TouchableOpacity>
           <View style={styles.logoWrap}>
             <Ionicons name="mail-open-outline" size={46} color={COLORS.sand} />
@@ -123,7 +123,7 @@ export default function AcceptInvitation() {
                 <TextInput
                   style={styles.input}
                   placeholder="napr. a3f7c2e1b9d4..."
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#B8ACA0"
                   value={token}
                   onChangeText={setToken}
                   autoCapitalize="none"
@@ -141,7 +141,7 @@ export default function AcceptInvitation() {
                   activeOpacity={0.85}
                   disabled={!token.trim()}
                 >
-                  <Ionicons name="shield-checkmark-outline" size={16} color="#fff" />
+                  <Ionicons name="shield-checkmark-outline" size={16} color="#F5F6F8" />
                   <Text style={styles.btnConfirmText}>Overiť kód</Text>
                 </TouchableOpacity>
               )}
@@ -167,7 +167,7 @@ export default function AcceptInvitation() {
                 <TextInput
                   style={styles.input}
                   placeholder="Napr. MDDr. Peter Loderer"
-                  placeholderTextColor="#999"
+                  placeholderTextColor="#B8ACA0"
                   value={fullName}
                   onChangeText={setFullName}
                   autoCapitalize="words"
@@ -185,7 +185,7 @@ export default function AcceptInvitation() {
                   disabled={!fullName.trim()}
                 >
                   <Text style={styles.btnConfirmText}>Aktivovať účet</Text>
-                  <Ionicons name="arrow-forward" size={16} color="#fff" />
+                  <Ionicons name="arrow-forward" size={16} color="#F5F6F8" />
                 </TouchableOpacity>
               )}
             </>
@@ -265,10 +265,10 @@ const styles = StyleSheet.create({
 
   roleBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#EAF7EF', borderRadius: 2,
-    padding: 14, borderWidth: 1, borderColor: '#A8D9B8',
+    backgroundColor: '#EDF7F3', borderRadius: 2,
+    padding: 14, borderWidth: 1, borderColor: '#A3D4BE',
   },
-  roleBannerIcon:  { width: 36, height: 36, borderRadius: 18, backgroundColor: '#D4EFDF', alignItems: 'center', justifyContent: 'center' },
-  roleBannerTitle: { fontSize: 14, fontWeight: '700', color: '#1A5C35' },
-  roleBannerSub:   { fontSize: 12, color: '#2E7D52', marginTop: 2 },
+  roleBannerIcon:  { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EDF7F3', alignItems: 'center', justifyContent: 'center' },
+  roleBannerTitle: { fontSize: 14, fontWeight: '700', color: '#2E7D5E' },
+  roleBannerSub:   { fontSize: 12, color: '#2E7D5E', marginTop: 2 },
 });

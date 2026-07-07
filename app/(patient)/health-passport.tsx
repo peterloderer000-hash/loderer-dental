@@ -55,7 +55,7 @@ function CheckItem({ label, selected, onToggle }: { label: string; selected: boo
   return (
     <TouchableOpacity style={[styles.option, { borderColor: colors.bg3, backgroundColor: colors.cardBg }, selected && styles.optionSel]} onPress={onToggle} activeOpacity={0.75}>
       <View style={[styles.checkbox, { borderColor: colors.bg3 }, selected && styles.checkboxSel]}>
-        {selected && <Ionicons name="checkmark" size={11} color="#fff" />}
+        {selected && <Ionicons name="checkmark" size={11} color="#F5F6F8" />}
       </View>
       <Text style={[styles.optionText, { color: colors.textPrimary }, selected && styles.optionTextSel]}>{label}</Text>
     </TouchableOpacity>
@@ -82,7 +82,7 @@ function OtherInput({ value, onChange }: { value: string; onChange: (v: string) 
       <TextInput
         style={[styles.otherInput, { color: colors.textPrimary }]}
         placeholder="Upresni..."
-        placeholderTextColor={dark ? '#666' : '#999'}
+        placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
         value={value}
         onChangeText={onChange}
         autoCapitalize="sentences"
@@ -425,7 +425,7 @@ export default function HealthPassportScreen() {
             <Text style={[styles.fieldLabel, { marginTop: 12 }]}>ČÍSLO POISTENCA</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="napr. 8501234567"
-              placeholderTextColor={dark ? '#666' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={insuranceNumber} onChangeText={setInsuranceNumber}
               keyboardType="numeric" returnKeyType="done" />
 
@@ -433,12 +433,12 @@ export default function HealthPassportScreen() {
             <Text style={styles.fieldLabel}>KONTAKTNÁ OSOBA V PRÍPADE NÚDZE</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="Meno a priezvisko"
-              placeholderTextColor={dark ? '#666' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={emergencyName} onChangeText={setEmergencyName}
               autoCapitalize="words" returnKeyType="next" />
             <TextInput style={[styles.input, { marginTop: 8, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="Telefón"
-              placeholderTextColor={dark ? '#666' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={emergencyPhone} onChangeText={setEmergencyPhone}
               keyboardType="phone-pad" returnKeyType="done" />
 
@@ -446,7 +446,7 @@ export default function HealthPassportScreen() {
             <Text style={styles.fieldLabel}>POSLEDNÁ NÁVŠTEVA U ZUBÁRA</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               placeholder="napr. 2024-06-15 alebo 'Pred rokom'"
-              placeholderTextColor={dark ? '#666' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={lastDentalVisit} onChangeText={setLastDentalVisit}
               autoCapitalize="sentences" returnKeyType="done" />
 
@@ -456,7 +456,7 @@ export default function HealthPassportScreen() {
               onPress={() => setIsPregnant((v) => !v)}
               activeOpacity={0.75}>
               <View style={[styles.checkbox, isPregnant && styles.checkboxSel]}>
-                {isPregnant && <Ionicons name="checkmark" size={11} color="#fff" />}
+                {isPregnant && <Ionicons name="checkmark" size={11} color="#F5F6F8" />}
               </View>
               <Text style={[styles.optionText, isPregnant && styles.optionTextSel]}>
                 🤰 Som tehotná / dojčím
@@ -492,11 +492,11 @@ export default function HealthPassportScreen() {
             <View style={styles.dividerLine} />
             <Text style={styles.fieldLabel}>ALERGIE</Text>
             <TextInput style={[styles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} placeholder="napr. Penicilín, latex..."
-              placeholderTextColor={dark ? '#666' : '#999'} value={allergies} onChangeText={setAllergies}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'} value={allergies} onChangeText={setAllergies}
               multiline numberOfLines={2} textAlignVertical="top" />
             <Text style={[styles.fieldLabel, { marginTop: 14 }]}>LIEKY (pravidelne užívané)</Text>
             <TextInput style={[styles.input, { minHeight: 60, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} placeholder="napr. Warfarín 5mg..."
-              placeholderTextColor={dark ? '#666' : '#999'} value={medications} onChangeText={setMedications}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'} value={medications} onChangeText={setMedications}
               multiline numberOfLines={2} textAlignVertical="top" />
           </View>
 
@@ -575,7 +575,7 @@ export default function HealthPassportScreen() {
           <View style={[styles.card, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
             <Text style={styles.cardSub}>Čo by sme mohli urobiť, aby bola vaša návšteva čo najpríjemnejšia?</Text>
             <TextInput style={[styles.input, { minHeight: 90, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
-              placeholder="Napíšte nám..." placeholderTextColor={dark ? '#666' : '#999'}
+              placeholder="Napíšte nám..." placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={openQ} onChangeText={setOpenQ}
               multiline numberOfLines={4} textAlignVertical="top" />
           </View>
@@ -620,7 +620,7 @@ const styles = StyleSheet.create({
   card: { backgroundColor: COLORS.cream, borderRadius: RADII.md, marginHorizontal: SPACING.xl, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, gap: 6 },
   cardSub: { fontSize: 12, color: COLORS.wal, marginBottom: 6, lineHeight: 18 },
   dividerLine: { height: 1, backgroundColor: COLORS.bg3, marginVertical: 10 },
-  option: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, paddingHorizontal: 10, borderRadius: RADII.xs, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  option: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9, paddingHorizontal: 10, borderRadius: RADII.xs, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#F5F6F8' },
   optionSel: { backgroundColor: COLORS.esp, borderColor: COLORS.gold },
   optionText: { flex: 1, fontSize: 13, color: COLORS.esp },
   optionTextSel: { color: COLORS.cream, fontWeight: '500' },
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
   fieldLabel: { fontSize: 9, letterSpacing: 1.8, color: COLORS.wal, fontWeight: '600', textTransform: 'uppercase', marginBottom: 6 },
   input: { backgroundColor: COLORS.bg2, borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: RADII.sm, padding: 10, fontSize: 13, color: COLORS.esp, minHeight: 42, lineHeight: 20 },
   chipRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginBottom: 4 },
-  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADII.pill, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  chip:        { paddingHorizontal: 12, paddingVertical: 7, borderRadius: RADII.pill, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#F5F6F8' },
   chipSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.gold },
   chipText:    { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   chipTextSel: { color: COLORS.cream },
@@ -659,5 +659,5 @@ const qrS = StyleSheet.create({
   cardTitle:  { fontSize: 14, fontFamily: 'DMSans_500Medium', marginBottom: 6 },
   cardRow:    { fontSize: 13, lineHeight: 20 },
   closeBtn:   { width: '100%', paddingVertical: 14, borderRadius: 2, alignItems: 'center' },
-  closeBtnText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
+  closeBtnText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
 });

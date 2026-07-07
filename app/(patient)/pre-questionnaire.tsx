@@ -121,7 +121,7 @@ export default function PreQuestionnaireScreen() {
               <TextInput
                 style={[s.input, { color: colors.textPrimary, backgroundColor: colors.inputBg, borderColor: colors.bg3 }]}
                 placeholder={q.placeholder}
-                placeholderTextColor={dark ? '#666' : '#aaa'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={answers[q.key] ?? ''}
                 onChangeText={v => setAnswers(prev => ({ ...prev, [q.key]: v }))}
                 multiline={q.multiline}
@@ -163,7 +163,7 @@ export default function PreQuestionnaireScreen() {
             <TextInput
               style={[s.input, { color: colors.textPrimary, backgroundColor: colors.inputBg, borderColor: colors.bg3 }]}
               placeholder="Napr. estetika, citlivosť, strach zo zákroku..."
-              placeholderTextColor={dark ? '#666' : '#aaa'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={answers.concerns ?? ''}
               onChangeText={v => setAnswers(prev => ({ ...prev, concerns: v }))}
               multiline numberOfLines={3} textAlignVertical="top"
@@ -178,7 +178,7 @@ export default function PreQuestionnaireScreen() {
           style={[s.submitBtn, saving && { opacity: 0.6 }]}
           onPress={handleSubmit} disabled={saving} activeOpacity={0.85}
         >
-          <Ionicons name={saving ? 'hourglass-outline' : 'send'} size={18} color="#fff" />
+          <Ionicons name={saving ? 'hourglass-outline' : 'send'} size={18} color="#F5F6F8" />
           <Text style={s.submitText}>{saving ? 'Odosielam...' : 'Odoslať doktorovi'}</Text>
         </TouchableOpacity>
       </View>
@@ -189,7 +189,7 @@ export default function PreQuestionnaireScreen() {
 const s = StyleSheet.create({
   header:       { backgroundColor: COLORS.esp, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
   headerLabel:  { fontSize: 10, fontFamily: 'DMSans_500Medium', color: COLORS.sand, letterSpacing: 1.5 },
-  headerTitle:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2' },
+  headerTitle:  { fontSize: 20, fontFamily: 'PlayfairDisplay_700Bold', color: '#F5F6F8' },
   infoCard:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, borderWidth: 1, borderRadius: RADII.lg, padding: 14, marginBottom: 14 },
   infoTitle:    { fontSize: 13, fontFamily: 'DMSans_500Medium', marginBottom: 3 },
   infoSub:      { fontSize: 12, lineHeight: 18 },
@@ -204,5 +204,5 @@ const s = StyleSheet.create({
   painLabelText:{ fontSize: 11 },
   footer:       { borderTopWidth: 1, padding: 16, paddingBottom: 34 },
   submitBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, backgroundColor: COLORS.esp, borderRadius: RADII.lg, paddingVertical: 16 },
-  submitText:   { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
+  submitText:   { fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
 });

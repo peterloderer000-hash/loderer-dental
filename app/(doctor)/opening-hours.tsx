@@ -212,7 +212,7 @@ export default function OpeningHoursScreen() {
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               />
               <Text style={[s.sep, { color: colors.textSecondary }]}>–</Text>
               <TextInput
@@ -222,7 +222,7 @@ export default function OpeningHoursScreen() {
                 editable={item.is_open}
                 keyboardType="numeric"
                 maxLength={5}
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               />
             </View>
           </View>
@@ -256,7 +256,7 @@ export default function OpeningHoursScreen() {
               style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               value={exDate} onChangeText={setExDate}
               placeholder="2026-12-24"
-              placeholderTextColor={dark ? '#555' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               keyboardType="numbers-and-punctuation"
               maxLength={10}
             />
@@ -278,7 +278,7 @@ export default function OpeningHoursScreen() {
                   <TextInput
                     style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                     value={exOpen} onChangeText={setExOpen}
-                    placeholder="08:00" placeholderTextColor={dark ? '#555' : '#bbb'}
+                    placeholder="08:00" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                     keyboardType="numbers-and-punctuation" maxLength={5}
                   />
                 </View>
@@ -287,7 +287,7 @@ export default function OpeningHoursScreen() {
                   <TextInput
                     style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                     value={exClose} onChangeText={setExClose}
-                    placeholder="13:00" placeholderTextColor={dark ? '#555' : '#bbb'}
+                    placeholder="13:00" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                     keyboardType="numbers-and-punctuation" maxLength={5}
                   />
                 </View>
@@ -299,7 +299,7 @@ export default function OpeningHoursScreen() {
               style={[s.exInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
               value={exNote} onChangeText={setExNote}
               placeholder="Napr. Sviatok práce, dovolenka..."
-              placeholderTextColor={dark ? '#555' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
             />
 
             <TouchableOpacity
@@ -307,7 +307,7 @@ export default function OpeningHoursScreen() {
               onPress={addException} disabled={exSaving} activeOpacity={0.85}
             >
               {exSaving
-                ? <ActivityIndicator color="#fff" size="small" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
                 : <Text style={[s.saveBtnText, { color: COLORS.cream }]}>Uložiť výnimku</Text>}
             </TouchableOpacity>
           </View>

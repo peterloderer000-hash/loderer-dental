@@ -159,7 +159,7 @@ const s = StyleSheet.create({
   },
   heroTitle: {
     ...TYPO.h1,
-    color: '#F8F6F2',
+    color: '#F5F6F8',
     marginBottom: 2,
   },
   heroSub: {
@@ -180,7 +180,7 @@ const s = StyleSheet.create({
   searchInput: {
     flex: 1,
     ...TYPO.body,
-    color: '#F8F6F2',
+    color: '#F5F6F8',
     padding: 0,
   },
   body: { flex: 1 },

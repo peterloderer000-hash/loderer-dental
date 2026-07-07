@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   infoLabel: { fontSize: 11, fontWeight: '700', color: COLORS.wal, textTransform: 'uppercase', width: 90 },
   infoValue: { flex: 1, fontSize: 13, color: COLORS.esp, lineHeight: 19 },
 
-  empty:      { fontSize: 12, color: '#bbb', fontStyle: 'italic' },
+  empty:      { fontSize: 12, color: '#D0D4DC', fontStyle: 'italic' },
   openText:   { fontSize: 13, color: COLORS.esp, lineHeight: 20, fontStyle: 'italic' },
 
   emptyTitle: { fontSize: 18, fontWeight: '600', color: COLORS.esp, marginBottom: 8 },

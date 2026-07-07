@@ -69,7 +69,7 @@ export default function VideoConsult() {
   const STATUS_CFG = {
     scheduled: { label: 'Naplánovaná', color: COLORS.info, icon: 'time-outline' as const },
     in_progress: { label: 'Prebieha', color: COLORS.success, icon: 'videocam' as const },
-    completed: { label: 'Dokončená', color: '#95A5A6', icon: 'checkmark-circle' as const },
+    completed: { label: 'Dokončená', color: '#B8ACA0', icon: 'checkmark-circle' as const },
     cancelled: { label: 'Zrušená', color: COLORS.error, icon: 'close-circle' as const },
   };
 
@@ -143,7 +143,7 @@ export default function VideoConsult() {
                       </View>
                     </View>
                     <TouchableOpacity style={st.callBtn} onPress={() => startCall(s)} activeOpacity={0.85}>
-                      <Ionicons name="videocam" size={18} color="#fff" />
+                      <Ionicons name="videocam" size={18} color="#F5F6F8" />
                       <Text style={st.callBtnText}>Zahájiť hovor</Text>
                     </TouchableOpacity>
                   </Animated.View>

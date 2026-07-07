@@ -8,7 +8,7 @@ import { useAppTheme } from '../../../context/ThemeContext';
 type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
 const ACTIONS: { label: string; icon: IoniconsName; route: string; color: string; bg: string; darkBg: string }[] = [
-  { label: 'Rezervovať', icon: 'calendar-outline',    route: '/(patient)/book-appointment', color: COLORS.esp, bg: '#FAF7F2', darkBg: '#1E2535' },
+  { label: 'Rezervovať', icon: 'calendar-outline',    route: '/(patient)/book-appointment', color: COLORS.esp, bg: '#F5F6F8', darkBg: '#1E2535' },
   { label: 'Termíny',    icon: 'list-outline',        route: '/(patient)/appointments',     color: '#1A5276',  bg: '#EBF5FB', darkBg: '#0D2233' },
   { label: 'Kalkulačka', icon: 'calculator-outline',  route: '/(patient)/calculator',       color: '#B87333',  bg: '#FDF3E7', darkBg: '#2D1F10' },
   { label: 'Zdravie',    icon: 'clipboard-outline',   route: '/(patient)/health-passport',  color: '#17A589',  bg: '#E8F8F5', darkBg: '#1A3D2E' },
@@ -17,9 +17,9 @@ const ACTIONS: { label: string; icon: IoniconsName; route: string; color: string
   { label: 'Recepty',    icon: 'medical-outline',     route: '/(patient)/prescriptions',    color: '#2E7D5E',  bg: '#EDF7F3', darkBg: '#1A3D2E' },
   { label: 'Správy',    icon: 'mail-outline',        route: '/(patient)/messages',          color: '#1A5276',  bg: '#EBF5FB', darkBg: '#0D2233' },
   { label: 'Liečba',   icon: 'clipboard-outline',   route: '/(patient)/treatment-plan',    color: '#7D3C98',  bg: '#F5EEF8', darkBg: '#1E0D33' },
-  { label: 'Rodina',   icon: 'people-outline',      route: '/(patient)/family',            color: '#784212',  bg: '#FDF3E7', darkBg: '#2D1F10' },
+  { label: 'Rodina',   icon: 'people-outline',      route: '/(patient)/family',            color: '#B87333',  bg: '#FDF3E7', darkBg: '#2D1F10' },
   { label: 'Platby',   icon: 'card-outline',        route: '/(patient)/payment-history',   color: '#1A5276',  bg: '#EBF5FB', darkBg: '#0D2233' },
-  { label: 'Shop',     icon: 'bag-outline',         route: '/(patient)/shop',              color: '#9A7D0A',  bg: '#FDF3E7', darkBg: '#2D1F10' },
+  { label: 'Shop',     icon: 'bag-outline',         route: '/(patient)/shop',              color: '#B87333',  bg: '#FDF3E7', darkBg: '#2D1F10' },
   { label: 'Môj zubár',icon: 'person-circle-outline',route: '/(patient)/moj-zubar',        color: '#0E6655',  bg: '#E8F8F5', darkBg: '#1A3D2E' },
   { label: 'Súhlasy',  icon: 'shield-checkmark-outline', route: '/(patient)/consents',     color: '#6C3483',  bg: '#F5EEF8', darkBg: '#1E0D33' },
 ];

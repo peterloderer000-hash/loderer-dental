@@ -47,7 +47,7 @@ type AnalysisResult = {
 const FINDING_CFG: Record<string, { label: string; icon: string; color: string; bg: string }> = {
   cavity:       { label: 'Kariés',        icon: '🦷', color: '#C0392B', bg: '#FDEDEC' },
   inflammation: { label: 'Zápal',         icon: '🔴', color: '#C0392B', bg: '#FDEDEC' },
-  bone_loss:    { label: 'Úbytok kosti',  icon: '🦴', color: '#D35400', bg: '#FDF3E7' },
+  bone_loss:    { label: 'Úbytok kosti',  icon: '🦴', color: '#B87333', bg: '#FDF3E7' },
   fracture:     { label: 'Fraktúra',      icon: '💥', color: '#922B21', bg: '#FDEDEC' },
   impaction:    { label: 'Impakcia',      icon: '⚠️', color: '#B87333', bg: '#FDF3E7' },
   abscess:      { label: 'Absces',        icon: '🏥', color: '#C0392B', bg: '#FDEDEC' },
@@ -269,7 +269,7 @@ export default function XrayAnalysis() {
                 onPress={pickImage}
                 activeOpacity={0.85}
               >
-                <Ionicons name="images-outline" size={20} color="#fff" />
+                <Ionicons name="images-outline" size={20} color="#F5F6F8" />
                 <Text style={styles.uploadBtnText}>Z galérie</Text>
               </TouchableOpacity>
 
@@ -278,7 +278,7 @@ export default function XrayAnalysis() {
                 onPress={takePhoto}
                 activeOpacity={0.85}
               >
-                <Ionicons name="camera-outline" size={20} color="#fff" />
+                <Ionicons name="camera-outline" size={20} color="#F5F6F8" />
                 <Text style={styles.uploadBtnText}>Odfotiť</Text>
               </TouchableOpacity>
             </View>
@@ -352,14 +352,14 @@ export default function XrayAnalysis() {
                 >
                   {analyzing ? (
                     <View style={styles.analyzingRow}>
-                      <ActivityIndicator size="small" color="#fff" />
+                      <ActivityIndicator size="small" color="#F5F6F8" />
                       <Text style={styles.analyzeBtnText}>
                         Analyzujem... {Math.round(progress)}%
                       </Text>
                     </View>
                   ) : (
                     <>
-                      <Ionicons name="sparkles" size={20} color="#fff" />
+                      <Ionicons name="sparkles" size={20} color="#F5F6F8" />
                       <Text style={styles.analyzeBtnText}>Spustiť AI analýzu</Text>
                     </>
                   )}

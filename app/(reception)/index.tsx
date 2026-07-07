@@ -372,10 +372,10 @@ function KpiItem({ icon, label, value, color, dark }: {
 
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 14, paddingBottom: 20, overflow: 'hidden' },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8' },
   heroRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
   heroSub:  { ...TYPO.overline, color: COLORS.sand, marginBottom: 4 },
-  heroTitle:{ ...TYPO.h1, color: '#F8F6F2' },
+  heroTitle:{ ...TYPO.h1, color: '#F5F6F8' },
   refreshBtn: {
     width: 36, height: 36, borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.10)',
@@ -393,7 +393,7 @@ const s = StyleSheet.create({
   kioskQr:       { width: 240, height: 240 },
   kioskDate:     { fontSize: 12, marginBottom: 20 },
   kioskClose:    { paddingVertical: 14, paddingHorizontal: 48, borderRadius: 2 },
-  kioskCloseText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F8F6F2' },
+  kioskCloseText:{ fontSize: 15, fontFamily: 'DMSans_500Medium', color: '#F5F6F8' },
   urgentBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: COLORS.errorBg,

@@ -268,7 +268,7 @@ export default function ReceptionPayments() {
                     </View>
 
                     {isPaid && apt.payment_method && (
-                      <View style={[pc.methodBadge, { backgroundColor: dark ? '#ffffff10' : '#f5f5f5' }]}>
+                      <View style={[pc.methodBadge, { backgroundColor: dark ? '#ffffff10' : '#F5F6F8' }]}>
                         <Ionicons
                           name={(PAYMENT_METHODS.find(m => m.key === apt.payment_method)?.icon ?? 'cash-outline') as any}
                           size={12}
@@ -294,9 +294,9 @@ export default function ReceptionPayments() {
                           style={pc.payGrad}
                         >
                           {isLoading
-                            ? <ActivityIndicator size="small" color="#fff" />
+                            ? <ActivityIndicator size="small" color="#F5F6F8" />
                             : <>
-                                <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                                <Ionicons name="checkmark-circle-outline" size={16} color="#F5F6F8" />
                                 <Text style={pc.payText}>Prijať platbu</Text>
                               </>
                           }
@@ -343,7 +343,7 @@ function PaymentMethodModal({ visible, appointment, onClose, onSelect, loading, 
         <View style={[pm.sheet, { backgroundColor: colors.cardBg }]}>
           <Text style={[pm.title, { color: colors.textPrimary }]}>Prijať platbu</Text>
 
-          <View style={[pm.infoRow, { backgroundColor: dark ? '#ffffff08' : '#f8f8f8', borderColor: colors.bg3 }]}>
+          <View style={[pm.infoRow, { backgroundColor: dark ? '#ffffff08' : '#F5F6F8', borderColor: colors.bg3 }]}>
             <Text style={[pm.infoName, { color: colors.textPrimary }]}>{appointment.patient?.full_name ?? 'Pacient'}</Text>
             <Text style={[pm.infoService, { color: colors.textSecondary }]}>{appointment.service?.name ?? '—'} · {fmtTime(appointment.appointment_date)}</Text>
             <Text style={[pm.infoPrice, { color: colors.textPrimary }]}>{fmtPrice(price)}</Text>
@@ -360,7 +360,7 @@ function PaymentMethodModal({ visible, appointment, onClose, onSelect, loading, 
                 disabled={loading}
               >
                 <Ionicons name={m.icon as any} size={28} color={m.color} />
-                <Text style={[pm.methodBtnText, { color: dark ? '#F0EDEA' : m.color }]}>{m.label}</Text>
+                <Text style={[pm.methodBtnText, { color: dark ? '#EAECEE' : m.color }]}>{m.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -377,7 +377,7 @@ function PaymentMethodModal({ visible, appointment, onClose, onSelect, loading, 
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, gap: 2 },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle: { ...TYPO.h1, color: '#F8F6F2', marginBottom: 14 },
+  heroTitle: { ...TYPO.h1, color: '#F5F6F8', marginBottom: 14 },
   summaryRow: { flexDirection: 'row', gap: 10 },
   methodRow:   { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingBottom: 8, flexWrap: 'wrap' },
   methodChip:  { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: RADII.pill, paddingHorizontal: 10, paddingVertical: 5 },

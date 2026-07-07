@@ -30,7 +30,7 @@ function ShimmerStrip({ width, height = 16, style }: { width?: number | string; 
   }));
 
   return (
-    <View style={[{ width: width as DimensionValue, height, borderRadius: RADII.sm, backgroundColor: '#E8DFD0', overflow: 'hidden' }, style]}>
+    <View style={[{ width: width as DimensionValue, height, borderRadius: RADII.sm, backgroundColor: '#D0D4DC', overflow: 'hidden' }, style]}>
       <Animated.View style={[StyleSheet.absoluteFill, animStyle]}>
         <LinearGradient
           colors={['transparent', 'rgba(255,255,255,0.6)', 'transparent']}
@@ -91,12 +91,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     alignItems: 'center',
-    backgroundColor: '#F8F6F2',
+    backgroundColor: '#F5F6F8',
     borderRadius: RADII.lg,
     padding: 14,
   },
   card: {
-    backgroundColor: '#F8F6F2',
+    backgroundColor: '#F5F6F8',
     borderRadius: RADII.xl,
     padding: 20,
     ...require('../../styles/theme').SHADOWS.sm,

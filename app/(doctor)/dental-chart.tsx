@@ -28,15 +28,15 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
 
   function toothColor(n: number): string {
     const r = chart[n];
-    if (!r) return dark ? '#1E2535' : '#F0EBE5';
+    if (!r) return dark ? '#1E2535' : '#EAECEE';
     const cfg = STATUS_LIST.find(s => s.key === r.status);
-    return cfg?.bg ?? (dark ? '#1E2535' : '#F0EBE5');
+    return cfg?.bg ?? (dark ? '#1E2535' : '#EAECEE');
   }
   function toothBorder(n: number): string {
     const r = chart[n];
-    if (!r) return dark ? '#2A3347' : '#D5C9C0';
+    if (!r) return dark ? '#2A3347' : '#D0D4DC';
     const cfg = STATUS_LIST.find(s => s.key === r.status);
-    return cfg?.color ?? (dark ? '#2A3347' : '#BBACA0');
+    return cfg?.color ?? (dark ? '#2A3347' : '#B8ACA0');
   }
 
   const svgH = toothH * 2 + 16 + 20; // 2 rows + gap + label space
@@ -45,7 +45,7 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
     <TouchableOpacity activeOpacity={1}>
       <Svg width={W} height={svgH} style={{ alignSelf: 'center' }}>
         {/* HORNÁ ČEĽUSŤ (1-16) */}
-        <SvgText x={W / 2} y={11} textAnchor="middle" fontSize={8} fill={dark ? '#BBACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
+        <SvgText x={W / 2} y={11} textAnchor="middle" fontSize={8} fill={dark ? '#B8ACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
           HORNÁ ČEĽUSŤ
         </SvgText>
         {Array.from({ length: 16 }, (_, i) => {
@@ -55,14 +55,14 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
           return (
             <G key={n} onPress={() => onPress(n)}>
               <Rect x={x} y={y} width={toothW} height={toothH} rx={3} fill={toothColor(n)} stroke={toothBorder(n)} strokeWidth={1} />
-              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#BBACA0' : '#3A4256'}>
+              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#B8ACA0' : '#3A4256'}>
                 {n}
               </SvgText>
             </G>
           );
         })}
         {/* DOLNÁ ČEĽUSŤ (17-32) */}
-        <SvgText x={W / 2} y={14 + toothH + 8 + 8} textAnchor="middle" fontSize={8} fill={dark ? '#BBACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
+        <SvgText x={W / 2} y={14 + toothH + 8 + 8} textAnchor="middle" fontSize={8} fill={dark ? '#B8ACA0' : '#3A4256'} fontFamily="DMSans_500Medium">
           DOLNÁ ČEĽUSŤ
         </SvgText>
         {Array.from({ length: 16 }, (_, i) => {
@@ -72,7 +72,7 @@ function ToothSVGMap({ chart, onPress }: { chart: Record<number, ToothRecord | u
           return (
             <G key={n} onPress={() => onPress(n)}>
               <Rect x={x} y={y} width={toothW} height={toothH} rx={3} fill={toothColor(n)} stroke={toothBorder(n)} strokeWidth={1} />
-              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#BBACA0' : '#3A4256'}>
+              <SvgText x={x + toothW / 2} y={y + toothH - 3} textAnchor="middle" fontSize={6} fill={dark ? '#B8ACA0' : '#3A4256'}>
                 {n}
               </SvgText>
             </G>
@@ -99,26 +99,26 @@ const STATUS_LIST: { key: ToothStatus; label: string; color: string; bg: string 
   { key: 'healthy',            label: 'Zdravý',              color: '#2E7D5E', bg: '#EDF7F3' },
   { key: 'cavity',             label: 'Kaz',                 color: '#922B21', bg: '#FDEDEC' },
   { key: 'early_cavity',       label: 'Začínajúci kaz',      color: '#CB4335', bg: '#FDEDEC' },
-  { key: 'watch',              label: 'Na pozorovanie',       color: '#E67E22', bg: '#FEF5E7' },
-  { key: 'filled',             label: 'Plomba',              color: '#9A7D0A', bg: '#FDF3E7' },
+  { key: 'watch',              label: 'Na pozorovanie',       color: '#B87333', bg: '#FDF3E7' },
+  { key: 'filled',             label: 'Plomba',              color: '#B87333', bg: '#FDF3E7' },
   { key: 'large_filling',      label: 'Veľká plomba',        color: '#B87333', bg: '#FEF3CD' },
-  { key: 'replace_filling',    label: 'Výmena plomby',       color: '#B7770D', bg: '#FEF0D3' },
+  { key: 'replace_filling',    label: 'Výmena plomby',       color: '#B87333', bg: '#FEF0D3' },
   { key: 'crown',              label: 'Korunka',             color: '#1A5276', bg: '#EBF5FB' },
-  { key: 'bridge',             label: 'Mostík',              color: '#154360', bg: '#D6EAF8' },
+  { key: 'bridge',             label: 'Mostík',              color: '#154360', bg: '#EBF5FB' },
   { key: 'implant',            label: 'Implantát',           color: '#117A65', bg: '#EDF7F3' },
   { key: 'veneer',             label: 'Veneer',              color: '#6C3483', bg: '#F5EEF8' },
   { key: 'sealant',            label: 'Pečať',               color: '#1ABC9C', bg: '#E8F8F5' },
   { key: 'root_canal',         label: 'Devitalizácia',       color: '#7D3C98', bg: '#F4ECF7' },
-  { key: 'extracted',          label: 'Extrahovaný',         color: '#566573', bg: '#F2F3F4' },
-  { key: 'missing',            label: 'Chýba',               color: '#AAB7B8', bg: '#FDFEFE' },
+  { key: 'extracted',          label: 'Extrahovaný',         color: '#3A4256', bg: '#F5F6F8' },
+  { key: 'missing',            label: 'Chýba',               color: '#D0D4DC', bg: '#F5F6F8' },
   { key: 'fracture',           label: 'Fraktúra',            color: '#C0392B', bg: '#FDEDEC' },
-  { key: 'erosion',            label: 'Erózia',              color: '#D35400', bg: '#FDEBD0' },
-  { key: 'abrasion',           label: 'Abrázia',             color: '#A04000', bg: '#FDEBD0' },
+  { key: 'erosion',            label: 'Erózia',              color: '#B87333', bg: '#FDF3E7' },
+  { key: 'abrasion',           label: 'Abrázia',             color: '#B87333', bg: '#FDF3E7' },
   { key: 'hypoplasia',         label: 'Hypoplázia',          color: '#8E44AD', bg: '#F5EEF8' },
   { key: 'hypomineralization', label: 'Hypomineralizácia',   color: '#9B59B6', bg: '#F5EEF8' },
   { key: 'periodontal',        label: 'Parodontálny prob.',  color: '#C0392B', bg: '#FDEDEC' },
   { key: 'mobility',           label: 'Kývavosť zuba',       color: '#C0392B', bg: '#FDEDEC' },
-  { key: 'improve_hygiene',    label: 'Zlepšiť hygienu',     color: '#2980B9', bg: '#EBF5FB' },
+  { key: 'improve_hygiene',    label: 'Zlepšiť hygienu',     color: '#1A5276', bg: '#EBF5FB' },
   { key: 'treatment_needed',   label: 'Indik. prerobenie',   color: '#B8ACA0', bg: '#FDF3E7' },
 ];
 
@@ -261,7 +261,7 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving,
             value={notes}
             onChangeText={setNotes}
             placeholder="Napr. distálna plocha..."
-            placeholderTextColor={dark ? '#555' : '#bbb'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
             multiline
             numberOfLines={2}
           />
@@ -295,7 +295,7 @@ function EditModal({ tooth, record, patientId, visible, onClose, onSave, saving,
             activeOpacity={0.85}
           >
             {saving
-              ? <ActivityIndicator color="#fff" size="small" />
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
               : <Text style={styles.saveBtnText}>Uložiť zmenu</Text>}
           </TouchableOpacity>
         </View>
@@ -395,7 +395,7 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
               value={note}
               onChangeText={onNoteChange}
               placeholder="Napr. distálna plocha, citlivosť na chlad..."
-              placeholderTextColor={dark ? '#555' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               multiline
               numberOfLines={2}
             />
@@ -403,7 +403,7 @@ function ToothDetailModal({ tooth, record, patientId, patientName, note, visible
             {/* Akcie */}
             <TouchableOpacity style={[dStyles.btn, { backgroundColor: COLORS.esp }]}
               onPress={onEditStatus} activeOpacity={0.85}>
-              <Ionicons name="create-outline" size={16} color="#fff" />
+              <Ionicons name="create-outline" size={16} color="#F5F6F8" />
               <Text style={dStyles.btnTextWhite}>Zmeniť stav zuba</Text>
             </TouchableOpacity>
 

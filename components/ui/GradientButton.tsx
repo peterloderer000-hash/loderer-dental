@@ -31,10 +31,10 @@ const VARIANT_GRADIENTS: Record<Variant, string[]> = {
 
 const VARIANT_TEXT: Record<Variant, string> = {
   gold:    '#0A0F1A',
-  hero:    '#F8F6F2',
+  hero:    '#F5F6F8',
   ghost:   COLORS.cream,
-  success: '#fff',
-  danger:  '#fff',
+  success: '#F5F6F8',
+  danger:  '#F5F6F8',
 };
 
 const AnimTouchable = Animated.createAnimatedComponent(TouchableOpacity);

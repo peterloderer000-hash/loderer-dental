@@ -204,7 +204,7 @@ export default function FamilyDashboard() {
             {/* Add member button */}
             <TouchableOpacity style={st.addBtn} onPress={() => { setAddModal(true); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
               activeOpacity={0.85}>
-              <Ionicons name="person-add" size={20} color="#fff" />
+              <Ionicons name="person-add" size={20} color="#F5F6F8" />
               <Text style={st.addBtnText}>Pridať člena rodiny</Text>
             </TouchableOpacity>
           </>

@@ -164,7 +164,7 @@ export default function ConsentsScreen() {
                   </View>
                 </View>
                 <TouchableOpacity style={styles.signBtn} onPress={() => openSign(c)} activeOpacity={0.85}>
-                  <Ionicons name="pencil-outline" size={15} color="#fff" />
+                  <Ionicons name="pencil-outline" size={15} color="#F5F6F8" />
                   <Text style={styles.signBtnText}>Prečítať a podpísať</Text>
                 </TouchableOpacity>
               </View>
@@ -237,7 +237,7 @@ export default function ConsentsScreen() {
             {/* Checkbox */}
             <TouchableOpacity style={styles.checkRow} onPress={() => setAgreed(v => !v)} activeOpacity={0.8}>
               <View style={[styles.checkbox, { borderColor: colors.bg3 }, agreed && styles.checkboxChecked]}>
-                {agreed && <Ionicons name="checkmark" size={14} color="#fff" />}
+                {agreed && <Ionicons name="checkmark" size={14} color="#F5F6F8" />}
               </View>
               <Text style={[styles.checkLabel, { color: colors.textPrimary }]}>
                 Prečítal/a som si súhlas a rozumiem jeho obsahu
@@ -247,7 +247,7 @@ export default function ConsentsScreen() {
             {/* Podpis — meno */}
             <Text style={[styles.signLabel, { color: colors.textSecondary }]}>PODPIS — ZADAJ CELÉ MENO</Text>
             <TextInput style={[styles.signInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={signName} onChangeText={setSignName}
-              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#666' : '#999'}
+              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               autoCapitalize="words" />
 
             {/* Akcie */}
@@ -258,8 +258,8 @@ export default function ConsentsScreen() {
               <TouchableOpacity
                 style={[styles.confirmBtn, (saving || !agreed || !signName.trim()) && { opacity: 0.5 }]}
                 onPress={handleSign} disabled={saving || !agreed || !signName.trim()} activeOpacity={0.85}>
-                {saving ? <ActivityIndicator color="#fff" size="small" />
-                  : <><Ionicons name="pencil-outline" size={15} color="#fff" />
+                {saving ? <ActivityIndicator color="#F5F6F8" size="small" />
+                  : <><Ionicons name="pencil-outline" size={15} color="#F5F6F8" />
                       <Text style={styles.confirmBtnText}>Podpísať</Text></>}
               </TouchableOpacity>
             </View>
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   backBtn:      { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center' },
   headerSub:    { fontSize: 9, letterSpacing: 2, color: COLORS.sand, fontWeight: '600', textTransform: 'uppercase', marginBottom: 2 },
   headerTitle:  { fontSize: 18, fontWeight: '700', color: '#F5F6F8' },
-  pendingBadge: { backgroundColor: '#E67E22', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
+  pendingBadge: { backgroundColor: '#B87333', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4 },
   pendingBadgeText: { fontSize: 11, fontWeight: '800', color: '#F5F6F8' },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8, marginTop: 4 },

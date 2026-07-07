@@ -354,7 +354,7 @@ export default function DoctorMessagesScreen() {
           <TextInput
             style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Napíšte správu..."
-            placeholderTextColor={dark ? '#666' : '#bbb'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
             value={text}
             onChangeText={setText}
             multiline maxLength={500}
@@ -363,8 +363,8 @@ export default function DoctorMessagesScreen() {
             style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnDisabled]}
             onPress={handleSend} disabled={!text.trim() || sending} activeOpacity={0.8}>
             {sending
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Ionicons name="send" size={18} color="#fff" />}
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
+              : <Ionicons name="send" size={18} color="#F5F6F8" />}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   bubbleTextMine:  { color: '#F5F6F8' },
-  bubbleTime:      { fontSize: 10, color: '#bbb', marginTop: 4, textAlign: 'right' },
+  bubbleTime:      { fontSize: 10, color: '#D0D4DC', marginTop: 4, textAlign: 'right' },
   bubbleTimeMine:  { color: COLORS.sand },
 
   inputRow:        { flexDirection: 'row', alignItems: 'flex-end', gap: 8, padding: 12, backgroundColor: COLORS.cream, borderTopWidth: 1, borderTopColor: COLORS.bg3 },

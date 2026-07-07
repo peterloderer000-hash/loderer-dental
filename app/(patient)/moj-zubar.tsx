@@ -328,9 +328,9 @@ export default function MojZubarScreen() {
             activeOpacity={0.88}
           >
             <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-              <Ionicons name="calendar-outline" size={18} color="#fff" />
+              <Ionicons name="calendar-outline" size={18} color="#F5F6F8" />
               <Text style={s.ctaText}>Rezervovať termín</Text>
-              <Ionicons name="arrow-forward" size={16} color="#fff" />
+              <Ionicons name="arrow-forward" size={16} color="#F5F6F8" />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -379,7 +379,7 @@ const s = StyleSheet.create({
   emptyText: { ...TYPO.h2 },
 
   hero: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 28, alignItems: 'center', overflow: 'hidden', gap: 6 },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8' },
   goldLines: { position: 'absolute', top: 28, left: 20, gap: 3 },
   goldLine:  { width: 32, height: 2, backgroundColor: COLORS.gold },
 
@@ -390,7 +390,7 @@ const s = StyleSheet.create({
   avatarInitials:  { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 32, color: COLORS.cream },
   verifiedBadge:   { position: 'absolute', bottom: 0, right: 0, backgroundColor: COLORS.esp, borderRadius: 2, padding: 1 },
 
-  doctorName: { ...TYPO.h1, color: '#F8F6F2', textAlign: 'center' },
+  doctorName: { ...TYPO.h1, color: '#F5F6F8', textAlign: 'center' },
   doctorSpec: { ...TYPO.body, color: 'rgba(196,168,130,0.75)', textAlign: 'center', marginBottom: 8 },
 
   starRow:   { flexDirection: 'row', alignItems: 'center', gap: 3, marginBottom: 14 },

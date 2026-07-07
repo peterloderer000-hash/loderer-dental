@@ -128,7 +128,7 @@ export default function CalculatorScreen() {
                   <Ionicons
                     name={isOpen ? 'chevron-up' : 'chevron-down'}
                     size={16}
-                    color={isOpen ? COLORS.wal : '#bbb'}
+                    color={isOpen ? COLORS.wal : '#D0D4DC'}
                   />
                 </View>
               </TouchableOpacity>
@@ -176,7 +176,7 @@ export default function CalculatorScreen() {
                         onPress={() => addToBasket(svc)}
                         activeOpacity={0.75}
                       >
-                        <Ionicons name="add" size={14} color="#fff" />
+                        <Ionicons name="add" size={14} color="#F5F6F8" />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -239,7 +239,7 @@ export default function CalculatorScreen() {
                 onPress={() => router.push('/(patient)/book-appointment')}
                 activeOpacity={0.85}
               >
-                <Ionicons name="calendar" size={16} color="#fff" />
+                <Ionicons name="calendar" size={16} color="#F5F6F8" />
                 <Text style={styles.bookBtnText}>Rezervovať</Text>
               </TouchableOpacity>
             </View>
@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
   svcName:  { fontSize: 12, fontWeight: '600', color: COLORS.esp, marginBottom: 2 },
   svcMeta:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
   svcPrice: { fontSize: 11, fontWeight: '700', color: COLORS.wal },
-  svcDot:   { fontSize: 10, color: '#ccc' },
-  svcDur:   { fontSize: 10, color: '#bbb' },
+  svcDot:   { fontSize: 10, color: '#D0D4DC' },
+  svcDur:   { fontSize: 10, color: '#D0D4DC' },
 
   // Qty tlačidlá
   qtyRow:     { flexDirection: 'row', alignItems: 'center', gap: 6 },

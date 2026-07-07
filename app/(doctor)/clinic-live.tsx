@@ -278,7 +278,7 @@ export default function ClinicLiveScreen() {
       return [
         {
           label: 'Priprav účet', icon: 'receipt-outline',
-          color: '#E67E22', bg: '#FEF3E2',
+          color: '#B87333', bg: '#FEF3E2',
           handler: wrapAction(appt.id, async () => { await clinic.prepareInvoice(appt); setExpanded(null); })
         },
       ];
@@ -355,7 +355,7 @@ export default function ClinicLiveScreen() {
         {counts.waiting > 0     && <SummaryChip emoji="⏳" label={`${counts.waiting} čaká`}     color="#B87333" />}
         {counts.in_chair > 0    && <SummaryChip emoji="🦷" label={`${counts.in_chair} v kresle`} color="#2E7D5E" />}
         {counts.treatment_done > 0 && <SummaryChip emoji="✅" label={`${counts.treatment_done} hotový`} color="#7D3C98" />}
-        {counts.checkout > 0    && <SummaryChip emoji="🧾" label={`${counts.checkout} účet`}    color="#E67E22" />}
+        {counts.checkout > 0    && <SummaryChip emoji="🧾" label={`${counts.checkout} účet`}    color="#B87333" />}
       </ScrollView>
 
       {/* Content */}

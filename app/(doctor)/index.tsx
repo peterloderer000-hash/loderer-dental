@@ -176,7 +176,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
                         <TouchableOpacity key={s.start}
                           style={[rsStyles.slot, { backgroundColor: rc.cardBg, borderColor: rc.bg3 }, isSel && rsStyles.slotSel, taken && rsStyles.slotTaken]}
                           onPress={() => !taken && setSelTime(s.start)} disabled={taken} activeOpacity={0.8}>
-                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#F5F6F8' }, taken && { color: '#ccc' }]}>
+                          <Text style={[rsStyles.slotText, { color: rc.textPrimary }, isSel && { color: '#F5F6F8' }, taken && { color: '#D0D4DC' }]}>
                             {s.start}
                           </Text>
                           {taken && <Text style={rsStyles.slotTakenLbl}>✗</Text>}
@@ -195,7 +195,7 @@ function DoctorRescheduleModal({ visible, appointment, doctorId, onClose, onDone
               style={[rsStyles.btnConfirm, (!selDate || !selTime || saving) && { opacity: 0.4 }]}
               onPress={handleConfirm} disabled={!selDate || !selTime || saving} activeOpacity={0.85}>
               {saving
-                ? <ActivityIndicator color="#fff" size="small" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
                 : <Text style={rsStyles.btnConfirmText}>Potvrdiť presun</Text>}
             </TouchableOpacity>
           </View>
@@ -224,7 +224,7 @@ const rsStyles = StyleSheet.create({
   slotSel:     { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
   slotTaken:   { backgroundColor: '#f5f5f5', borderColor: '#e8e8e8', opacity: 0.5 },
   slotText:    { fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  slotTakenLbl:{ fontSize: 9, color: '#bbb' },
+  slotTakenLbl:{ fontSize: 9, color: '#D0D4DC' },
   actions:     { flexDirection: 'row', gap: 10 },
   btnCancel:   { flex: 1, paddingVertical: 14, borderRadius: 2, alignItems: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   btnCancelText:{ fontSize: 14, fontWeight: '600', color: COLORS.wal },
@@ -302,7 +302,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
           ) : null}
         </View>
         <StatusBadge status={item.status} />
-        <Ionicons name="chevron-forward" size={13} color="#ccc" style={{ marginLeft: 4 }} />
+        <Ionicons name="chevron-forward" size={13} color="#D0D4DC" style={{ marginLeft: 4 }} />
       </TouchableOpacity>
       {item.service && (
         <View style={styles.notesRow}>
@@ -331,9 +331,9 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onComplete, 
       ) : item.status === 'completed' ? (
         <View style={[styles.ratingRow, dark && { backgroundColor: '#2D1F10' }]}>
           {[1,2,3,4,5].map(n => (
-            <Ionicons key={n} name="star-outline" size={13} color="#ccc" />
+            <Ionicons key={n} name="star-outline" size={13} color="#D0D4DC" />
           ))}
-          <Text style={[styles.ratingLabel, { color: '#ccc' }]}>Bez hodnotenia</Text>
+          <Text style={[styles.ratingLabel, { color: '#D0D4DC' }]}>Bez hodnotenia</Text>
         </View>
       ) : null}
       <View style={styles.actionsGrid}>
@@ -485,9 +485,9 @@ function ApproveModal({ visible, appointment, onClose, onApprove, onReject, savi
               activeOpacity={0.85}
             >
               {saving
-                ? <ActivityIndicator color="#fff" size="small" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
                 : <>
-                    <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
+                    <Ionicons name="checkmark-circle-outline" size={16} color="#F5F6F8" />
                     <Text style={aStyles.btnApproveText}>Schváliť</Text>
                   </>}
             </TouchableOpacity>
@@ -610,7 +610,7 @@ function CompleteModal({ visible, patientName, onClose, onConfirm, saving }: {
                   activeOpacity={0.85}
                 >
                   {saving
-                    ? <ActivityIndicator color="#fff" size="small" />
+                    ? <ActivityIndicator color="#F5F6F8" size="small" />
                     : <Text style={styles.sheetBtnConfirmText}>✓ Dokončiť</Text>}
                 </TouchableOpacity>
               </View>
@@ -1116,16 +1116,16 @@ export default function DoctorHome() {
           { label: 'Čakáreň',   icon: 'tv-outline'              as const, route: '/(doctor)/waiting-room'   as const, color: '#1A5276', bg: '#EBF5FB', badge: arrivedAppts.length > 0 ? arrivedAppts.length : 0 },
           { label: 'Fakturácia',icon: 'card-outline'            as const, route: '/(doctor)/billing'        as const, color: '#7D3C98', bg: '#F5EEF8' },
           { label: 'Súhlasy',   icon: 'document-text-outline'   as const, route: '/(doctor)/consent-forms'  as const, color: '#0E6655', bg: '#E8F8F5', badge: consentCount },
-          { label: 'Broadcast', icon: 'megaphone-outline'        as const, route: '/(doctor)/broadcast'     as const, color: '#D35400', bg: '#FEF0E7' },
+          { label: 'Broadcast', icon: 'megaphone-outline'        as const, route: '/(doctor)/broadcast'     as const, color: '#B87333', bg: '#FEF0E7' },
           ...(wlCount > 0     ? [{ label: 'Čakacia l.', icon: 'list-outline' as const,     route: '/(doctor)/waitlist' as const, color: '#0E6655', bg: '#E8F8F5', badge: wlCount }]     : []),
           ...(recallCount > 0 ? [{ label: 'Recall',     icon: 'refresh-outline' as const,  route: '/(doctor)/recall'   as const, color: '#922B21', bg: '#FDEDEC', badge: recallCount }] : []),
           { label: 'Owner',     icon: 'bar-chart-outline'      as const, route: '/(doctor)/owner-dashboard' as const, color: '#1B4F72', bg: '#EBF5FB' },
           { label: 'PDF Export',icon: 'document-outline'       as const, route: '/(doctor)/pdf-exports'     as const, color: '#6C3483', bg: '#F4ECF7' },
           { label: 'Faktúry',  icon: 'receipt-outline'        as const, route: '/(doctor)/auto-invoices'   as const, color: '#2E7D5E', bg: '#E8F8F5' },
-          { label: 'Waitlist',  icon: 'hourglass-outline'     as const, route: '/(doctor)/smart-waitlist'  as const, color: '#D35400', bg: '#FEF0E7' },
+          { label: 'Waitlist',  icon: 'hourglass-outline'     as const, route: '/(doctor)/smart-waitlist'  as const, color: '#B87333', bg: '#FEF0E7' },
           { label: 'Video',     icon: 'videocam-outline'      as const, route: '/(doctor)/video-consult'   as const, color: '#2E86C1', bg: '#EBF5FB' },
           { label: 'SMS',       icon: 'chatbox-outline'       as const, route: '/(doctor)/sms-reminders'   as const, color: '#6C3483', bg: '#F4ECF7' },
-          { label: 'Sklad',     icon: 'cube-outline'          as const, route: '/(doctor)/inventory'       as const, color: '#784212', bg: '#FDEBD0' },
+          { label: 'Sklad',     icon: 'cube-outline'          as const, route: '/(doctor)/inventory'       as const, color: '#B87333', bg: '#FDF3E7' },
           { label: 'Hodnotenia',icon: 'star-half-outline'     as const, route: '/(doctor)/satisfaction-surveys' as const, color: '#3A4256', bg: '#FDF3E7' },
         ] as { label: string; icon: any; route: any; color: string; bg: string; badge?: number }[]).map((chip) => (
           <TouchableOpacity
@@ -1201,7 +1201,7 @@ export default function DoctorHome() {
                         onPress={() => setApprovingAppt(appt)}
                         activeOpacity={0.8}
                       >
-                        <Ionicons name="checkmark" size={13} color="#fff" />
+                        <Ionicons name="checkmark" size={13} color="#F5F6F8" />
                         <Text style={styles.pendingBtnApproveText}>Schváliť</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
@@ -1277,7 +1277,7 @@ export default function DoctorHome() {
                       onPress={() => setCompletingItem(appt)}
                       activeOpacity={0.85}
                     >
-                      <Ionicons name="checkmark-circle-outline" size={13} color="#fff" />
+                      <Ionicons name="checkmark-circle-outline" size={13} color="#F5F6F8" />
                       <Text style={styles.arrivedCallBtnText}>Zavolať dnu ✓</Text>
                     </TouchableOpacity>
                   </TouchableOpacity>
@@ -1344,7 +1344,7 @@ export default function DoctorHome() {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Ionicons name="close-circle" size={16} color="#bbb" />
+              <Ionicons name="close-circle" size={16} color="#D0D4DC" />
             </TouchableOpacity>
           )}
         </View>
@@ -1394,7 +1394,7 @@ export default function DoctorHome() {
               activeOpacity={0.85}
             >
               <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={styles.emptyAddBtnGradient}>
-                <Ionicons name="add-circle-outline" size={16} color="#fff" />
+                <Ionicons name="add-circle-outline" size={16} color="#F5F6F8" />
                 <Text style={styles.emptyAddBtnText}>Pridať termín</Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -1439,7 +1439,7 @@ export default function DoctorHome() {
         activeOpacity={0.85}
       >
         <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={styles.fabGradient}>
-          <Ionicons name="add" size={26} color="#fff" />
+          <Ionicons name="add" size={26} color="#F5F6F8" />
         </LinearGradient>
       </TouchableOpacity>
 
@@ -1546,7 +1546,7 @@ const styles = StyleSheet.create({
   dateLabel:  { ...TYPO.overline, color: COLORS.esp },
 
   // ── Appointment card ─────────────────────────────────────────────────────────
-  card:        { backgroundColor: '#FAFAF8', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 10, paddingLeft: 18, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, ...SHADOWS.card, overflow: 'hidden' },
+  card:        { backgroundColor: '#F5F6F8', borderRadius: RADII.lg, marginHorizontal: SPACING.lg, marginBottom: 10, paddingLeft: 18, padding: 14, borderWidth: 1, borderColor: COLORS.bg3, ...SHADOWS.card, overflow: 'hidden' },
   cardUrgent:  { borderColor: COLORS.error, borderWidth: 1.5 },
   accentBar:   { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, borderTopLeftRadius: RADII.lg, borderBottomLeftRadius: RADII.lg },
   urgentBanner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FDEDEC', borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, alignSelf: 'flex-start', marginBottom: 8 },
@@ -1556,7 +1556,7 @@ const styles = StyleSheet.create({
   timeText:    { fontSize: 14, fontWeight: '700', color: COLORS.cream },
   patientName: { fontSize: 14, fontWeight: '600', color: COLORS.esp, marginBottom: 2 },
   patientPhone:{ fontSize: 11, color: COLORS.wal },
-  familyTag:   { fontSize: 11, color: '#784212', fontWeight: '600' },
+  familyTag:   { fontSize: 11, color: '#B87333', fontWeight: '600' },
 
   badge:     { borderRadius: 2, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
   badgeText: { fontSize: 9, fontWeight: '700', letterSpacing: 0.5 },
@@ -1564,7 +1564,7 @@ const styles = StyleSheet.create({
   notesRow:    { flexDirection: 'row', gap: 6, alignItems: 'flex-start', marginTop: 6, marginBottom: 4 },
   notesText:   { flex: 1, fontSize: 12, color: COLORS.wal, lineHeight: 18 },
   ratingRow:   { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 6, marginBottom: 4, backgroundColor: '#FEFCE8', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 6 },
-  ratingLabel: { fontSize: 11, fontWeight: '600', color: '#9A7D0A', marginLeft: 6 },
+  ratingLabel: { fontSize: 11, fontWeight: '600', color: '#B87333', marginLeft: 6 },
 
   actionsGrid:     { gap: 8, marginTop: 10 },
   actionsRow:      { flexDirection: 'row', gap: 8 },

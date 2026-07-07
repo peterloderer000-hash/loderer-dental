@@ -41,7 +41,7 @@ function Avatar({ name, avatarUrl }: { name: string | null; avatarUrl: string | 
   // Deterministická farba podľa prvého písmena
   const PALETTE = [
     '#1A5276', '#2E7D5E', '#6C3483', '#922B21',
-    '#9A7D0A', '#1A5276', '#17A589', '#784212',
+    '#B87333', '#1A5276', '#17A589', '#B87333',
   ];
   const color = PALETTE[(initials.charCodeAt(0) ?? 0) % PALETTE.length];
 
@@ -124,7 +124,7 @@ const PatientCard = React.memo(function PatientCard({ patient, onDetail, onChart
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.btnBook} onPress={onBook} activeOpacity={0.8}>
-        <Ionicons name="calendar-outline" size={14} color="#fff" />
+        <Ionicons name="calendar-outline" size={14} color="#F5F6F8" />
         <Text style={styles.btnBookText}>Rezervovať termín</Text>
       </TouchableOpacity>
     </TouchableOpacity>
@@ -270,7 +270,7 @@ export default function PatientsScreen() {
         <TextInput
           style={[styles.searchInput, { color: colors.textPrimary }]}
           placeholder="Hľadaj podľa mena alebo telefónu..."
-          placeholderTextColor={dark ? '#666' : '#999'}
+          placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
           value={query}
           onChangeText={setQuery}
           autoCapitalize="none"
@@ -279,7 +279,7 @@ export default function PatientsScreen() {
         />
         {query.length > 0 && (
           <TouchableOpacity onPress={() => setQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Ionicons name="close-circle" size={18} color="#bbb" />
+            <Ionicons name="close-circle" size={18} color="#D0D4DC" />
           </TouchableOpacity>
         )}
         <TouchableOpacity
@@ -318,8 +318,8 @@ export default function PatientsScreen() {
             <Text style={[styles.statLbl, { color: '#2E7D5E' }]}>S anamnézou</Text>
           </View>
           <View style={[styles.statChip, { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' }]}>
-            <Text style={[styles.statNum, { color: '#9A7D0A' }]}>{missingCount}</Text>
-            <Text style={[styles.statLbl, { color: '#9A7D0A' }]}>Bez anamnézy</Text>
+            <Text style={[styles.statNum, { color: '#B87333' }]}>{missingCount}</Text>
+            <Text style={[styles.statLbl, { color: '#B87333' }]}>Bez anamnézy</Text>
           </View>
           {waitingList.length > 0 && (
             <View style={[styles.statChip, { backgroundColor: '#EBF5FB', borderColor: '#AED6F1' }]}>
@@ -329,8 +329,8 @@ export default function PatientsScreen() {
           )}
           {recallCount > 0 && (
             <View style={[styles.statChip, { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' }]}>
-              <Text style={[styles.statNum, { color: '#9A7D0A' }]}>{recallCount}</Text>
-              <Text style={[styles.statLbl, { color: '#9A7D0A' }]}>Recall</Text>
+              <Text style={[styles.statNum, { color: '#B87333' }]}>{recallCount}</Text>
+              <Text style={[styles.statLbl, { color: '#B87333' }]}>Recall</Text>
             </View>
           )}
         </View>
@@ -421,7 +421,7 @@ export default function PatientsScreen() {
                         style={styles.wlBtnBook}
                         onPress={() => router.push({ pathname: '/(doctor)/add-appointment', params: { patientId: entry.patient_id, patientName: entry.patientName, ...(entry.service_id ? { serviceId: entry.service_id } : {}) } })}
                         activeOpacity={0.8}>
-                        <Ionicons name="calendar-outline" size={13} color="#fff" />
+                        <Ionicons name="calendar-outline" size={13} color="#F5F6F8" />
                         <Text style={styles.wlBtnBookText}>Rezervovať</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
@@ -435,7 +435,7 @@ export default function PatientsScreen() {
                         style={styles.wlBtnDone}
                         onPress={() => handleContactWaiting(entry)}
                         activeOpacity={0.8}>
-                        <Ionicons name="checkmark" size={13} color="#fff" />
+                        <Ionicons name="checkmark" size={13} color="#F5F6F8" />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -537,9 +537,9 @@ const styles = StyleSheet.create({
   patientName: { fontSize: 15, fontWeight: '700', color: COLORS.esp, marginBottom: 3 },
   infoRow:     { flexDirection: 'row', alignItems: 'center', gap: 4 },
   infoText:    { fontSize: 12, color: COLORS.wal },
-  infoMuted:   { fontSize: 12, color: '#888', fontStyle: 'italic' },
+  infoMuted:   { fontSize: 12, color: '#B8ACA0', fontStyle: 'italic' },
   recallChip:  { backgroundColor: '#FDF3E7', borderRadius: 2, paddingHorizontal: 6, paddingVertical: 1, marginLeft: 4, borderWidth: 1, borderColor: '#D0D4DC' },
-  recallChipText: { fontSize: 9, fontWeight: '700', color: '#9A7D0A' },
+  recallChipText: { fontSize: 9, fontWeight: '700', color: '#B87333' },
 
   passportBadge:        { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 4, borderWidth: 1, alignSelf: 'flex-start' },
   passportBadgeOk:      { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' },
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
   wlPatient:       { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   wlService:       { fontSize: 11, color: COLORS.wal, marginBottom: 3 },
   wlDate:          { fontSize: 11, color: '#B87333', fontWeight: '500', marginBottom: 4 },
-  wlNotes:         { fontSize: 11, color: '#888', marginBottom: 8, fontStyle: 'italic' },
+  wlNotes:         { fontSize: 11, color: '#B8ACA0', marginBottom: 8, fontStyle: 'italic' },
   wlActions:       { flexDirection: 'row', gap: 6 },
   wlBtnBook:       { flex: 1.4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: 2, backgroundColor: COLORS.wal },
   wlBtnBookText:   { fontSize: 11, fontWeight: '700', color: '#F5F6F8' },

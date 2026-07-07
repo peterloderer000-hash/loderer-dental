@@ -18,8 +18,8 @@ import { useAppTheme } from '../../context/ThemeContext';
 type SimType = 'whitening' | 'braces' | 'veneers' | 'alignment';
 
 const SIMULATIONS: { key: SimType; label: string; icon: string; desc: string; color: string }[] = [
-  { key: 'whitening', label: 'Bielenie', icon: '✨', desc: 'Simulácia belšieho úsmevu', color: '#F1C40F' },
-  { key: 'braces', label: 'Rovnátka', icon: '😬', desc: 'Vizualizácia rovnátok', color: '#3498DB' },
+  { key: 'whitening', label: 'Bielenie', icon: '✨', desc: 'Simulácia belšieho úsmevu', color: '#B87333' },
+  { key: 'braces', label: 'Rovnátka', icon: '😬', desc: 'Vizualizácia rovnátok', color: '#1A5276' },
   { key: 'veneers', label: 'Fazety', icon: '💎', desc: 'Simulácia porcelánových faziet', color: '#C0392B' },
   { key: 'alignment', label: 'Zarovnanie', icon: '🦷', desc: 'Po vyrovnaní zubov', color: '#52C896' },
 ];
@@ -103,7 +103,7 @@ export default function SmileDesign() {
                 {getOverlay() && <View style={[st.photoOverlay, { backgroundColor: getOverlay()! }]} />}
                 {processing && (
                   <View style={st.processingOverlay}>
-                    <Ionicons name="sparkles" size={32} color="#fff" />
+                    <Ionicons name="sparkles" size={32} color="#F5F6F8" />
                     <Text style={st.processingText}>AI spracovanie...</Text>
                   </View>
                 )}
@@ -188,7 +188,7 @@ export default function SmileDesign() {
                   { text: 'Objednať sa', onPress: () => router.push('/(patient)/book-appointment') },
                 ]);
               }} activeOpacity={0.85}>
-              <Ionicons name="calendar" size={20} color="#fff" />
+              <Ionicons name="calendar" size={20} color="#F5F6F8" />
               <Text style={st.ctaText}>Objednať sa na konzultáciu</Text>
             </TouchableOpacity>
           </Animated.View>

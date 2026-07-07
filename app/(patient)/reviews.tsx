@@ -237,7 +237,7 @@ export default function ReviewsScreen() {
             <View style={styles.starsRowLarge}>
               {[1,2,3,4,5].map(n => (
                 <TouchableOpacity key={n} onPress={() => setRatingVal(n)} activeOpacity={0.7}>
-                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#ddd'} />
+                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#D0D4DC'} />
                 </TouchableOpacity>
               ))}
             </View>
@@ -262,7 +262,7 @@ export default function ReviewsScreen() {
                 style={[styles.modalBtnSubmit, (saving || ratingVal === 0) && { opacity: 0.45 }]}
                 onPress={handleSubmitRating} disabled={saving || ratingVal === 0} activeOpacity={0.85}
               >
-                {saving ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.modalBtnSubmitText}>Odoslať ★</Text>}
+                {saving ? <ActivityIndicator color="#F5F6F8" size="small" /> : <Text style={styles.modalBtnSubmitText}>Odoslať ★</Text>}
               </TouchableOpacity>
             </View>
           </View>

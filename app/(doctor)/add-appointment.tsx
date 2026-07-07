@@ -319,7 +319,7 @@ export default function DoctorAddAppointment() {
             <TextInput
               style={[styles.patientInput, { color: colors.textPrimary }]}
               placeholder="Vyhľadaj pacienta..."
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               value={patientQuery}
               onChangeText={(t) => { setQuery(t); setPatient(null); setDropdown(true); }}
               onFocus={() => setDropdown(true)}
@@ -409,7 +409,7 @@ export default function DoctorAddAppointment() {
               </View>
               <TouchableOpacity onPress={() => { setPatient(null); setQuery(''); }}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Ionicons name="close-circle" size={20} color="#bbb" />
+                <Ionicons name="close-circle" size={20} color="#D0D4DC" />
               </TouchableOpacity>
             </View>
           )}
@@ -429,7 +429,7 @@ export default function DoctorAddAppointment() {
                 </View>
               </View>
             ) : (
-              <Text style={[styles.servicePickerPlaceholder, { color: dark ? '#666' : '#bbb' }]}>Vyber službu...</Text>
+              <Text style={[styles.servicePickerPlaceholder, { color: dark ? '#B8ACA0' : '#D0D4DC' }]}>Vyber službu...</Text>
             )}
             <Ionicons name={showServices ? 'chevron-up' : 'chevron-down'} size={16} color={COLORS.wal} />
           </TouchableOpacity>
@@ -489,7 +489,7 @@ export default function DoctorAddAppointment() {
                 <TextInput
                   style={[styles.durationInput, { color: colors.textPrimary }]}
                   placeholder={`Vlastná (min) · teraz: ${effectiveDuration} min`}
-                  placeholderTextColor={dark ? '#666' : '#bbb'}
+                  placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                   keyboardType="numeric"
                   value={customDurationText}
                   onChangeText={(t) => {
@@ -581,7 +581,7 @@ export default function DoctorAddAppointment() {
             <TextInput
               style={[styles.notesInput, { color: colors.textPrimary }]}
               placeholder="Dôvod návštevy, typ ošetrenia, poznámky..."
-              placeholderTextColor={dark ? '#666' : '#bbb'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -682,9 +682,9 @@ export default function DoctorAddAppointment() {
             activeOpacity={0.85}
           >
             {loading
-              ? <ActivityIndicator color="#fff" />
+              ? <ActivityIndicator color="#F5F6F8" />
               : <>
-                  <Ionicons name="calendar" size={18} color="#fff" />
+                  <Ionicons name="calendar" size={18} color="#F5F6F8" />
                   <Text style={styles.saveBtnText}>Uložiť termín</Text>
                 </>}
           </TouchableOpacity>
@@ -732,19 +732,19 @@ const styles = StyleSheet.create({
   timesGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   timeCell:       { width: '22%', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 0, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   timeCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  timeCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.5 },
+  timeCellTaken:  { backgroundColor: '#F5F6F8', borderColor: '#EAECEE', opacity: 0.5 },
   timeText:       { fontSize: 13, fontWeight: '600', color: COLORS.esp },
   timeSel:        { color: COLORS.cream },
-  timeTakenText:  { color: '#ccc' },
+  timeTakenText:  { color: '#D0D4DC' },
   timeTakenLabel: { fontSize: 9, color: '#C0392B', marginTop: 2, fontWeight: '700' },
-  timeEndText:    { fontSize: 10, color: '#aaa', marginTop: 2 },
+  timeEndText:    { fontSize: 10, color: '#B8ACA0', marginTop: 2 },
   slotSubLabel:   { fontSize: 11, color: COLORS.wal, fontStyle: 'italic', marginBottom: 8 },
 
   // Service picker
   servicePickerBtn:         { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 12, marginBottom: 4 },
   servicePickerName:        { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   servicePickerMeta:        { fontSize: 10, color: COLORS.wal, marginTop: 1 },
-  servicePickerPlaceholder: { flex: 1, fontSize: 14, color: '#bbb' },
+  servicePickerPlaceholder: { flex: 1, fontSize: 14, color: '#D0D4DC' },
   serviceDropdown:          { backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, marginBottom: 8, overflow: 'hidden', elevation: 4 },
   serviceDropdownCat:       { fontSize: 9, fontWeight: '800', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 1.5, paddingHorizontal: 12, paddingTop: 12, paddingBottom: 4, backgroundColor: COLORS.bg2 },
   serviceDropdownItem:      { flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: COLORS.bg2 },

@@ -142,7 +142,7 @@ export default function OwnerDashboard() {
     const total = kpi.totalRevenue || 1;
     return [
       { label: 'Hotovosť', amount: kpi.cashPayments, pct: (kpi.cashPayments / total) * 100, color: '#52C896' },
-      { label: 'Karta', amount: kpi.cardPayments, pct: (kpi.cardPayments / total) * 100, color: '#3498DB' },
+      { label: 'Karta', amount: kpi.cardPayments, pct: (kpi.cardPayments / total) * 100, color: '#1A5276' },
       { label: 'Prevod', amount: kpi.transferPayments, pct: (kpi.transferPayments / total) * 100, color: '#9B59B6' },
     ];
   }, [kpi]);
@@ -209,8 +209,8 @@ export default function OwnerDashboard() {
                 <Text style={[styles.kpiLabel, { color: dark ? '#5DADE2' : '#2E86C1' }]}>Dokončených</Text>
               </View>
               <View style={[styles.kpiBox, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7', borderColor: dark ? '#B8ACA044' : '#D0D4DC' }]}>
-                <Text style={[styles.kpiVal, { color: dark ? '#F1C40F' : '#B87333' }]}>{kpi.cancelled}</Text>
-                <Text style={[styles.kpiLabel, { color: dark ? '#F1C40F' : '#B7950B' }]}>Zrušených</Text>
+                <Text style={[styles.kpiVal, { color: dark ? '#B87333' : '#B87333' }]}>{kpi.cancelled}</Text>
+                <Text style={[styles.kpiLabel, { color: dark ? '#B87333' : '#B7950B' }]}>Zrušených</Text>
               </View>
               <View style={[styles.kpiBox, { backgroundColor: dark ? '#4A1010' : '#FDEDEC', borderColor: dark ? '#C0392B44' : '#F5B7B1' }]}>
                 <Text style={[styles.kpiVal, { color: dark ? '#C0392B' : '#922B21' }]}>{kpi.noShow}</Text>
@@ -341,6 +341,6 @@ const styles = StyleSheet.create({
   docStat: { fontSize: 11 },
   docRevenue: { fontSize: 14, fontWeight: '800' },
 
-  summaryRow:   { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E8E0D5' },
+  summaryRow:   { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#D0D4DC' },
   summaryLabel: { fontSize: 13 },
   summaryVal:   { fontSize: 14, fontWeight: '700' } });

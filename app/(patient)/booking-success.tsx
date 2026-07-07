@@ -85,7 +85,7 @@ export default function BookingSuccessScreen() {
           {/* Success ikona */}
           <Animated.View style={[styles.iconWrap, { transform: [{ scale }] }]}>
             <View style={styles.iconCircle}>
-              <Ionicons name="hourglass-outline" size={48} color="#fff" />
+              <Ionicons name="hourglass-outline" size={48} color="#F5F6F8" />
             </View>
             <Text style={styles.confetti}>📋</Text>
           </Animated.View>
@@ -164,7 +164,7 @@ export default function BookingSuccessScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnPrimary}
               onPress={() => router.push('/')} activeOpacity={0.85}>
-              <Ionicons name="home-outline" size={16} color="#fff" />
+              <Ionicons name="home-outline" size={16} color="#F5F6F8" />
               <Text style={styles.btnPrimaryText}>Domov</Text>
             </TouchableOpacity>
           </View>

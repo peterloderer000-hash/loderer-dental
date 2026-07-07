@@ -136,7 +136,7 @@ export default function ShopScreen() {
         onBack={() => router.back()}
         rightAction={
           <TouchableOpacity style={s.cartBtn} onPress={() => setShowCart(true)} activeOpacity={0.85}>
-            <Ionicons name="cart-outline" size={20} color="#fff" />
+            <Ionicons name="cart-outline" size={20} color="#F5F6F8" />
             {cartCount > 0 && (
               <View style={s.cartBadge}>
                 <Text style={s.cartBadgeText}>{cartCount}</Text>
@@ -198,7 +198,7 @@ export default function ShopScreen() {
                   ) : (
                     <TouchableOpacity style={s.addBtn} onPress={() => addToCart(p)} activeOpacity={0.85}>
                       <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={s.addBtnGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                        <Ionicons name="cart-outline" size={14} color="#fff" />
+                        <Ionicons name="cart-outline" size={14} color="#F5F6F8" />
                         <Text style={s.addBtnText}>Do košíka</Text>
                       </LinearGradient>
                     </TouchableOpacity>
@@ -298,7 +298,7 @@ export default function ShopScreen() {
                 activeOpacity={0.85}
               >
                 <LinearGradient colors={GRADIENTS.gold as [string,string,...string[]]} style={s.orderBtnGrad}>
-                  <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
+                  <Ionicons name="checkmark-circle-outline" size={18} color="#F5F6F8" />
                   <Text style={s.orderBtnText}>
                     {ordering ? 'Odosielam...' : 'Objednať na vyzdvihnutie'}
                   </Text>

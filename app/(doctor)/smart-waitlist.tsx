@@ -41,7 +41,7 @@ const STATUS_CFG = {
   waiting: { label: 'Čaká', color: COLORS.warning },
   notified: { label: 'Notifikovaný', color: COLORS.info },
   booked: { label: 'Objednaný', color: COLORS.success },
-  expired: { label: 'Expirovaný', color: '#95A5A6' },
+  expired: { label: 'Expirovaný', color: '#B8ACA0' },
 };
 
 export default function SmartWaitlist() {
@@ -211,7 +211,7 @@ export default function SmartWaitlist() {
                         <TouchableOpacity style={st.notifyBtn}
                           onPress={() => notifyPatient(entry)}
                           disabled={notifying === entry.id}>
-                          <Ionicons name="notifications" size={16} color="#fff" />
+                          <Ionicons name="notifications" size={16} color="#F5F6F8" />
                           <Text style={st.notifyText}>{notifying === entry.id ? '...' : 'Notifikovať'}</Text>
                         </TouchableOpacity>
                       )}

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../styles/theme';
+import { useAppTheme } from '../context/ThemeContext';
 
 type Props = {
   date: string;        // napr. 'Utorok, 1. Apríla · 10:30'
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export default function UpcomingAppointmentCard({ date, doctor, type, onPress }: Props) {
+  const { colors, dark } = useAppTheme();
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
       {/* Label */}
@@ -48,11 +50,11 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     borderWidth: 1,
     borderColor: COLORS.wal,
-    shadowColor: '#1a0e08',
+    shadowColor: '#121417',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 4,
   },
   label: {
     fontSize: 9,
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 19,
     fontWeight: '500',
-    color: '#fff',
+    color: '#F5F6F8',
     marginBottom: 14,
   },
   divider: {

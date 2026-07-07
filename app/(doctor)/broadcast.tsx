@@ -262,7 +262,7 @@ export default function BroadcastScreen() {
                 <TextInput
                   style={[styles.searchInput, { color: colors.textPrimary }]}
                   placeholder="Hľadaj pacienta..."
-                  placeholderTextColor={dark ? '#666' : '#999'}
+                  placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                   value={patientSearch}
                   onChangeText={setPatientSearch}
                 />
@@ -326,7 +326,7 @@ export default function BroadcastScreen() {
           <TextInput
             style={[styles.input, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
             placeholder="Napr. Oznamenie o zatvorení ordinacie"
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             value={title}
             onChangeText={setTitle}
             maxLength={80}
@@ -338,7 +338,7 @@ export default function BroadcastScreen() {
           <TextInput
             style={[styles.input, styles.bodyInput, { backgroundColor: colors.cardBg, borderColor: colors.bg3, color: colors.textPrimary }]}
             placeholder="Text správy pre pacientov..."
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             value={body}
             onChangeText={setBody}
             multiline
@@ -423,9 +423,9 @@ export default function BroadcastScreen() {
             activeOpacity={0.85}
           >
             {sending
-              ? <ActivityIndicator color="#fff" size="small" />
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
               : <>
-                  <Ionicons name="send" size={18} color="#fff" />
+                  <Ionicons name="send" size={18} color="#F5F6F8" />
                   <Text style={styles.sendBtnText}>
                     Odoslať správu ({recipientCount})
                   </Text>
@@ -480,11 +480,11 @@ const styles = StyleSheet.create({
 
   previewBox:   { backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3, padding: 14, marginBottom: 20 },
   previewLabel: { fontSize: 9, fontWeight: '800', color: COLORS.wal, letterSpacing: 1.5, marginBottom: 10 },
-  previewCard:  { backgroundColor: '#F8F8F8', borderRadius: 2, padding: 12, gap: 3 },
+  previewCard:  { backgroundColor: '#F5F6F8', borderRadius: 2, padding: 12, gap: 3 },
   previewHeader:{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 4 },
   previewApp:   { fontSize: 10, fontWeight: '700', color: COLORS.wal },
   previewTitle: { fontSize: 13, fontWeight: '700', color: COLORS.esp },
-  previewBody:  { fontSize: 13, color: '#555', lineHeight: 17 },
+  previewBody:  { fontSize: 13, color: '#B8ACA0', lineHeight: 17 },
 
   schedToggle:       { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: COLORS.bg3, borderRadius: 2, padding: 14, marginBottom: 10 },
   schedToggleActive: { backgroundColor: '#FDF3E7', borderWidth: 1, borderColor: COLORS.gold },

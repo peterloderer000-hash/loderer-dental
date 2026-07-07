@@ -25,7 +25,7 @@ interface Props {
 const HEIGHT: Record<Variant, number> = { small: 100, medium: 130, large: 160, featured: 200 };
 
 export default function BentoCard({
-  title, value, subtitle, icon, iconColor = '#fff', colors, textColor = '#fff',
+  title, value, subtitle, icon, iconColor = '#F5F6F8', colors, textColor = '#F5F6F8',
   onPress, variant = 'medium', style, badge,
 }: Props) {
   const scale = useSharedValue(1);
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: SPACING.md,
     right: SPACING.md,
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#C0392B',
     borderRadius: RADII.full,
     minWidth: 22,
     height: 22,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   badgeText: {
-    color: '#fff',
+    color: '#F5F6F8',
     fontSize: 10,
     fontFamily: 'DMSans_500Medium',
   },

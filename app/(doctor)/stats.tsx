@@ -119,7 +119,7 @@ function RevenueBarChart({ data }: { data: { label: string; revenue: number; isC
             <View style={[revenueBarStyles.track, { backgroundColor: colors.bg3 }]}>
               <View style={[
                 revenueBarStyles.fill,
-                { width: `${Math.max(pct, d.revenue > 0 ? 4 : 0)}%`, backgroundColor: d.isCurrent ? COLORS.wal : '#BBACA0' },
+                { width: `${Math.max(pct, d.revenue > 0 ? 4 : 0)}%`, backgroundColor: d.isCurrent ? COLORS.wal : '#B8ACA0' },
               ]}>
                 {d.revenue > 0 && pct >= 15 && (
                   <Text style={revenueBarStyles.fillLabel}>
@@ -151,7 +151,7 @@ function ServiceBreakdown({ services, total }: {
   total: number;
 }) {
   const { colors } = useAppTheme();
-  const palette = ['#111827', '#6B4F35', '#BBACA0', '#1A5276', '#2E7D5E', '#7D3C98'];
+  const palette = ['#121417', '#6B4F35', '#B8ACA0', '#1A5276', '#2E7D5E', '#7D3C98'];
   return (
     <View style={{ gap: 8 }}>
       {services.slice(0, 6).map((svc, i) => {
@@ -822,7 +822,7 @@ export default function StatsScreen() {
                       key={star}
                       name={star <= Math.round(stats.avgRating!) ? 'star' : 'star-outline'}
                       size={22}
-                      color="#F1C40F"
+                      color="#B87333"
                     />
                   ))}
                 </View>
@@ -855,8 +855,8 @@ export default function StatsScreen() {
                 <Text style={[styles.retentionLabel, { color: dark ? '#52C896' : '#2E7D5E' }]}>Opakovaní pacienti</Text>
               </View>
               <View style={[styles.retentionItem, { backgroundColor: dark ? '#2D1F10' : '#FDF3E7' }]}>
-                <Text style={[styles.retentionNum, { color: dark ? '#B8ACA0' : '#9A7D0A' }]}>{stats.oneTimePatients}</Text>
-                <Text style={[styles.retentionLabel, { color: dark ? '#B8ACA0' : '#9A7D0A' }]}>Jednorazoví</Text>
+                <Text style={[styles.retentionNum, { color: dark ? '#B8ACA0' : '#B87333' }]}>{stats.oneTimePatients}</Text>
+                <Text style={[styles.retentionLabel, { color: dark ? '#B8ACA0' : '#B87333' }]}>Jednorazoví</Text>
               </View>
               <View style={[styles.retentionItem, { backgroundColor: dark ? '#1E0D33' : '#F5EEF8' }]}>
                 <Text style={[styles.retentionNum, { color: dark ? '#A569BD' : '#6C3483' }]}>{stats.avgApptPerPatient}</Text>
@@ -898,7 +898,7 @@ export default function StatsScreen() {
               <Text style={[styles.retentionNum, { color: dark ? '#F0A030' : '#B87333' }]}>{stats.cancelledCount}</Text>
               <Text style={[styles.retentionLabel, { color: dark ? '#F0A030' : '#B87333' }]}>Zrušených</Text>
             </View>
-            <View style={[styles.retentionItem, { backgroundColor: dark ? '#1A3D2E' : '#F0FAF4' }]}>
+            <View style={[styles.retentionItem, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3' }]}>
               <Text style={[styles.retentionNum, { color: dark ? '#58D68D' : '#2E7D5E' }]}>{stats.completedCount}</Text>
               <Text style={[styles.retentionLabel, { color: dark ? '#58D68D' : '#2E7D5E' }]}>Dokončených</Text>
             </View>
@@ -1004,9 +1004,9 @@ export default function StatsScreen() {
             activeOpacity={0.85}
           >
             {exporting
-              ? <ActivityIndicator color="#fff" size="small" />
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
               : <>
-                  <Ionicons name="download-outline" size={16} color="#fff" />
+                  <Ionicons name="download-outline" size={16} color="#F5F6F8" />
                   <Text style={styles.invoiceExportBtnText}>Exportovať PDF</Text>
                 </>}
           </TouchableOpacity>
@@ -1091,7 +1091,7 @@ const styles = StyleSheet.create({
   statEmoji:   { fontSize: 22, marginBottom: 4 },
   statValue:   { fontSize: 24, fontWeight: '800', lineHeight: 28, color: COLORS.esp },
   statLabel:   { fontSize: 9, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.3, color: COLORS.wal, marginTop: 2, textAlign: 'center' },
-  statSub:     { fontSize: 10, color: '#888', marginTop: 3, textAlign: 'center' },
+  statSub:     { fontSize: 10, color: '#B8ACA0', marginTop: 3, textAlign: 'center' },
 
   // Trend
   trendRow:         { flexDirection: 'row', gap: 10, marginBottom: 14 },
@@ -1134,7 +1134,7 @@ const styles = StyleSheet.create({
   starsRow:        { flexDirection: 'row', gap: 3, marginBottom: 6 },
   ratingAvgText:   { fontSize: 20, fontWeight: '800', color: COLORS.esp, marginBottom: 2 },
   ratingCountText: { fontSize: 10, color: COLORS.wal, fontWeight: '500' },
-  ratingCircle:    { width: 70, height: 70, borderRadius: 35, backgroundColor: '#FDF3E7', borderWidth: 2, borderColor: '#F1C40F', alignItems: 'center', justifyContent: 'center' },
+  ratingCircle:    { width: 70, height: 70, borderRadius: 35, backgroundColor: '#FDF3E7', borderWidth: 2, borderColor: '#B87333', alignItems: 'center', justifyContent: 'center' },
   ratingCircleNum: { fontSize: 22, fontWeight: '800', color: COLORS.esp, lineHeight: 26 },
   ratingCircleSub: { fontSize: 9, color: COLORS.wal, fontWeight: '600' },
 

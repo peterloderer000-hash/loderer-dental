@@ -187,7 +187,7 @@ export default function Inventory() {
             />
           </View>
           <TouchableOpacity style={[st.addBtn, { backgroundColor: COLORS.gold }]} onPress={() => setShowAdd(true)}>
-            <Ionicons name="add" size={22} color="#fff" />
+            <Ionicons name="add" size={22} color="#F5F6F8" />
           </TouchableOpacity>
         </View>
 

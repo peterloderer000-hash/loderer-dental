@@ -99,21 +99,21 @@ function scoreLabel(s: number) {
 }
 function grade(s: number) { return s >= 85 ? 'A' : s >= 70 ? 'B' : s >= 50 ? 'C' : 'D'; }
 function gradeColor(s: number) {
-  return s >= 85 ? COLORS.success : s >= 70 ? '#9A7D0A' : s >= 50 ? COLORS.warning : COLORS.error;
+  return s >= 85 ? COLORS.success : s >= 70 ? '#B87333' : s >= 50 ? COLORS.warning : COLORS.error;
 }
 
 const STATUS_DISPLAY: Partial<Record<ToothStatus, { label: string; color: string; emoji: string }>> = {
   healthy:         { label: 'Zdravý',        color: COLORS.success, emoji: '✅' },
   cavity:          { label: 'Kaz',           color: COLORS.error,   emoji: '🔴' },
   early_cavity:    { label: 'Začín. kaz',    color: '#CB4335',      emoji: '🟠' },
-  filled:          { label: 'Plomba',        color: '#9A7D0A',      emoji: '🟡' },
+  filled:          { label: 'Plomba',        color: '#B87333',      emoji: '🟡' },
   large_filling:   { label: 'Veľká plomba',  color: '#B87333',      emoji: '🟤' },
   crown:           { label: 'Korunka',       color: COLORS.info,    emoji: '👑' },
   implant:         { label: 'Implantát',     color: '#117A65',      emoji: '🔩' },
   bridge:          { label: 'Mostík',        color: '#154360',      emoji: '🌉' },
   root_canal:      { label: 'Devitalizácia', color: '#7D3C98',      emoji: '🟣' },
-  extracted:       { label: 'Extrahovaný',   color: '#566573',      emoji: '⚫' },
-  missing:         { label: 'Chýba',         color: '#AAB7B8',      emoji: '⬜' },
+  extracted:       { label: 'Extrahovaný',   color: '#3A4256',      emoji: '⚫' },
+  missing:         { label: 'Chýba',         color: '#D0D4DC',      emoji: '⬜' },
   watch:           { label: 'Pozorovanie',   color: COLORS.warning,  emoji: '👁' },
   periodontal:     { label: 'Parodont.',     color: COLORS.error,   emoji: '🦷' },
   improve_hygiene: { label: 'Zlepš hygienu', color: COLORS.info,    emoji: '🪥' },
@@ -167,7 +167,7 @@ function ScoreRing({ score, size = 180 }: { score: number; size?: number }) {
       }} />
       {/* Center text */}
       <View style={{ alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: size * 0.22, color: '#F8F6F2', lineHeight: size * 0.26 }}>
+        <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: size * 0.22, color: '#F5F6F8', lineHeight: size * 0.26 }}>
           {display}
         </Text>
         <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: size * 0.08, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.5 }}>
@@ -430,7 +430,7 @@ export default function ScoreScreen() {
                 activeOpacity={0.85}
               >
                 <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                  <Ionicons name="calendar-outline" size={18} color="#fff" />
+                  <Ionicons name="calendar-outline" size={18} color="#F5F6F8" />
                   <Text style={s.ctaText}>Rezervovať termín</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -447,7 +447,7 @@ export default function ScoreScreen() {
                 <DimBar label="Estetika"  score={sc.aesthetics} emoji="✨" colors={colors} />
                 <DimBar label="Prevencia" score={sc.prevention} emoji="🛡️" colors={colors} />
                 <View style={s.legend}>
-                  {([['A','≥85', COLORS.success],['B','≥70','#9A7D0A'],['C','≥50', COLORS.warning],['D','<50', COLORS.error]] as const).map(([g, r, c]) => (
+                  {([['A','≥85', COLORS.success],['B','≥70','#B87333'],['C','≥50', COLORS.warning],['D','<50', COLORS.error]] as const).map(([g, r, c]) => (
                     <View key={g} style={s.legendItem}>
                       <View style={[s.legendDot, { backgroundColor: c }]} />
                       <Text style={[s.legendText, { color: colors.textSecondary }]}>{g}: {r}</Text>
@@ -496,7 +496,7 @@ export default function ScoreScreen() {
                 <View
                   key={a.key}
                   style={[ach.item,
-                    { backgroundColor: a.unlocked ? (dark ? '#1A2A1A' : '#F0FAF4') : colors.bg2,
+                    { backgroundColor: a.unlocked ? (dark ? '#1A2A1A' : '#EDF7F3') : colors.bg2,
                       borderColor: a.unlocked ? (dark ? '#52C89644' : '#A3D4BE') : colors.bg3,
                       opacity: a.unlocked ? 1 : 0.45 }]}
                 >
@@ -546,7 +546,7 @@ export default function ScoreScreen() {
           {/* CTA button */}
           <TouchableOpacity style={s.ctaBtn} onPress={() => router.push('/(patient)/book-appointment')} activeOpacity={0.85}>
             <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.ctaGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-              <Ionicons name="calendar-outline" size={18} color="#fff" />
+              <Ionicons name="calendar-outline" size={18} color="#F5F6F8" />
               <Text style={s.ctaText}>Rezervovať termín</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -571,9 +571,9 @@ const ach = StyleSheet.create({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   hero: { paddingHorizontal: 20, paddingTop: 14, paddingBottom: 32, overflow: 'hidden' },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8' },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 4 },
-  heroTitle: { ...TYPO.h1, color: '#F8F6F2', marginBottom: 24 },
+  heroTitle: { ...TYPO.h1, color: '#F5F6F8', marginBottom: 24 },
 
   ringWrap:     { alignItems: 'center', gap: 16 },
   ringMeta:     { alignItems: 'center', gap: 8 },
@@ -583,18 +583,18 @@ const s = StyleSheet.create({
 
   noDataHero:  { alignItems: 'center', gap: 10, paddingBottom: 8 },
   noDataEmoji: { fontSize: 52 },
-  noDataTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#F8F6F2', textAlign: 'center' },
+  noDataTitle: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 20, color: '#F5F6F8', textAlign: 'center' },
   noDataSub:   { fontFamily: 'DMSans_400Regular', fontSize: 13, color: 'rgba(196,168,130,0.75)', textAlign: 'center', lineHeight: 20 },
 
   subRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 },
 
-  noDataCard: { margin: 16, borderRadius: RADII.lg, backgroundColor: '#FAFAF8', padding: 20, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3, gap: 10 },
+  noDataCard: { margin: 16, borderRadius: RADII.lg, backgroundColor: '#F5F6F8', padding: 20, ...SHADOWS.card, borderWidth: 1, borderColor: COLORS.bg3, gap: 10 },
   noDataCardTitle: { ...TYPO.h2 },
   noDataCardSub:   { ...TYPO.body },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
-  card:      { backgroundColor: '#FAFAF8', borderRadius: RADII.lg, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, ...SHADOWS.sm },
+  card:      { backgroundColor: '#F5F6F8', borderRadius: RADII.lg, marginHorizontal: 16, marginTop: 12, padding: 16, borderWidth: 1, ...SHADOWS.sm },
   cardTitle: { ...TYPO.label, marginBottom: 14 },
 
   legend:     { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'flex-end' },

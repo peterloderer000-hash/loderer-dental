@@ -34,7 +34,7 @@ const RELATIONSHIPS = ['dieťa', 'manžel/ka', 'rodič', 'súrodenec', 'iné'] a
 const REL_CFG: Record<string, { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string; darkBg: string }> = {
   'dieťa':     { icon: 'happy-outline',  color: '#1A5276', bg: '#EBF5FB', darkBg: '#0D2233' },
   'manžel/ka': { icon: 'heart-outline',  color: '#7D3C98', bg: '#F5EEF8', darkBg: '#2A1040' },
-  'rodič':     { icon: 'people-outline', color: '#784212', bg: '#FDF3E7', darkBg: '#2D2000' },
+  'rodič':     { icon: 'people-outline', color: '#B87333', bg: '#FDF3E7', darkBg: '#2D2000' },
   'súrodenec': { icon: 'person-outline', color: '#2E7D5E', bg: '#EDF7F3', darkBg: '#1A3D2E' },
   'iné':       { icon: 'person-outline', color: COLORS.wal, bg: '#D0D4DC', darkBg: '#1E1610' },
 };
@@ -298,7 +298,7 @@ export default function FamilyScreen() {
               value={form.full_name}
               onChangeText={v => setForm(f => ({ ...f, full_name: v }))}
               placeholder="Meno a priezvisko"
-              placeholderTextColor={dark ? '#555' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               autoCapitalize="words"
             />
 
@@ -336,7 +336,7 @@ export default function FamilyScreen() {
               value={form.date_of_birth}
               onChangeText={v => setForm(f => ({ ...f, date_of_birth: v }))}
               placeholder="DD.MM.RRRR"
-              placeholderTextColor={dark ? '#555' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               keyboardType="numbers-and-punctuation"
               maxLength={10}
             />
@@ -348,7 +348,7 @@ export default function FamilyScreen() {
               value={form.notes}
               onChangeText={v => setForm(f => ({ ...f, notes: v }))}
               placeholder="Alergie, špeciálne potreby..."
-              placeholderTextColor={dark ? '#555' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               multiline
             />
 

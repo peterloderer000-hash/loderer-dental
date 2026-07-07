@@ -207,7 +207,7 @@ export default function PatientMessagesScreen() {
           <TextInput
             style={[styles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Napíšte správu..."
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             value={text}
             onChangeText={setText}
             multiline
@@ -220,8 +220,8 @@ export default function PatientMessagesScreen() {
             disabled={!text.trim() || sending}
             activeOpacity={0.8}>
             {sending
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Ionicons name="send" size={18} color="#fff" />}
+              ? <ActivityIndicator color="#F5F6F8" size="small" />
+              : <Ionicons name="send" size={18} color="#F5F6F8" />}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   bubbleTheirs:    {},
   bubbleText:      { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
   bubbleTextMine:  { color: '#F5F6F8' },
-  bubbleTime:      { fontSize: 11, color: '#888', marginTop: 4, textAlign: 'right' },
+  bubbleTime:      { fontSize: 11, color: '#B8ACA0', marginTop: 4, textAlign: 'right' },
   bubbleTimeMine:  { color: COLORS.sand },
 
   // Input

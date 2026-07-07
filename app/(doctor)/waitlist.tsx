@@ -180,7 +180,7 @@ export default function WaitlistScreen() {
                           onPress={() => Linking.openURL(`tel:${item.patient!.phone_number}`).catch(() => {})}
                           activeOpacity={0.75}
                         >
-                          <Ionicons name="call" size={14} color="#fff" />
+                          <Ionicons name="call" size={14} color="#F5F6F8" />
                         </TouchableOpacity>
                       )}
                     </View>
@@ -227,9 +227,9 @@ export default function WaitlistScreen() {
                       activeOpacity={0.85}
                     >
                       {isActing
-                        ? <ActivityIndicator color="#fff" size="small" />
+                        ? <ActivityIndicator color="#F5F6F8" size="small" />
                         : <>
-                            <Ionicons name="calendar-outline" size={15} color="#fff" />
+                            <Ionicons name="calendar-outline" size={15} color="#F5F6F8" />
                             <Text style={styles.btnApproveText}>Rezervovať</Text>
                           </>}
                     </TouchableOpacity>
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   avatarText: { fontSize: 17, fontWeight: '700', color: COLORS.cream },
   patientName:{ fontSize: 15, fontWeight: '700', color: COLORS.esp },
   patientPhone:{ fontSize: 11, color: COLORS.wal, marginTop: 1 },
-  timeAgo:    { fontSize: 10, color: '#bbb', fontStyle: 'italic' },
+  timeAgo:    { fontSize: 10, color: '#D0D4DC', fontStyle: 'italic' },
   waitBadge:     { borderRadius: 2, borderWidth: 1, paddingHorizontal: 7, paddingVertical: 3 },
   waitBadgeText: { fontSize: 10, fontWeight: '700' },
   callBtn:    { width: 28, height: 28, borderRadius: 2, backgroundColor: '#1A8A44', alignItems: 'center', justifyContent: 'center' },

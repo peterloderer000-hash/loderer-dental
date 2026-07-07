@@ -92,7 +92,7 @@ export default function InsuranceCalc() {
                 style={[st.treatRow, sel && { backgroundColor: COLORS.gold + '08' }, i > 0 && { borderTopWidth: 0.5, borderTopColor: colors.bg3 }]}
                 onPress={() => toggleTreatment(t.key)} activeOpacity={0.7}>
                 <View style={[st.checkBox, { borderColor: sel ? COLORS.gold : colors.bg3, backgroundColor: sel ? COLORS.gold : 'transparent' }]}>
-                  {sel && <Ionicons name="checkmark" size={14} color="#fff" />}
+                  {sel && <Ionicons name="checkmark" size={14} color="#F5F6F8" />}
                 </View>
                 <Text style={{ fontSize: 20 }}>{t.icon}</Text>
                 <View style={{ flex: 1 }}>

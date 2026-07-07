@@ -273,7 +273,7 @@ export default function RecallScreen() {
             <View style={[styles.checkbox,
               { borderColor: isSel ? COLORS.wal : colors.bg3 },
               isSel && { backgroundColor: COLORS.wal }]}>
-              {isSel && <Ionicons name="checkmark" size={12} color="#fff" />}
+              {isSel && <Ionicons name="checkmark" size={12} color="#F5F6F8" />}
             </View>
           </View>
 
@@ -427,7 +427,7 @@ export default function RecallScreen() {
                   <View style={[styles.checkbox,
                     { borderColor: allSelected ? COLORS.wal : colors.bg3 },
                     allSelected && { backgroundColor: COLORS.wal }]}>
-                    {allSelected && <Ionicons name="checkmark" size={12} color="#fff" />}
+                    {allSelected && <Ionicons name="checkmark" size={12} color="#F5F6F8" />}
                   </View>
                   <Text style={[styles.selectAllText, { color: colors.textSecondary }]}>
                     {allSelected ? 'Zrušiť výber' : 'Vybrať všetkých'}
@@ -444,7 +444,7 @@ export default function RecallScreen() {
                     }}
                     activeOpacity={0.85}
                   >
-                    <Ionicons name="send-outline" size={14} color="#fff" />
+                    <Ionicons name="send-outline" size={14} color="#F5F6F8" />
                     <Text style={styles.bulkSendText}>Poslať všetkým vybraným ({selected.size})</Text>
                   </TouchableOpacity>
                 )}
@@ -484,7 +484,7 @@ export default function RecallScreen() {
                 value={bulkMsg}
                 onChangeText={setBulkMsg}
                 placeholder="Napíšte správu pre pacientov..."
-                placeholderTextColor={dark ? '#555' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -503,8 +503,8 @@ export default function RecallScreen() {
                   disabled={sending || !bulkMsg.trim()}
                   activeOpacity={0.85}>
                   {sending
-                    ? <ActivityIndicator color="#fff" size="small" />
-                    : <><Ionicons name="send-outline" size={15} color="#fff" />
+                    ? <ActivityIndicator color="#F5F6F8" size="small" />
+                    : <><Ionicons name="send-outline" size={15} color="#F5F6F8" />
                         <Text style={styles.modalBtnSendText}>Odoslať všetkým</Text></>}
                 </TouchableOpacity>
               </View>

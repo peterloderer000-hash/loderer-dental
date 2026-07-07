@@ -123,7 +123,7 @@ function InviteModal({
           <TextInput
             style={[im.input, { color: colors.textPrimary }]}
             placeholder="meno@klinika.sk"
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -153,8 +153,8 @@ function InviteModal({
           activeOpacity={0.85}
         >
           {loading
-            ? <ActivityIndicator color="#fff" />
-            : <><Ionicons name="send-outline" size={16} color="#fff" /><Text style={im.sendBtnText}>Vytvoriť pozvánku</Text></>}
+            ? <ActivityIndicator color="#F5F6F8" />
+            : <><Ionicons name="send-outline" size={16} color="#F5F6F8" /><Text style={im.sendBtnText}>Vytvoriť pozvánku</Text></>}
         </TouchableOpacity>
       </View>
     </Modal>
@@ -334,7 +334,7 @@ export default function AdminScreen() {
       <View style={[s.tabRow, { backgroundColor: colors.cardBg, borderBottomColor: colors.bg3 }]}>
         {TABS.map(t => (
           <TouchableOpacity key={t.key} style={[s.tabBtn, tab === t.key && s.tabBtnActive, tab === t.key && dark && { borderBottomColor: COLORS.gold }]} onPress={() => setTab(t.key)} activeOpacity={0.75}>
-            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? colors.textPrimary : '#aaa'} />
+            <Ionicons name={tab === t.key ? t.icon : `${t.icon}-outline` as any} size={16} color={tab === t.key ? colors.textPrimary : '#B8ACA0'} />
             <Text style={[s.tabBtnText, tab === t.key && s.tabBtnTextActive, tab === t.key && { color: colors.textPrimary }]}>{t.label}</Text>
           </TouchableOpacity>
         ))}
@@ -429,7 +429,7 @@ export default function AdminScreen() {
                             value={(editForm as any)[f.key] ?? ''}
                             onChangeText={v => setEditForm(prev => ({ ...prev, [f.key]: v }))}
                             placeholder={f.placeholder}
-                            placeholderTextColor={dark ? '#666' : '#999'}
+                            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                             autoCapitalize={f.key === 'email' || f.key === 'website' ? 'none' : 'words'}
                           />
                         </View>
@@ -440,7 +440,7 @@ export default function AdminScreen() {
                         <Text style={[s.cancelBtnText, { color: colors.textSecondary }]}>Zrušiť</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={[s.saveBtn, savingClinic && { opacity: 0.5 }]} onPress={saveClinic} disabled={savingClinic} activeOpacity={0.85}>
-                        {savingClinic ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.saveBtnText}>Uložiť</Text>}
+                        {savingClinic ? <ActivityIndicator color="#F5F6F8" size="small" /> : <Text style={s.saveBtnText}>Uložiť</Text>}
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -599,10 +599,10 @@ const s = StyleSheet.create({
     borderBottomWidth: 3, borderBottomColor: 'transparent'
   },
   tabBtnActive: { borderBottomColor: COLORS.esp },
-  tabBtnText:   { fontSize: 11, fontWeight: '600', color: '#aaa' },
+  tabBtnText:   { fontSize: 11, fontWeight: '600', color: '#B8ACA0' },
   tabBtnTextActive: { color: COLORS.esp },
 
-  listMeta: { fontSize: 11, color: '#aaa', fontWeight: '600', letterSpacing: 1, marginBottom: 12 },
+  listMeta: { fontSize: 11, color: '#B8ACA0', fontWeight: '600', letterSpacing: 1, marginBottom: 12 },
 
   memberCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
@@ -619,7 +619,7 @@ const s = StyleSheet.create({
   roleBadge: { borderRadius: 2, paddingHorizontal: 8, paddingVertical: 3 },
   roleBadgeText: { fontSize: 10, fontWeight: '700' },
   memberSub:   { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
-  memberPhone: { fontSize: 12, color: '#888' },
+  memberPhone: { fontSize: 12, color: '#B8ACA0' },
   removeBtn: {
     width: 34, height: 34, borderRadius: 2,
     backgroundColor: '#FDF2F2', alignItems: 'center', justifyContent: 'center'

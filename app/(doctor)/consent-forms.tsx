@@ -258,7 +258,7 @@ export default function ConsentFormsScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.formActionBtn, styles.formActionSend]}
                       onPress={() => openSend(f.id)} activeOpacity={0.85}>
-                      <Ionicons name="send-outline" size={14} color="#fff" />
+                      <Ionicons name="send-outline" size={14} color="#F5F6F8" />
                       <Text style={[styles.formActionText, { color: '#F5F6F8' }]}>Odoslať</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDeleteForm(f)}
@@ -324,11 +324,11 @@ export default function ConsentFormsScreen() {
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={[styles.formLabel, { color: colors.textSecondary }]}>NÁZOV SÚHLASU *</Text>
               <TextInput style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]} value={formTitle} onChangeText={setFormTitle}
-                placeholder="napr. Súhlas s extrakciou zuba" placeholderTextColor={dark ? '#666' : '#bbb'} />
+                placeholder="napr. Súhlas s extrakciou zuba" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} />
               <Text style={[styles.formLabel, { color: colors.textSecondary }]}>TEXT SÚHLASU *</Text>
               <TextInput style={[styles.formInput, { minHeight: 160, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 value={formContent} onChangeText={setFormContent}
-                placeholder="Plný text informovaného súhlasu..." placeholderTextColor={dark ? '#666' : '#bbb'}
+                placeholder="Plný text informovaného súhlasu..." placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 multiline />
             </ScrollView>
             <View style={styles.modalActions}>
@@ -337,7 +337,7 @@ export default function ConsentFormsScreen() {
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalSave, saving && { opacity: 0.5 }]}
                 onPress={handleSaveForm} disabled={saving} activeOpacity={0.85}>
-                {saving ? <ActivityIndicator color="#fff" size="small" />
+                {saving ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <Text style={styles.modalSaveText}>{editingForm ? 'Uložiť' : 'Vytvoriť'}</Text>}
               </TouchableOpacity>
             </View>
@@ -359,7 +359,7 @@ export default function ConsentFormsScreen() {
                   style={[styles.patientOption, { borderBottomColor: colors.bg3 }, sendPatientId === p.id && styles.patientOptionActive]}
                   onPress={() => setSendPatientId(p.id)} activeOpacity={0.8}>
                   <View style={[styles.patientDot, { borderColor: colors.bg3 }, sendPatientId === p.id && { backgroundColor: COLORS.wal }]}>
-                    {sendPatientId === p.id && <Ionicons name="checkmark" size={12} color="#fff" />}
+                    {sendPatientId === p.id && <Ionicons name="checkmark" size={12} color="#F5F6F8" />}
                   </View>
                   <Text style={[styles.patientOptionText, { color: colors.textSecondary }, sendPatientId === p.id && { color: colors.textPrimary, fontWeight: '700' }]}>
                     {p.full_name ?? 'Pacient'}
@@ -373,8 +373,8 @@ export default function ConsentFormsScreen() {
               </TouchableOpacity>
               <TouchableOpacity style={[styles.modalSave, (sending || !sendPatientId) && { opacity: 0.5 }]}
                 onPress={handleSend} disabled={sending || !sendPatientId} activeOpacity={0.85}>
-                {sending ? <ActivityIndicator color="#fff" size="small" />
-                  : <><Ionicons name="send-outline" size={14} color="#fff" />
+                {sending ? <ActivityIndicator color="#F5F6F8" size="small" />
+                  : <><Ionicons name="send-outline" size={14} color="#F5F6F8" />
                       <Text style={styles.modalSaveText}>Odoslať</Text></>}
               </TouchableOpacity>
             </View>
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
   formCard:    { backgroundColor: COLORS.cream, borderRadius: 2, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: COLORS.bg3 },
   formCardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 6 },
   formTitle:   { flex: 1, fontSize: 14, fontWeight: '700', color: COLORS.esp, lineHeight: 20 },
-  formPreview: { fontSize: 11, color: '#888', lineHeight: 16, marginBottom: 10, fontStyle: 'italic' },
+  formPreview: { fontSize: 11, color: '#B8ACA0', lineHeight: 16, marginBottom: 10, fontStyle: 'italic' },
   formActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   formActionBtn:  { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 2, borderWidth: 1, borderColor: COLORS.bg3 },
   formActionSend: { backgroundColor: COLORS.wal, borderColor: COLORS.wal },

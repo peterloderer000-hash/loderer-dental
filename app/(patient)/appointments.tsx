@@ -117,7 +117,7 @@ const AppointmentCard = React.memo(function AppointmentCard({ item, onCancel, on
         {item.family_member_name ? (
           <View style={styles.infoItem}>
             <Text style={{ fontSize: 13 }}>👶</Text>
-            <Text style={[styles.infoText, { color: '#784212', fontWeight: '600' }]}>
+            <Text style={[styles.infoText, { color: '#B87333', fontWeight: '600' }]}>
               Pre: {item.family_member_name}
             </Text>
           </View>
@@ -408,8 +408,8 @@ function RescheduleModal({ visible, appointment, onClose, onDone }: {
             style={[rs.confirmBtn, (!selDate || !selTime || saving) && rs.confirmBtnOff]}
             onPress={handleConfirm} disabled={!selDate || !selTime || saving} activeOpacity={0.85}>
             {saving
-              ? <ActivityIndicator color="#fff" />
-              : <><Ionicons name="checkmark-circle" size={18} color="#fff" />
+              ? <ActivityIndicator color="#F5F6F8" />
+              : <><Ionicons name="checkmark-circle" size={18} color="#F5F6F8" />
                   <Text style={rs.confirmText}>Potvrdiť presunutie</Text></>}
           </TouchableOpacity>
         </View>
@@ -434,7 +434,7 @@ const rs = StyleSheet.create({
   slotTaken:      { opacity: 0.4 },
   slotText:       { fontSize: 13, fontWeight: '700', color: COLORS.esp },
   slotTextSel:    { color: COLORS.cream },
-  slotTextTaken:  { color: '#ccc' },
+  slotTextTaken:  { color: '#D0D4DC' },
   slotTakenLabel: { fontSize: 9, color: '#C0392B', fontWeight: '700' },
 
   confirmBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 15 },
@@ -500,7 +500,7 @@ function RatingModal({ appointment, onClose, onDone }: {
             {[1,2,3,4,5].map((n) => (
               <TouchableOpacity key={n} onPress={() => selectRating(n)} activeOpacity={0.7}>
                 <Ionicons name={n <= rating ? 'star' : 'star-outline'} size={40}
-                  color={n <= rating ? '#B8ACA0' : '#ddd'} />
+                  color={n <= rating ? '#B8ACA0' : '#D0D4DC'} />
               </TouchableOpacity>
             ))}
           </Animated.View>
@@ -512,7 +512,7 @@ function RatingModal({ appointment, onClose, onDone }: {
           <TextInput
             style={[rStyles.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Pridaj komentár (voliteľné)..."
-            placeholderTextColor={dark ? '#666' : '#999'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
             value={review}
             onChangeText={setReview}
             multiline
@@ -528,7 +528,7 @@ function RatingModal({ appointment, onClose, onDone }: {
               style={[rStyles.btnSubmit, (saving || rating === 0) && { opacity: 0.5 }]}
               onPress={handleSubmit} disabled={saving || rating === 0} activeOpacity={0.85}>
               {saving
-                ? <ActivityIndicator color="#fff" size="small" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
                 : <Text style={rStyles.btnSubmitText}>Odoslať hodnotenie</Text>}
             </TouchableOpacity>
           </View>
@@ -646,7 +646,7 @@ function AppointmentDetailSheet({ appointment, onClose }: {
             <View style={[dsStyles.notesBox, { backgroundColor: '#FDFDE7', borderColor: '#D0D4DC' }]}>
               <View style={dsStyles.notesHeader}>
                 <Text style={{ fontSize: 14 }}>📋</Text>
-                <Text style={[dsStyles.notesHeaderText, { color: '#9A7D0A' }]}>POKYNY PO OŠETRENÍ</Text>
+                <Text style={[dsStyles.notesHeaderText, { color: '#B87333' }]}>POKYNY PO OŠETRENÍ</Text>
               </View>
               <Text style={[dsStyles.notesText, { color: '#6D4C0A' }]}>{appointment.care_instructions}</Text>
             </View>
@@ -1042,7 +1042,7 @@ const styles = StyleSheet.create({
   // Filters
   filterScroll:  { flexShrink: 0, flexGrow: 0 },
   filterContent: { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
-  filterTab:     { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#FAFAF8' },
+  filterTab:     { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: COLORS.bg3, backgroundColor: '#F5F6F8' },
   filterTabText: { fontSize: 13, fontFamily: 'DMSans_500Medium', color: COLORS.wal },
   filterTabTextActive: { color: '#F5F6F8', fontFamily: 'DMSans_500Medium', fontSize: 13 },
 
@@ -1098,14 +1098,14 @@ const styles = StyleSheet.create({
   careBox:       { marginTop: 10, backgroundColor: '#FDFDE7', borderRadius: 2, padding: 11, borderWidth: 1.5, borderColor: '#D0D4DC' },
   careBoxHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   careBoxIcon:   { fontSize: 13 },
-  careBoxLabel:  { fontSize: 9, fontWeight: '800', color: '#9A7D0A', letterSpacing: 1.5, textTransform: 'uppercase' },
+  careBoxLabel:  { fontSize: 9, fontWeight: '800', color: '#B87333', letterSpacing: 1.5, textTransform: 'uppercase' },
   careBoxText:   { fontSize: 13, color: '#6D4C0A', lineHeight: 19 },
 
   detailHint:     { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8, justifyContent: 'center' },
   detailHintText: { fontSize: 11, color: COLORS.wal, fontStyle: 'italic' },
 
   // Stav platby
-  payBadge:        { flexDirection: 'row', alignItems: 'center', marginTop: 8, alignSelf: 'flex-start', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#F5F5F5' },
+  payBadge:        { flexDirection: 'row', alignItems: 'center', marginTop: 8, alignSelf: 'flex-start', borderRadius: 2, paddingHorizontal: 10, paddingVertical: 4, borderWidth: 1, borderColor: COLORS.bg3, backgroundColor: '#F5F6F8' },
   payPaid:         { backgroundColor: '#EDF7F3', borderColor: '#A3D4BE' },
   payPartial:      { backgroundColor: '#FDF3E7', borderColor: '#D0D4DC' },
   payBadgeText:    { fontSize: 11, fontWeight: '600', color: COLORS.wal },
@@ -1116,7 +1116,7 @@ const styles = StyleSheet.create({
   ratingRow:  { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: COLORS.bg3 },
   ratingText: { fontSize: 12, fontWeight: '600', color: '#B8ACA0', marginLeft: 4 },
   rateBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10, paddingVertical: 9, borderRadius: 2, backgroundColor: '#FDF3E7', borderWidth: 1, borderColor: '#D0D4DC' },
-  rateBtnText:{ fontSize: 13, fontWeight: '600', color: '#9A7D0A' },
+  rateBtnText:{ fontSize: 13, fontWeight: '600', color: '#B87333' },
 
   // Empty / loading
   loadingText: { marginTop: 12, color: COLORS.wal, fontSize: 13 },

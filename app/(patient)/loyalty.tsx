@@ -30,7 +30,7 @@ type PointEntry = {
 
 const TIERS = [
   { key: 'bronze',   label: 'Bronze',   icon: '🥉', min: 0,    color: '#CD7F32', bg: '#FFF3E0', next: 200 },
-  { key: 'silver',   label: 'Silver',   icon: '🥈', min: 200,  color: '#A0A0A0', bg: '#F5F5F5', next: 500 },
+  { key: 'silver',   label: 'Silver',   icon: '🥈', min: 200,  color: '#B8ACA0', bg: '#F5F6F8', next: 500 },
   { key: 'gold',     label: 'Gold',     icon: '🥇', min: 500,  color: '#3A4256', bg: '#FFF8E1', next: 1000 },
   { key: 'platinum', label: 'Platinum', icon: '💎', min: 1000, color: '#7B68EE', bg: '#EDE7F6', next: null },
 ];
@@ -38,7 +38,7 @@ const TIERS = [
 const REASON_CFG: Record<string, { icon: string; label: string; color: string }> = {
   appointment: { icon: '🦷', label: 'Návšteva',  color: '#2E7D5E' },
   review:      { icon: '⭐', label: 'Recenzia',  color: '#B8ACA0' },
-  referral:    { icon: '👥', label: 'Odporúčanie', color: '#3498DB' },
+  referral:    { icon: '👥', label: 'Odporúčanie', color: '#1A5276' },
   streak:      { icon: '🔥', label: 'Séria',     color: '#C0392B' },
   bonus:       { icon: '🎁', label: 'Bonus',     color: '#9B59B6' },
 };
@@ -136,7 +136,7 @@ export default function LoyaltyScreen() {
         {/* ── TIER CARD ── */}
         <Animated.View entering={FadeInDown.delay(100).duration(500)}>
           <LinearGradient
-            colors={dark ? ['#1A120B', '#111827'] : [tier.bg, '#F5F6F8']}
+            colors={dark ? ['#1A120B', '#121417'] : [tier.bg, '#F5F6F8']}
             style={[s.tierCard, SHADOWS.card]}
           >
             <View style={s.tierTop}>

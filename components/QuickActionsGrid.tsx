@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { COLORS, SIZES } from '../styles/theme';
+import { useAppTheme } from '../context/ThemeContext';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -20,6 +21,7 @@ const ACTIONS: Action[] = [
 
 export default function QuickActionsGrid() {
   const router = useRouter();
+  const { colors, dark } = useAppTheme();
 
   return (
     <View style={styles.grid}>
@@ -30,7 +32,7 @@ export default function QuickActionsGrid() {
           onPress={() => router.push(action.route as any)}
           activeOpacity={0.75}
         >
-          <Ionicons name={action.icon} size={24} color={COLORS.wal} />
+          <Ionicons name={action.icon} size={24} color={dark ? colors.textSub : COLORS.wal} />
           <Text style={styles.tileLabel}>{action.label}</Text>
         </TouchableOpacity>
       ))}
@@ -47,10 +49,10 @@ const styles = StyleSheet.create({
   },
   tile: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: dark ? colors.card : '#F5F6F8',
     borderRadius: SIZES.radius,
     borderWidth: 1,
-    borderColor: COLORS.bg3,
+    borderColor: dark ? colors.border : COLORS.bg3,
     paddingVertical: 16,
     alignItems: 'center',
     gap: 8,
@@ -63,7 +65,7 @@ const styles = StyleSheet.create({
   tileLabel: {
     fontSize: 9,
     fontWeight: '500',
-    color: COLORS.wal,
+    color: dark ? colors.textSub : COLORS.wal,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     textAlign: 'center',

@@ -358,7 +358,7 @@ function RecallSection({ colors, dark }: { colors: any; dark: boolean }) {
           </View>
         </View>
         {/* Progress bar */}
-        <View style={[s.recallBarBg, { backgroundColor: dark ? '#ffffff10' : '#f0f0f0' }]}>
+        <View style={[s.recallBarBg, { backgroundColor: dark ? '#ffffff10' : '#EAECEE' }]}>
           <View style={[s.recallBarFg, { width: `${Math.min(pct, 100)}%`, backgroundColor: pct > 30 ? COLORS.error : COLORS.warning }]} />
         </View>
       </View>
@@ -371,7 +371,7 @@ function RecallSection({ colors, dark }: { colors: any; dark: boolean }) {
 const s = StyleSheet.create({
   hero:      { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, gap: 2 },
   heroLabel: { ...TYPO.overline, color: COLORS.sand, marginBottom: 2 },
-  heroTitle: { ...TYPO.h1, color: '#F8F6F2' },
+  heroTitle: { ...TYPO.h1, color: '#F5F6F8' },
   backBtn:   { position: 'absolute', left: 16, top: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.10)', alignItems: 'center', justifyContent: 'center' },
 
   tabRow: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 14, paddingTop: 4, gap: 8 },

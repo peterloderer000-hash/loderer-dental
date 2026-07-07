@@ -86,7 +86,7 @@ export default function CheckInScreen() {
             <TextInput
               style={[s.input, { borderColor: colors.bg3, backgroundColor: colors.bg2, color: colors.textPrimary }]}
               placeholder="napr. A1B2C3D4"
-              placeholderTextColor={dark ? '#666' : '#999'}
+              placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
               value={code}
               onChangeText={(t) => { setCode(t.toUpperCase()); setFound(null); }}
               autoCapitalize="characters"
@@ -102,8 +102,8 @@ export default function CheckInScreen() {
               activeOpacity={0.8}
             >
               {searching
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <Ionicons name="search" size={20} color="#fff" />}
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
+                : <Ionicons name="search" size={20} color="#F5F6F8" />}
             </TouchableOpacity>
           </View>
 
@@ -136,9 +136,9 @@ export default function CheckInScreen() {
                 activeOpacity={0.85}
               >
                 {confirming
-                  ? <ActivityIndicator color="#fff" />
+                  ? <ActivityIndicator color="#F5F6F8" />
                   : <>
-                      <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                      <Ionicons name="checkmark-circle" size={20} color="#F5F6F8" />
                       <Text style={s.confirmText}>Potvrdiť príchod do čakárne</Text>
                     </>}
               </TouchableOpacity>

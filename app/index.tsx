@@ -147,7 +147,7 @@ export default function AuthScreen() {
           <View style={styles.retryWrap}>
             <Text style={styles.retryText}>Pripojenie trvá dlhšie ako zvyčajne...</Text>
             <TouchableOpacity style={styles.retryBtn} onPress={handleRetry} activeOpacity={0.85}>
-              <Ionicons name="refresh-outline" size={16} color="#fff" />
+              <Ionicons name="refresh-outline" size={16} color="#F5F6F8" />
               <Text style={styles.retryBtnText}>Skúsiť znova</Text>
             </TouchableOpacity>
           </View>
@@ -206,7 +206,7 @@ export default function AuthScreen() {
                     <TextInput
                       style={styles.input}
                       placeholder="vas@email.sk"
-                      placeholderTextColor="#bbb"
+                      placeholderTextColor="#D0D4DC"
                       autoCapitalize="none"
                       keyboardType="email-address"
                       value={email}
@@ -215,7 +215,7 @@ export default function AuthScreen() {
                     />
                   </View>
                   <TouchableOpacity style={styles.btnPrimary} onPress={handleResetPassword} activeOpacity={0.85}>
-                    <Ionicons name="send-outline" size={17} color="#fff" />
+                    <Ionicons name="send-outline" size={17} color="#F5F6F8" />
                     <Text style={styles.btnPrimaryText}>Odoslať odkaz</Text>
                   </TouchableOpacity>
                 </>
@@ -232,7 +232,7 @@ export default function AuthScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="vas@email.sk"
-                  placeholderTextColor="#bbb"
+                  placeholderTextColor="#D0D4DC"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   value={email}
@@ -246,7 +246,7 @@ export default function AuthScreen() {
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
                   placeholder="••••••••"
-                  placeholderTextColor="#bbb"
+                  placeholderTextColor="#D0D4DC"
                   secureTextEntry={!showPass}
                   value={password}
                   onChangeText={setPassword}
@@ -262,7 +262,7 @@ export default function AuthScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.btnPrimary} onPress={handleSignIn} activeOpacity={0.85}>
-                <Ionicons name="log-in-outline" size={18} color="#fff" />
+                <Ionicons name="log-in-outline" size={18} color="#F5F6F8" />
                 <Text style={styles.btnPrimaryText}>Prihlásiť sa</Text>
               </TouchableOpacity>
 
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
 
   divider:     { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 18 },
   dividerLine: { flex: 1, height: 1, backgroundColor: COLORS.bg3 },
-  dividerText: { fontSize: 12, color: '#bbb', fontWeight: '500' },
+  dividerText: { fontSize: 12, color: '#D0D4DC', fontWeight: '500' },
 
   btnSecondary:     { borderWidth: 1.5, borderColor: COLORS.bg3, borderRadius: 2, paddingVertical: 13, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, backgroundColor: COLORS.bg2 },
   btnSecondaryText: { color: COLORS.wal, fontSize: 14, fontWeight: '600' },

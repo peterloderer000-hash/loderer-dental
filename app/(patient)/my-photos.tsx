@@ -48,7 +48,7 @@ const CAT_CFG: Record<string, { label: string; icon: string; color: string; bg: 
   xray:     { label: 'RTG',      icon: '🩻', color: '#1A5276', bg: '#EBF5FB' },
   photo:    { label: 'Fotka',    icon: '📸', color: '#2E7D5E', bg: '#EDF7F3' },
   document: { label: 'Dokument', icon: '📄', color: '#7D3C98', bg: '#F5EEF8' },
-  general:  { label: 'Príloha',  icon: '📎', color: '#784212', bg: '#FDF3E7' },
+  general:  { label: 'Príloha',  icon: '📎', color: '#B87333', bg: '#FDF3E7' },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -69,7 +69,7 @@ function PreviewModal({
     <Modal visible={visible} animationType="fade" transparent statusBarTranslucent>
       <View style={ms.backdrop}>
         <TouchableOpacity style={ms.closeBtn} onPress={onClose} activeOpacity={0.8}>
-          <Ionicons name="close" size={24} color="#fff" />
+          <Ionicons name="close" size={24} color="#F5F6F8" />
         </TouchableOpacity>
 
         <Image
@@ -128,7 +128,7 @@ function CompareModal({
         <View style={cStyles.header}>
           <Text style={cStyles.headerTitle}>Pred / Po porovnanie</Text>
           <TouchableOpacity onPress={onClose} style={cStyles.closeBtn} activeOpacity={0.8}>
-            <Ionicons name="close" size={22} color="#fff" />
+            <Ionicons name="close" size={22} color="#F5F6F8" />
           </TouchableOpacity>
         </View>
 
@@ -139,7 +139,7 @@ function CompareModal({
           </View>
           <View style={[cStyles.sliderLine, { left: sliderX }]}>
             <View style={cStyles.sliderHandle}>
-              <Ionicons name="swap-horizontal" size={16} color="#fff" />
+              <Ionicons name="swap-horizontal" size={16} color="#F5F6F8" />
             </View>
           </View>
           <View style={cStyles.labelLeft}>
@@ -373,11 +373,11 @@ export default function MyPhotosScreen() {
                 onPress={toggleCompareMode}
                 activeOpacity={0.85}
               >
-                <Ionicons name="git-compare-outline" size={16} color="#fff" />
+                <Ionicons name="git-compare-outline" size={16} color="#F5F6F8" />
               </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.addBtn} onPress={openPicker} activeOpacity={0.85}>
-              <Ionicons name="camera-outline" size={18} color="#fff" />
+              <Ionicons name="camera-outline" size={18} color="#F5F6F8" />
               <Text style={styles.addBtnText}>Nahrať</Text>
             </TouchableOpacity>
           </View>
@@ -424,7 +424,7 @@ export default function MyPhotosScreen() {
       {/* ── Compare banner ── */}
       {compareMode && (
         <Animated.View entering={FadeInDown.duration(200)} style={[styles.compareBanner, { backgroundColor: dark ? '#1E1610' : COLORS.gold }]}>
-          <Ionicons name="git-compare-outline" size={16} color="#fff" />
+          <Ionicons name="git-compare-outline" size={16} color="#F5F6F8" />
           <Text style={styles.compareBannerText}>
             Vyber 2 fotky na porovnanie ({compareSelect.length}/2)
           </Text>
@@ -443,12 +443,12 @@ export default function MyPhotosScreen() {
           <TextInput
             style={[styles.formInput, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={formName} onChangeText={setFormName}
-            placeholder="Názov fotky *" placeholderTextColor={dark ? '#666' : '#bbb'}
+            placeholder="Názov fotky *" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
           />
           <TextInput
             style={[styles.formInput, { minHeight: 54, textAlignVertical: 'top', backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             value={formNotes} onChangeText={setFormNotes}
-            placeholder="Poznámka (nepovinné)" placeholderTextColor={dark ? '#666' : '#bbb'} multiline
+            placeholder="Poznámka (nepovinné)" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} multiline
           />
           <View style={styles.formActions}>
             <TouchableOpacity
@@ -461,8 +461,8 @@ export default function MyPhotosScreen() {
             <TouchableOpacity style={[styles.formSave, uploading && { opacity: 0.5 }]}
               onPress={handleUpload} disabled={uploading} activeOpacity={0.85}>
               {uploading
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <><Ionicons name="cloud-upload-outline" size={14} color="#fff" />
+                ? <ActivityIndicator color="#F5F6F8" size="small" />
+                : <><Ionicons name="cloud-upload-outline" size={14} color="#F5F6F8" />
                     <Text style={styles.formSaveText}>Nahrať</Text></>}
             </TouchableOpacity>
           </View>
@@ -509,7 +509,7 @@ export default function MyPhotosScreen() {
                     </View>
                     {compareMode && att.file_type === 'image' && (
                       <View style={[styles.gridCheckbox, isSelected && styles.gridCheckboxActive]}>
-                        {isSelected && <Ionicons name="checkmark" size={12} color="#fff" />}
+                        {isSelected && <Ionicons name="checkmark" size={12} color="#F5F6F8" />}
                       </View>
                     )}
                     <View style={styles.gridNameOverlay}>
@@ -557,7 +557,7 @@ export default function MyPhotosScreen() {
                   </View>
                   {compareMode && att.file_type === 'image' && (
                     <View style={[styles.listCheckbox, isSelected && styles.listCheckboxActive]}>
-                      {isSelected && <Ionicons name="checkmark" size={14} color="#fff" />}
+                      {isSelected && <Ionicons name="checkmark" size={14} color="#F5F6F8" />}
                     </View>
                   )}
                 </TouchableOpacity>
@@ -683,14 +683,14 @@ const styles = StyleSheet.create({
   catBadge:      { borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   catBadgeText:  { fontSize: 9, fontWeight: '700' },
   attDate:       { fontSize: 10 },
-  attSize:       { fontSize: 10, color: '#bbb' },
+  attSize:       { fontSize: 10, color: '#D0D4DC' },
   attName:       { fontSize: 13, fontWeight: '700', marginBottom: 4 },
   attMetaRow:    { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3 },
   catBadge:      { borderRadius: 2, paddingHorizontal: 6, paddingVertical: 2 },
   catBadgeText:  { fontSize: 9, fontWeight: '700' },
   attDate:       { fontSize: 10 },
-  attSize:       { fontSize: 10, color: '#bbb' },
-  attNotes:      { fontSize: 10, color: '#888', fontStyle: 'italic', lineHeight: 14 },
+  attSize:       { fontSize: 10, color: '#D0D4DC' },
+  attNotes:      { fontSize: 10, color: '#B8ACA0', fontStyle: 'italic', lineHeight: 14 },
   listCheckbox:  { width: 24, height: 24, borderRadius: 2, borderWidth: 2, borderColor: COLORS.sand, alignItems: 'center', justifyContent: 'center' },
   listCheckboxActive: { backgroundColor: COLORS.gold, borderColor: COLORS.gold },
 });

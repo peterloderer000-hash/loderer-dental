@@ -70,7 +70,7 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'Zrušený',    pending:   'Čaká',    arrived: 'V čakárni'
 };
 const STATUS_COLOR: Record<string, string> = {
-  scheduled: '#1A5276', completed: '#2E7D5E', cancelled: '#922B21', pending: '#E67E22'
+  scheduled: '#1A5276', completed: '#2E7D5E', cancelled: '#922B21', pending: '#B87333'
 };
 
 export default function SearchScreen() {
@@ -385,5 +385,5 @@ const styles = StyleSheet.create({
   resultInitials: { fontSize: 14, fontWeight: '700', color: COLORS.cream },
   resultTitle:    { fontSize: 13, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
   resultSub:      { fontSize: 11, color: COLORS.wal },
-  resultNote:     { fontSize: 10, color: '#888', fontStyle: 'italic', marginTop: 2 }
+  resultNote:     { fontSize: 10, color: '#B8ACA0', fontStyle: 'italic', marginTop: 2 }
 });

@@ -13,7 +13,7 @@ interface Props {
 const STATUS_CONFIG: Record<Status, { label: string; bg: string; text: string; border: string }> = {
   scheduled: { label: 'Naplánovaný', bg: '#EBF5FB', text: '#1A5276', border: '#AED6F1' },
   arrived:   { label: 'Prišiel',     bg: '#EDF7F3', text: '#2E7D5E', border: '#A8D5C0' },
-  completed: { label: 'Dokončený',   bg: '#F0FAF5', text: '#1E6B45', border: '#A8D5B8' },
+  completed: { label: 'Dokončený',   bg: '#EDF7F3', text: '#1E6B45', border: '#A8D5B8' },
   cancelled: { label: 'Zrušený',     bg: '#FDEDEC', text: '#922B21', border: '#F1948A' },
   pending:   { label: 'Čaká',        bg: '#FEF9E7', text: '#7D6608', border: '#F9E79F' },
   paid:      { label: 'Zaplatené',   bg: COLORS.successBg, text: COLORS.success, border: '#A8D5C0' },

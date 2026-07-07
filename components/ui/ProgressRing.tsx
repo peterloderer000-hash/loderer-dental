@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontFamily: 'PlayfairDisplay_700Bold',
-    color: '#111827',
+    color: '#121417',
     lineHeight: 34,
   },
   label: {
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   sublabel: {
     ...TYPO.overline,
-    color: '#BBACA0',
+    color: '#B8ACA0',
     fontSize: 8,
     lineHeight: 12,
   },

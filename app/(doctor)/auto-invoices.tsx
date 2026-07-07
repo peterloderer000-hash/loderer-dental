@@ -110,7 +110,7 @@ export default function AutoInvoices() {
   }
 
   const STATUS_CFG = {
-    draft: { label: 'Koncept', color: '#95A5A6' },
+    draft: { label: 'Koncept', color: '#B8ACA0' },
     sent: { label: 'Odoslaná', color: COLORS.info },
     paid: { label: 'Zaplatená', color: COLORS.success },
     overdue: { label: 'Po splatnosti', color: COLORS.error },
@@ -147,7 +147,7 @@ export default function AutoInvoices() {
             {/* Generate button */}
             <TouchableOpacity style={[st.genBtn, generating && { opacity: 0.6 }]}
               onPress={generateForCompleted} disabled={generating} activeOpacity={0.85}>
-              <Ionicons name="flash" size={20} color="#fff" />
+              <Ionicons name="flash" size={20} color="#F5F6F8" />
               <Text style={st.genBtnText}>
                 {generating ? 'Generujem...' : 'Auto-generovať faktúry za posledný týždeň'}
               </Text>

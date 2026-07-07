@@ -322,9 +322,9 @@ export default function RiskPrediction() {
               onPress={runPrediction} disabled={generating} activeOpacity={0.85}
             >
               {generating ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color="#F5F6F8" />
               ) : (
-                <Ionicons name="sparkles" size={20} color="#fff" />
+                <Ionicons name="sparkles" size={20} color="#F5F6F8" />
               )}
               <Text style={s.generateBtnText}>
                 {generating ? 'Analyzujem...' : 'Generovať predikciu'}

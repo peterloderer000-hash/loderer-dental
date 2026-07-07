@@ -165,7 +165,7 @@ const bbl = StyleSheet.create({
   bubbleAI:   { backgroundColor: COLORS.cream, borderBottomLeftRadius: 4, borderWidth: 1.5, borderColor: COLORS.bg3, elevation: 1 },
   textUser:   { fontSize: 14, color: '#F5F6F8', lineHeight: 20 },
   textAI:     { fontSize: 14, color: COLORS.esp, lineHeight: 20 },
-  time:       { fontSize: 9, color: '#999', marginTop: 4, textAlign: 'right' }
+  time:       { fontSize: 9, color: '#B8ACA0', marginTop: 4, textAlign: 'right' }
 });
 
 // ─── Main screen ──────────────────────────────────────────────────────────────
@@ -283,7 +283,7 @@ export default function ClinicAIScreen() {
           <TextInput
             style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
             placeholder="Opýtajte sa na stav kliniky..."
-            placeholderTextColor={dark ? '#555' : '#bbb'}
+            placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
             value={input}
             onChangeText={setInput}
             multiline
@@ -297,7 +297,7 @@ export default function ClinicAIScreen() {
             disabled={!input.trim() || thinking}
             activeOpacity={0.85}
           >
-            <Ionicons name="send" size={18} color="#fff" />
+            <Ionicons name="send" size={18} color="#F5F6F8" />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

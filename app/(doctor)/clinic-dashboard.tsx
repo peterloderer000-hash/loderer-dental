@@ -38,7 +38,7 @@ const sc = StyleSheet.create({
   iconWrap:{ width: 32, height: 32, borderRadius: 2, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
   value:   { fontSize: 28, fontWeight: '900', lineHeight: 32 },
   label:   { fontSize: 11, fontWeight: '600', color: COLORS.wal, textTransform: 'uppercase', letterSpacing: 0.5 },
-  sub:     { fontSize: 10, color: '#999', marginTop: 1 }
+  sub:     { fontSize: 10, color: '#B8ACA0', marginTop: 1 }
 });
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ export default function ClinicDashboardScreen() {
   const utilizationColor =
     metrics.utilizationPct === null  ? COLORS.wal :
     metrics.utilizationPct >= 80     ? '#2E7D5E' :
-    metrics.utilizationPct >= 50     ? '#E67E22' : '#C0392B';
+    metrics.utilizationPct >= 50     ? '#B87333' : '#C0392B';
 
   return (
     <View style={[s.safe, { backgroundColor: colors.esp }]}>

@@ -295,7 +295,7 @@ export default function BrushingChallenge() {
                 onPress={timerActive ? stopTimer : startTimer}
                 activeOpacity={0.85}
               >
-                <Ionicons name={timerActive ? 'stop' : 'play'} size={24} color="#fff" />
+                <Ionicons name={timerActive ? 'stop' : 'play'} size={24} color="#F5F6F8" />
                 <Text style={st.startBtnText}>
                   {timerActive ? 'Zastaviť' : 'Začať čistenie'}
                 </Text>
@@ -311,7 +311,7 @@ export default function BrushingChallenge() {
             {stats.weekHistory.map((done, i) => (
               <View key={i} style={st.weekDay}>
                 <View style={[st.weekDot, { backgroundColor: done ? COLORS.success : colors.bg3 }]}>
-                  {done && <Ionicons name="checkmark" size={12} color="#fff" />}
+                  {done && <Ionicons name="checkmark" size={12} color="#F5F6F8" />}
                 </View>
                 <Text style={[st.weekDayText, { color: done ? COLORS.success : colors.textSecondary }]}>
                   {DAY_NAMES[(new Date(Date.now() - (6-i) * 86400000).getDay() + 6) % 7]}

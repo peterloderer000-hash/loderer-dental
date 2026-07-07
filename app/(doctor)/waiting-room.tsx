@@ -155,10 +155,10 @@ export default function WaitingRoomScreen() {
               {inChair.map((p) => {
                 const treatMin = waitMins(p.started_at);
                 return (
-                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#1A3D2E' : '#F0FAF4', borderColor: dark ? '#52C89655' : '#A3D4BE' }]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: dark ? '#1A3D2E' : '#EDF7F3', borderColor: dark ? '#52C89655' : '#A3D4BE' }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, { backgroundColor: '#2E7D5E' }]}>
-                        <Ionicons name="medical" size={18} color="#fff" />
+                        <Ionicons name="medical" size={18} color="#F5F6F8" />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={[s.name, { color: colors.textPrimary }]}>{p.patient?.full_name ?? 'Pacient'}</Text>
@@ -183,7 +183,7 @@ export default function WaitingRoomScreen() {
                       disabled={saving}
                       activeOpacity={0.85}
                     >
-                      <Ionicons name="checkmark-circle" size={18} color="#fff" />
+                      <Ionicons name="checkmark-circle" size={18} color="#F5F6F8" />
                       <Text style={s.actionBtnText}>Ukončiť ošetrenie</Text>
                     </TouchableOpacity>
                   </View>
@@ -203,7 +203,7 @@ export default function WaitingRoomScreen() {
                 const mins = waitMins(p.arrived_at);
                 const isLong = mins >= 20;
                 return (
-                  <View key={p.id} style={[s.card, { backgroundColor: isLong ? (dark ? '#3B0D0D' : '#FFF8F8') : colors.cardBg, borderColor: isLong ? '#F1948A' : colors.bg3 }]}>
+                  <View key={p.id} style={[s.card, { backgroundColor: isLong ? (dark ? '#3B0D0D' : '#F5F6F8') : colors.cardBg, borderColor: isLong ? '#F1948A' : colors.bg3 }]}>
                     <View style={s.cardTop}>
                       <View style={[s.numBadge, isLong && { backgroundColor: '#C0392B' }]}>
                         <Text style={s.numText}>{idx + 1}</Text>
@@ -226,7 +226,7 @@ export default function WaitingRoomScreen() {
                       onPress={() => { setPickerApptId(p.id); setPickerOpen(true); }}
                       activeOpacity={0.85}
                     >
-                      <Ionicons name="megaphone" size={16} color="#fff" />
+                      <Ionicons name="megaphone" size={16} color="#F5F6F8" />
                       <Text style={s.actionBtnText}>Zavolať do ordinácie</Text>
                     </TouchableOpacity>
                   </View>
@@ -303,8 +303,8 @@ const s = StyleSheet.create({
     borderWidth: 1.5, borderColor: COLORS.bg3,
     elevation: 2, shadowColor: '#121417', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4,
     gap: 12 },
-  cardUrgent:     { borderColor: '#F1948A', backgroundColor: '#FFF8F8' },
-  cardInProgress: { borderColor: '#A3D4BE', backgroundColor: '#F0FAF4' },
+  cardUrgent:     { borderColor: '#F1948A', backgroundColor: '#F5F6F8' },
+  cardInProgress: { borderColor: '#A3D4BE', backgroundColor: '#EDF7F3' },
   cardTop:        { flexDirection: 'row', alignItems: 'center', gap: 14 },
 
   numBadge: { width: 44, height: 44, borderRadius: 4, backgroundColor: COLORS.esp, alignItems: 'center', justifyContent: 'center' },
@@ -312,7 +312,7 @@ const s = StyleSheet.create({
 
   name:     { fontSize: 16, fontWeight: '800', color: COLORS.esp, marginBottom: 2 },
   service:  { fontSize: 12, color: COLORS.wal, marginBottom: 2 },
-  apptTime: { fontSize: 11, color: '#999' },
+  apptTime: { fontSize: 11, color: '#B8ACA0' },
 
   roomBadge:     { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
   roomBadgeText: { fontSize: 11, fontWeight: '600', color: '#2E7D5E' },

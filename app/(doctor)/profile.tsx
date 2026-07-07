@@ -210,8 +210,8 @@ export default function DoctorProfile() {
               )}
               <View style={[styles.cameraBtn, uploading && { backgroundColor: COLORS.wal }]}>
                 {uploading
-                  ? <ActivityIndicator size="small" color="#fff" />
-                  : <Ionicons name="camera" size={14} color="#fff" />}
+                  ? <ActivityIndicator size="small" color="#F5F6F8" />
+                  : <Ionicons name="camera" size={14} color="#F5F6F8" />}
               </View>
             </TouchableOpacity>
 
@@ -242,32 +242,32 @@ export default function DoctorProfile() {
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>CELÉ MENO</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={fullName} onChangeText={setFullName}
-              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#666' : '#bbb'} autoCapitalize="words" />
+              placeholder="Meno a priezvisko" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoCapitalize="words" />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>ŠPECIALIZÁCIA / TITUL</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={specialty} onChangeText={setSpecialty}
               placeholder="napr. MDDr., Ortodontia, Implantológia..."
-              placeholderTextColor={dark ? '#666' : '#bbb'} autoCapitalize="words" />
+              placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoCapitalize="words" />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>TELEFÓN</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={phone} onChangeText={setPhone}
-              placeholder="+421 900 000 000" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="phone-pad" />
+              placeholder="+421 900 000 000" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} keyboardType="phone-pad" />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>EMAIL</Text>
-            <View style={[styles.inputDisabled, { backgroundColor: dark ? '#111' : '#f5f5f5', borderColor: colors.bg3 }]}>
-              <Text style={[styles.inputDisabledText, { color: dark ? '#666' : '#999' }]}>{email}</Text>
-              <Ionicons name="lock-closed-outline" size={14} color={dark ? '#555' : '#bbb'} />
+            <View style={[styles.inputDisabled, { backgroundColor: dark ? '#121417' : '#f5f5f5', borderColor: colors.bg3 }]}>
+              <Text style={[styles.inputDisabledText, { color: dark ? '#B8ACA0' : '#B8ACA0' }]}>{email}</Text>
+              <Ionicons name="lock-closed-outline" size={14} color={dark ? '#B8ACA0' : '#D0D4DC'} />
             </View>
 
             <TouchableOpacity style={[styles.saveBtn, saving && { opacity: 0.6 }]}
               onPress={handleSave} disabled={saving} activeOpacity={0.85}>
               <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={styles.saveGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
                 {saving
-                  ? <ActivityIndicator color="#fff" size="small" />
+                  ? <ActivityIndicator color="#F5F6F8" size="small" />
                   : <>
-                      <Ionicons name="checkmark-circle" size={17} color="#fff" />
+                      <Ionicons name="checkmark-circle" size={17} color="#F5F6F8" />
                       <Text style={styles.saveBtnText}>Uložiť zmeny</Text>
                     </>}
               </LinearGradient>
@@ -284,22 +284,22 @@ export default function DoctorProfile() {
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>NÁZOV AMBULANCIE</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={clinicName} onChangeText={setClinicName}
-              placeholder="napr. Zubná ambulancia Loderer" placeholderTextColor={dark ? '#666' : '#bbb'} autoCapitalize="words" />
+              placeholder="napr. Zubná ambulancia Loderer" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoCapitalize="words" />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>ADRESA</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={clinicAddress} onChangeText={setClinicAddress}
-              placeholder="napr. Hlavná 1, 040 01 Košice" placeholderTextColor={dark ? '#666' : '#bbb'} autoCapitalize="words" />
+              placeholder="napr. Hlavná 1, 040 01 Košice" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoCapitalize="words" />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>IČO</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={clinicIco} onChangeText={setClinicIco}
-              placeholder="12345678" placeholderTextColor={dark ? '#666' : '#bbb'} keyboardType="numeric" maxLength={10} />
+              placeholder="12345678" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} keyboardType="numeric" maxLength={10} />
 
             <Text style={[styles.fieldLabel, { color: colors.wal }]}>DIČ (voliteľné)</Text>
             <TextInput style={[styles.input, { backgroundColor: colors.inputBg, borderColor: colors.bg3, color: colors.textPrimary }]}
               value={clinicDic} onChangeText={setClinicDic}
-              placeholder="SK1234567890" placeholderTextColor={dark ? '#666' : '#bbb'} autoCapitalize="characters" maxLength={12} />
+              placeholder="SK1234567890" placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'} autoCapitalize="characters" maxLength={12} />
 
             <View style={[styles.clinicInfoBanner, { backgroundColor: dark ? '#0D2137' : '#EBF5FB', borderColor: dark ? '#1A4B70' : '#AED6F1' }]}>
               <Ionicons name="information-circle-outline" size={14} color={dark ? '#7FB3D3' : '#1A5276'} />
@@ -341,9 +341,9 @@ export default function DoctorProfile() {
             <View style={styles.clinicOpsGrid}>
               {[
                 { icon: 'pulse-outline'      as const, label: 'Live prehľad',     sub: 'Dnešné termíny',      route: '/(doctor)/clinic-live',      color: '#52C896' },
-                { icon: 'bed-outline'        as const, label: 'Kreslo',           sub: 'Tablet / ambulancia', route: '/(doctor)/clinic-room',      color: '#2980B9' },
+                { icon: 'bed-outline'        as const, label: 'Kreslo',           sub: 'Tablet / ambulancia', route: '/(doctor)/clinic-room',      color: '#1A5276' },
                 { icon: 'bar-chart-outline'  as const, label: 'Dashboard',        sub: 'Denné metriky',       route: '/(doctor)/clinic-dashboard', color: '#8E44AD' },
-                { icon: 'sparkles-outline'   as const, label: 'AI asistent',      sub: 'Opýtaj sa AI',        route: '/(doctor)/clinic-ai',        color: '#E67E22' },
+                { icon: 'sparkles-outline'   as const, label: 'AI asistent',      sub: 'Opýtaj sa AI',        route: '/(doctor)/clinic-ai',        color: '#B87333' },
               ].map(item => (
                 <TouchableOpacity
                   key={item.label}
@@ -411,10 +411,10 @@ export default function DoctorProfile() {
           </TouchableOpacity>
 
           <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-            <Text style={{ fontSize: 11, color: '#BBACA0', fontFamily: 'DMSans_400Regular' }}>
+            <Text style={{ fontSize: 11, color: '#B8ACA0', fontFamily: 'DMSans_400Regular' }}>
               Loderer Dental v{Constants.expoConfig?.version ?? '1.0.0'}
             </Text>
-            <Text style={{ fontSize: 10, color: '#BBACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
+            <Text style={{ fontSize: 10, color: '#B8ACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
               Build: 2026-05-02 • OTA aktívne
             </Text>
           </View>
@@ -429,7 +429,7 @@ export default function DoctorProfile() {
 function HeroStat({ value, label }: { value: number; label: string }) {
   return (
     <View style={{ alignItems: 'center', flex: 1 }}>
-      <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F8F6F2', lineHeight: 26 }}>{value}</Text>
+      <Text style={{ fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F5F6F8', lineHeight: 26 }}>{value}</Text>
       <Text style={{ fontFamily: 'DMSans_500Medium', fontSize: 9, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.8, textTransform: 'uppercase', marginTop: 2 }}>{label}</Text>
     </View>
   );
@@ -443,9 +443,9 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero:       { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, alignItems: 'center', overflow: 'hidden', gap: 6 },
-  heroCircle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2', opacity: 0.05 },
+  heroCircle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8', opacity: 0.05 },
   heroLabel:  { ...TYPO.overline, color: COLORS.sand, marginBottom: 8 },
-  heroName:   { ...TYPO.h2, color: '#F8F6F2', marginBottom: 4 },
+  heroName:   { ...TYPO.h2, color: '#F5F6F8', marginBottom: 4 },
   heroSpec:   { ...TYPO.body, color: 'rgba(196,168,130,0.75)', marginBottom: 6 },
 
   // ── Avatar ──

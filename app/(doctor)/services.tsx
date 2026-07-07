@@ -280,7 +280,7 @@ export default function ServicesScreen() {
               <TextInput
                 style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 placeholder="Napr. Plomba, Extrakcia..."
-                placeholderTextColor={dark ? '#555' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 value={name} onChangeText={setName}
               />
 
@@ -288,7 +288,7 @@ export default function ServicesScreen() {
               <TextInput
                 style={[s.input, { backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                 placeholder="30"
-                placeholderTextColor={dark ? '#555' : '#bbb'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                 value={duration} onChangeText={setDuration} keyboardType="numeric"
               />
 
@@ -297,13 +297,13 @@ export default function ServicesScreen() {
                 <TextInput
                   style={[s.input, { flex: 1, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                   placeholder="od"
-                  placeholderTextColor={dark ? '#555' : '#bbb'}
+                  placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                   value={priceMin} onChangeText={setPriceMin} keyboardType="decimal-pad"
                 />
                 <TextInput
                   style={[s.input, { flex: 1, backgroundColor: colors.bg2, color: colors.textPrimary, borderColor: colors.bg3 }]}
                   placeholder="do"
-                  placeholderTextColor={dark ? '#555' : '#bbb'}
+                  placeholderTextColor={dark ? '#B8ACA0' : '#D0D4DC'}
                   value={priceMax} onChangeText={setPriceMax} keyboardType="decimal-pad"
                 />
               </View>

@@ -418,7 +418,7 @@ export default function ChatScreen() {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <Ionicons name="send" size={16} color="#fff" />
+              <Ionicons name="send" size={16} color="#F5F6F8" />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -431,10 +431,10 @@ export default function ChatScreen() {
 const s = StyleSheet.create({
   // Hero
   hero:         { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 0, overflow: 'hidden' },
-  heroCircle:   { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2', opacity: 0.05 },
+  heroCircle:   { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8', opacity: 0.05 },
   heroRow:      { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
   botAvatarHero:{ width: 44, height: 44, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.12)', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)' },
-  heroTitle:    { ...TYPO.bodyMed, color: '#F8F6F2', fontSize: 16 },
+  heroTitle:    { ...TYPO.bodyMed, color: '#F5F6F8', fontSize: 16 },
   onlineBadge:  { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 3 },
   onlineDot:    { width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' },
   onlineText:   { fontFamily: 'DMSans_400Regular', fontSize: 11, color: 'rgba(196,168,130,0.7)' },

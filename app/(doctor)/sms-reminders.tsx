@@ -103,7 +103,7 @@ export default function SmsReminders() {
                     value={item.value}
                     onValueChange={(v) => { item.set(v); Haptics.selectionAsync(); }}
                     trackColor={{ false: colors.bg3, true: COLORS.gold + '50' }}
-                    thumbColor={item.value ? COLORS.gold : '#ccc'}
+                    thumbColor={item.value ? COLORS.gold : '#D0D4DC'}
                   />
                 </View>
               ))}

@@ -28,7 +28,7 @@ const AVATAR_BUCKET = 'avatars';
 // ─── Loyalty card ─────────────────────────────────────────────────────────────
 const LEVELS = [
   { key: 'bronze'  as const, min: 0,    max: 299,   color: '#CD7F32', bg: '#FDF3E7', icon: '🥉' },
-  { key: 'silver'  as const, min: 300,  max: 599,   color: '#A0A0A0', bg: '#F4F4F4', icon: '🥈' },
+  { key: 'silver'  as const, min: 300,  max: 599,   color: '#B8ACA0', bg: '#F5F6F8', icon: '🥈' },
   { key: 'gold'    as const, min: 600,  max: 999,   color: '#D4A017', bg: '#FDF3E7', icon: '🥇' },
   { key: 'platinum'as const, min: 1000, max: 99999, color: '#6C3483', bg: '#F5EEF8', icon: '💎' },
 ];
@@ -253,8 +253,8 @@ export default function ProfileScreen() {
               )}
               <View style={s.cameraBtn}>
                 {uploading
-                  ? <ActivityIndicator size="small" color="#fff" />
-                  : <Ionicons name="camera" size={13} color="#fff" />}
+                  ? <ActivityIndicator size="small" color="#F5F6F8" />
+                  : <Ionicons name="camera" size={13} color="#F5F6F8" />}
               </View>
             </TouchableOpacity>
 
@@ -411,7 +411,7 @@ export default function ProfileScreen() {
               >
                 <LinearGradient colors={GRADIENTS.gold as [string, string, ...string[]]} style={s.saveGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
                   {saving
-                    ? <ActivityIndicator color="#fff" size="small" />
+                    ? <ActivityIndicator color="#F5F6F8" size="small" />
                     : <Text style={s.saveBtnText}>{t('profile.personal.save')}</Text>}
                 </LinearGradient>
               </TouchableOpacity>
@@ -429,7 +429,7 @@ export default function ProfileScreen() {
                 { icon: 'people-outline'        as const, label: t('profile.quickAccess.family'),    sub: t('profile.quickAccess.familySub'), route: '/(patient)/family',           bg: COLORS.infoBg,     color: COLORS.info    },
                 { icon: 'document-text-outline' as const, label: t('profile.quickAccess.consents'),  sub: t('profile.quickAccess.consentsSub'), route: '/(patient)/consents',       bg: '#F5EEF8',         color: '#7D3C98' },
                 { icon: 'list-outline'          as const, label: t('profile.quickAccess.plan'),      sub: t('profile.quickAccess.planSub'),  route: '/(patient)/treatment-plan',   bg: COLORS.successBg,  color: COLORS.success },
-                { icon: 'qr-code-outline'       as const, label: 'Dentálny pas',                     sub: 'QR kód pre iného zubára',           route: '/(patient)/dental-passport-qr', bg: '#EBF5FB',       color: '#2980B9' },
+                { icon: 'qr-code-outline'       as const, label: 'Dentálny pas',                     sub: 'QR kód pre iného zubára',           route: '/(patient)/dental-passport-qr', bg: '#EBF5FB',       color: '#1A5276' },
                 { icon: 'calculator-outline'    as const, label: 'Odhad poistenia',                  sub: 'Kalkulačka krytia poisťovňou',      route: '/(patient)/insurance-calc',     bg: '#FDF3E7',       color: '#B8ACA0' },
               ].map((item, idx, arr) => (
                 <TouchableOpacity
@@ -457,10 +457,10 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-              <Text style={{ fontSize: 11, color: '#BBACA0', fontFamily: 'DMSans_400Regular' }}>
+              <Text style={{ fontSize: 11, color: '#B8ACA0', fontFamily: 'DMSans_400Regular' }}>
                 Loderer Dental v{Constants.expoConfig?.version ?? '1.0.0'}
               </Text>
-              <Text style={{ fontSize: 10, color: '#BBACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
+              <Text style={{ fontSize: 10, color: '#B8ACA0', marginTop: 2, fontFamily: 'DMSans_400Regular' }}>
                 Build: 2026-05-02 • OTA aktívne
               </Text>
             </View>
@@ -507,7 +507,7 @@ const s = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   hero: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, alignItems: 'center', overflow: 'hidden' },
-  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F8F6F2' },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: '#F5F6F8' },
 
   avatarWrap: { position: 'relative', marginBottom: 12 },
   avatar: { width: 88, height: 88, borderRadius: 44, backgroundColor: COLORS.wal, borderWidth: 3, borderColor: COLORS.sand },
@@ -518,7 +518,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: '#F5F6F8',
   },
-  heroName: { ...TYPO.h2, color: '#F8F6F2', marginBottom: 6 },
+  heroName: { ...TYPO.h2, color: '#F5F6F8', marginBottom: 6 },
   roleBadge: { backgroundColor: 'rgba(255,255,255,0.10)', borderRadius: RADII.full, paddingHorizontal: 14, paddingVertical: 5, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
   roleText:  { fontFamily: 'DMSans_500Medium', fontSize: 12, color: COLORS.sand },
   statRow: { flexDirection: 'row', alignItems: 'center', width: '100%', backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: RADII.md, paddingVertical: 12, paddingHorizontal: 8 },
@@ -559,7 +559,7 @@ const s = StyleSheet.create({
 });
 
 const sp = StyleSheet.create({
-  value: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F8F6F2', lineHeight: 26 },
+  value: { fontFamily: 'PlayfairDisplay_700Bold', fontSize: 22, color: '#F5F6F8', lineHeight: 26 },
   label: { fontFamily: 'DMSans_500Medium', fontSize: 9, color: 'rgba(196,168,130,0.7)', letterSpacing: 0.8, textTransform: 'uppercase', marginTop: 2 },
 });
 

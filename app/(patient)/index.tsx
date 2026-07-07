@@ -381,7 +381,7 @@ export default function PatientHome() {
                 <Text style={styles.queueEmoji}>📱</Text>
                 <View>
                   <Text style={[styles.queueTitle, { color: dark ? COLORS.gold : '#B87333' }]}>QR Check-in</Text>
-                  <Text style={[styles.queueSub, { color: dark ? COLORS.sand : '#9A7D0A' }]}>
+                  <Text style={[styles.queueSub, { color: dark ? COLORS.sand : '#B87333' }]}>
                     Naskenujte kód v čakárni
                   </Text>
                 </View>
@@ -412,7 +412,7 @@ export default function PatientHome() {
                   <Text style={styles.apptDate}>{formatApptDate(nextAppointment.appointment_date)}</Text>
                   {daysUntilNext !== null && (
                     <View style={[styles.countdownPill, {
-                      backgroundColor: daysUntilNext === 0 ? '#C0392B' : daysUntilNext <= 3 ? '#E67E22' : '#2E7D5E',
+                      backgroundColor: daysUntilNext === 0 ? '#C0392B' : daysUntilNext <= 3 ? '#B87333' : '#2E7D5E',
                     }]}>
                       <Text style={styles.countdownText}>
                         {daysUntilNext === 0 ? 'DNES' : daysUntilNext === 1 ? 'o 1 deň' : daysUntilNext < 5 ? `o ${daysUntilNext} dni` : `o ${daysUntilNext} dní`}
@@ -469,7 +469,7 @@ export default function PatientHome() {
             onPress={() => router.push({ pathname: '/(patient)/book-appointment', params: { urgent: '1' } })}
             activeOpacity={0.85}
           >
-            <View style={[styles.urgentIconWrap, { backgroundColor: dark ? '#7B1A1A' : '#FADBD8' }]}>
+            <View style={[styles.urgentIconWrap, { backgroundColor: dark ? '#7B1A1A' : '#FDEDEC' }]}>
               <Text style={{ fontSize: 20 }}>🦷</Text>
             </View>
             <View style={{ flex: 1 }}>
@@ -505,8 +505,8 @@ export default function PatientHome() {
         <Reanimated.View entering={FadeInUp.delay(305).duration(500)} style={{ paddingHorizontal: SPACING.lg, marginBottom: 14 }}>
           <View style={styles.quickRow}>
             {([
-              { icon: 'sparkles-outline', label: 'Smile Design', route: '/(patient)/smile-design', color: '#F1C40F' },
-              { icon: 'grid-outline', label: 'Zubná mapa', route: '/(patient)/dental-map', color: '#3498DB' },
+              { icon: 'sparkles-outline', label: 'Smile Design', route: '/(patient)/smile-design', color: '#B87333' },
+              { icon: 'grid-outline', label: 'Zubná mapa', route: '/(patient)/dental-map', color: '#1A5276' },
               { icon: 'timer-outline', label: 'Čistenie', route: '/(patient)/brushing-challenge', color: '#52C896' },
               { icon: 'people-outline', label: 'Rodina', route: '/(patient)/family-dashboard', color: '#9B59B6' },
             ] as { icon: any; label: string; route: any; color: string }[]).map((item) => (
@@ -532,7 +532,7 @@ export default function PatientHome() {
             onPress={() => router.push('/(patient)/dental-twin')}
             activeOpacity={0.9}
           >
-            <LinearGradient colors={['#1A1209', '#111827']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={['#1A1209', '#121417']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <View style={styles.twinLeft}>
                 <Text style={styles.twinEmoji}>🦷</Text>
                 <View>
@@ -553,7 +553,7 @@ export default function PatientHome() {
             onPress={() => router.push('/(patient)/loyalty')}
             activeOpacity={0.9}
           >
-            <LinearGradient colors={dark ? ['#1A1209', '#111827'] : ['#3A4256', '#B8941F']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <LinearGradient colors={dark ? ['#1A1209', '#121417'] : ['#3A4256', '#B8941F']} style={styles.twinGrad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
               <View style={styles.twinLeft}>
                 <Text style={styles.twinEmoji}>🏆</Text>
                 <View>
@@ -607,15 +607,15 @@ export default function PatientHome() {
               activeOpacity={0.85}
             >
               <View style={[styles.warnIconWrap, { backgroundColor: dark ? '#3D1A00' : '#FDE8C0' }]}>
-                <Ionicons name="warning" size={20} color="#E67E22" />
+                <Ionicons name="warning" size={20} color="#B87333" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.warnTitle, { color: dark ? '#F0A030' : '#B87333' }]}>Odporúčame návštevu</Text>
-                <Text style={[styles.warnSub, { color: dark ? '#C09028' : '#9A7D0A' }]}>
+                <Text style={[styles.warnSub, { color: dark ? '#C09028' : '#B87333' }]}>
                   Máte {problemTeeth} {problemTeeth === 1 ? 'zub' : problemTeeth < 5 ? 'zuby' : 'zubov'} vyžadujúcich pozornosť
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color={dark ? '#F0A030' : '#E67E22'} />
+              <Ionicons name="chevron-forward" size={16} color={dark ? '#F0A030' : '#B87333'} />
             </TouchableOpacity>
           </Reanimated.View>
         )}
@@ -732,7 +732,7 @@ export default function PatientHome() {
             <Animated.View style={[styles.starsRow, { transform: [{ scale: starScale }] }]}>
               {[1, 2, 3, 4, 5].map(n => (
                 <TouchableOpacity key={n} onPress={() => { setRatingVal(n); animateStar(); }} activeOpacity={0.7}>
-                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#ddd'} />
+                  <Ionicons name={n <= ratingVal ? 'star' : 'star-outline'} size={42} color={n <= ratingVal ? '#B8ACA0' : '#D0D4DC'} />
                 </TouchableOpacity>
               ))}
             </Animated.View>
@@ -753,7 +753,7 @@ export default function PatientHome() {
                 style={[styles.ratingBtnSubmit, (ratingSaving || ratingVal === 0) && { opacity: 0.45 }]}
                 onPress={handleSubmitRating} disabled={ratingSaving || ratingVal === 0} activeOpacity={0.85}
               >
-                {ratingSaving ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.ratingBtnSubmitText}>Odoslať ★</Text>}
+                {ratingSaving ? <ActivityIndicator color="#F5F6F8" size="small" /> : <Text style={styles.ratingBtnSubmitText}>Odoslať ★</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
   },
   name: {
     ...TYPO.hero,
-    color: '#F8F6F2',
+    color: '#F5F6F8',
     marginBottom: 6,
   },
   heroDate: {
@@ -857,7 +857,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   apptCard: {
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#F5F6F8',
     borderRadius: RADII.xl,
     padding: SPACING.lg,
     borderWidth: 1, borderColor: COLORS.bg3,
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
   twinLeft:   { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
   twinEmoji:  { fontSize: 32 },
   twinLabel:  { fontSize: 9, letterSpacing: 2, color: 'rgba(201,168,76,0.7)', fontFamily: 'DMSans_500Medium', marginBottom: 2 },
-  twinTitle:  { fontSize: 15, fontFamily: 'PlayfairDisplay_700Bold', color: '#F8F6F2', marginBottom: 2 },
+  twinTitle:  { fontSize: 15, fontFamily: 'PlayfairDisplay_700Bold', color: '#F5F6F8', marginBottom: 2 },
   twinSub:    { fontSize: 11, color: 'rgba(196,168,130,0.6)', fontFamily: 'DMSans_400Regular' },
   urgentBtn:      { flexDirection: 'row', alignItems: 'center', gap: 12, borderRadius: 2, borderWidth: 1.5, padding: 14, marginBottom: 10 },
   urgentIconWrap: { width: 44, height: 44, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
@@ -1002,7 +1002,7 @@ const styles = StyleSheet.create({
   quickBtn: {
     flex: 1, alignItems: 'center', paddingVertical: SPACING.md,
     borderRadius: RADII.lg,
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#F5F6F8',
     borderWidth: 1, borderColor: COLORS.bg3,
     ...SHADOWS.card,
     gap: 6,
@@ -1047,7 +1047,7 @@ const styles = StyleSheet.create({
   },
   scoreTitle: {
     fontFamily: 'PlayfairDisplay_700Bold',
-    fontSize: 18, color: '#F8F6F2',
+    fontSize: 18, color: '#F5F6F8',
     lineHeight: 24, marginBottom: SPACING.sm,
   },
   scoreSub: {
@@ -1101,7 +1101,7 @@ const styles = StyleSheet.create({
   },
   timelineCard: {
     flex: 1,
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#F5F6F8',
     borderRadius: RADII.lg,
     padding: SPACING.md,
     marginBottom: SPACING.sm,

@@ -71,7 +71,7 @@ function CompareSlider({ beforeUrl, afterUrl }: { beforeUrl: string; afterUrl: s
       {/* Divider line */}
       <View style={[s.sliderLine, { left: `${sliderPos * 100}%` }]}>
         <View style={s.sliderHandle}>
-          <Ionicons name="swap-horizontal" size={16} color="#fff" />
+          <Ionicons name="swap-horizontal" size={16} color="#F5F6F8" />
         </View>
       </View>
 
@@ -204,7 +204,7 @@ export default function BeforeAfterScreen() {
           style={[s.addBtn, { backgroundColor: COLORS.gold }]}
           onPress={() => setShowAdd(true)} activeOpacity={0.85}
         >
-          <Ionicons name="add-circle-outline" size={20} color="#fff" />
+          <Ionicons name="add-circle-outline" size={20} color="#F5F6F8" />
           <Text style={s.addBtnText}>Pridať porovnanie</Text>
         </TouchableOpacity>
 
@@ -330,7 +330,7 @@ export default function BeforeAfterScreen() {
                 onPress={saveBeforeAfter}
                 disabled={!beforeUri || !afterUri || !treatment || uploading}
               >
-                <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                <Ionicons name="checkmark-circle" size={20} color="#F5F6F8" />
                 <Text style={s.saveBtnText}>{uploading ? 'Nahrávam...' : 'Uložiť porovnanie'}</Text>
               </TouchableOpacity>
             </ScrollView>
@@ -344,7 +344,7 @@ export default function BeforeAfterScreen() {
           <View style={s.compareHeader}>
             <Text style={s.compareTitle}>{selectedItem?.treatment_type}</Text>
             <TouchableOpacity onPress={() => setSelectedItem(null)}>
-              <Ionicons name="close-circle" size={32} color="#fff" />
+              <Ionicons name="close-circle" size={32} color="#F5F6F8" />
             </TouchableOpacity>
           </View>
           {selectedItem && (

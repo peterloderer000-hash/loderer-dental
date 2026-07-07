@@ -33,7 +33,7 @@ function StepDot({ index, current, total }: { index: number; current: number; to
       done && sd.dotDone,
     ]}>
       {done
-        ? <Ionicons name="checkmark" size={12} color="#fff" />
+        ? <Ionicons name="checkmark" size={12} color="#F5F6F8" />
         : <Text style={[sd.dotNum, (active || done) && sd.dotNumLight]}>{index + 1}</Text>}
     </View>
   );
@@ -88,7 +88,7 @@ function StepWelcome({ name, onNext }: { name: string; onNext: () => void }) {
 
       <TouchableOpacity style={step.btn} onPress={onNext} activeOpacity={0.85}>
         <Text style={step.btnText}>Začať nastavenie</Text>
-        <Ionicons name="arrow-forward" size={18} color="#fff" />
+        <Ionicons name="arrow-forward" size={18} color="#F5F6F8" />
       </TouchableOpacity>
     </ScrollView>
   );
@@ -122,7 +122,7 @@ function StepProfile({
             <TextInput
               style={step.input}
               placeholder={field.placeholder}
-              placeholderTextColor="#999"
+              placeholderTextColor="#B8ACA0"
               value={(form as any)[field.key]}
               onChangeText={v => onChange(field.key, v)}
               keyboardType={field.keyboard}
@@ -136,7 +136,7 @@ function StepProfile({
       <TextInput
         style={[step.inputWrap, step.textArea]}
         placeholder="Krátky popis pre pacientov..."
-        placeholderTextColor="#999"
+        placeholderTextColor="#B8ACA0"
         value={form.bio}
         onChangeText={v => onChange('bio', v)}
         multiline
@@ -150,10 +150,10 @@ function StepProfile({
         </TouchableOpacity>
         <TouchableOpacity style={[step.btn, { flex: 1 }]} onPress={onNext} activeOpacity={0.85} disabled={loading}>
           {loading
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color="#F5F6F8" />
             : <>
                 <Text style={step.btnText}>Pokračovať</Text>
-                <Ionicons name="arrow-forward" size={16} color="#fff" />
+                <Ionicons name="arrow-forward" size={16} color="#F5F6F8" />
               </>}
         </TouchableOpacity>
       </View>
@@ -192,7 +192,7 @@ function StepHours({
                   value={s.from}
                   onChangeText={v => onChange(day, 'from', v)}
                   placeholder="08:00"
-                  placeholderTextColor="#bbb"
+                  placeholderTextColor="#D0D4DC"
                   keyboardType="numbers-and-punctuation"
                   maxLength={5}
                 />
@@ -202,7 +202,7 @@ function StepHours({
                   value={s.to}
                   onChangeText={v => onChange(day, 'to', v)}
                   placeholder="17:00"
-                  placeholderTextColor="#bbb"
+                  placeholderTextColor="#D0D4DC"
                   keyboardType="numbers-and-punctuation"
                   maxLength={5}
                 />
@@ -221,10 +221,10 @@ function StepHours({
         </TouchableOpacity>
         <TouchableOpacity style={[step.btn, { flex: 1 }]} onPress={onNext} activeOpacity={0.85} disabled={loading}>
           {loading
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color="#F5F6F8" />
             : <>
                 <Text style={step.btnText}>Uložiť a dokončiť</Text>
-                <Ionicons name="checkmark" size={16} color="#fff" />
+                <Ionicons name="checkmark" size={16} color="#F5F6F8" />
               </>}
         </TouchableOpacity>
       </View>
@@ -238,14 +238,14 @@ function StepDone({ onFinish }: { onFinish: () => void }) {
   return (
     <View style={step.doneWrap}>
       <View style={step.doneCircle}>
-        <Ionicons name="checkmark-done" size={48} color="#fff" />
+        <Ionicons name="checkmark-done" size={48} color="#F5F6F8" />
       </View>
       <Text style={step.doneTitle}>Všetko nastavené!</Text>
       <Text style={step.doneSub}>
         Váš profil je aktívny. Môžete začať pracovať so systémom.
       </Text>
       <TouchableOpacity style={[step.btn, { alignSelf: 'stretch', marginTop: 32 }]} onPress={onFinish} activeOpacity={0.85}>
-        <Ionicons name="home" size={18} color="#fff" />
+        <Ionicons name="home" size={18} color="#F5F6F8" />
         <Text style={step.btnText}>Prejsť do aplikácie</Text>
       </TouchableOpacity>
     </View>
@@ -521,5 +521,5 @@ const hrs = StyleSheet.create({
     backgroundColor: COLORS.bg2,
   },
   dash:   { fontSize: 14, color: COLORS.wal, fontWeight: '600' },
-  closed: { flex: 1, fontSize: 13, color: '#aaa', fontStyle: 'italic' },
+  closed: { flex: 1, fontSize: 13, color: '#B8ACA0', fontStyle: 'italic' },
 });

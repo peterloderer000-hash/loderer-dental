@@ -133,7 +133,7 @@ export default function OnlinePayment() {
                         <TouchableOpacity
                           style={[st.payBtn, paying === inv.id && { opacity: 0.6 }]}
                           onPress={() => handlePay(inv)} disabled={!!paying}>
-                          <Ionicons name="card" size={16} color="#fff" />
+                          <Ionicons name="card" size={16} color="#F5F6F8" />
                           <Text style={st.payBtnText}>{paying === inv.id ? '...' : 'Zaplatiť'}</Text>
                         </TouchableOpacity>
                       </View>

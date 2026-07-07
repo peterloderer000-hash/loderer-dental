@@ -43,7 +43,7 @@ function StepBar({ step }: { step: Step }) {
             <View style={styles.stepItem}>
               <View style={[styles.stepDot, done && styles.stepDotDone, active && styles.stepDotActive]}>
                 {done
-                  ? <Ionicons name="checkmark" size={10} color="#fff" />
+                  ? <Ionicons name="checkmark" size={10} color="#F5F6F8" />
                   : <Text style={[styles.stepDotText, active && { color: '#F5F6F8' }]}>{i + 1}</Text>}
               </View>
               <Text style={[styles.stepLabel, { color: colors.textSecondary }, active && styles.stepLabelActive]}>{label}</Text>
@@ -500,7 +500,7 @@ export default function BookAppointmentScreen() {
                         <Text style={styles.doctorAvail}>Dostupné termíny ›</Text>
                       </View>
                       {selected && <Ionicons name="checkmark-circle" size={22} color={COLORS.gold} />}
-                      {!selected && <Ionicons name="chevron-forward" size={18} color="#ccc" />}
+                      {!selected && <Ionicons name="chevron-forward" size={18} color="#D0D4DC" />}
                     </TouchableOpacity>
                   );
                 })}
@@ -527,7 +527,7 @@ export default function BookAppointmentScreen() {
                     <Text style={[styles.doctorName, { color: colors.textPrimary }]}>Nevadí mi kto</Text>
                     <Text style={[styles.doctorSpec, { color: colors.textSecondary }]}>Prvý dostupný termín u ľubovoľného doktora</Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={18} color="#ccc" />
+                  <Ionicons name="chevron-forward" size={18} color="#D0D4DC" />
                 </TouchableOpacity>
               </>
             )}
@@ -614,7 +614,7 @@ export default function BookAppointmentScreen() {
               <TextInput
                 style={[styles.searchInput, { color: colors.textPrimary }]}
                 placeholder="Vyhľadaj službu..."
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 autoCapitalize="none"
@@ -623,7 +623,7 @@ export default function BookAppointmentScreen() {
               />
               {searchQuery.length > 0 && (
                 <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Ionicons name="close-circle" size={16} color="#bbb" />
+                  <Ionicons name="close-circle" size={16} color="#D0D4DC" />
                 </TouchableOpacity>
               )}
             </View>
@@ -666,7 +666,7 @@ export default function BookAppointmentScreen() {
                           </View>
                         </View>
                       </View>
-                      <Ionicons name="chevron-forward" size={20} color="#ddd" />
+                      <Ionicons name="chevron-forward" size={20} color="#D0D4DC" />
                     </TouchableOpacity>
                   );
                 });
@@ -707,7 +707,7 @@ export default function BookAppointmentScreen() {
                       <Ionicons
                         name={selected ? 'checkmark-circle' : 'chevron-forward'}
                         size={20}
-                        color={selected ? '#2E7D5E' : '#ddd'}
+                        color={selected ? '#2E7D5E' : '#D0D4DC'}
                       />
                     </TouchableOpacity>
                   );
@@ -844,8 +844,8 @@ export default function BookAppointmentScreen() {
                   disabled={wlLoading}
                   activeOpacity={0.85}>
                   {wlLoading
-                    ? <ActivityIndicator color="#fff" size="small" />
-                    : <><Ionicons name="person-add-outline" size={15} color="#fff" />
+                    ? <ActivityIndicator color="#F5F6F8" size="small" />
+                    : <><Ionicons name="person-add-outline" size={15} color="#F5F6F8" />
                         <Text style={styles.wlBtnText}>Zapísať sa na čakaciu listinu</Text></>}
                 </TouchableOpacity>
               )}
@@ -898,7 +898,7 @@ export default function BookAppointmentScreen() {
 
               <TouchableOpacity style={styles.successBtn}
                 onPress={() => router.replace('/(patient)/appointments')} activeOpacity={0.85}>
-                <Ionicons name="calendar-outline" size={18} color="#fff" />
+                <Ionicons name="calendar-outline" size={18} color="#F5F6F8" />
                 <Text style={styles.successBtnText}>Zobraziť moje termíny</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -975,7 +975,7 @@ export default function BookAppointmentScreen() {
             <View style={[styles.notesCard, { backgroundColor: colors.cardBg, borderColor: colors.bg3 }]}>
               <TextInput style={[styles.notesInput, { color: colors.textPrimary }]}
                 placeholder="Ďalšie informácie pre doktora..."
-                placeholderTextColor={dark ? '#666' : '#999'}
+                placeholderTextColor={dark ? '#B8ACA0' : '#B8ACA0'}
                 value={notes} onChangeText={setNotes}
                 multiline numberOfLines={3} textAlignVertical="top" />
             </View>
@@ -991,9 +991,9 @@ export default function BookAppointmentScreen() {
               </TouchableOpacity>
               <PulseButton onPress={handleBook} loading={loading}>
                 {loading
-                  ? <ActivityIndicator color="#fff" />
+                  ? <ActivityIndicator color="#F5F6F8" />
                   : <>
-                      <Ionicons name="calendar" size={18} color="#fff" />
+                      <Ionicons name="calendar" size={18} color="#F5F6F8" />
                       <Text style={styles.bookBtnText}>Potvrdiť rezerváciu</Text>
                     </>}
               </PulseButton>
@@ -1013,7 +1013,7 @@ const styles = StyleSheet.create({
   content:{ padding: SPACING.xl, paddingTop: 16 },
 
   familyBanner:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FDF3E7', paddingHorizontal: SPACING.xl, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#F0D9A8' },
-  familyBannerText: { fontSize: 13, color: '#784212' },
+  familyBannerText: { fontSize: 13, color: '#B87333' },
   center: { flex: 1, backgroundColor: COLORS.bg2, alignItems: 'center', justifyContent: 'center', gap: 12 },
   loadingText: { color: COLORS.wal, fontSize: 13 },
 
@@ -1029,8 +1029,8 @@ const styles = StyleSheet.create({
   stepDot:      { width: 22, height: 22, borderRadius: 2, backgroundColor: COLORS.bg3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: COLORS.bg3 },
   stepDotActive:{ backgroundColor: COLORS.wal, borderColor: COLORS.wal },
   stepDotDone:  { backgroundColor: '#2E7D5E', borderColor: '#2E7D5E' },
-  stepDotText:  { fontSize: 11, fontWeight: '700', color: '#666' },
-  stepLabel:    { fontSize: 10, fontWeight: '600', color: '#666', textTransform: 'uppercase', letterSpacing: 0.5 },
+  stepDotText:  { fontSize: 11, fontWeight: '700', color: '#B8ACA0' },
+  stepLabel:    { fontSize: 10, fontWeight: '600', color: '#B8ACA0', textTransform: 'uppercase', letterSpacing: 0.5 },
   stepLabelActive: { color: COLORS.wal },
   stepLine:     { flex: 1, height: 2, backgroundColor: COLORS.bg3, marginHorizontal: 4 },
   stepLineDone: { backgroundColor: '#2E7D5E' },
@@ -1048,7 +1048,7 @@ const styles = StyleSheet.create({
 
   // Doctor card (Step 0)
   doctorCard:    { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 10, elevation: 1 },
-  doctorCardSel: { borderColor: COLORS.gold, backgroundColor: '#FFFDF7' },
+  doctorCardSel: { borderColor: COLORS.gold, backgroundColor: '#F5F6F8' },
   doctorAvatar:  { width: 56, height: 56, borderRadius: 6, backgroundColor: COLORS.wal, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: COLORS.sand },
   doctorInitials:{ fontSize: 18, fontWeight: '700', color: COLORS.cream, fontFamily: 'PlayfairDisplay_700Bold' },
   doctorName:    { fontSize: 16, fontFamily: 'PlayfairDisplay_700Bold', color: COLORS.esp, marginBottom: 2 },
@@ -1082,13 +1082,13 @@ const styles = StyleSheet.create({
   slotsGrid:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
   slotCell:       { width: '22%', alignItems: 'center', paddingVertical: 12, borderRadius: 2, backgroundColor: COLORS.cream, borderWidth: 1.5, borderColor: COLORS.bg3 },
   slotCellSel:    { backgroundColor: COLORS.esp, borderColor: COLORS.sand },
-  slotCellTaken:  { backgroundColor: '#F9F9F9', borderColor: '#E8E8E8', opacity: 0.55 },
+  slotCellTaken:  { backgroundColor: '#F5F6F8', borderColor: '#EAECEE', opacity: 0.55 },
   slotStart:      { fontSize: 14, fontWeight: '700', color: COLORS.esp },
-  slotEnd:        { fontSize: 10, color: '#888', marginTop: 2 },
+  slotEnd:        { fontSize: 10, color: '#B8ACA0', marginTop: 2 },
   slotSelText:    { color: COLORS.cream },
   slotEndSel:     { color: COLORS.sand },
-  slotTakenText:  { color: '#bbb' },
-  slotTakenLabel: { fontSize: 12, color: '#bbb', marginTop: 1 },
+  slotTakenText:  { color: '#D0D4DC' },
+  slotTakenLabel: { fontSize: 12, color: '#D0D4DC', marginTop: 1 },
 
   // Summary
   summaryCard:    { backgroundColor: COLORS.cream, borderRadius: 4, borderWidth: 1.5, borderColor: COLORS.sand, padding: 16, marginBottom: 20 },
@@ -1102,7 +1102,7 @@ const styles = StyleSheet.create({
 
   // Urgent toggle
   urgentCard:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: COLORS.cream, borderRadius: 2, borderWidth: 1.5, borderColor: COLORS.bg3, padding: 14, marginBottom: 14 },
-  urgentCardActive:   { borderColor: '#C0392B', backgroundColor: '#FEF9F9' },
+  urgentCardActive:   { borderColor: '#C0392B', backgroundColor: '#F5F6F8' },
   urgentLeft:         { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 },
   urgentEmoji:        { fontSize: 26 },
   urgentTitle:        { fontSize: 14, fontWeight: '700', color: COLORS.esp, marginBottom: 2 },
@@ -1120,7 +1120,7 @@ const styles = StyleSheet.create({
   // Waiting list
   wlBox:         { backgroundColor: '#FDF3E7', borderRadius: 2, borderWidth: 1.5, borderColor: '#D0D4DC', padding: 16, marginBottom: 16 },
   wlTitle:       { fontSize: 14, fontWeight: '700', color: '#B87333', marginBottom: 8 },
-  wlSub:         { fontSize: 13, color: '#9A7D0A', lineHeight: 19, marginBottom: 14 },
+  wlSub:         { fontSize: 13, color: '#B87333', lineHeight: 19, marginBottom: 14 },
   wlBtn:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: COLORS.wal, borderRadius: 2, paddingVertical: 12 },
   wlBtnText:     { fontSize: 13, fontWeight: '700', color: '#F5F6F8' },
   wlSuccess:     { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#EDF7F3', borderRadius: 2, padding: 10 },
