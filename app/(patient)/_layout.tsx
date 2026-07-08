@@ -50,10 +50,10 @@ export default function PatientLayout() {
           <Ionicons name={focused ? 'star' : 'star-outline'} size={22} color={color} />
         ),
       }} />
-      <Tabs.Screen name="chat" options={{
-        title: 'AI Chat',
+      <Tabs.Screen name="messages" options={{
+        title: 'Správy',
         tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'} size={22} color={color} />
+          <Ionicons name={focused ? 'chatbubbles' : 'chatbubbles-outline'} size={22} color={color} />
         ),
       }} />
       <Tabs.Screen name="profile" options={{
@@ -69,7 +69,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="calculator"       options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="notifications"    options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="booking-success"  options={{ href: null, headerShown: false }} />
-      <Tabs.Screen name="messages"         options={{ href: null, headerShown: false }} />
+      <Tabs.Screen name="chat"             options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="payment-history"  options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="family"           options={{ href: null, headerShown: false }} />
       <Tabs.Screen name="consents"         options={{ href: null, headerShown: false }} />
