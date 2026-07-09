@@ -175,40 +175,50 @@ export default function SmileDesign() {
     }, 500);
 
     try {
-      // Read photo as base64
-      const response = await fetch(photoUri);
-      const blob = await response.blob();
-      const base64 = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1] ?? result);
-        };
-        reader.readAsDataURL(blob);
-      });
-
-      // Upload original to Supabase Storage
+      // 1. Upload photo to Supabase Storage first
+      setProgress(5);
       const origPath = `originals/${userId}/${Date.now()}.jpg`;
       const origBlob = await (await fetch(photoUri)).blob();
-      await supabase.storage.from('smile-designs').upload(origPath, origBlob, { contentType: 'image/jpeg' });
+      const { error: uploadError } = await supabase.storage.from('smile-designs').upload(origPath, origBlob, { contentType: 'image/jpeg' });
+      if (uploadError) throw new Error(`Upload zlyhalo: ${uploadError.message}`);
+
       const { data: origUrlData } = supabase.storage.from('smile-designs').getPublicUrl(origPath);
+      const imageUrl = origUrlData?.publicUrl;
+      if (!imageUrl) throw new Error('Nepodarilo sa získať URL obrázku');
 
-      // Call AI Edge Function
+      setProgress(20);
+
+      // 2. Call AI Edge Function with URL (not base64 — avoids payload size limits)
       const { data: { session } } = await supabase.auth.getSession();
-      const aiRes = await fetch(EDGE_FN_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session?.access_token ?? ''}`,
-        },
-        body: JSON.stringify({
-          image_base64: base64,
-          effect: selectedEffect,
-          intensity,
-        }),
-      });
+      let aiRes: Response;
+      try {
+        aiRes = await fetch(EDGE_FN_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session?.access_token ?? ''}`,
+          },
+          body: JSON.stringify({
+            image_url: imageUrl,
+            effect: selectedEffect,
+            intensity,
+          }),
+        });
+      } catch (fetchErr: any) {
+        throw new Error('Nepodarilo sa pripojiť k AI serveru. Skontrolujte internetové pripojenie.');
+      }
 
-      const aiData = await aiRes.json();
+      // 3. Parse response — handle non-JSON gracefully
+      let aiData: any;
+      try {
+        aiData = await aiRes.json();
+      } catch {
+        throw new Error(
+          aiRes.status === 404
+            ? 'AI funkcia nie je nasadená. Spustite: supabase functions deploy smile-transform'
+            : `Server vrátil neočakávanú odpoveď (HTTP ${aiRes.status})`
+        );
+      }
 
       if (aiData.status === 'success' && aiData.result_url) {
         setResultUri(aiData.result_url);
@@ -217,7 +227,7 @@ export default function SmileDesign() {
         // Save to database
         await supabase.from('smile_designs').insert({
           patient_id: userId,
-          original_url: origUrlData?.publicUrl ?? '',
+          original_url: imageUrl,
           result_url: aiData.result_url,
           effect_type: selectedEffect,
           intensity,
@@ -227,19 +237,25 @@ export default function SmileDesign() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         await loadHistory();
       } else {
-        throw new Error(aiData.error ?? 'AI spracovanie zlyhalo');
+        throw new Error(aiData.error ?? `AI spracovanie zlyhalo (HTTP ${aiRes.status})`);
       }
     } catch (e: any) {
       setProgress(0);
-      const msg = e?.message ?? '';
+      const msg = e?.message ?? 'Neznáma chyba';
       if (msg.includes('REPLICATE_API_TOKEN')) {
         Alert.alert(
           'API kľúč chýba',
-          'Pre AI spracovanie je potrebný Replicate API kľúč. Nastavte ho v Supabase Dashboard → Edge Functions → Secrets ako REPLICATE_API_TOKEN.',
+          'Pre AI spracovanie je potrebný Replicate API kľúč.\n\nNastavte ho v Supabase Dashboard → Edge Functions → Secrets ako REPLICATE_API_TOKEN.',
+          [{ text: 'Rozumiem' }],
+        );
+      } else if (msg.includes('nasadená') || msg.includes('deploy')) {
+        Alert.alert(
+          'AI funkcia nie je nasadená',
+          'Edge Function "smile-transform" nie je nasadená na Supabase.\n\nSpustite:\nsupabase functions deploy smile-transform',
           [{ text: 'Rozumiem' }],
         );
       } else {
-        Alert.alert('Chyba', `AI spracovanie zlyhalo: ${msg}`, [{ text: 'OK' }]);
+        Alert.alert('Chyba', msg, [{ text: 'Skúsiť znova', onPress: processWithAI }, { text: 'Zrušiť' }]);
       }
     } finally {
       clearInterval(progressInterval);
@@ -676,14 +692,4 @@ const st = StyleSheet.create({
   disclaimerText: { flex: 1, fontSize: 11, lineHeight: 16 },
 
   /* Modal */
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: SPACING.xl },
-  modalContent: { borderRadius: RADII.lg, padding: SPACING.lg, alignItems: 'center', width: '100%', maxWidth: 360 },
-  modalImgRow: { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  modalImgWrap: { flex: 1, alignItems: 'center' },
-  modalImg: { width: '100%', aspectRatio: 0.75, borderRadius: RADII.sm, resizeMode: 'cover', marginBottom: 4 },
-  modalImgLabel: { fontSize: 9, fontWeight: '600', letterSpacing: 1.5, textTransform: 'uppercase' },
-  modalEffect: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  modalDate: { fontSize: 12, marginBottom: 16 },
-  modalCloseBtn: { paddingHorizontal: 36, paddingVertical: 12, borderRadius: RADII.sm },
-  modalCloseBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 13, letterSpacing: 1, textTransform: 'uppercase' },
-});
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justify

@@ -55,21 +55,53 @@ function toothType(num: number): 'molar' | 'premolar' | 'canine' | 'incisor' {
   return 'incisor';
 }
 
-/* ─── SVG cesty pre anatomické tvary zubov ────────────────────────────────── */
-// Horné zuby (koreň hore, korunka dole)
+/* ─── SVG cesty pre anatomické tvary zubov s koreňmi ─────────────────────── */
+// Horné zuby (korene hore, korunka dole) — výrazné anatomické tvary
 const UPPER_PATHS: Record<string, { path: string; w: number; h: number }> = {
-  molar:    { w: 30, h: 40, path: 'M6,0 C3,0 1,4 2,12 L1,24 C0,30 4,38 8,40 L12,40 C14,40 16,40 18,40 L22,40 C26,38 30,30 29,24 L28,12 C29,4 27,0 24,0 Z' },
-  premolar: { w: 24, h: 38, path: 'M5,0 C2,0 1,5 2,14 L2,24 C1,30 4,36 7,38 L12,38 L17,38 C20,36 23,30 22,24 L22,14 C23,5 22,0 19,0 Z' },
-  canine:   { w: 20, h: 40, path: 'M7,0 C4,0 2,6 3,16 L3,26 C2,32 4,38 7,40 L10,40 L13,40 C16,38 18,32 17,26 L17,16 C18,6 16,0 13,0 Z' },
-  incisor:  { w: 18, h: 36, path: 'M5,0 C3,0 1,5 2,14 L2,22 C1,28 3,34 6,36 L9,36 L12,36 C15,34 17,28 16,22 L16,14 C17,5 15,0 13,0 Z' },
+  // Stolička — široká korunka, 3 korene (2 bukálne + 1 palatinálny)
+  molar: {
+    w: 32, h: 48,
+    path: 'M5,0 C4,0 3,2 4,6 L6,16 C5,18 4,18 3,16 L2,6 C1,2 0,2 0,4 L1,16 C1,18 2,19 3,19 L4,19 C5,20 5,22 5,24 L3,28 C1,32 1,38 4,44 C6,47 10,48 16,48 C22,48 26,47 28,44 C31,38 31,32 29,28 L27,24 C27,22 27,20 28,19 L29,19 C30,19 31,18 31,16 L32,4 C32,2 31,2 30,6 L29,16 C28,18 27,18 26,16 L28,6 C29,2 28,0 27,0 C26,0 25,2 25,6 L24,14 C23,16 22,17 21,16 L21,12 C21,8 20,4 18,2 L16,0 L14,2 C12,4 11,8 11,12 L11,16 C10,17 9,16 8,14 L7,6 C7,2 6,0 5,0 Z',
+  },
+  // Predstolička — stredná korunka, 1-2 korene
+  premolar: {
+    w: 24, h: 46,
+    path: 'M8,0 C7,0 6,2 7,8 L8,16 C7,18 6,18 5,16 L4,8 C3,4 2,2 2,4 L3,16 C3,18 4,19 5,20 L5,24 C3,28 2,34 4,40 C5,43 8,46 12,46 C16,46 19,43 20,40 C22,34 21,28 19,24 L19,20 C20,19 21,18 21,16 L22,4 C22,2 21,4 20,8 L19,16 C18,18 17,18 16,16 L17,8 C18,2 17,0 16,0 C15,0 14,3 14,8 L13,14 C13,16 12,17 12,17 C12,17 11,16 11,14 L10,8 C10,3 9,0 8,0 Z',
+  },
+  // Očný zub — úzky, dlhý, 1 koreň (najdlhší)
+  canine: {
+    w: 18, h: 50,
+    path: 'M9,0 C7,0 6,4 6,10 L6,18 C5,20 4,20 4,18 L4,14 C3,10 2,10 2,12 L3,18 C3,20 4,22 5,22 L5,26 C4,30 3,36 3,42 C4,46 6,50 9,50 C12,50 14,46 15,42 C15,36 14,30 13,26 L13,22 C14,22 15,20 15,18 L16,12 C16,10 15,10 14,14 L14,18 C14,20 13,20 12,18 L12,10 C12,4 11,0 9,0 Z',
+  },
+  // Rezák — široká plochá korunka, 1 koreň
+  incisor: {
+    w: 18, h: 42,
+    path: 'M9,0 C7,0 6,3 6,8 L6,16 C5,18 4,18 4,16 L4,12 C3,8 2,8 2,10 L3,16 C3,18 4,20 5,20 L4,24 C3,28 2,32 3,36 C4,39 6,42 9,42 C12,42 14,39 15,36 C16,32 15,28 14,24 L13,20 C14,20 15,18 15,16 L16,10 C16,8 15,8 14,12 L14,16 C14,18 13,18 12,16 L12,8 C12,3 11,0 9,0 Z',
+  },
 };
 
-// Dolné zuby (koreň dole, korunka hore) — zrkadlový odraz
+// Dolné zuby (korene dole, korunka hore) — zrkadlové anatomické tvary
 const LOWER_PATHS: Record<string, { path: string; w: number; h: number }> = {
-  molar:    { w: 30, h: 40, path: 'M6,40 C3,40 1,36 2,28 L1,16 C0,10 4,2 8,0 L12,0 C14,0 16,0 18,0 L22,0 C26,2 30,10 29,16 L28,28 C29,36 27,40 24,40 Z' },
-  premolar: { w: 24, h: 38, path: 'M5,38 C2,38 1,33 2,24 L2,14 C1,8 4,2 7,0 L12,0 L17,0 C20,2 23,8 22,14 L22,24 C23,33 22,38 19,38 Z' },
-  canine:   { w: 20, h: 40, path: 'M7,40 C4,40 2,34 3,24 L3,14 C2,8 4,2 7,0 L10,0 L13,0 C16,2 18,8 17,14 L17,24 C18,34 16,40 13,40 Z' },
-  incisor:  { w: 18, h: 36, path: 'M5,36 C3,36 1,31 2,22 L2,14 C1,8 3,2 6,0 L9,0 L12,0 C15,2 17,8 16,14 L16,22 C17,31 15,36 13,36 Z' },
+  // Stolička — široká korunka, 2 korene
+  molar: {
+    w: 32, h: 48,
+    path: 'M4,4 C1,10 1,16 3,20 L5,24 C5,26 5,28 4,29 L3,29 C2,29 1,30 1,32 L0,44 C0,46 1,46 2,42 L3,32 C4,30 5,30 6,32 L7,42 C8,46 9,48 10,48 C11,48 12,44 11,38 L10,32 C10,30 11,29 12,30 L14,32 C16,34 18,36 20,32 L22,30 C23,29 24,30 24,32 L23,38 C22,44 23,48 24,48 C25,48 26,46 27,42 L28,32 C29,30 30,30 31,32 L32,44 C32,46 33,46 32,42 L31,32 C31,30 30,29 29,29 L28,29 C27,28 27,26 27,24 L29,20 C31,16 31,10 28,4 C26,1 22,0 16,0 C10,0 6,1 4,4 Z',
+  },
+  // Predstolička — 1 koreň
+  premolar: {
+    w: 24, h: 46,
+    path: 'M4,6 C2,12 2,18 4,22 L5,24 C5,26 5,28 4,29 L3,30 C2,30 2,32 3,34 L5,40 C6,42 7,44 8,46 C9,48 10,46 10,42 L10,36 C10,34 11,33 12,33 C13,33 14,34 14,36 L14,42 C14,46 15,48 16,46 L17,44 C18,42 19,40 20,36 L21,32 C21,30 21,30 20,29 L19,28 C19,26 19,24 20,22 C22,18 22,12 20,6 C19,3 16,0 12,0 C8,0 5,3 4,6 Z',
+  },
+  // Očný zub — 1 dlhý koreň
+  canine: {
+    w: 18, h: 50,
+    path: 'M3,8 C3,14 4,20 5,24 L5,26 C4,28 3,28 3,26 L3,22 C2,20 1,20 2,22 L3,28 C3,30 4,30 5,30 L5,34 C4,38 4,42 6,46 C7,48 8,50 9,50 C10,50 11,48 12,46 C14,42 14,38 13,34 L13,30 C14,30 15,30 15,28 L16,22 C17,20 16,20 15,22 L15,26 C15,28 14,28 13,26 L13,24 C14,20 15,14 15,8 C14,4 12,0 9,0 C6,0 4,4 3,8 Z',
+  },
+  // Rezák — 1 koreň
+  incisor: {
+    w: 18, h: 42,
+    path: 'M3,6 C2,10 2,16 3,20 L4,22 C4,24 3,24 3,22 L3,18 C2,16 1,16 2,18 L3,24 C3,26 4,26 5,26 L4,30 C3,34 3,36 5,38 C6,40 8,42 9,42 C10,42 12,40 13,38 C15,36 15,34 14,30 L13,26 C14,26 15,26 15,24 L16,18 C17,16 16,16 15,18 L15,22 C15,24 14,24 14,22 L15,20 C16,16 16,10 15,6 C14,2 12,0 9,0 C6,0 4,2 3,6 Z',
+  },
 };
 
 /* ─── Hlavný komponent ────────────────────────────────────────────────────── */
@@ -121,7 +153,7 @@ export default function DentalMap() {
   }, [teeth]);
 
   /* ─── SVG Zub komponent ───────────────────────────────────────────────── */
-  const TOOTH_SCALE = Math.min((SCREEN_W - 64) / 320, 1.15);
+  const TOOTH_SCALE = Math.min((SCREEN_W - 48) / 380, 0.85);
 
   function SvgTooth({ num, isUpper }: { num: number; isUpper: boolean }) {
     const status = getStatus(num);
@@ -162,8 +194,8 @@ export default function DentalMap() {
           {status !== 'unknown' && (
             <SvgText
               x={shape.w / 2}
-              y={shape.h / 2 + (isUpper ? 2 : -2)}
-              fontSize={type === 'molar' ? 13 : 11}
+              y={isUpper ? shape.h * 0.72 : shape.h * 0.28}
+              fontSize={type === 'molar' ? 12 : 10}
               fontWeight="800"
               fill={cfg.color}
               textAnchor="middle"
@@ -301,9 +333,9 @@ export default function DentalMap() {
                 <>
                   {/* Veľký SVG zub */}
                   <View style={[st.modalToothWrap, { backgroundColor: dark ? cfg.color + '15' : cfg.color + '10' }]}>
-                    <Svg width={shape.w * 2.2} height={shape.h * 2.2} viewBox={`0 0 ${shape.w} ${shape.h}`}>
+                    <Svg width={shape.w * 1.8} height={shape.h * 1.8} viewBox={`0 0 ${shape.w} ${shape.h}`}>
                       <Path d={shape.path} fill={cfg.color + '35'} stroke={cfg.color} strokeWidth={1.5} strokeLinejoin="round" />
-                      <SvgText x={shape.w / 2} y={shape.h / 2} fontSize={16} fontWeight="800" fill={cfg.color} textAnchor="middle" alignmentBaseline="central">
+                      <SvgText x={shape.w / 2} y={isUpper ? shape.h * 0.72 : shape.h * 0.28} fontSize={14} fontWeight="800" fill={cfg.color} textAnchor="middle" alignmentBaseline="central">
                         {cfg.icon}
                       </SvgText>
                     </Svg>
@@ -370,9 +402,9 @@ const st = StyleSheet.create({
   jawLabelText: { fontSize: 9, fontWeight: '600', letterSpacing: 2, textTransform: 'uppercase' },
 
   /* Jaw row */
-  jawRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingHorizontal: 2 },
+  jawRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', paddingHorizontal: 0 },
   quadrant: { flexDirection: 'row', alignItems: 'flex-end' },
-  midLine: { width: 1.5, height: '80%', marginHorizontal: 2, borderRadius: 1 },
+  midLine: { width: 1.5, height: '70%', marginHorizontal: 1, borderRadius: 1 },
 
   /* Cross divider */
   crossDivider: { flexDirection: 'row', alignItems: 'center', marginVertical: 6, paddingHorizontal: 4 },
@@ -380,36 +412,4 @@ const st = StyleSheet.create({
   crossCenter: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', marginHorizontal: 6 },
 
   /* Tooth numbers */
-  toothNum: { fontSize: 7, fontWeight: '700', textAlign: 'center', letterSpacing: 0.3 },
-
-  /* Quadrant labels */
-  quadrantLabels: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 4, paddingHorizontal: 16 },
-  qLabel: { fontSize: 8, fontWeight: '600', letterSpacing: 1.5, textTransform: 'uppercase' },
-
-  /* Legend */
-  legendCard: { borderRadius: RADII.lg, borderWidth: 1, padding: SPACING.lg, marginBottom: SPACING.md },
-  legendTitle: { fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 },
-  legendGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: RADII.sm, borderWidth: 1 },
-  legendDot: { width: 8, height: 8, borderRadius: 2 },
-  legendText: { fontSize: 11, fontWeight: '500' },
-
-  /* Info */
-  infoCard: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: RADII.md, borderWidth: 1, padding: SPACING.md, marginBottom: SPACING.lg },
-  infoText: { flex: 1, fontSize: 12, lineHeight: 17 },
-
-  /* Modal */
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', alignItems: 'center', padding: SPACING.xl },
-  modal: { borderRadius: RADII.lg, padding: SPACING.xl, alignItems: 'center', width: '100%', maxWidth: 320 },
-  modalToothWrap: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 14 },
-  modalTitle: { fontSize: 22, fontWeight: '800', marginBottom: 2 },
-  modalType: { fontSize: 12, marginBottom: 12 },
-  statusBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8, borderRadius: RADII.pill, marginBottom: 14 },
-  statusText: { fontSize: 14, fontWeight: '700' },
-  notesWrap: { width: '100%', borderRadius: RADII.sm, borderWidth: 1, padding: 12, marginBottom: 12 },
-  notesLabel: { fontSize: 8, fontWeight: '600', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4 },
-  notesText: { fontSize: 13, lineHeight: 18 },
-  modalDate: { fontSize: 11, marginBottom: 14 },
-  modalBtn: { paddingHorizontal: 36, paddingVertical: 12, borderRadius: RADII.sm },
-  modalBtnText: { color: '#F5F6F8', fontWeight: '700', fontSize: 13, letterSpacing: 1, textTransform: 'uppercase' },
-});
+  toothNum: { fontSize: 
