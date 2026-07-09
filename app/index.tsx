@@ -14,11 +14,27 @@ import { ONBOARDING_KEY } from './onboarding';
 const { width } = Dimensions.get('window');
 
 async function getRoleAndNavigate(userId: string, router: any) {
-  const { data } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
-  if      (data?.role === 'doctor')    router.replace('/(doctor)');
-  else if (data?.role === 'patient')   router.replace('/(patient)');
-  else if (data?.role === 'reception') router.replace('/(reception)');
-  else                                 router.replace('/setup-role');
+  try {
+    const { data, error } = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
+    if (error) {
+      console.error('Profile load error:', error);
+      // Ak RLS alebo sieť zlyhá, skús znova s krátkym oneskorením
+      await new Promise(r => setTimeout(r, 1000));
+      const retry = await supabase.from('profiles').select('role').eq('id', userId).maybeSingle();
+      if (retry.data?.role === 'doctor')    { router.replace('/(doctor)'); return; }
+      if (retry.data?.role === 'patient')   { router.replace('/(patient)'); return; }
+      if (retry.data?.role === 'reception') { router.replace('/(reception)'); return; }
+      router.replace('/setup-role');
+      return;
+    }
+    if      (data?.role === 'doctor')    router.replace('/(doctor)');
+    else if (data?.role === 'patient')   router.replace('/(patient)');
+    else if (data?.role === 'reception') router.replace('/(reception)');
+    else                                 router.replace('/setup-role');
+  } catch (e) {
+    console.error('getRoleAndNavigate error:', e);
+    router.replace('/setup-role');
+  }
 }
 
 type Mode = 'login' | 'reset';
@@ -339,16 +355,4 @@ const styles = StyleSheet.create({
   // Reset mode
   backRow:  { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 18 },
   backText: { fontSize: 13, color: COLORS.wal, fontWeight: '500' },
-  resetInfo:{ fontSize: 13, color: COLORS.wal, lineHeight: 20, marginBottom: 20, textAlign: 'center' },
-
-  // Success state
-  successBox:   { alignItems: 'center', paddingVertical: 16, gap: 12 },
-  successTitle: { fontSize: 20, fontWeight: '700', color: '#2E7D5E' },
-  successSub:   { fontSize: 13, color: COLORS.wal, textAlign: 'center', lineHeight: 20, marginBottom: 8 },
-
-  // Retry
-  retryWrap:    { alignItems: 'center', marginTop: 32, gap: 14 },
-  retryText:    { color: COLORS.sand, fontSize: 13, textAlign: 'center', opacity: 0.8 },
-  retryBtn:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: COLORS.wal, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 4 },
-  retryBtnText: { color: '#F5F6F8', fontSize: 13, fontWeight: '600' },
-});
+  resetInfo:{ fontSize: 13, color: COLORS

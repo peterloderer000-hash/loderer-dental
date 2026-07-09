@@ -17,31 +17,57 @@ export default function SetupRole() {
     if (!fullName.trim()) { Alert.alert('Chyba', 'Zadaj svoje celé meno.'); return; }
     setLoading(true);
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      Alert.alert('Chyba', 'Nepodarilo sa načítať účet.');
-      setLoading(false); return;
-    }
+    try {
+      // Použijeme getSession() (lokálne) namiesto getUser() (sieťový call)
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.user) {
+        // Fallback na getUser() ak session nie je
+        const { data: { user: fallbackUser }, error: userError } = await supabase.auth.getUser();
+        if (userError || !fallbackUser) {
+          Alert.alert('Chyba', 'Relácia vypršala. Prihláste sa znova.', [
+            { text: 'OK', onPress: () => router.replace('/') },
+          ]);
+          setLoading(false); return;
+        }
+        // Pokračuj s fallback user
+        await processUser(fallbackUser.id);
+        return;
+      }
 
-    // Ak má user už staff rolu (z pozvánky), neprepisuj ju
-    const { data: existing } = await supabase
-      .from('profiles').select('role').eq('id', user.id).maybeSingle();
-
-    if (existing?.role && existing.role !== 'patient') {
+      await processUser(session.user.id);
+    } catch (e: any) {
+      console.error('Setup role error:', e);
+      Alert.alert('Chyba pripojenia', 'Skontrolujte internetové pripojenie a skúste znova.');
       setLoading(false);
-      router.replace('/(doctor)');
-      return;
     }
+  }
 
-    const { error } = await supabase.from('profiles').upsert({
-      id:        user.id,
-      role:      'patient',
-      full_name: fullName.trim(),
-    });
+  async function processUser(userId: string) {
+    try {
+      // Ak má user už staff rolu (z pozvánky), neprepisuj ju
+      const { data: existing } = await supabase
+        .from('profiles').select('role').eq('id', userId).maybeSingle();
 
-    setLoading(false);
-    if (error) { Alert.alert('Chyba', error.message); return; }
-    router.replace('/(patient)');
+      if (existing?.role && existing.role !== 'patient') {
+        setLoading(false);
+        if (existing.role === 'reception') router.replace('/(reception)');
+        else router.replace('/(doctor)');
+        return;
+      }
+
+      const { error } = await supabase.from('profiles').upsert({
+        id:        userId,
+        role:      'patient',
+        full_name: fullName.trim(),
+      });
+
+      setLoading(false);
+      if (error) { Alert.alert('Chyba', error.message); return; }
+      router.replace('/(patient)');
+    } catch (e: any) {
+      setLoading(false);
+      Alert.alert('Chyba', e?.message ?? 'Nepodarilo sa uložiť profil.');
+    }
   }
 
   return (
@@ -143,34 +169,4 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 10, fontWeight: '700', color: COLORS.wal,
-    textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8,
-  },
-
-  inputWrap: {
-    flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1.5, borderColor: COLORS.bg3,
-    borderRadius: 2, backgroundColor: COLORS.bg2,
-    marginBottom: 8, paddingHorizontal: 12,
-  },
-  inputIcon: { marginRight: 8 },
-  input:     { flex: 1, paddingVertical: 13, fontSize: 15, color: COLORS.esp },
-
-  btnConfirm: {
-    backgroundColor: COLORS.esp, borderRadius: 2,
-    paddingVertical: 15, alignItems: 'center', marginTop: 20,
-    flexDirection: 'row', justifyContent: 'center', gap: 8,
-    elevation: 4, shadowColor: COLORS.esp,
-    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8,
-  },
-  btnDisabled:    { opacity: 0.35 },
-  btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
-
-  inviteLink: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 6, marginTop: 28, paddingVertical: 8,
-  },
-  inviteLinkText: {
-    fontSize: 12, color: COLORS.wal, fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-});
+    textTransform: 'uppercase', letterSp

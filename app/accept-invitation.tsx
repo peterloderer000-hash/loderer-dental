@@ -59,11 +59,22 @@ export default function AcceptInvitation() {
     if (!fullName.trim() || !invitation) { Alert.alert('Chyba', 'Zadaj svoje celé meno.'); return; }
     setLoading(true);
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      Alert.alert('Chyba', 'Nepodarilo sa načítať účet.');
-      setLoading(false); return;
+    // Použijeme getSession() (lokálne) s fallbackom na getUser() (sieťový)
+    let userId: string | null = null;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.id) {
+      userId = session.user.id;
+    } else {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        Alert.alert('Chyba', 'Relácia vypršala. Prihláste sa znova.', [
+          { text: 'OK', onPress: () => router.replace('/') },
+        ]);
+        setLoading(false); return;
+      }
+      userId = user.id;
     }
+    const user = { id: userId! };
 
     const profilePayload: Record<string, any> = {
       id:        user.id,
@@ -264,11 +275,4 @@ const styles = StyleSheet.create({
   btnConfirmText: { fontSize: 15, fontWeight: '700', color: '#F5F6F8' },
 
   roleBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#EDF7F3', borderRadius: 2,
-    padding: 14, borderWidth: 1, borderColor: '#A3D4BE',
-  },
-  roleBannerIcon:  { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EDF7F3', alignItems: 'center', justifyContent: 'center' },
-  roleBannerTitle: { fontSize: 14, fontWeight: '700', color: '#2E7D5E' },
-  roleBannerSub:   { fontSize: 12, color: '#2E7D5E', marginTop: 2 },
-});
+    flexDirection: 'row', alignItems: 
